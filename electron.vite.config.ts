@@ -6,6 +6,12 @@ import { defineConfig } from 'electron-vite'
 export default defineConfig({
   main: {
     build: {
+      // Bundle Google Drive authentication into the main process. Leaving this
+      // dependency tree external makes electron-builder omit deep pnpm
+      // dependencies such as math-intrinsics from the packaged app.
+      externalizeDeps: {
+        exclude: ['googleapis', '@google-cloud/local-auth']
+      },
       rollupOptions: {
         input: {
           index: resolve('src/main/index.ts'),
