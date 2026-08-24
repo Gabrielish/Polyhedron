@@ -10,7 +10,7 @@ export default defineConfig({
       // dependency tree external makes electron-builder omit deep pnpm
       // dependencies such as math-intrinsics from the packaged app.
       externalizeDeps: {
-        exclude: ['googleapis', '@google-cloud/local-auth']
+        exclude: ['googleapis']
       },
       rollupOptions: {
         input: {
