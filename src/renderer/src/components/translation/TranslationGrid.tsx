@@ -4,6 +4,10 @@ import {
   BookOpen,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   ChevronUp,
   Copy,
   Flag,
@@ -1023,7 +1027,7 @@ export function TranslationGrid({
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(1)}
           >
-            {t('grid.pagination.first', { ns: 'translate' })}
+            <ChevronsLeft size={16} aria-hidden="true" />{t('grid.pagination.first', { ns: 'translate' })}
           </button>
           <button
             type="button"
@@ -1031,7 +1035,7 @@ export function TranslationGrid({
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => p - 1)}
           >
-            {t('grid.pagination.prev', { ns: 'translate' })}
+            <ChevronLeft size={18} aria-hidden="true" />{t('grid.pagination.prev', { ns: 'translate' })}
           </button>
           <button
             type="button"
@@ -1039,7 +1043,7 @@ export function TranslationGrid({
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => p + 1)}
           >
-            {t('grid.pagination.next', { ns: 'translate' })}
+            {t('grid.pagination.next', { ns: 'translate' })}<ChevronRight size={18} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -1047,7 +1051,7 @@ export function TranslationGrid({
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(totalPages)}
           >
-            {t('grid.pagination.last', { ns: 'translate' })}
+            {t('grid.pagination.last', { ns: 'translate' })}<ChevronsRight size={16} aria-hidden="true" />
           </button>
         </div>
       </div>

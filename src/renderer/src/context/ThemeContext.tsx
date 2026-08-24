@@ -17,7 +17,7 @@ const STORAGE_KEY = 'icosa-theme'
 
 function readTheme(): ThemeId {
   const value = window.localStorage.getItem(STORAGE_KEY)
-  return THEMES.some((item) => item.id === value) ? (value as ThemeId) : 'classic'
+  return value === 'liquid-glass' ? 'liquid-glass' : 'liquid-glass'
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {

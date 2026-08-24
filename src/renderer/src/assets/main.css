@@ -1853,3 +1853,373 @@ html[data-theme='liquid-glass'] .translation-pagination-controls {
     transform: none !important;
   }
 }
+
+
+/* Final size lock: Glossary navigation bubbles match the Liquid Glass dock. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .sidebar-shell {
+    --mobile-liquid-dock-size: 58px;
+  }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next {
+    width: var(--mobile-liquid-dock-size) !important;
+    min-width: var(--mobile-liquid-dock-size) !important;
+    max-width: var(--mobile-liquid-dock-size) !important;
+    height: var(--mobile-liquid-dock-size) !important;
+    min-height: var(--mobile-liquid-dock-size) !important;
+    max-height: var(--mobile-liquid-dock-size) !important;
+    flex: 0 0 var(--mobile-liquid-dock-size) !important;
+    aspect-ratio: 1 / 1 !important;
+    bottom: 16px !important;
+    border-radius: 50% !important;
+  }
+}
+/* Final mobile pagination placement: two visible bubbles outside the dock. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule {
+    display: flex !important;
+    position: fixed !important;
+    right: 0 !important;
+    bottom: 16px !important;
+    left: 0 !important;
+    z-index: 200 !important;
+    height: 58px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-next {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    z-index: 201 !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-next { right: 10px !important; left: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-indicator,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-range { display: none !important; }
+}
+
+/* Final responsive Glossary mobile layout. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-table-scroll { overflow-x: hidden !important; }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid { grid-template-columns: 34px 56px minmax(0, 1fr) minmax(0, 1fr) !important; min-width: 0 !important; }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid > :nth-child(n + 5) { display: none !important; }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid > :nth-child(3),
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid > :nth-child(4) { min-width: 0 !important; overflow-wrap: anywhere !important; }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid > :nth-child(3) > *,
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid > :nth-child(4) > * { min-width: 0 !important; max-width: 100% !important; overflow-wrap: anywhere !important; white-space: pre-wrap !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer { position: fixed !important; right: 0 !important; bottom: 0 !important; left: 0 !important; z-index: 100 !important; height: 0 !important; min-height: 0 !important; padding: 0 !important; pointer-events: none !important; overflow: visible !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-status-capsule,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-first,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule { display: contents !important; pointer-events: none !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next { position: fixed !important; top: auto !important; bottom: 24px !important; z-index: 110 !important; display: inline-flex !important; width: 58px !important; min-width: 58px !important; height: 58px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: 1px solid rgb(255 255 255 / 22%) !important; border-radius: 999px !important; background: linear-gradient(145deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 4%)) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 10px 26px rgb(0 0 0 / 38%) !important; -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important; font-size: 0 !important; pointer-events: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next { right: 10px !important; left: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-first:disabled,
+html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev:disabled,
+html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next:disabled,
+html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disabled { display: none !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev svg,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next svg { width: 18px !important; height: 18px !important; display: block !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev:not(:disabled):hover,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next:not(:disabled):hover { border-color: rgb(237 28 36 / 70%) !important; background: rgb(237 28 36 / 16%) !important; }
+}
+
+
+/* Last mobile override: keep the two Glossary bubbles visible and compact. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule { display: flex !important; position: fixed !important; inset: auto 0 16px 0 !important; z-index: 200 !important; height: 58px !important; align-items: center !important; justify-content: space-between !important; pointer-events: none !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next { position: absolute !important; top: 0 !important; bottom: auto !important; width: 58px !important; min-width: 58px !important; max-width: 58px !important; height: 58px !important; min-height: 58px !important; max-height: 58px !important; flex: 0 0 58px !important; padding: 0 !important; border-radius: 50% !important; pointer-events: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next { right: 10px !important; left: auto !important; }
+}
+
+
+/* Compact Glossary arrows: smaller than the Liquid Glass navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    flex-basis: 44px !important;
+    border-radius: 50% !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev svg,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+
+/* Center Glossary arrows vertically against the Liquid Glass dock. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
+
+/* Mobile Translate pagination: only Previous and Next bubbles. */
+@media (max-width: 899px) {
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(4) { display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) {
+    position: fixed !important; top: auto !important; bottom: 23px !important; z-index: 200 !important; display: inline-flex !important;
+    width: 44px !important; min-width: 44px !important; max-width: 44px !important; height: 44px !important; min-height: 44px !important; max-height: 44px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important; border: 1px solid rgb(255 255 255 / 22%) !important; border-radius: 50% !important;
+    background: linear-gradient(145deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 4%)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 10px 26px rgb(0 0 0 / 38%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important; font-size: 0 !important; transform: none !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2) { left: 10px !important; right: auto !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) { right: 10px !important; left: auto !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2)::after,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3)::after { display: block !important; font-size: 20px !important; line-height: 1 !important; color: #d7d9df !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2)::after { content: '<' !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3)::after { content: '>' !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover { border-color: rgb(237 28 36 / 70%) !important; background: rgb(237 28 36 / 16%) !important; }
+}
+
+
+/* Use the same Lucide chevrons as Glossary in Translate bubbles. */
+@media (max-width: 899px) {
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2)::after,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3)::after { content: none !important; display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2) svg,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) svg { display: block !important; width: 18px !important; height: 18px !important; color: #d7d9df !important; }
+}
+
+
+/* Mobile Translate page indicator: static text, no dropdown. */
+@media (max-width: 899px) {
+  html[data-theme="liquid-glass"] .translation-page-menu-trigger,
+  html[data-theme="liquid-glass"] .translation-page-menu-popover {
+    display: none !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed !important;
+    right: auto !important;
+    bottom: 82px !important;
+    left: 50% !important;
+    z-index: 205 !important;
+    display: block !important;
+    transform: translateX(-50%) !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #a7abb5 !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+  }
+}
+
+
+/* Compact Translate header on mobile without changing desktop layout. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .editor-header { padding: 8px 12px 6px !important; }
+  html[data-theme="liquid-glass"] .editor-header-top { gap: 5px !important; margin-bottom: 6px !important; }
+  html[data-theme="liquid-glass"] .editor-header-top > button { height: 34px !important; padding: 0 10px !important; font-size: 13px !important; }
+  html[data-theme="liquid-glass"] .editor-header-breadcrumb { max-width: calc(100vw - 150px) !important; gap: 3px !important; font-size: 12px !important; }
+  html[data-theme="liquid-glass"] .editor-header-breadcrumb > span:first-child { max-width: 110px !important; }
+  html[data-theme="liquid-glass"] .editor-header-actions { width: 100% !important; margin-left: 0 !important; justify-content: flex-end !important; gap: 4px !important; }
+  html[data-theme="liquid-glass"] .editor-header-actions > button { height: 32px !important; }
+  html[data-theme="liquid-glass"] .editor-header-actions > button[title="Save to Glossary"] { padding: 0 9px !important; font-size: 12px !important; }
+  html[data-theme="liquid-glass"] .editor-header-actions > button[title="Save"] { padding: 0 10px !important; font-size: 12px !important; }
+  html[data-theme="liquid-glass"] .editor-header-language-row { flex-direction: column !important; align-items: stretch !important; gap: 4px !important; }
+  html[data-theme="liquid-glass"] .editor-header-language-block { width: 100% !important; }
+  html[data-theme="liquid-glass"] .editor-header-language-block h1 { margin-bottom: 2px !important; gap: 8px !important; font-size: 25px !important; }
+  html[data-theme="liquid-glass"] #translation-status-tabs { min-height: 0 !important; height: 30px !important; overflow: hidden !important; }
+  html[data-theme="liquid-glass"] #translation-status-tabs > div { flex-wrap: nowrap !important; max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; scrollbar-width: none !important; }
+  html[data-theme="liquid-glass"] #translation-status-tabs > div::-webkit-scrollbar { display: none !important; }
+  html[data-theme="liquid-glass"] #translation-status-tabs > div > button { height: 27px !important; padding: 0 8px !important; white-space: nowrap !important; }
+  html[data-theme="liquid-glass"] .translation-stats { min-width: 0 !important; width: 100% !important; gap: 1px !important; }
+  html[data-theme="liquid-glass"] .translation-stats > div:first-child { font-size: 16px !important; }
+  html[data-theme="liquid-glass"] .translation-stats > div:nth-child(2) { height: 30px !important; padding-right: 18px !important; }
+  html[data-theme="liquid-glass"] .translation-stats .translation-progress-bubble { width: 30px !important; height: 30px !important; border-width: 3px !important; }
+  html[data-theme="liquid-glass"] .translation-stats .translation-progress-bubble svg { width: 16px !important; height: 16px !important; }
+  html[data-theme="liquid-glass"] .translation-stats .translation-progress-track > div > span { width: 22px !important; height: 22px !important; border-width: 3px !important; }
+  html[data-theme="liquid-glass"] .translation-stats .translation-progress-track > div > span svg { width: 11px !important; height: 11px !important; }
+}
+
+
+/* Place EN -> RO alongside mobile save actions. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .editor-header-language-block h1 {
+    position: relative !important;
+    z-index: 3 !important;
+    width: max-content !important;
+    max-width: 48vw !important;
+    margin-top: -36px !important;
+    margin-bottom: 2px !important;
+    font-size: 25px !important;
+  }
+}
+
+
+/* Final Translate mobile spacing, hover and page-edge states. */
+@media (max-width: 899px) {
+  html[data-theme="liquid-glass"] #translation-status-tabs { margin-top: 8px !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):disabled,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):disabled { display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover {
+    border-color: rgb(237 28 36 / 70%) !important;
+    background: rgb(237 28 36 / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(237 28 36 / 18%) !important;
+  }
+}
+
+
+/* Match Glossary arrow hover to Translate: red glass accent. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev:not(:disabled):hover,
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next:not(:disabled):hover {
+    border-color: rgb(237 28 36 / 70%) !important;
+    background: rgb(237 28 36 / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(237 28 36 / 18%) !important;
+  }
+}
+
+
+/* Intermediate widths use the normal desktop Translate pagination. */
+@media (min-width: 501px) and (max-width: 899px) {
+  html[data-theme="liquid-glass"] .translation-pagination-footer {
+    position: static !important;
+    left: auto !important; right: auto !important; bottom: auto !important;
+    z-index: auto !important; width: auto !important; max-width: none !important;
+    display: flex !important; align-items: center !important; justify-content: flex-end !important;
+    padding: 8px 20px !important; border-top: 1px solid #1f2329 !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls {
+    position: static !important; display: flex !important; align-items: center !important; gap: 8px !important;
+    min-height: 42px !important; padding: 7px 10px !important; border: 1px solid rgb(255 255 255 / 18%) !important;
+    border-radius: 16px !important; pointer-events: auto !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > .translation-page-indicator {
+    position: static !important; display: inline-flex !important; transform: none !important;
+    border: 0 !important; background: transparent !important; color: #9298a4 !important; font-size: 11px !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div {
+    display: flex !important; position: static !important; gap: 6px !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button {
+    position: static !important; display: inline-flex !important; width: auto !important; min-width: 0 !important; max-width: none !important;
+    height: 28px !important; min-height: 28px !important; max-height: 28px !important; flex: none !important;
+    padding: 0 10px !important; border-radius: 6px !important; font-size: 11px !important; transform: none !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(4) { display: inline-flex !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button::after { content: none !important; display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button svg { display: inline-block !important; width: 14px !important; height: 14px !important; }
+  html[data-theme="liquid-glass"] .translation-page-menu-trigger,
+  html[data-theme="liquid-glass"] .translation-page-menu-popover { display: none !important; }
+}
+
+
+/* Final mobile-style Translate pagination for compact windows: bubbles only. */
+@media (min-width: 401px) and (max-width: 899px) {
+  html[data-theme="liquid-glass"] .translation-pagination-footer {
+    position: fixed !important; inset: auto 0 0 0 !important; height: 0 !important; padding: 0 !important;
+    z-index: 100 !important; border: 0 !important; pointer-events: none !important; overflow: visible !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls {
+    display: contents !important; pointer-events: none !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed !important; right: auto !important; bottom: 82px !important; left: 50% !important;
+    z-index: 205 !important; display: block !important; transform: translateX(-50%) !important;
+    border: 0 !important; background: transparent !important; color: #a7abb5 !important; font-size: 12px !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > .translation-page-menu-trigger,
+  html[data-theme="liquid-glass"] .translation-page-menu-popover { display: none !important; pointer-events: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(4) { display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) {
+    position: fixed !important; top: auto !important; bottom: 23px !important; z-index: 210 !important;
+    display: inline-flex !important; width: 44px !important; min-width: 44px !important; max-width: 44px !important;
+    height: 44px !important; min-height: 44px !important; max-height: 44px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border-radius: 50% !important; font-size: 0 !important; transform: none !important; pointer-events: auto !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2) { left: 10px !important; right: auto !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) { right: 10px !important; left: auto !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):disabled,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):disabled { display: none !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2) svg,
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3) svg { display: block !important; width: 18px !important; height: 18px !important; }
+}
+
+
+/* Compact desktop Translate pagination: icon-only controls. */
+@media (min-width: 900px) {
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button {
+    width: 32px !important; min-width: 32px !important; max-width: 32px !important;
+    height: 28px !important; min-height: 28px !important; padding: 0 !important;
+    justify-content: center !important; gap: 0 !important; font-size: 0 !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button svg {
+    display: block !important; width: 16px !important; height: 16px !important;
+  }
+}
+
+
+/* Desktop pagination hides controls that cannot be used on the current edge page. */
+@media (min-width: 900px) {
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:disabled {
+    display: none !important;
+  }
+}
+
+
+/* Desktop pagination order: << < page > >>. */
+@media (min-width: 900px) {
+  html[data-theme="liquid-glass"] .translation-pagination-controls {
+    display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 6px !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div {
+    display: contents !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > .translation-page-indicator {
+    order: 2 !important; margin: 0 2px !important;
+  }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2) { order: 1 !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3),
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(4) { order: 3 !important; }
+}
+
+
+/* Glossary pagination: hide duplicate range text. */
+html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-range {
+  display: none !important;
+}

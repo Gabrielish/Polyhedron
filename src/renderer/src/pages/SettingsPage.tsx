@@ -193,12 +193,15 @@ export function SettingsPage(): React.JSX.Element {
           <div className="grid gap-3 sm:grid-cols-3">
             {THEMES.map((item) => {
               const selected = theme === item.id
+              const outdated = item.id === 'classic'
               return (
                 <button
                   key={item.id}
                   type="button"
+                  disabled={outdated}
                   onClick={() => setTheme(item.id)}
-                  className={`relative rounded-lg border p-3 text-left transition-colors ${selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
+                  aria-label={outdated ? `${item.name} theme (outdated)` : `${item.name} theme`}
+                  className={`relative rounded-lg border p-3 text-left transition-colors ${outdated ? 'cursor-not-allowed border-neutral-800/60 bg-neutral-950/40 opacity-45 grayscale' : selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
                 >
                   {selected && <Check size={14} className="absolute right-3 top-3 text-amber-400" />}
                   <div className="mb-3 flex gap-1.5">

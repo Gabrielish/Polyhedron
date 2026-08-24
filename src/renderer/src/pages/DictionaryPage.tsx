@@ -1,7 +1,6 @@
 import {
   BookOpen,
   Box,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -70,7 +69,6 @@ const TABLE_HEADER =
 const GRID_COLS = '48px 112px 1fr 1fr 192px 144px 128px'
 const DEFAULT_PAGE_SIZE = 200
 const MAX_PAGE_SIZE = 1000
-const MOBILE_PAGE_SIZE_OPTIONS = [100, 250, 500, 1000]
 
 export function DictionaryPage(): React.JSX.Element {
   const { t, currentLanguage } = useAppTranslation(['dictionary', 'common', 'toasts'])
@@ -88,7 +86,6 @@ export function DictionaryPage(): React.JSX.Element {
   const [bootstrapping, setBootstrapping] = useState(true)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
-  const [mobilePageMenuOpen, setMobilePageMenuOpen] = useState(false)
   const [text, setText] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
   const [modName, setModName] = useState('')
@@ -490,17 +487,6 @@ export function DictionaryPage(): React.JSX.Element {
     }
   }
 
-  const handlePageSizeChange = async (value: string) => {
-    const nextPageSize = normalizePageSize(value)
-    setSelectedIds(new Set())
-    nextLoadingModeRef.current = 'replace'
-    setPageSize(nextPageSize)
-    setPage(1)
-    await window.api.config.set({
-      key: 'translation_page_size',
-      value: String(nextPageSize)
-    })
-  }
 
   const toggleSelected = (id: number, checked: boolean) => {
     if (selectionScope === 'all-filtered') setSelectionScope('page')
@@ -734,7 +720,7 @@ export function DictionaryPage(): React.JSX.Element {
 
       <div className="relative min-h-0 flex-1">
         {/* grid-based virtualized layout (Option B) - avoids <table> absolute-positioning quirks */}
-        <div ref={scrollRef} className="icosa-scroll h-full overflow-auto">
+        <div ref={scrollRef} className="dictionary-table-scroll icosa-scroll h-full overflow-auto">
           {/* sticky header row */}
           <div
             className="sticky top-0 z-10 grid border-b border-[#1f2329] bg-[#131518] pr-[var(--scrollbar-width,0px)]"
@@ -933,83 +919,35 @@ export function DictionaryPage(): React.JSX.Element {
         <div className="dictionary-pagination-capsule flex items-center gap-2">
           <button
             type="button"
-            disabled={result.page <= 1 || loading}
-            onClick={() => {
-              setSelectedIds(new Set())
-              setPage(1)
-            }}
-            aria-label="First page"
-            className="dictionary-page-first inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            <ChevronLeft size={12} /><ChevronLeft size={12} className="-ml-2" />
-            <span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
-          </button>
-          <button
-            type="button"
-            disabled={result.page <= 1 || loading}
+            disabled={result.page <= 1}
             onClick={() => {
               setSelectedIds(new Set())
               setPage((current) => Math.max(1, current - 1))
             }}
             aria-label="Previous page"
-            className="dictionary-page-prev inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+            aria-disabled={loading}
+            className="dictionary-page-prev inline-flex h-7 cursor-pointer items-center justify-center rounded-md border border-[#2a2f37] px-2 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft size={12} /><span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
           </button>
-          <button
-            type="button"
-            className="dictionary-page-menu-trigger font-mono text-[11px] tabular-nums text-neutral-400"
-            onClick={() => setMobilePageMenuOpen((open) => !open)}
-            aria-expanded={mobilePageMenuOpen}
-            aria-label="Page and rows per page"
-          >
-            {result.page} of {result.totalPages}<ChevronDown size={12} />
-          </button>
-          {mobilePageMenuOpen && (
-            <div className="dictionary-page-menu-popover" role="menu" aria-label="Rows per page">
-              {MOBILE_PAGE_SIZE_OPTIONS.map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  role="menuitem"
-                  className={cn(size === pageSize && 'is-selected')}
-                  onClick={() => {
-                    handlePageSizeChange(String(size))
-                    setMobilePageMenuOpen(false)
-                  }}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          )}
+          <span className="dictionary-page-indicator font-mono text-[11px] tabular-nums text-neutral-400">
+            {result.page} of {result.totalPages}
+          </span>
           <span className="dictionary-page-range font-mono">
             {t('footer.range', { ns: 'dictionary', start: pageStart, end: pageEnd, total: stats.total })}
           </span>
           <button
             type="button"
-            disabled={result.page >= result.totalPages || loading}
+            disabled={result.page >= result.totalPages}
             onClick={() => {
               setSelectedIds(new Set())
               setPage((current) => Math.min(result.totalPages, current + 1))
             }}
             aria-label="Next page"
-            className="dictionary-page-next inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+            aria-disabled={loading}
+            className="dictionary-page-next inline-flex h-7 cursor-pointer items-center justify-center rounded-md border border-[#2a2f37] px-2 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
             <span className="sr-only">{t('actions.next', { ns: 'common' })}</span><ChevronRight size={12} />
-          </button>
-          <button
-            type="button"
-            disabled={result.page >= result.totalPages || loading}
-            onClick={() => {
-              setSelectedIds(new Set())
-              setPage(result.totalPages)
-            }}
-            aria-label="Last page"
-            className="dictionary-page-last inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
-          >
-            <ChevronRight size={12} /><ChevronRight size={12} className="-ml-2" />
-            <span className="sr-only">{t('actions.next', { ns: 'common' })}</span>
           </button>
         </div>
       </footer>
