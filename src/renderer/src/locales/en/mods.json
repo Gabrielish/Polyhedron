@@ -1,0 +1,42 @@
+{
+  "title": "Manage Mods",
+  "subtitle": "Delete mods and set the dictionary lookup priority.",
+  "searchPlaceholder": "Search mod...",
+  "priority": {
+    "heading": "Priority order",
+    "empty": "No priority mods yet. Promote a mod from the list below.",
+    "infoTitle": "Dictionary lookup priority",
+    "infoBody": "Mods listed here are consulted first, in order, when translating. Position 1 is the highest priority."
+  },
+  "fallback": {
+    "heading": "Other mods",
+    "empty": "No mods found."
+  },
+  "actions": {
+    "promote": "Promote to priority",
+    "demote": "Remove from priority",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "delete": "Delete mod",
+    "positionLabel": "Position",
+    "dragDisabledWhileSearch": "Clear search to reorder"
+  },
+  "delete": {
+    "title": "Delete mod",
+    "subject": "Are you sure you want to delete the mod {{name}}?",
+    "impactRows_one": "{{count}} dictionary entry will be removed.",
+    "impactRows_other": "{{count}} dictionary entries will be removed.",
+    "impactFolder": "Folder {{path}} will be deleted.",
+    "impactFolderMissing": "No mod folder on disk.",
+    "irreversible": "This action cannot be undone.",
+    "confirm": "Delete mod and entries",
+    "cancel": "Cancel"
+  },
+  "toast": {
+    "deleted": "Mod \"{{name}}\" deleted.",
+    "promoted": "Mod \"{{name}}\" promoted.",
+    "demoted": "Mod \"{{name}}\" removed from priority.",
+    "reordered": "Priority order updated.",
+    "deleteFailed": "Failed to delete mod."
+  }
+}

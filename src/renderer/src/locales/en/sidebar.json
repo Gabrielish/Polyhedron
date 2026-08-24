@@ -1,0 +1,16 @@
+{
+  "translate": "Translate",
+  "dictionary": "Glossary",
+  "mods": "Manage Mods",
+  "merge": "Merge translations",
+  "extract": "Extract mod",
+  "package": "Create package",
+  "injectLocalization": "Inject Localization",
+  "importWorkspace": "Import Workspace",
+  "exportWorkspace": "Export Workspace",
+  "settings": "Settings",
+  "metrics": "Metrics",
+  "dialogues": "Dialogue Nodes",
+  "gameData": "Game Data",
+  "gameInterface": "Game Interface"
+}

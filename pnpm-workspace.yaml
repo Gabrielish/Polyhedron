@@ -1,0 +1,9 @@
+# Build-script decisions for pnpm v10+ (moved here from package.json's "pnpm" field).
+# better-sqlite3 is intentionally NOT built by pnpm: compiling it against system Node needs
+# Visual Studio and targets the wrong ABI anyway. The root `postinstall`
+# (electron-builder install-app-deps) rebuilds it for Electron's ABI using prebuilt binaries.
+allowBuilds:
+  better-sqlite3: false
+  electron: true
+  electron-winstaller: true
+  esbuild: true

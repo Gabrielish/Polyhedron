@@ -1,0 +1,76 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1777870018920,
+      "tag": "0000_lucky_calypso",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1777939200000,
+      "tag": "0001_add_total_strings",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777942800000,
+      "tag": "0002_add_last_file_path",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1778115600000,
+      "tag": "0003_add_mod_meta",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1778187600000,
+      "tag": "0004_drop_dictionary_uid_index",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1778975652088,
+      "tag": "0005_nostalgic_black_crow",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1778982960726,
+      "tag": "0006_fair_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1779052024100,
+      "tag": "0007_ordinary_rafael_vega",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1779133579328,
+      "tag": "0008_clean_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1782945157817,
+      "tag": "0009_peaceful_bishop",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "GR2": {
+    "InputPath": "",
+    "OutputPath": "",
+    "BatchInputPath": "",
+    "BatchOutputPath": "",
+    "BatchInputFormat": 0,
+    "BatchOutputFormat": 1,
+    "ConformPath": null
+  },
+  "PAK": {
+    "ExtractInputPath": "C:\\Users\\raluc\\Downloads\\Icosa Build\\EnglishRO.pak",
+    "ExtractOutputPath": "C:\\Users\\raluc\\Downloads\\Icosa Build",
+    "CreateInputPath": "",
+    "CreateOutputPath": "",
+    "CreatePackageVersion": 0,
+    "CreatePackageCompression": 3
+  },
+  "Resources": {
+    "InputPath": "",
+    "OutputPath": "",
+    "BatchInputPath": "",
+    "BatchOutputPath": "",
+    "BatchInputFormat": 0,
+    "BatchOutputFormat": 0
+  },
+  "VirtualTextures": {
+    "GTSPath": "",
+    "DestinationPath": ""
+  },
+  "Story": {
+    "InputPath": "",
+    "OutputPath": "",
+    "FilterText": "",
+    "FilterMatchCase": false
+  },
+  "Debugging": {
+    "SavePath": ""
+  },
+  "SelectedGame": 4,
+  "Version": "1.20.4"
+}

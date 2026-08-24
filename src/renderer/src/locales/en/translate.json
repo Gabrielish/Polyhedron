@@ -1,0 +1,145 @@
+{
+  "newProject": "New translation project",
+  "editor": {
+    "back": "Back",
+    "sideBySide": "Side by side",
+    "stacked": "Stacked",
+    "undo": "Undo",
+    "redo": "Redo",
+    "save": "Save",
+    "saveGlossary": "Save to Glossary",
+    "remainingStrings": "{{count}} strings remaining",
+    "dictionaryMatches": "{{count}} dictionary matches available",
+    "batch": "batch {{completed}}/{{total}}"
+  },
+  "setup": {
+    "steps": {
+      "languages": "Languages",
+      "mod": "Mod",
+      "file": "File"
+    },
+    "languagePair": {
+      "title": "Language pair",
+      "description": "Choose the translation direction.",
+      "source": "Source",
+      "target": "Target"
+    },
+    "modSelection": {
+      "title": "Mod",
+      "description": "Select an existing mod or create a new one.",
+      "existing": "Existing",
+      "new": "+ New",
+      "searchPlaceholder": "Search mod...",
+      "noMods": "No mods found. Create a new one.",
+      "noSearchResults": "No results for this search.",
+      "modName": "Mod name",
+      "modNamePlaceholder": "ex: Order of the Dracolich"
+    },
+    "fileCard": {
+      "title": "Mod file",
+      "description": "Drop here or browse. Accepts .xml, .pak, .zip.",
+      "dropZone": "File drop area",
+      "dropPrompt": "Drag the mod file here",
+      "browseFile": "Browse file",
+      "fileSelected": "File selected"
+    },
+    "ready": "Ready to start: {{source}} -> {{target}}",
+    "idle": "Complete the 3 steps to start translating",
+    "openEditor": "Open editor",
+    "loadingPreparingSession": "Preparing translation session...",
+    "loadingEntries": "Loading XML entries...",
+    "loadingModData": "Updating mod data...",
+    "loadingPreparingFile": "Preparing file to open the editor...",
+    "loadingEditor": "Loading translation editor...",
+    "loadingUnpacking": "Unpacking mod files…",
+    "loadingParsing": "Parsing localization XML…",
+    "loadingCache": "Loading dictionary cache…",
+    "loadingMatching": "Matching dictionary {{processed}} / {{total}}"
+  },
+  "routeSkeleton": {
+    "header": "Loading translation workspace"
+  },
+  "grid": {
+    "searchPlaceholder": "Search strings...",
+    "exactMatch": "Exact Match",
+    "all": "All",
+    "untranslated": "Untranslated",
+    "translated": "Translated",
+    "tags": "With XML tags",
+    "needsReview": "Needs review",
+    "needsReviewShort": "Review",
+    "needsReviewToggle": "Toggle Needs review",
+    "selectedStats": "{{strings}} strings • {{characters}} characters",
+    "sourceHeader": "Source · {{language}}",
+    "translationHeader": "Translation · {{language}}",
+    "emptySource": "empty",
+    "charCount": "{{count}} characters",
+    "appearsCount": "Appears {{count}}x",
+    "wordAndCharCount": "{{chars}} characters · {{words}} words",
+    "translationPlaceholder": "Translation...",
+    "startTyping": "Start typing the translation...",
+    "copySource": "Copy source",
+    "markTranslated": "Mark as translated",
+    "next": "next",
+    "newLine": "new line",
+    "entries": "{{count}} entries",
+    "containsTags": "contains tags",
+    "dictionarySuggestion": "Dictionary suggests:",
+    "dictionaryTagMod": "1 term (mod)",
+    "dictionaryTag": "1 term",
+    "refreshView": "Refresh list",
+    "refreshViewHidden": "{{count}} pending",
+    "pagination": {
+      "pageSizeLabel": "Rows per page",
+      "pageOf": "Page {{current}} of {{total}}",
+      "first": "First",
+      "prev": "Previous",
+      "next": "Next",
+      "last": "Last"
+    }
+  },
+  "alreadyTranslatedDialog": {
+    "title": "Already-translated entries selected",
+    "description": "{{translatedCount}} of the selected entries already have a translation. How do you want to proceed?",
+    "proceedAll": "Translate everything",
+    "onlyUntranslated": "Send only untranslated ({{untranslatedCount}})",
+    "cancel": "Cancel"
+  },
+  "batchBar": {
+    "selectedCount_one": "{{count}} entry selected",
+    "selectedCount_other": "{{count}} entries selected",
+    "translating": "Translating {{completed}} / {{total}}",
+    "stop": "Stop",
+    "translateWithDeepL": "Translate with DeepL",
+    "translateWithGoogle": "Translate with Google",
+    "clearSelection": "Clear selection",
+    "noSelection": "No entries selected",
+    "cancelled": "{{translated}} of {{total}} entries translated before cancellation",
+    "partial": "{{translated}} of {{total}} entries translated; {{failed}} remain pending",
+    "partialWithError": "{{translated}} of {{total}} entries translated; {{failed}} remain pending. First error: {{error}}",
+    "completed_one": "{{count}} entry translated",
+    "completed_other": "{{count}} entries translated"
+  },
+  "entryEdit": {
+    "originalText": "Original text ({{language}})",
+    "translation": "Translation ({{language}})",
+    "empty": "empty",
+    "translateWithDeepL": "Translate with DeepL"
+  },
+  "xmlSelection": {
+    "title": "Select XML",
+    "description": "Files without content tags appear as Invalid format.",
+    "selectAll": "Select all XMLs",
+    "useXml": "Use XML",
+    "selectedCount_one": "{{count}} XML selected",
+    "selectedCount_other": "{{count}} XMLs selected",
+    "strings": "{{count}} strings"
+  },
+  "loaded": {
+    "defaultFileName": "translation.xml"
+  },
+  "export": {
+    "searchLanguageFolder": "Search folder...",
+    "noLanguageFolderFound": "No folder found."
+  }
+}

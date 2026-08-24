@@ -1,0 +1,36 @@
+{
+  "title": "Settings",
+  "subtitle": "Manage your API keys, application preferences and default tools.",
+  "sections": {
+    "apiKeys": "API keys",
+    "defaults": "Defaults",
+    "language": "Application preferences",
+    "interface": "Interface",
+    "tools": "External tools",
+    "debugLogs": "Debug logs"
+  },
+  "fields": {
+    "deeplKey": "DeepL API key",
+    "googleKey": "Google Translate API key",
+    "defaultAuthor": "Default author",
+    "defaultSourceLanguage": "Default source language",
+    "defaultTargetLanguage": "Default target language",
+    "appLanguage": "Application language",
+    "showCounters": "Show translation counters",
+    "divinePath": "Divine.exe path"
+  },
+  "descriptions": {
+    "divinePath": "Leave empty to use the system default.",
+    "showCounters": "Show the selected strings and character totals, plus character counts on each entry."
+  },
+  "placeholders": {
+    "author": "Your name",
+    "sourceLanguage": "en",
+    "targetLanguage": "ro",
+    "divinePath": "C:\\path\\to\\Divine.exe"
+  },
+  "buttons": {
+    "save": "Save",
+    "saved": "Saved"
+  }
+}

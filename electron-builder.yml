@@ -1,0 +1,68 @@
+appId: com.icosa.bg3-mod-translator
+productName: Polyhedron
+copyright: Copyright © 2026 kaironn
+publish:
+  provider: github
+  owner: Gabrielish
+  repo: Polyhedron
+  releaseType: release
+directories:
+  buildResources: build
+files:
+  - package.json
+  - out/**
+  - drizzle/**
+  - tools/**
+  - work/pak/**
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,CHANGELOG.md,README.md,PLANNING.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!bkp/**'
+  - '!work/pak/Localization/English/english.loca'
+asarUnpack:
+  - resources/**
+  - drizzle/**
+  - tools/**
+  - work/pak/**
+  # napi-rs native binding for lz4-napi (pak compression). Its .node lives in a
+  # platform-specific package that must sit on the real filesystem - dlopen can't read
+  # it from inside app.asar. '**/*.node' also covers any future native dependency.
+  - '**/*.node'
+  - node_modules/@antoniomuso/**
+win:
+  executableName: Polyhedron
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  requestedExecutionLevel: asInvoker
+nsis:
+  artifactName: ${productName}-${version}-windows-${arch}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  runAfterFinish: false
+  deleteAppDataOnUninstall: false
+mac:
+  # This is a local, unsigned build. Keeping identity null prevents a
+  # partially-signed app/framework bundle and Team ID mismatch on macOS.
+  identity: null
+  target:
+    - target: dmg
+      arch:
+        - arm64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+npmRebuild: true

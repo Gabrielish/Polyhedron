@@ -1,0 +1,14 @@
+{
+  "translate": "Traduzir",
+  "dictionary": "Dicionário",
+  "mods": "Gerenciar mods",
+  "merge": "Mesclar traduções",
+  "extract": "Extrair mod",
+  "package": "Criar pacote",
+  "injectLocalization": "Injetar localização",
+  "importWorkspace": "Importar Workspace",
+  "exportWorkspace": "Exportar Workspace",
+  "settings": "Configurações",
+  "metrics": "Métricas",
+  "dialogues": "Nós de diálogo"
+}

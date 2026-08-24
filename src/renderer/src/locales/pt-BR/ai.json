@@ -1,0 +1,74 @@
+{
+  "providers": {
+    "title": "Tradução por IA",
+    "subtitle": "Uma chave por provedor. A IA selecionada é a usada pelos botões de tradução.",
+    "useThis": "Usar esta IA na tradução",
+    "connected": "conectado",
+    "noKey": "sem chave",
+    "showKey": "Mostrar",
+    "hideKey": "Ocultar",
+    "autoSaved": "As alterações são salvas automaticamente",
+    "activeHint": "Botão de tradução ativo: {{provider}} · {{model}}"
+  },
+  "slots": {
+    "title": "Prompt de tradução",
+    "subtitle": "Personalize o prompt enviado à IA. Salve vários em slots e alterne entre eles.",
+    "copyName": "Cópia do Padrão",
+    "newSlotName": "Novo prompt",
+    "namePlaceholder": "Nome do prompt…",
+    "newSlot": "Novo slot",
+    "defaultReadOnly": "Prompt padrão (somente leitura)",
+    "editing": "Editando: {{name}}",
+    "cannotSave": "Não é possível salvar.",
+    "missingVarsError": "Faltam variáveis obrigatórias: {{vars}}",
+    "unknownVarsError": "Variáveis desconhecidas (erro de digitação?): {{vars}}. Corrija ou remova-as.",
+    "unknownCount_one": "{{count}} variável desconhecida",
+    "unknownCount_other": "{{count}} variáveis desconhecidas",
+    "reservedError": "Seções reservadas são anexadas automaticamente e não podem aparecer no prompt: {{sections}}",
+    "reservedCount_one": "{{count}} seção reservada",
+    "reservedCount_other": "{{count}} seções reservadas",
+    "lockedNotice": "O prompt padrão não pode ser sobrescrito. Ao editá-lo, um novo slot será criado.",
+    "editCreateCopy": "Editar (criar cópia)",
+    "save": "Salvar prompt",
+    "delete": "Excluir slot",
+    "allVarsPresent": "✓ todas as variáveis obrigatórias presentes",
+    "missingCount_one": "{{count}} variável obrigatória faltando",
+    "missingCount_other": "{{count}} variáveis obrigatórias faltando",
+    "tooltip": {
+      "text": "As variáveis entre chaves são substituídas em cada tradução. As quatro obrigatórias precisam existir no prompt para poder salvar. Na tradução em lote, {SOURCE_TEXT} recebe várias linhas numeradas de uma vez e uma seção obrigatória de formato de resposta é anexada automaticamente.",
+      "example": "Traduza de {SOURCE_LANGUAGE} para {TARGET_LANGUAGE}:\n\n\"{SOURCE_TEXT}\""
+    }
+  },
+  "similarity": {
+    "title": "Busca por similaridade",
+    "subtitle": "Inclui traduções anteriores parecidas como exemplos de referência no prompt.",
+    "enable": "Habilitar busca por similaridade",
+    "enableDesc": "Anexa os exemplos mais parecidos do histórico de tradução ao prompt.",
+    "count": "Resultados incluídos como contexto",
+    "countDesc": "Quantos exemplos mais similares enviar. Padrão: 3.",
+    "minScore": "Ignorar pontuações abaixo de",
+    "minScoreDesc": "Exemplos com similaridade menor que este limite são descartados."
+  },
+  "modal": {
+    "title": "Traduzir com IA",
+    "source": "Texto de origem · {{language}}",
+    "examples": "Exemplos por similaridade",
+    "showingSelected": "· mostrando {{showing}} · {{selected}} selecionados",
+    "noExamples": "Nenhum exemplo similar encontrado.",
+    "belowThreshold": "abaixo do limite",
+    "appendNote": "Os exemplos selecionados são anexados ao prompt como referências em bullet points.",
+    "linePrompt": "Prompt desta linha",
+    "alsoUpdate": "Também atualizar o prompt salvo nas configurações",
+    "translate": "Traduzir",
+    "examplesN_one": "{{count}} exemplo",
+    "examplesN_other": "{{count}} exemplos",
+    "noContext": "sem contexto"
+  },
+  "actions": {
+    "translateWithAI": "Traduzir com IA",
+    "translateWithAIProvider": "Traduzir com {{provider}}"
+  },
+  "grid": {
+    "translateWith": "Traduzir · {{provider}}"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "providers": {
+    "title": "AI translation",
+    "subtitle": "One key per provider. The selected AI is the one used by the translate buttons.",
+    "useThis": "Use this AI for translation",
+    "connected": "connected",
+    "noKey": "no key",
+    "showKey": "Show",
+    "hideKey": "Hide",
+    "autoSaved": "Changes are saved automatically",
+    "activeHint": "Active translation button: {{provider}} · {{model}}"
+  },
+  "slots": {
+    "title": "Translation prompt",
+    "subtitle": "Customize the prompt sent to the AI. Save several in slots and switch between them.",
+    "copyName": "Copy of Default",
+    "newSlotName": "New prompt",
+    "namePlaceholder": "Prompt name…",
+    "newSlot": "New slot",
+    "defaultReadOnly": "Default prompt (read-only)",
+    "editing": "Editing: {{name}}",
+    "cannotSave": "Cannot save.",
+    "missingVarsError": "Missing required variables: {{vars}}",
+    "unknownVarsError": "Unknown variables (typo?): {{vars}}. Fix or remove them.",
+    "unknownCount_one": "{{count}} unknown variable",
+    "unknownCount_other": "{{count}} unknown variables",
+    "reservedError": "Reserved sections are appended automatically and cannot appear in the prompt: {{sections}}",
+    "reservedCount_one": "{{count}} reserved section",
+    "reservedCount_other": "{{count}} reserved sections",
+    "lockedNotice": "The default prompt cannot be overwritten. Editing it creates a new slot.",
+    "editCreateCopy": "Edit (create a copy)",
+    "save": "Save prompt",
+    "delete": "Delete slot",
+    "allVarsPresent": "✓ all required variables present",
+    "missingCount_one": "{{count}} required variable missing",
+    "missingCount_other": "{{count}} required variables missing",
+    "tooltip": {
+      "text": "Variables in braces are replaced on each translation. The four required ones must exist in the prompt before it can be saved. In batch translation, {SOURCE_TEXT} receives several numbered lines at once and a mandatory response-format section is appended automatically.",
+      "example": "Translate from {SOURCE_LANGUAGE} to {TARGET_LANGUAGE}:\n\n\"{SOURCE_TEXT}\""
+    }
+  },
+  "similarity": {
+    "title": "Similarity search",
+    "subtitle": "Includes similar past translations as reference examples in the prompt.",
+    "enable": "Enable similarity search",
+    "enableDesc": "Appends the most similar examples from the translation history to the prompt.",
+    "count": "Results included as context",
+    "countDesc": "How many of the most similar examples to send. Default: 3.",
+    "minScore": "Ignore scores below",
+    "minScoreDesc": "Examples with a similarity lower than this threshold are discarded."
+  },
+  "modal": {
+    "title": "Translate with AI",
+    "source": "Source text · {{language}}",
+    "examples": "Similarity examples",
+    "showingSelected": "· showing {{showing}} · {{selected}} selected",
+    "noExamples": "No similar examples found.",
+    "belowThreshold": "below threshold",
+    "appendNote": "Selected examples are appended to the prompt as reference bullet points.",
+    "linePrompt": "Prompt for this line",
+    "alsoUpdate": "Also update the saved prompt in settings",
+    "translate": "Translate",
+    "examplesN_one": "{{count}} example",
+    "examplesN_other": "{{count}} examples",
+    "noContext": "no context"
+  },
+  "actions": {
+    "translateWithAI": "Translate with AI",
+    "translateWithAIProvider": "Translate with {{provider}}"
+  },
+  "grid": {
+    "translateWith": "Translate · {{provider}}"
+  }
+}
