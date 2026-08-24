@@ -79,11 +79,11 @@ async function findWorkspaceFile(drive: drive_v3.Drive): Promise<drive_v3.Schema
   return result.data.files?.[0] ?? null
 }
 
-export async function uploadWorkspaceToDrive(): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
+export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
   const existing = await findWorkspaceFile(drive)
-  const stats = getWorkspaceTranslationStats(path.join(app.getPath('userData'), 'icosa', 'sessions'))
+  const stats = getWorkspaceTranslationStats(path.join(app.getPath('userData'), 'icosa', 'sessions'), sessionKey)
   const tempDir = createTempDir('icosa_cloud_upload')
   const workspacePath = path.join(tempDir, CLOUD_FILE_NAME)
 
@@ -103,7 +103,7 @@ export async function uploadWorkspaceToDrive(): Promise<{ fileName: string; modi
   }
 }
 
-export async function downloadWorkspaceFromDrive(): Promise<{ fileName: string; restartRequired: boolean; stats: WorkspaceTranslationStats }> {
+export async function downloadWorkspaceFromDrive(sessionKey?: string): Promise<{ fileName: string; restartRequired: boolean; stats: WorkspaceTranslationStats }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
   const cloudFile = await findWorkspaceFile(drive)
@@ -123,7 +123,7 @@ export async function downloadWorkspaceFromDrive(): Promise<{ fileName: string; 
     })
     const extractedDir = path.join(tempDir, 'extracted')
     extractZip(workspacePath, extractedDir)
-    const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'))
+    const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'), sessionKey)
     await importWorkspace(workspacePath)
     return { fileName: CLOUD_FILE_NAME, restartRequired: true, stats }
   } finally {

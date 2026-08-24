@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import Database from 'better-sqlite3'
@@ -14,12 +15,15 @@ export interface WorkspaceTranslationStats {
   fingerprint: string
 }
 
-export function getWorkspaceTranslationStats(sessionsDir: string): WorkspaceTranslationStats {
+export function getWorkspaceTranslationStats(sessionsDir: string, sessionKey?: string): WorkspaceTranslationStats {
   const stats: WorkspaceTranslationStats = { translated: 0, total: 0, fingerprint: '' }
   let hash = 2166136261
   if (!fs.existsSync(sessionsDir)) return stats
+  const requestedFile = sessionKey
+    ? `${crypto.createHash('sha256').update(sessionKey).digest('hex')}.json`
+    : null
   for (const fileName of fs.readdirSync(sessionsDir)) {
-    if (!fileName.endsWith('.json')) continue
+    if (!fileName.endsWith('.json') || (requestedFile && fileName !== requestedFile)) continue
     try {
       const parsed = JSON.parse(fs.readFileSync(path.join(sessionsDir, fileName), 'utf8')) as { entries?: Array<{ target?: string }> }
       if (!Array.isArray(parsed.entries)) continue

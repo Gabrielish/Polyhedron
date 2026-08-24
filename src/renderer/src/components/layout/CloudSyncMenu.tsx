@@ -28,7 +28,8 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const session = useTranslationSession()
-  const syncKey = `icosa.cloud-sync.${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
+  const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
+  const syncKey = `icosa.cloud-sync.${sessionKey}`
   const currentFingerprint = useMemo(
     () => fingerprint(session.entries.map(({ uid, target, matchType, needsReview }) => ({ uid, target, matchType, needsReview }))),
     [session.entries]
@@ -53,7 +54,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     setBusy(true)
     try {
       await saveCurrentSession()
-      const result = await window.api.cloud.upload()
+      const result = await window.api.cloud.upload({ sessionKey })
       localStorage.setItem(syncKey, result.stats.fingerprint || currentFingerprint)
       setSavedFingerprint(result.stats.fingerprint || currentFingerprint)
       setSyncResult({ direction: 'upload', ...result.stats })
@@ -68,7 +69,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   async function download(): Promise<void> {
     setBusy(true)
     try {
-      const result = await window.api.cloud.download()
+      const result = await window.api.cloud.download({ sessionKey })
       localStorage.setItem(syncKey, result.stats.fingerprint)
       setSavedFingerprint(result.stats.fingerprint)
       setSyncResult({ direction: 'download', ...result.stats })

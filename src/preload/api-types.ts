@@ -640,8 +640,8 @@ export interface WorkspaceApi {
 }
 
 export interface CloudApi {
-  upload(): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }>
-  download(): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }>
+  upload(params?: { sessionKey?: string }): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }>
+  download(params?: { sessionKey?: string }): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }>
 }
 
 export interface AppWindow {

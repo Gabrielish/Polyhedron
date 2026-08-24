@@ -2,6 +2,6 @@ import { ipcMain } from 'electron'
 import { downloadWorkspaceFromDrive, uploadWorkspaceToDrive } from '../services/cloud-drive.service'
 
 export function registerCloudHandlers(): void {
-  ipcMain.handle('cloud:upload', () => uploadWorkspaceToDrive())
-  ipcMain.handle('cloud:download', () => downloadWorkspaceFromDrive())
+  ipcMain.handle('cloud:upload', (_event, params: { sessionKey?: string } = {}) => uploadWorkspaceToDrive(params.sessionKey))
+  ipcMain.handle('cloud:download', (_event, params: { sessionKey?: string } = {}) => downloadWorkspaceFromDrive(params.sessionKey))
 }

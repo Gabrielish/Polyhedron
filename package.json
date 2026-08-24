@@ -1,6 +1,6 @@
 {
   "name": "icosa",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": true,
   "description": "Polyhedron — desktop translator for Baldur's Gate 3 mod localization.",
   "main": "./out/main/index.js",
