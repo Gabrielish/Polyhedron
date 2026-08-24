@@ -11,9 +11,11 @@ const NO_DRAG: AppRegionStyle = { WebkitAppRegion: 'no-drag' }
 
 export function TitleBar(): React.JSX.Element {
   const [isMaximized, setIsMaximized] = useState(false)
+  const [appVersion, setAppVersion] = useState('')
   const { t } = useAppTranslation('common')
 
   useEffect(() => {
+    window.api.app.getVersion().then(setAppVersion).catch(() => undefined)
     window.api.window.isMaximized().then(setIsMaximized)
     return window.api.window.onMaximizeChange(setIsMaximized)
   }, [])
@@ -36,7 +38,7 @@ export function TitleBar(): React.JSX.Element {
           Polyhedron
         </span>
         <span className="text-[9px] font-normal tracking-normal text-neutral-600">
-          v2.1.1
+          {appVersion ? `v${appVersion}` : 'v—'}
         </span>
       </div>
 

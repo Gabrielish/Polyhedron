@@ -20,6 +20,10 @@ function on<T>(channel: string, cb: (data: T) => void): UnsubscribeFn {
 }
 
 const api: AppApi = {
+  app: {
+    getVersion: (): Promise<string> => ipcRenderer.invoke('app:version')
+  },
+
   translation: {
     start: (payload: TranslationStartPayload): Promise<{ jobId: string }> =>
       ipcRenderer.invoke('translation:start', payload),

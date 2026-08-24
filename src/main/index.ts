@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import iconWin from '../../resources/icon.ico?asset'
 import icon from '../../resources/icon.png?asset'
@@ -81,6 +81,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  ipcMain.handle('app:version', () => app.getVersion())
   electronApp.setAppUserModelId('com.icosa.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())
 

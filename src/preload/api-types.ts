@@ -594,6 +594,9 @@ export interface MetricsApi {
 }
 
 export interface AppApi {
+  app: {
+    getVersion(): Promise<string>
+  }
   translation: TranslationApi
   dictionary: DictionaryApi
   language: LanguageApi
