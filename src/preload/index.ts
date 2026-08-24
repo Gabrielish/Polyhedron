@@ -302,6 +302,7 @@ const api: AppApi = {
         source: string
         target: string
         matchType: 'none' | 'mod-text' | 'text' | 'manual'
+        needsReview: boolean
       }[]
     > => ipcRenderer.invoke('xml:load', params),
 

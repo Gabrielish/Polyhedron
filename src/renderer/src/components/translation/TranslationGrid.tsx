@@ -244,7 +244,7 @@ export function TranslationGrid({
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
-  const [linkNameDescription, setLinkNameDescription] = useState(false)
+  const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(false)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
@@ -272,7 +272,7 @@ export function TranslationGrid({
   // Row the per-line "Translate with AI" modal is open for (null = closed).
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [dialogueKey, setDialogueKey] = useState<{ file: string; dialogue: string } | null>(null)
-  const [dialogueChoices, setDialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
+  const [dialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
   const [showLiveGraph, setShowLiveGraph] = useState(true)
   const [onlineNodeMeta, setOnlineNodeMeta] = useState<Record<string, OnlineNodeMeta>>({})
   const { provider: aiProvider } = useAISettings()
@@ -946,6 +946,8 @@ export function TranslationGrid({
       </div>
     </div>
   )
+
+  void dialogueModal
 
   const handleEnterKey = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
