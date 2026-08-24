@@ -13,9 +13,13 @@ const CLOUD_FILE_NAME = 'icosa-workspace.icws'
 
 
 function credentialsPath(): string {
-  return app.isPackaged
-    ? path.join(process.resourcesPath, 'tools', 'google-drive', 'google-drive-credentials.json')
-    : path.join(app.getAppPath(), 'tools', 'google-drive', 'google-drive-credentials.json')
+  const candidates = [
+    path.join(app.getPath('userData'), 'google-drive-credentials.json'),
+    path.join(app.getPath('userData'), 'icosa', 'google-drive-credentials.json'),
+    path.join(process.resourcesPath, 'tools', 'google-drive', 'google-drive-credentials.json'),
+    path.join(app.getAppPath(), 'tools', 'google-drive', 'google-drive-credentials.json')
+  ]
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? candidates[0]
 }
 
 function tokenPath(): string {
@@ -25,7 +29,7 @@ function tokenPath(): string {
 async function getAuth() {
   const keyfilePath = credentialsPath()
   if (!fs.existsSync(keyfilePath)) {
-    throw new Error('Google Drive credentials are missing. Add tools/google-drive/google-drive-credentials.json.')
+    throw new Error(`Google Drive credentials are missing. Add google-drive-credentials.json to ${path.dirname(keyfilePath)}.`)
   }
 
   const installed = JSON.parse(fs.readFileSync(keyfilePath, 'utf8')) as {
