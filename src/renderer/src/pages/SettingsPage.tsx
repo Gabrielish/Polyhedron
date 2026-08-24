@@ -1,4 +1,4 @@
-import { Check, Copy, FolderOpen, Palette, Settings, Trash2 } from 'lucide-react'
+import { Check, CheckCircle2, Copy, Download, FolderOpen, Palette, RefreshCw, Settings, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
@@ -12,6 +12,7 @@ import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { defaultLanguage, languageLabels, supportedLanguages } from '@/i18n/languages'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { ConfigKey } from '@/types'
+import type { UpdateState } from '../../../preload/api-types'
 
 interface SettingFieldProps {
   label: string
@@ -91,11 +92,28 @@ export function SettingsPage(): React.JSX.Element {
   const { config, loading, set } = useConfig()
   const { theme, setTheme } = useTheme()
   const [logPath, setLogPath] = useState('')
+  const [updateState, setUpdateState] = useState<UpdateState | null>(null)
+  const [checkingForUpdates, setCheckingForUpdates] = useState(false)
   const { t } = useAppTranslation(['settings', 'common', 'toasts'])
 
   useEffect(() => {
     window.api.log.getPath().then(setLogPath)
+    return window.api.update.onState(setUpdateState)
   }, [])
+
+  const handleCheckForUpdates = async () => {
+    setCheckingForUpdates(true)
+    setUpdateState({ status: 'checking' })
+    try {
+      await window.api.update.check()
+    } finally {
+      setCheckingForUpdates(false)
+    }
+  }
+
+  const handleDownloadUpdate = async () => {
+    await window.api.update.download()
+  }
 
   const handleOpenLog = async () => {
     try {
@@ -173,6 +191,29 @@ export function SettingsPage(): React.JSX.Element {
         <AiProvidersCard />
         <PromptSlotsCard />
         <SimilaritySettingsCard />
+
+        <SettingsCard title="Application updates">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <RefreshCw size={18} className="mt-0.5 text-amber-400" />
+              <div>
+                <p className="text-sm font-medium text-neutral-200">Check for updates</p>
+                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.</p>
+                {updateState?.status === 'checking' && <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>}
+                {updateState?.status === 'not-available' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 size={13} /> You are up to date.</p>}
+                {updateState?.status === 'available' && <p className="mt-2 text-xs text-amber-300">Version {updateState.version} is available.</p>}
+                {updateState?.status === 'downloading' && <p className="mt-2 text-xs text-neutral-400">Downloading… {Math.round(updateState.percent)}%</p>}
+                {updateState?.status === 'downloaded' && <p className="mt-2 text-xs text-emerald-400">Version {updateState.version} is ready to install.</p>}
+                {updateState?.status === 'error' && <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><Download size={15} /> Download update</button>}
+              {updateState?.status === 'downloaded' && <button type="button" onClick={() => void window.api.update.install()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><RefreshCw size={15} /> Restart to update</button>}
+              <button type="button" disabled={checkingForUpdates || updateState?.status === 'downloading'} onClick={() => void handleCheckForUpdates()} className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"><RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates</button>
+            </div>
+          </div>
+        </SettingsCard>
 
         <SettingsCard title={t('sections.apiKeys')}>
           {/* OpenAI key hidden until supported
