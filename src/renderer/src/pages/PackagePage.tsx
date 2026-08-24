@@ -83,7 +83,7 @@ export function PackagePage(): React.JSX.Element {
       <button
         onClick={handlePack}
         disabled={running || !inputFolder || !outputPath}
-        className="w-fit rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-fit rounded-md border border-amber-500 bg-amber-500 px-6 py-2 text-sm font-medium text-neutral-950 hover:border-amber-400 hover:bg-amber-400 disabled:opacity-50"
       >
         {running ? t('creating') : t('create')}
       </button>

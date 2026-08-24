@@ -228,6 +228,7 @@ export type ConfigKey =
   | 'app_language'
   | 'author'
   | 'dictionary_page_size'
+  | 'translation_page_size'
   | 'show_translation_counters'
   | 'divine_path'
 

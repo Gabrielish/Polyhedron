@@ -1,6 +1,7 @@
 import {
   BookOpen,
   Box,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -69,7 +70,7 @@ const TABLE_HEADER =
 const GRID_COLS = '48px 112px 1fr 1fr 192px 144px 128px'
 const DEFAULT_PAGE_SIZE = 200
 const MAX_PAGE_SIZE = 1000
-const PAGE_SIZE_OPTIONS = [50, 100, 200, 500, 1000]
+const MOBILE_PAGE_SIZE_OPTIONS = [100, 250, 500, 1000]
 
 export function DictionaryPage(): React.JSX.Element {
   const { t, currentLanguage } = useAppTranslation(['dictionary', 'common', 'toasts'])
@@ -87,6 +88,7 @@ export function DictionaryPage(): React.JSX.Element {
   const [bootstrapping, setBootstrapping] = useState(true)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE)
+  const [mobilePageMenuOpen, setMobilePageMenuOpen] = useState(false)
   const [text, setText] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
   const [modName, setModName] = useState('')
@@ -160,7 +162,7 @@ export function DictionaryPage(): React.JSX.Element {
       ])
       setLanguages(languageRows)
       setKnownMods(modRows.map((row) => row.name))
-      setPageSize(normalizePageSize(config.dictionary_page_size))
+      setPageSize(normalizePageSize(config.translation_page_size || config.dictionary_page_size))
     } catch (error) {
       toast.error(getLocalizedErrorMessage(error, t))
     } finally {
@@ -495,7 +497,7 @@ export function DictionaryPage(): React.JSX.Element {
     setPageSize(nextPageSize)
     setPage(1)
     await window.api.config.set({
-      key: 'dictionary_page_size',
+      key: 'translation_page_size',
       value: String(nextPageSize)
     })
   }
@@ -549,7 +551,7 @@ export function DictionaryPage(): React.JSX.Element {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="dictionary-pagination-capsule flex items-center gap-2">
           <button
             type="button"
             onClick={handleExport}
@@ -628,8 +630,6 @@ export function DictionaryPage(): React.JSX.Element {
           menuMinWidth={176}
           t={t}
         />
-
-        <PageSizeSelect value={pageSize} onChange={handlePageSizeChange} t={t} />
 
         {hasFilters && (
           <button
@@ -920,15 +920,30 @@ export function DictionaryPage(): React.JSX.Element {
         {loading && <DictionaryLoadingOverlay mode={loadingMode} />}
       </div>
 
-      <footer className="flex items-center gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-4 py-2 text-[11px] text-neutral-500">
-        <span className="inline-flex items-center gap-1.5">
-          <Wifi size={11} className="text-amber-400" />
-          {t('status.connected', { ns: 'common' })}
-        </span>
-        <span>{t('footer.encoding', { ns: 'dictionary' })}</span>
-        <span>{t('footer.file', { ns: 'dictionary' })}</span>
+      <footer className="dictionary-footer flex items-center gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-4 py-2 text-[11px] text-neutral-500">
+        <div className="dictionary-status-capsule inline-flex items-center gap-3">
+          <span className="dictionary-connection-capsule inline-flex items-center gap-1.5">
+            <Wifi size={11} className="text-amber-400" />
+            {t('status.connected', { ns: 'common' })}
+          </span>
+          <span>{t('footer.encoding', { ns: 'dictionary' })}</span>
+          <span>{t('footer.file', { ns: 'dictionary' })}</span>
+        </div>
         <span className="flex-1" />
-        <div className="flex items-center gap-2">
+        <div className="dictionary-pagination-capsule flex items-center gap-2">
+          <button
+            type="button"
+            disabled={result.page <= 1 || loading}
+            onClick={() => {
+              setSelectedIds(new Set())
+              setPage(1)
+            }}
+            aria-label="First page"
+            className="dictionary-page-first inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <ChevronLeft size={12} /><ChevronLeft size={12} className="-ml-2" />
+            <span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
+          </button>
           <button
             type="button"
             disabled={result.page <= 1 || loading}
@@ -936,18 +951,40 @@ export function DictionaryPage(): React.JSX.Element {
               setSelectedIds(new Set())
               setPage((current) => Math.max(1, current - 1))
             }}
-            className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+            aria-label="Previous page"
+            className="dictionary-page-prev inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <ChevronLeft size={12} />
-            {t('actions.previous', { ns: 'common' })}
+            <ChevronLeft size={12} /><span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
           </button>
-          <span className="font-mono">
-            {t('footer.range', {
-              ns: 'dictionary',
-              start: pageStart,
-              end: pageEnd,
-              total: stats.total
-            })}
+          <button
+            type="button"
+            className="dictionary-page-menu-trigger font-mono text-[11px] tabular-nums text-neutral-400"
+            onClick={() => setMobilePageMenuOpen((open) => !open)}
+            aria-expanded={mobilePageMenuOpen}
+            aria-label="Page and rows per page"
+          >
+            {result.page} of {result.totalPages}<ChevronDown size={12} />
+          </button>
+          {mobilePageMenuOpen && (
+            <div className="dictionary-page-menu-popover" role="menu" aria-label="Rows per page">
+              {MOBILE_PAGE_SIZE_OPTIONS.map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  role="menuitem"
+                  className={cn(size === pageSize && 'is-selected')}
+                  onClick={() => {
+                    handlePageSizeChange(String(size))
+                    setMobilePageMenuOpen(false)
+                  }}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          )}
+          <span className="dictionary-page-range font-mono">
+            {t('footer.range', { ns: 'dictionary', start: pageStart, end: pageEnd, total: stats.total })}
           </span>
           <button
             type="button"
@@ -956,10 +993,23 @@ export function DictionaryPage(): React.JSX.Element {
               setSelectedIds(new Set())
               setPage((current) => Math.min(result.totalPages, current + 1))
             }}
-            className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+            aria-label="Next page"
+            className="dictionary-page-next inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
-            {t('actions.next', { ns: 'common' })}
-            <ChevronRight size={12} />
+            <span className="sr-only">{t('actions.next', { ns: 'common' })}</span><ChevronRight size={12} />
+          </button>
+          <button
+            type="button"
+            disabled={result.page >= result.totalPages || loading}
+            onClick={() => {
+              setSelectedIds(new Set())
+              setPage(result.totalPages)
+            }}
+            aria-label="Last page"
+            className="dictionary-page-last inline-flex h-7 cursor-pointer items-center gap-1 rounded-md border border-[#2a2f37] px-2.5 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <ChevronRight size={12} /><ChevronRight size={12} className="-ml-2" />
+            <span className="sr-only">{t('actions.next', { ns: 'common' })}</span>
           </button>
         </div>
       </footer>
@@ -1047,34 +1097,6 @@ function FilterSelect({
       triggerClassName="h-8 bg-[#131518] px-3 text-xs"
       menuClassName="border-[#1f2329]"
       menuMinWidth={menuMinWidth}
-    />
-  )
-}
-
-function PageSizeSelect({
-  value,
-  onChange,
-  t
-}: {
-  value: number
-  onChange: (value: string) => void
-  t: (key: string, options?: Record<string, unknown>) => string
-}): React.JSX.Element {
-  const options = PAGE_SIZE_OPTIONS.map((option) => ({
-    value: String(option),
-    label: t('filters.pageSizeOption', { ns: 'dictionary', count: option })
-  }))
-
-  return (
-    <ThemedSelect
-      label={t('filters.pageSize', { ns: 'dictionary' })}
-      value={String(value)}
-      onChange={onChange}
-      options={options}
-      className="w-36"
-      triggerClassName="h-8 bg-[#131518] px-3 text-xs"
-      menuClassName="border-[#1f2329]"
-      menuMinWidth={160}
     />
   )
 }

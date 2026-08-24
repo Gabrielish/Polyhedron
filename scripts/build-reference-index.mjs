@@ -14,8 +14,8 @@ for (const [file, category] of files) {
   const html = fs.readFileSync(path.join(referenceDir, file), 'utf8')
   for (const block of html.split(/<hr\s*\/?>(?=<b>)/i).slice(1)) {
     const name = decode(block.match(/^\s*<b>([^<]+)<\/b>/i)?.[1] ?? '')
-    const display = decode(block.match(/<b>DisplayName:\s*([^<]*)<\/b>/i)?.[1] ?? '')
-    const description = decode(block.match(/<b>Description:\s*([^<]*)<\/b>/i)?.[1] ?? '')
+    const display = decode(block.match(/(?:<b>)?DisplayName:\s*([\s\S]*?)(?=<br\s*\/?>(?:\s*)|<b>|$)/i)?.[1] ?? '')
+    const description = decode(block.match(/(?:<b>)?Description:\s*([\s\S]*?)(?=<br\s*\/?>(?:\s*)|<b>|$)/i)?.[1] ?? '')
     const itemName = display || name
     if (itemName && (display || description)) entries.push({ name: itemName, description, category })
   }

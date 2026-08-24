@@ -18,7 +18,7 @@ export function TranslationStats({ translatedCount, total, pct, todayProgress = 
   const checkpointDays = Math.ceil(Math.max(nextCheckpointCount - translatedCount, 0) / 250)
 
   return (
-    <div className="flex min-w-95 flex-col gap-2">
+    <div className="translation-stats flex min-w-95 flex-col gap-2">
       <div className="flex items-end justify-between gap-4 px-1 font-mono tabular-nums">
         <span className="text-xl font-bold text-amber-400">{translatedCount.toLocaleString()} <span className="font-normal text-neutral-500">/{total.toLocaleString()}</span></span>
         <span className="text-xl font-bold text-white">{pct.toFixed(2)}%</span>

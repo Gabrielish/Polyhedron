@@ -5,6 +5,7 @@ import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { AiProvidersCard } from '@/features/settings/AiProvidersCard'
 import { PromptSlotsCard } from '@/features/settings/PromptSlotsCard'
 import { SimilaritySettingsCard } from '@/features/settings/SimilaritySettingsCard'
+import { MetricsPage } from './MetricsPage'
 import { THEMES, useTheme } from '@/context/ThemeContext'
 import { useConfig } from '@/hooks/useConfig'
 import { i18n } from '@/i18n'
@@ -161,6 +162,29 @@ export function SettingsPage(): React.JSX.Element {
           <p className="text-neutral-500 text-sm mt-1">{t('subtitle')}</p>
         </div>
 
+        <SettingsCard title="Application updates">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <RefreshCw size={18} className="mt-0.5 text-amber-400" />
+              <div>
+                <p className="text-sm font-medium text-neutral-200">Check for updates</p>
+                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.</p>
+                {updateState?.status === 'checking' && <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>}
+                {updateState?.status === 'not-available' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 size={13} /> You are up to date.</p>}
+                {updateState?.status === 'available' && <p className="mt-2 text-xs text-amber-300">Version {updateState.version} is available.</p>}
+                {updateState?.status === 'downloading' && <p className="mt-2 text-xs text-neutral-400">Downloading… {Math.round(updateState.percent)}%</p>}
+                {updateState?.status === 'downloaded' && <p className="mt-2 text-xs text-emerald-400">Version {updateState.version} is ready to install.</p>}
+                {updateState?.status === 'error' && <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><Download size={15} /> Download update</button>}
+              {updateState?.status === 'downloaded' && <button type="button" onClick={() => void window.api.update.install()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><RefreshCw size={15} /> Restart to update</button>}
+              <button type="button" disabled={checkingForUpdates || updateState?.status === 'downloading'} onClick={() => void handleCheckForUpdates()} className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"><RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates</button>
+            </div>
+          </div>
+        </SettingsCard>
+
         <SettingsCard title="Appearance">
           <div className="mb-4 flex items-center gap-2 text-sm text-neutral-400">
             <Palette size={16} className="text-amber-400" />
@@ -188,31 +212,23 @@ export function SettingsPage(): React.JSX.Element {
           </div>
         </SettingsCard>
 
+        <SettingsCard title="Rows per page">
+          <div className="flex max-w-sm flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-300">String count on each page</label>
+            <span className="text-xs text-neutral-500">Choose how many translation and glossary entries are shown at once.</span>
+            <ThemedSelect
+              value={config['translation_page_size'] || '250'}
+              onChange={(value) => { void set('translation_page_size', value) }}
+              options={[100, 250, 500, 1000].map((value) => ({ value: String(value), label: `${value} strings` }))}
+            />
+          </div>
+        </SettingsCard>
+
         <AiProvidersCard />
         <PromptSlotsCard />
         <SimilaritySettingsCard />
-
-        <SettingsCard title="Application updates">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <RefreshCw size={18} className="mt-0.5 text-amber-400" />
-              <div>
-                <p className="text-sm font-medium text-neutral-200">Check for updates</p>
-                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.</p>
-                {updateState?.status === 'checking' && <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>}
-                {updateState?.status === 'not-available' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 size={13} /> You are up to date.</p>}
-                {updateState?.status === 'available' && <p className="mt-2 text-xs text-amber-300">Version {updateState.version} is available.</p>}
-                {updateState?.status === 'downloading' && <p className="mt-2 text-xs text-neutral-400">Downloading… {Math.round(updateState.percent)}%</p>}
-                {updateState?.status === 'downloaded' && <p className="mt-2 text-xs text-emerald-400">Version {updateState.version} is ready to install.</p>}
-                {updateState?.status === 'error' && <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><Download size={15} /> Download update</button>}
-              {updateState?.status === 'downloaded' && <button type="button" onClick={() => void window.api.update.install()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><RefreshCw size={15} /> Restart to update</button>}
-              <button type="button" disabled={checkingForUpdates || updateState?.status === 'downloading'} onClick={() => void handleCheckForUpdates()} className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"><RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates</button>
-            </div>
-          </div>
+        <SettingsCard title="Metrics">
+          <MetricsPage embedded />
         </SettingsCard>
 
         <SettingsCard title={t('sections.apiKeys')}>

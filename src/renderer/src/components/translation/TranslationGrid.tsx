@@ -266,6 +266,13 @@ export function TranslationGrid({
   const deferredFilter = useDeferredValue(filter)
   const [isPending, startFilterTransition] = useTransition()
   const [pageSize, setPageSize] = useState<100 | 250 | 500 | 1000>(250)
+  useEffect(() => {
+    const configured = Number(config['translation_page_size'])
+    if (configured === 100 || configured === 250 || configured === 500 || configured === 1000) {
+      setPageSize(configured)
+    }
+  }, [config])
+  const [mobilePageMenuOpen, setMobilePageMenuOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [stickyRowIds, setStickyRowIds] = useState<Set<string>>(() => new Set())
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
@@ -976,33 +983,39 @@ export function TranslationGrid({
     'inline-flex h-7 cursor-pointer items-center rounded border border-[#1f2329] bg-[#131518] px-2 text-xs font-medium text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200 disabled:cursor-not-allowed disabled:opacity-40'
 
   const PaginationFooter = (
-    <div className="flex shrink-0 items-center justify-between gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-5 py-2">
-      <div className="flex items-center gap-2 text-xs text-neutral-500">
-        <span>{t('grid.pagination.pageSizeLabel', { ns: 'translate' })}</span>
-        <select
-          value={pageSize}
-          onChange={(event) => {
-            setPageSize(Number(event.target.value) as typeof pageSize)
-            setCurrentPage(1)
-          }}
-          className="cursor-pointer rounded border border-[#1f2329] bg-[#131518] px-2 py-0.5 text-xs text-neutral-300 focus:outline-none"
-        >
-          {([100, 250, 500, 1000] as const).map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-[11px] tabular-nums text-neutral-500">
-          {t('grid.pagination.pageOf', {
-            ns: 'translate',
-            current: currentPage,
-            total: totalPages
-          })}
+    <div className="translation-pagination-footer flex shrink-0 items-center justify-between gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-5 py-2">
+      <div className="translation-pagination-controls flex items-center gap-2">
+        <span className="translation-page-indicator font-mono text-[11px] tabular-nums text-neutral-500">
+          {currentPage} of {totalPages}
         </span>
+        <button
+          type="button"
+          className="translation-page-menu-trigger font-mono text-[11px] tabular-nums text-neutral-500"
+          onClick={() => setMobilePageMenuOpen((open) => !open)}
+          aria-expanded={mobilePageMenuOpen}
+        >
+          {currentPage} of {totalPages}
+          <ChevronDown size={12} />
+        </button>
+        {mobilePageMenuOpen && (
+          <div className="translation-page-menu-popover" role="menu" aria-label="Rows per page">
+            {([100, 250, 500, 1000] as const).map((size) => (
+              <button
+                key={size}
+                type="button"
+                role="menuitem"
+                className={cn(size === pageSize && "is-selected")}
+                onClick={() => {
+                  setPageSize(size)
+                  setCurrentPage(1)
+                  setMobilePageMenuOpen(false)
+                }}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -1169,8 +1182,8 @@ export function TranslationGrid({
   )
 
   const searchBar = (
-    <div className="flex min-w-0 shrink-0 flex-col gap-1 overflow-visible border-b border-[#1f2329] bg-[#0c0d0f] px-5 py-1">
-      <div className="flex min-w-0 items-center gap-3 overflow-visible">
+    <div className="translation-search-bar flex min-w-0 shrink-0 flex-col gap-1 overflow-visible border-b border-[#1f2329] bg-[#0c0d0f] px-5 py-1">
+      <div className="translation-search-controls flex min-w-0 flex-wrap items-center gap-3 overflow-visible">
       <div className="flex h-8 w-[clamp(220px,24vw,300px)] min-w-45 max-w-full flex-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 transition-colors focus-within:border-neutral-600">
         <Search size={13} className="shrink-0 text-neutral-500" />
         <input
@@ -1370,7 +1383,7 @@ export function TranslationGrid({
                   data-index={virtualItem.index}
                   ref={sideVirtualizer.measureElement}
                   className={cn(
-                    'translate-entry-row group grid border-b border-[#1f2329] transition-colors hover:bg-[#131518]/60 focus-within:bg-[#131518] focus-within:shadow-[inset_3px_0_0_#f59e0b]',
+                    'translate-entry-row group grid border-b border-[#1f2329] hover:bg-[#131518]/60 focus-within:bg-[#131518] focus-within:shadow-[inset_3px_0_0_#f59e0b]',
                     isRowSelected && 'bg-blue-950/10'
                   )}
                   style={{
@@ -1576,7 +1589,7 @@ export function TranslationGrid({
                 <div className="mx-auto max-w-275">
                   <div
                     className={cn(
-                      'translate-entry-card group grid cursor-default overflow-hidden rounded-xl border transition-all duration-120',
+                      'translate-entry-card group grid cursor-default overflow-hidden rounded-xl border transition-[background-color,box-shadow,transform] duration-120',
                       'border-[#1f2329] bg-[#0f1114]',
                       'hover:-translate-y-px hover:border-[#2a2f37] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18)]',
                       'focus-within:border-amber-500 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.25),0_8px_24px_rgba(0,0,0,0.24)]',

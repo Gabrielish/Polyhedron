@@ -47,8 +47,10 @@ function createWindow(): void {
     width: 1600,
     height: 900,
     show: false,
-    frame: false,
-    titleBarStyle: 'hidden',
+    // Keep the custom frameless title bar on Windows, but use native traffic-light
+    // controls on macOS so the Windows-style buttons are not shown there.
+    frame: process.platform !== 'darwin',
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     autoHideMenuBar: true,
     icon: process.platform === 'win32' ? iconWin : icon,
     webPreferences: {

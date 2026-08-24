@@ -48,8 +48,10 @@ export function MergeBottomBar({
       : undefined
 
   return (
-    <div className="shrink-0 border-t border-[#1f2329] px-6 py-3">
-      <div className="mx-auto flex max-w-220 flex-col gap-2 rounded-xl border border-neutral-700 bg-[#131518] px-4 py-3 shadow-xl">
+    <div className="merge-bottom-bar shrink-0 px-6 pt-3.5 pb-3">
+      <div className="mx-auto grid max-w-220 grid-cols-[56px_1fr] overflow-hidden rounded-xl border border-neutral-700 bg-[#131518] shadow-xl">
+        <div className="border-r border-neutral-800 px-4 py-4 font-mono text-[11px] font-semibold tracking-widest text-neutral-500">04</div>
+        <div className="flex flex-col gap-2 px-4 py-3">
         {showProgress && (
           <div className="space-y-1.5">
             {progressPct !== undefined ? (
@@ -88,6 +90,7 @@ export function MergeBottomBar({
               : t('actions.run', { ns: 'common' })}
           </button>
         </div>
+      </div>
       </div>
     </div>
   )

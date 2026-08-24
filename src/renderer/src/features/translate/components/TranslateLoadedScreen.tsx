@@ -23,6 +23,9 @@ interface TranslateLoadedScreenProps {
 export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): React.JSX.Element {
   const { t } = useAppTranslation('translate')
   const [viewMode, setViewMode] = useState<'side' | 'stacked'>('side')
+  const [isCompactViewport, setIsCompactViewport] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
+  )
   const [languages, setLanguages] = useState<Language[]>([])
   const dictionarySave = useDictionarySave(session)
   const batch = useBatchTranslation(session)
@@ -38,6 +41,14 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
 
   useEffect(() => {
     window.api.language.getAll().then(setLanguages)
+  }, [])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 899px)')
+    const handleViewportChange = () => setIsCompactViewport(mediaQuery.matches)
+    handleViewportChange()
+    mediaQuery.addEventListener('change', handleViewportChange)
+    return () => mediaQuery.removeEventListener('change', handleViewportChange)
   }, [])
 
   const handleEntryManualEdit = useCallback(
@@ -83,7 +94,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       <EditorHeader
         session={session}
         fileName={fileName}
-        viewMode={viewMode}
+        viewMode={isCompactViewport ? 'stacked' : viewMode}
         isSaving={dictionarySave.isSaving}
         translatedCount={translatedCount}
         total={total}
@@ -100,7 +111,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
           entries={session.entries}
           onEntryChange={session.updateEntry}
           onEntryManualEdit={handleEntryManualEdit}
-          viewMode={viewMode}
+          viewMode={isCompactViewport ? 'stacked' : viewMode}
         />
       </div>
 

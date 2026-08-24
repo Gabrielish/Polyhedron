@@ -84,7 +84,7 @@ export function ExtractPage(): React.JSX.Element {
       <button
         onClick={handleExtract}
         disabled={running || !inputPath || !outputPath || !sourceLang}
-        className="w-fit cursor-pointer rounded-md bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-fit cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-6 py-2 text-sm font-medium text-neutral-950 hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {running ? t('extracting') : t('extract')}
       </button>

@@ -47,14 +47,14 @@ export function EditorHeader({
   const { t } = useAppTranslation(['translate', 'common'])
 
   return (
-    <div className="bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
-      <div className="flex items-center gap-3 mb-4">
+    <div className="editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
+      <div className="editor-header-top flex flex-wrap items-center gap-3 mb-4">
         <button type="button" className={btnBase} onClick={session.resetSession}>
           <ArrowLeft />
           {t('editor.back')}
         </button>
 
-        <div className="flex items-center gap-1.5 text-sm text-neutral-500 min-w-0">
+        <div className="editor-header-breadcrumb flex items-center gap-1.5 text-sm text-neutral-500 min-w-0">
           <span className="max-w-50 truncate font-medium text-sm text-neutral-300">
             {session.modName}
           </span>
@@ -64,7 +64,7 @@ export function EditorHeader({
           <span className="font-mono font-semibold text-neutral-200 shrink-0">{fileName}</span>
         </div>
 
-        <div className="ml-auto flex items-center gap-1.5 shrink-0">
+        <div className="editor-header-actions ml-auto flex items-center gap-1.5 shrink-0">
           <div className="flex items-center bg-[#131518] border border-[#1f2329] rounded-md p-0.75 gap-0.5">
             <button
               type="button"
@@ -130,8 +130,8 @@ export function EditorHeader({
         </div>
       </div>
 
-      <div className="flex items-end gap-8">
-        <div className="flex-1 min-w-0">
+      <div className="editor-header-language-row flex items-end gap-8">
+        <div className="editor-header-language-block flex-1 min-w-0">
           <h1 className="flex items-center gap-3.5 m-0 text-[32px] font-bold tracking-tight leading-none mb-2">
             <span className="font-mono text-neutral-200 font-bold">
               {session.sourceLang.toUpperCase()}

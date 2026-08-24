@@ -82,6 +82,18 @@
   --color-background-soft: #101d2b;
 }
 
+[data-theme='liquid-glass'] {
+  --color-amber-300: #ff9b9f;
+  --color-amber-400: #ff6268;
+  --color-amber-500: #ed1c24;
+  --color-amber-600: #c9151c;
+  --color-amber-700: #a80f15;
+  --color-amber-800: #850b10;
+  --color-amber-900: #65080c;
+  --color-background: #050505;
+  --color-background-soft: #101010;
+}
+
 [data-theme='icosa-green'] {
   --color-amber-300: #b7f58a;
   --color-amber-400: #8ee34f;
@@ -116,6 +128,44 @@
   --color-amber-900: #292354;
   --color-background: #07080b;
   --color-background-soft: #0d0f14;
+}
+
+/* Liquid Glass surfaces: translucent dark panels with restrained blur and
+   cool highlights. The effect is limited to this opt-in theme. */
+html[data-theme='liquid-glass'] body {
+  background:
+    radial-gradient(circle at 12% 0%, rgb(237 28 36 / 14%), transparent 35%),
+    radial-gradient(circle at 88% 100%, rgb(120 30 50 / 12%), transparent 38%),
+    #080d14;
+}
+html[data-theme='liquid-glass'] .app-content-shell,
+html[data-theme='liquid-glass'] .sidebar-shell,
+html[data-theme='liquid-glass'] .app-content-shell main {
+  background-color: rgb(8 13 20 / 78%);
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0f1114]'] {
+  background-color: rgb(21 32 45 / 56%);
+  border-color: rgb(255 125 130 / 18%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 12px 30px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled),
+html[data-theme='liquid-glass'] .app-content-shell main input,
+html[data-theme='liquid-glass'] .app-content-shell main textarea,
+html[data-theme='liquid-glass'] .app-content-shell main select {
+  border-color: rgb(255 125 130 / 18%);
+}
+html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled):hover {
+  background-color: rgb(237 28 36 / 12%);
+  border-color: rgb(255 125 130 / 38%);
+  box-shadow: 0 0 22px rgb(237 28 36 / 12%);
+}
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500'],
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90'] {
+  color: #071018;
+  box-shadow: 0 0 18px rgb(237 28 36 / 20%), inset 0 1px 0 rgb(255 255 255 / 20%);
 }
 
 /* Duolingo-style primary buttons: a small lower shadow gives the button
@@ -352,4 +402,1454 @@ html[data-theme]:not([data-theme='classic']) [class~="hover:bg-[#1f2329]"]:hover
 }
 .icosa-scroll::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+/* Liquid Glass final surface overrides (kept last so shared theme rules do not
+   flatten the translucent panels). */
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0f1114]'] {
+  background-color: rgb(21 32 45 / 56%);
+  border-color: rgb(255 125 130 / 18%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 12px 30px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0c0d0f]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0a0a0c]'] {
+  background-color: rgb(5 10 16 / 62%);
+}
+
+
+/* Liquid Glass navigation: a centered iOS-style bottom icon bar. */
+html[data-theme='liquid-glass'] .app-content-shell {
+  margin-left: 0;
+}
+html[data-theme='liquid-glass'] .app-content-shell main {
+  padding-bottom: 0 !important;
+}
+html[data-theme='liquid-glass'] .sidebar-shell {
+  top: auto;
+  bottom: 24px;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  height: auto;
+  transform: translateX(-50%) translateY(0);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  flex-direction: row;
+  overflow: visible;
+  border: 1px solid rgb(255 125 130 / 22%);
+  border-radius: 22px;
+  background: rgb(15 18 24 / 76%);
+  box-shadow: 0 16px 45px rgb(0 0 0 / 42%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 28px rgb(237 28 36 / 9%);
+  backdrop-filter: blur(24px) saturate(140%);
+  isolation: isolate;
+}
+html[data-theme='liquid-glass'] .sidebar-shell:hover {
+  transform: translateX(-50%) translateY(-4px);
+  box-shadow: 0 22px 52px rgb(0 0 0 / 48%), inset 0 1px 0 rgb(255 255 255 / 14%), 0 0 34px rgb(237 28 36 / 14%);
+}
+html[data-theme='liquid-glass'] .sidebar-nav {
+  display: flex;
+  min-width: 0;
+  flex: 0 1 auto;
+  gap: 3px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 7px;
+}
+html[data-theme='liquid-glass'] .sidebar-nav section {
+  display: flex;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+html[data-theme='liquid-glass'] .sidebar-nav section > div {
+  display: none;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a,
+html[data-theme='liquid-glass'] .sidebar-footer a {
+  width: 42px;
+  height: 42px;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-radius: 14px;
+  color: #9298a4;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a:hover {
+  color: #f1f3f6;
+  background: rgb(255 255 255 / 7%);
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
+  color: #ed1c24;
+  background: rgb(237 28 36 / 14%);
+  box-shadow: 0 0 18px rgb(237 28 36 / 28%), inset 0 1px 0 rgb(255 125 130 / 28%);
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
+  filter: drop-shadow(0 0 5px rgb(237 28 36 / 80%));
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(n + 2),
+html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(n + 2) {
+  display: none;
+}
+html[data-theme='liquid-glass'] .sidebar-footer {
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 7px 7px 7px 3px;
+}
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .sidebar-shell {
+    bottom: 16px;
+    max-width: calc(100vw - 16px);
+  }
+  html[data-theme='liquid-glass'] .sidebar-nav a,
+  html[data-theme='liquid-glass'] .sidebar-footer a {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+
+/* Keep translation pagination floating above the Liquid Glass dock. The
+   virtualized string list remains behind it while the user scrolls. */
+html[data-theme='liquid-glass'] .translation-pagination-footer {
+  position: fixed;
+  z-index: 35;
+  left: 16px;
+  right: 16px;
+  bottom: 32px;
+  width: auto;
+  max-width: none;
+  transform: none;
+  justify-content: space-between;
+  gap: 0;
+  padding: 0;
+  border: 0 !important;
+  border-top: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+html[data-theme='liquid-glass'] .translation-pagination-size,
+html[data-theme='liquid-glass'] .translation-pagination-controls {
+  min-height: 42px;
+  border: 1px solid rgb(255 125 130 / 20%);
+  border-radius: 16px;
+  background: rgb(15 18 24 / 72%);
+  box-shadow: 0 14px 36px rgb(0 0 0 / 34%), inset 0 1px 0 rgb(255 255 255 / 10%), 0 0 24px rgb(237 28 36 / 7%);
+  backdrop-filter: blur(22px) saturate(135%);
+}
+html[data-theme='liquid-glass'] .translation-pagination-size {
+  padding: 8px 12px;
+}
+html[data-theme='liquid-glass'] .translation-pagination-controls {
+  padding: 7px 10px;
+}
+html[data-theme='liquid-glass'] .translation-pagination-footer select,
+html[data-theme='liquid-glass'] .translation-pagination-footer button {
+  border-color: rgb(255 125 130 / 20%);
+  background-color: rgb(21 25 33 / 72%);
+}
+html[data-theme='liquid-glass'] .translation-pagination-footer button:not(:disabled):hover {
+  border-color: rgb(237 28 36 / 52%);
+  background-color: rgb(237 28 36 / 13%);
+  box-shadow: 0 0 14px rgb(237 28 36 / 12%);
+}
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer {
+    left: 6px;
+    right: 6px;
+    bottom: 68px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-size {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls {
+    padding-left: 6px;
+    padding-right: 6px;
+    gap: 3px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-footer > div:first-child span {
+    display: none;
+  }
+}
+
+
+/* theSVG-inspired dark language for Liquid Glass. Keep the Polyhedron red
+   accent while using near-black surfaces, graphite borders and pill controls. */
+html[data-theme='liquid-glass'] body,
+html[data-theme='liquid-glass'] .app-content-shell,
+html[data-theme='liquid-glass'] .app-content-shell main {
+  background-color: #050505;
+  color: #f1f1f1;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0c0d0f]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0a0a0c]'] {
+  background-color: #090909;
+  border-color: #252525;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0f1114]'] {
+  background-color: #101010;
+  border-color: #292929;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='border-[#1f2329]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='border-[#2a2f37]'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='border-neutral-800'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='border-neutral-800/80'] {
+  border-color: #292929;
+}
+html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled) {
+  border-radius: 10px;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled):hover {
+  background-color: #181818;
+  border-color: #454545;
+  color: #ffffff;
+}
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500'],
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90'] {
+  border-color: #ed1c24;
+  border-radius: 999px;
+  background-color: #ed1c24;
+  color: #ffffff;
+  box-shadow: 0 0 18px rgb(237 28 36 / 18%), inset 0 1px 0 rgb(255 255 255 / 18%);
+}
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500']:hover,
+html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90']:hover {
+  background-color: #ff3038;
+  border-color: #ff3038;
+  box-shadow: 0 0 24px rgb(237 28 36 / 32%);
+}
+html[data-theme='liquid-glass'] .app-content-shell main input,
+html[data-theme='liquid-glass'] .app-content-shell main textarea,
+html[data-theme='liquid-glass'] .app-content-shell main select {
+  border-color: #292929;
+  background-color: #0b0b0b;
+  color: #eeeeee;
+}
+html[data-theme='liquid-glass'] .app-content-shell main input:focus,
+html[data-theme='liquid-glass'] .app-content-shell main textarea:focus,
+html[data-theme='liquid-glass'] .app-content-shell main select:focus {
+  border-color: rgb(237 28 36 / 72%);
+  box-shadow: 0 0 0 3px rgb(237 28 36 / 12%);
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-500'] {
+  color: #777777;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-400'] {
+  color: #a3a3a3;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-300'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-200'] {
+  color: #e7e7e7;
+}
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-amber-400'],
+html[data-theme='liquid-glass'] .app-content-shell [class~='text-amber-500'] {
+  color: #ed1c24;
+}
+
+/* Stronger Liquid Glass treatment for floating navigation and pagination. */
+html[data-theme='liquid-glass'] .sidebar-shell,
+html[data-theme='liquid-glass'] .translation-pagination-size,
+html[data-theme='liquid-glass'] .translation-pagination-controls {
+  background-color: rgb(20 20 23 / 42%);
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(237 28 36 / 4%));
+  border-color: rgb(255 255 255 / 18%);
+  -webkit-backdrop-filter: blur(28px) saturate(155%);
+  backdrop-filter: blur(28px) saturate(155%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(237 28 36 / 8%);
+}
+html[data-theme='liquid-glass'] .sidebar-shell:hover,
+html[data-theme='liquid-glass'] .translation-pagination-size:hover,
+html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
+  border-color: rgb(255 255 255 / 26%);
+  background-color: rgb(28 28 32 / 48%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 22px 52px rgb(0 0 0 / 48%), 0 0 30px rgb(237 28 36 / 12%);
+}
+html[data-theme='liquid-glass'] .translation-pagination-size select,
+html[data-theme='liquid-glass'] .translation-pagination-controls button {
+  background-color: rgb(10 10 12 / 34%);
+  border-color: rgb(255 255 255 / 15%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+/* Compact theSVG-style navigation state for Liquid Glass. */
+html[data-theme='liquid-glass'] .sidebar-shell:hover {
+  transform: translateX(-50%) translateY(0);
+}
+html[data-theme='liquid-glass'] .sidebar-shell {
+  max-width: min(760px, calc(100vw - 24px));
+}
+html[data-theme='liquid-glass'] .sidebar-nav {
+  gap: 2px;
+  padding: 6px;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a,
+html[data-theme='liquid-glass'] .sidebar-footer a {
+  width: 58px;
+  height: 56px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 3px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #929292;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:first-child,
+html[data-theme='liquid-glass'] .sidebar-footer a > span:first-child {
+  display: flex;
+  width: auto;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(2),
+html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(2) {
+  display: block !important;
+  width: 100%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  opacity: 1;
+  color: inherit;
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(3),
+html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(3) {
+  display: none !important;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a:hover {
+  border-color: rgb(255 255 255 / 72%);
+  background: rgb(255 255 255 / 5%);
+  color: #eeeeee;
+  box-shadow: none;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
+  border-color: rgb(237 28 36 / 40%);
+  background: rgb(237 28 36 / 14%);
+  color: #ed1c24;
+  box-shadow: 0 0 16px rgb(237 28 36 / 28%), inset 0 1px 0 rgb(255 125 130 / 18%);
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: rgb(255 255 255 / 78%);
+  background: rgb(237 28 36 / 18%);
+  color: #ff6268;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
+  filter: drop-shadow(0 0 5px rgb(237 28 36 / 85%));
+}
+html[data-theme='liquid-glass'] .sidebar-footer {
+  gap: 2px;
+  padding: 6px;
+}
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .sidebar-shell {
+    max-width: calc(100vw - 12px);
+  }
+  html[data-theme='liquid-glass'] .sidebar-nav a,
+  html[data-theme='liquid-glass'] .sidebar-footer a {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Minimal Liquid Glass dock: only the outer capsule remains visible. */
+html[data-theme='liquid-glass'] .sidebar-shell:hover {
+  transform: translateX(-50%) translateY(0);
+}
+html[data-theme='liquid-glass'] .sidebar-nav a,
+html[data-theme='liquid-glass'] .sidebar-footer a {
+  width: 42px;
+  height: 42px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-color: transparent;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:first-child,
+html[data-theme='liquid-glass'] .sidebar-footer a > span:first-child {
+  width: auto;
+  height: auto;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(2),
+html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(2),
+html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(3),
+html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(3) {
+  display: none !important;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a:hover {
+  border-color: transparent;
+  background: rgb(255 255 255 / 6%);
+  box-shadow: none;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
+  border-color: transparent;
+  background: rgb(237 28 36 / 14%);
+  color: #ed1c24;
+  box-shadow: 0 0 16px rgb(237 28 36 / 26%);
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: transparent;
+  background: rgb(237 28 36 / 18%);
+}
+
+/* Flatten navigation groups: Liquid Glass uses one outer dock only. */
+html[data-theme='liquid-glass'] .sidebar-nav section {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-theme='liquid-glass'] .sidebar-nav section > div {
+  display: none !important;
+}
+
+/* Inactive dock items stay transparent on hover; only the active route is red. */
+html[data-theme='liquid-glass'] .sidebar-nav a:not([aria-current='page']):hover,
+html[data-theme='liquid-glass'] .sidebar-footer a:not([aria-current='page']):hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #eeeeee;
+}
+
+/* Focused/active dock items are represented by the glowing icon only. */
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'],
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #ed1c24;
+}
+html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
+html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
+  color: #ed1c24;
+  stroke: #ed1c24;
+  filter: drop-shadow(0 0 4px rgb(237 28 36 / 95%)) drop-shadow(0 0 11px rgb(237 28 36 / 62%));
+}
+
+
+/* Keep the Liquid Glass dock visibly glassy at rest, not only while focused. */
+html[data-theme='liquid-glass'] .sidebar-shell,
+html[data-theme='liquid-glass'] .sidebar-shell:hover,
+html[data-theme='liquid-glass'] .sidebar-shell:focus,
+html[data-theme='liquid-glass'] .sidebar-shell:focus-within {
+  background-color: rgb(20 20 23 / 48%) !important;
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 11%), rgb(255 255 255 / 3%) 46%, rgb(237 28 36 / 5%)) !important;
+  border-color: rgb(255 255 255 / 22%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(155%) !important;
+  backdrop-filter: blur(28px) saturate(155%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(0 0 0 / 28%), 0 18px 44px rgb(0 0 0 / 44%), 0 0 28px rgb(237 28 36 / 10%) !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+
+/* Keep the setup action row above the floating Liquid Glass dock. */
+html[data-theme='liquid-glass'] .translate-idle-footer {
+  margin-bottom: 96px;
+}
+
+/* Liquid Glass treatment for the Translate progress indicator. */
+html[data-theme='liquid-glass'] .translation-progress-track {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(10 12 16 / 58%);
+  box-shadow: inset 0 2px 7px rgb(0 0 0 / 58%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 18px rgb(237 28 36 / 8%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  backdrop-filter: blur(16px) saturate(145%);
+}
+html[data-theme='liquid-glass'] .translation-progress-fill {
+  background: linear-gradient(90deg, #ed1c24, #ff454c);
+  box-shadow: 0 0 14px rgb(237 28 36 / 58%), inset 0 1px 0 rgb(255 255 255 / 22%);
+}
+html[data-theme='liquid-glass'] .translation-progress-track > div > span,
+html[data-theme='liquid-glass'] .translation-progress-bubble {
+  border-color: #090b0f;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 16%), 0 0 14px rgb(237 28 36 / 25%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+html[data-theme='liquid-glass'] .translation-progress-bubble {
+  background: rgb(31 36 43 / 72%);
+}
+html[data-theme='liquid-glass'] .translation-progress-bubble.bg-amber-500 {
+  background: #ed1c24;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 20%), 0 0 20px rgb(237 28 36 / 62%);
+}
+
+/* Larger Liquid Glass checkpoint markers at 25%, 50% and 75%. */
+html[data-theme='liquid-glass'] .translation-progress-track > div > span {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%), 0 0 16px rgb(237 28 36 / 30%);
+}
+html[data-theme='liquid-glass'] .translation-progress-track > div > span svg {
+  width: 15px;
+  height: 15px;
+}
+
+
+/* Glossary footer capsules for Liquid Glass. */
+html[data-theme='liquid-glass'] .dictionary-footer {
+  position: fixed;
+  right: 14px;
+  bottom: 36px;
+  left: 14px;
+  z-index: 35;
+  display: flex;
+  gap: 10px;
+  min-height: 0;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+html[data-theme='liquid-glass'] .dictionary-status-capsule,
+html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
+  pointer-events: auto;
+  min-height: 34px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(237 28 36 / 4%));
+  padding: 6px 12px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 12px 28px rgb(0 0 0 / 28%), 0 0 18px rgb(237 28 36 / 6%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+html[data-theme='liquid-glass'] .dictionary-status-capsule {
+  color: #a3a3a3;
+  margin-right: auto;
+}
+html[data-theme='liquid-glass'] .dictionary-connection-capsule svg {
+  color: #ed1c24;
+  filter: drop-shadow(0 0 5px rgb(237 28 36 / 58%));
+}
+html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
+  margin-left: auto;
+}
+html[data-theme='liquid-glass'] .dictionary-pagination-capsule button {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(10 10 12 / 28%);
+  border-radius: 999px;
+}
+html[data-theme='liquid-glass'] .dictionary-pagination-capsule button:not(:disabled):hover {
+  border-color: rgb(255 255 255 / 40%);
+  background: rgb(255 255 255 / 8%);
+}
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    flex-wrap: wrap;
+  }
+  html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
+    margin-left: auto;
+  }
+}
+
+
+html[data-theme='liquid-glass'] .inject-localization-page {
+  padding-bottom: 112px;
+}
+
+/* Mods tools remain reachable above the floating Liquid Glass dock. */
+html[data-theme="liquid-glass"] .mods-page-main {
+  padding-bottom: 112px;
+  scrollbar-gutter: stable;
+}
+
+html[data-theme="liquid-glass"] .merge-tool-screen {
+  min-height: 0;
+}
+
+html[data-theme="liquid-glass"] .merge-bottom-bar {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 112px;
+}
+
+/* Keep the Settings item on the same rhythm as the navigation icons. */
+html[data-theme='liquid-glass'] .sidebar-nav {
+  padding-right: 0;
+}
+html[data-theme='liquid-glass'] .sidebar-footer {
+  padding-left: 0;
+}
+
+/* Align the Translate and Glossary side capsules to the dock's bottom edge. */
+@media (min-width: 701px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer,
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    bottom: 24px;
+  }
+}
+
+/* Pagination capsules use the same resting glass surface as the dock;
+   hovering them must not add a brighter border or glow. */
+html[data-theme='liquid-glass'] .translation-pagination-size:hover,
+html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
+  border-color: rgb(255 255 255 / 18%);
+  background-color: rgb(20 20 23 / 42%);
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(237 28 36 / 4%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(237 28 36 / 8%);
+}
+
+/* Compact Translate layout: keep the editor controls readable instead of
+   letting the breadcrumb and actions occupy the same row. */
+@media (max-width: 899px) {
+  html[data-theme] .editor-header {
+    padding: 12px 16px;
+  }
+  html[data-theme] .editor-header-top {
+    row-gap: 8px;
+  }
+  html[data-theme] .editor-header-breadcrumb {
+    min-width: 0;
+    flex: 1 1 0%;
+  }
+  html[data-theme] .editor-header-breadcrumb > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  html[data-theme] .editor-header-actions {
+    min-width: 0;
+    flex: 1 0 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  html[data-theme] .editor-header-actions::-webkit-scrollbar {
+    display: none;
+  }
+  html[data-theme] .editor-header-actions > * {
+    flex-shrink: 0;
+  }
+  html[data-theme] .editor-header-language-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  html[data-theme] .editor-header-language-block,
+  html[data-theme] .translation-stats {
+    width: 100%;
+    min-width: 0;
+  }
+  html[data-theme] #translation-status-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  html[data-theme] #translation-status-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  html[data-theme] #translation-status-tabs > div {
+    width: max-content;
+    flex-wrap: nowrap;
+  }
+  html[data-theme] .translation-search-bar {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  html[data-theme] .translation-search-controls > div:first-child {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 220px;
+  }
+}
+
+/* Mobile footer capsules sit above the floating navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer,
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    bottom: 68px;
+    align-items: flex-end;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    left: 6px;
+    right: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer,
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-size,
+  html[data-theme='liquid-glass'] .dictionary-status-capsule {
+    align-self: flex-start;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls,
+  html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
+    align-self: flex-end;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Compact pagination for narrow Translate windows. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer {
+    flex-direction: row;
+    align-items: flex-end;
+    bottom: 68px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-size {
+    min-height: 34px;
+    padding: 5px 8px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-size span {
+    display: none;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls {
+    min-height: 34px;
+    padding: 5px 6px;
+    gap: 3px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed;
+    z-index: 36;
+    right: auto;
+    bottom: 112px;
+    left: 50%;
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    transform: translateX(-50%);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 999px;
+    background: rgb(20 20 23 / 72%);
+    padding: 5px 12px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    backdrop-filter: blur(22px) saturate(145%);
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button {
+    width: 29px;
+    min-width: 29px;
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button::after {
+    font-size: 15px;
+    line-height: 1;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(1)::after { content: '«'; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(2)::after { content: '‹'; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(3)::after { content: '›'; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(4)::after { content: '»'; }
+}
+
+@media (max-width: 520px) {
+  html[data-theme='liquid-glass'] .translation-pagination-footer {
+    flex-direction: row;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > .translation-page-indicator {
+    bottom: 108px;
+  }
+}
+
+/* Mobile Translate navigation: four independent circular arrow buttons flank
+   the dock, while page size lives inside the centered page menu. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .translation-pagination-size {
+    display: none;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls {
+    position: static;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div {
+    display: contents;
+  }
+  html[data-theme='liquid-glass'] .translation-page-indicator {
+    display: none;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    position: fixed;
+    z-index: 36;
+    right: auto;
+    bottom: 112px;
+    left: 50%;
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    gap: 5px;
+    transform: translateX(-50%);
+    cursor: pointer;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 999px;
+    background: rgb(20 20 23 / 72%);
+    padding: 6px 12px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    backdrop-filter: blur(22px) saturate(145%);
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button {
+    position: fixed;
+    z-index: 36;
+    bottom: 68px;
+    display: inline-flex;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 999px;
+    font-size: 0;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(1) { left: 10px; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(2) { left: 50px; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(3) { right: 50px; }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:nth-child(4) { right: 10px; }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    position: fixed;
+    z-index: 37;
+    right: auto;
+    bottom: 154px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 14px;
+    background: rgb(18 18 21 / 94%);
+    padding: 10px 12px;
+    color: #a3a3a3;
+    font-size: 11px;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover select {
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
+    background: #101014;
+    padding: 4px 7px;
+    color: #eeeeee;
+  }
+}
+
+@media (min-width: 701px) {
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger,
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    display: none;
+  }
+}
+
+/* Final narrow-viewport pagination alignment. */
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-pagination-size {
+    display: none !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    bottom: 68px;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    bottom: 112px;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button {
+    bottom: 68px;
+  }
+}
+
+/* Mobile arrow controls share the dock's bottom edge; they flank it without
+   changing the dock itself. */
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button {
+    bottom: 16px;
+  }
+}
+
+/* Put the mobile page indicator above the right-side next/last controls. */
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    right: 10px;
+    bottom: 58px;
+    left: auto;
+    transform: none;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    right: 10px;
+    bottom: 102px;
+    left: auto;
+    display: flex;
+    min-width: 84px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px;
+    transform: none;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover button {
+    min-height: 28px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    padding: 4px 10px;
+    color: #b8b8b8;
+    text-align: left;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover button:hover,
+  html[data-theme='liquid-glass'] .translation-page-menu-popover button.is-selected {
+    background: rgb(237 28 36 / 16%);
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-page-indicator {
+    display: none !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    pointer-events: auto;
+    right: 10px;
+    bottom: 58px;
+    left: auto;
+    transform: none;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    pointer-events: auto;
+    right: 10px;
+    bottom: 102px;
+    left: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    display: inline-flex !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    pointer-events: auto !important;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-page-menu-trigger {
+    z-index: 100 !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover {
+    z-index: 101 !important;
+  }
+  html[data-theme='liquid-glass'] .translation-pagination-controls > div > button:disabled {
+    display: none !important;
+  }
+}
+
+/* The page-size menu has buttons too; keep them out of the arrow-control
+   selector used by the four mobile navigation buttons. */
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-page-menu-popover button {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 28px !important;
+    padding: 4px 10px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    justify-content: flex-start !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover button::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* Keep the mobile page-size menu in one floating capsule above the dock. */
+@media (max-width: 899px) {
+  html[data-theme='liquid-glass'] .translation-pagination-controls > .translation-page-menu-popover {
+    position: fixed !important; z-index: 101 !important; top: auto !important;
+    right: 10px !important; bottom: 102px !important; left: auto !important;
+    display: flex !important; width: 84px !important; min-width: 84px !important;
+    height: auto !important; flex-direction: column !important; align-items: stretch !important;
+    gap: 3px !important; transform: none !important;
+    border: 1px solid rgb(255 255 255 / 20%) !important; border-radius: 14px !important;
+    background: rgb(18 18 21 / 96%) !important; padding: 6px !important;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover > button {
+    position: static !important; inset: auto !important; display: block !important;
+    width: 100% !important; height: 28px !important; min-height: 28px !important; margin: 0 !important;
+    padding: 4px 10px !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; color: #b8b8b8 !important; font-size: 11px !important;
+    line-height: 20px !important; text-align: left !important; justify-content: flex-start !important;
+  }
+  html[data-theme='liquid-glass'] .translation-page-menu-popover > button::before,
+  html[data-theme='liquid-glass'] .translation-page-menu-popover > button::after { content: none !important; display: none !important; }
+}
+
+
+/* Mobile Glossary pagination follows the floating Liquid Glass controls used by Translate. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    right: 10px !important; bottom: 16px !important; left: 10px !important;
+    display: block !important; height: 0 !important; min-height: 0 !important;
+    padding: 0 !important; pointer-events: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important; z-index: 35 !important; right: auto !important; bottom: 16px !important; left: 10px !important;
+    margin: 0 !important; min-height: 34px !important; padding: 6px 12px !important;
+    pointer-events: auto !important; white-space: nowrap !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule {
+    position: static !important; display: contents !important; margin: 0 !important;
+    border: 0 !important; background: transparent !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: fixed !important; z-index: 36 !important; bottom: 16px !important;
+    display: inline-flex !important; width: 34px !important; min-width: 34px !important; height: 34px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border-radius: 999px !important; font-size: 0 !important; pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-first { left: 10px !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev { left: 50px !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next { right: 50px !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-last { right: 10px !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important; z-index: 37 !important; right: 10px !important; bottom: 58px !important;
+    left: auto !important; display: inline-flex !important; min-height: 34px !important;
+    align-items: center !important; gap: 5px !important; cursor: pointer !important;
+    border: 1px solid rgb(255 255 255 / 18%) !important; border-radius: 999px !important;
+    background: rgb(20 20 23 / 72%) !important; padding: 6px 12px !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(145%) !important; backdrop-filter: blur(22px) saturate(145%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important; z-index: 38 !important; right: 10px !important; bottom: 102px !important; left: auto !important;
+    display: flex !important; width: 84px !important; min-width: 84px !important;
+    flex-direction: column !important; gap: 3px !important; transform: none !important;
+    border: 1px solid rgb(255 255 255 / 20%) !important; border-radius: 14px !important;
+    background: rgb(18 18 21 / 96%) !important; padding: 6px !important;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-page-menu-popover > button {
+    position: static !important; inset: auto !important; display: block !important; width: 100% !important;
+    height: 28px !important; min-height: 28px !important; margin: 0 !important; padding: 4px 10px !important;
+    border: 0 !important; border-radius: 8px !important; background: transparent !important;
+    color: #b8b8b8 !important; font-size: 11px !important; line-height: 20px !important;
+    text-align: left !important; justify-content: flex-start !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-page-menu-popover > button:hover,
+  html[data-theme='liquid-glass'] .dictionary-page-menu-popover > button.is-selected {
+    background: rgb(237 28 36 / 16%) !important; color: #fff !important;
+  }
+}
+
+/* Final Glossary mobile layout: status and pagination sit above the navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-status-capsule { bottom: 64px !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule {
+    position: fixed !important; z-index: 36 !important; right: 10px !important; bottom: 64px !important; left: auto !important;
+    display: flex !important; align-items: center !important; gap: 4px !important;
+    min-height: 42px !important; padding: 4px 6px !important;
+    border: 1px solid rgb(255 255 255 / 18%) !important; border-radius: 18px !important;
+    background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(237 28 36 / 4%)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), 0 12px 28px rgb(0 0 0 / 28%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: static !important; inset: auto !important; display: inline-flex !important;
+    width: 30px !important; min-width: 30px !important; height: 30px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border: 1px solid rgb(255 255 255 / 12%) !important; border-radius: 9px !important;
+    background: rgb(10 10 12 / 28%) !important; font-size: 0 !important; pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > button:not(:disabled):hover {
+    border-color: rgb(255 255 255 / 38%) !important; background: rgb(255 255 255 / 8%) !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: static !important; inset: auto !important; display: inline-flex !important;
+    width: auto !important; min-width: 76px !important; height: 30px !important; min-height: 30px !important;
+    justify-content: center !important; padding: 5px 8px !important; border-radius: 9px !important;
+    background: rgb(10 10 12 / 28%) !important; font-size: 11px !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important; z-index: 39 !important; right: 10px !important; bottom: 112px !important; left: auto !important;
+  }
+}
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > button:disabled { display: none !important; }
+}
+
+/* Translate keeps its single pagination capsule on the right after page-size
+   controls moved to Settings. */
+html[data-theme='liquid-glass'] .translation-pagination-footer {
+  justify-content: flex-end !important;
+}
+html[data-theme='liquid-glass'] .translation-pagination-controls {
+  margin-left: auto !important;
+}
+
+/* Ensure the Glossary mobile page-size menu never participates in the
+   pagination row layout. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 200 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    height: auto !important;
+    right: 10px !important;
+    bottom: 112px !important;
+    left: auto !important;
+    top: auto !important;
+    gap: 3px !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    transform: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover > button {
+    position: static !important;
+    display: block !important;
+    flex: 0 0 28px !important;
+    width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    white-space: nowrap !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-range {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    white-space: nowrap !important;
+    line-height: 20px !important;
+  }
+}
+
+/* Glossary page-size menu is mobile-only; never let its options enter the
+   desktop pagination row. */
+@media (min-width: 701px) {
+  html[data-theme='liquid-glass'] .dictionary-page-menu-trigger,
+  html[data-theme='liquid-glass'] .dictionary-page-menu-popover {
+    display: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-page-first,
+  html[data-theme='liquid-glass'] .dictionary-page-last {
+    display: none !important;
+  }
+}
+
+/* The page indicator is a text button, not one of the arrow buttons. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-menu-trigger {
+    position: static !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    max-width: none !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 5px 8px !important;
+    border-radius: 9px !important;
+    font-size: 11px !important;
+    line-height: 20px !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Glossary mobile pagination mirrors Translate: arrows flank the dock. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule {
+    position: static !important;
+    display: contents !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: fixed !important;
+    z-index: 36 !important;
+    top: auto !important;
+    bottom: 16px !important;
+    display: inline-flex !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 9px !important;
+    font-size: 0 !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-first { left: 10px !important; right: auto !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev { left: 50px !important; right: auto !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next { right: 50px !important; left: auto !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-last { right: 10px !important; left: auto !important; }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 37 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 58px !important;
+    left: auto !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 5px 8px !important;
+    border-radius: 9px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 38 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 102px !important;
+    left: auto !important;
+  }
+}
+
+/* Simplified Glossary mobile navigation: only previous/next controls. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important;
+    z-index: 60 !important;
+    right: auto !important;
+    bottom: 64px !important;
+    left: 10px !important;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-first,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-last {
+    display: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next {
+    position: fixed !important;
+    z-index: 60 !important;
+    top: auto !important;
+    bottom: 16px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    border-radius: 999px !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev {
+    left: 10px !important;
+    right: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next {
+    right: 10px !important;
+    left: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 61 !important;
+    top: 48px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 62 !important;
+    top: 84px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+}
+
+/* Glossary mobile controls share the dock's bottom alignment. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer {
+    position: fixed !important;
+    z-index: 55 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important;
+    z-index: 70 !important;
+    right: auto !important;
+    bottom: 16px !important;
+    left: 10px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next {
+    position: fixed !important;
+    z-index: 70 !important;
+    top: auto !important;
+    bottom: 16px !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 71 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 58px !important;
+    left: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 72 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 102px !important;
+    left: auto !important;
+  }
+}
+
+/* Final mobile Glossary cleanup: no status capsule, page indicator at top. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-status-capsule {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 80 !important;
+    top: 48px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 81 !important;
+    top: 84px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+}
+
+/* Glossary mobile arrows: explicit, stable left/right controls. */
+@media (max-width: 700px) {
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    display: inline-flex !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev {
+    left: 10px !important;
+    right: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    right: 10px !important;
+    left: auto !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev::before,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev::after,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next::before,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next::after {
+    content: none !important;
+    display: none !important;
+  }
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-prev svg,
+  html[data-theme='liquid-glass'] .dictionary-footer .dictionary-page-next svg {
+    display: block !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
 }

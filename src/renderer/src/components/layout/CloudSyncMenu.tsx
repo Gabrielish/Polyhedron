@@ -83,9 +83,10 @@ export function CloudSyncMenu(): React.JSX.Element {
 
   return (
     <div
-      className="pointer-events-auto relative"
+      className="pointer-events-auto relative z-[110] mr-2"
       style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
       onDoubleClick={(event) => event.stopPropagation()}
     >
       <button
@@ -104,7 +105,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       </button>
 
       {open && !busy && (
-        <div className="pointer-events-auto absolute top-8 right-0 z-50 w-44 rounded-lg border border-[#343941] bg-[#171a1f] p-1.5 shadow-xl">
+        <div className="pointer-events-auto absolute top-8 right-0 z-[200] w-44 rounded-lg border border-[#343941] bg-[#171a1f] p-1.5 shadow-xl">
           <button
             type="button"
             onClick={() => void upload()}

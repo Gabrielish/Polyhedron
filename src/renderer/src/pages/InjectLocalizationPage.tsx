@@ -9,11 +9,12 @@ import { useTranslationExport } from '@/features/translate/hooks/useTranslationE
 
 type TargetPlatform = 'windows' | 'macos'
 
-export function InjectLocalizationPage(): React.JSX.Element {
+export function InjectLocalizationPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
   const session = useTranslationSession()
   const [running, setRunning] = useState<TargetPlatform | null>(null)
   const [result, setResult] = useState<string | null>(null)
   const [languages, setLanguages] = useState<Language[]>([])
+  const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const exportFlow = useTranslationExport(session, languages)
 
   useEffect(() => {
@@ -45,8 +46,8 @@ export function InjectLocalizationPage(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto p-8 text-neutral-200">
-      <div className="mx-auto w-full max-w-4xl">
+    <div className={`inject-localization-page flex h-full min-h-0 flex-col overflow-y-auto text-neutral-200 ${embedded ? 'p-0' : 'p-8'}`}>
+      <div className={embedded ? 'w-full' : 'mx-auto w-full max-w-4xl'}>
         <div className="mb-7 flex items-start gap-3">
           <HardDriveDownload className="mt-1 text-amber-400" size={24} />
           <div>
@@ -72,11 +73,11 @@ export function InjectLocalizationPage(): React.JSX.Element {
                 <div className="mt-1 text-xs leading-5 text-neutral-500">Steam / Baldurs Gate 3 / Data / Localization</div>
                 <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'windows' ? 'Injecting…' : 'Inject English.pak'}</span>
               </button>
-              <button type="button" disabled={running !== null} onClick={() => void inject('macos')} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
-                <div className="mb-4 flex items-center justify-between"><Apple size={24} className="text-amber-400" />{running === 'macos' ? <span className="text-xs text-amber-300">Injecting…</span> : <span className="text-xs text-neutral-600">macOS</span>}</div>
+              <button type="button" disabled={running !== null || isMacOS} onClick={() => { if (!isMacOS) void inject('macos') }} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-not-allowed disabled:opacity-60">
+                <div className="mb-4 flex items-center justify-between"><Apple size={24} className="text-amber-400" /><span className="text-xs text-neutral-600">{isMacOS ? 'Coming soon' : 'macOS'}</span></div>
                 <div className="font-medium">Inject for macOS</div>
-                <div className="mt-1 text-xs leading-5 text-neutral-500">Steam / Baldur&apos;s Gate 3.app / Contents / Data / Localization</div>
-                <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'macos' ? 'Injecting…' : 'Inject English.pak'}</span>
+                <div className="mt-1 text-xs leading-5 text-neutral-500">macOS injection is currently locked while Divine support is being prepared.</div>
+                <span className="mt-5 inline-flex rounded-md border border-[#3a3f47] bg-[#1b1e24] px-4 py-2 text-xs font-semibold text-neutral-500">Coming soon</span>
               </button>
             </div>
             <div className="mt-4 max-w-xl rounded-xl border border-[#2a2f37] bg-[#131518] p-4 shadow-[0_3px_0_#0b0d0f]">

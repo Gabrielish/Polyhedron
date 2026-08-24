@@ -1,7 +1,6 @@
 import { Maximize2, Minimize2, Minus, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
-import { CloudSyncMenu } from './CloudSyncMenu'
 import dragonLogo from '@/assets/dungeons-dragons.svg'
 
 type AppRegionStyle = React.CSSProperties & { WebkitAppRegion?: string }
@@ -12,6 +11,7 @@ const NO_DRAG: AppRegionStyle = { WebkitAppRegion: 'no-drag' }
 export function TitleBar(): React.JSX.Element {
   const [isMaximized, setIsMaximized] = useState(false)
   const [appVersion, setAppVersion] = useState('')
+  const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const { t } = useAppTranslation('common')
 
   useEffect(() => {
@@ -22,13 +22,13 @@ export function TitleBar(): React.JSX.Element {
 
   return (
     <div
-      style={DRAG}
+      style={NO_DRAG}
       onDoubleClick={() => window.api.window.maximize()}
       className="flex h-9 w-full shrink-0 items-center border-b border-[#1f2329] bg-[#0f1114] select-none"
     >
-      <div className="flex-1" />
+      <div style={DRAG} className="flex-1" />
 
-      <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 pointer-events-none">
+      <div style={DRAG} className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
         <div
           className="flex h-6 w-6 shrink-0 items-center justify-center"
         >
@@ -42,31 +42,32 @@ export function TitleBar(): React.JSX.Element {
         </span>
       </div>
 
-      <div style={NO_DRAG} className="flex h-full items-center">
-        <CloudSyncMenu />
-        <button
-          title={t('window.minimize')}
-          onClick={() => window.api.window.minimize()}
-          className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
-        >
-          <Minus size={13} />
-        </button>
+      <div style={NO_DRAG} className="relative z-[100] flex h-full items-center pointer-events-auto">
+        {!isMacOS && <>
+          <button
+            title={t('window.minimize')}
+            onClick={() => window.api.window.minimize()}
+            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
+          >
+            <Minus size={13} />
+          </button>
 
-        <button
-          title={t(isMaximized ? 'window.restore' : 'window.maximize')}
-          onClick={() => window.api.window.maximize()}
-          className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
-        >
-          {isMaximized ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
-        </button>
+          <button
+            title={t(isMaximized ? 'window.restore' : 'window.maximize')}
+            onClick={() => window.api.window.maximize()}
+            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
+          >
+            {isMaximized ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+          </button>
 
-        <button
-          title={t('window.close')}
-          onClick={() => window.api.window.close()}
-          className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-red-500 hover:text-white transition-colors"
-        >
-          <X size={13} />
-        </button>
+          <button
+            title={t('window.close')}
+            onClick={() => window.api.window.close()}
+            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-red-500 hover:text-white transition-colors"
+          >
+            <X size={13} />
+          </button>
+        </>}
       </div>
     </div>
   )

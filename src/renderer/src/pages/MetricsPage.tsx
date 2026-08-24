@@ -24,7 +24,7 @@ function buildRange(days: number): { from: string; to: string } {
   }
 }
 
-export function MetricsPage(): React.JSX.Element {
+export function MetricsPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
   const { t } = useAppTranslation('metrics')
   const [range, setRange] = useState<RangeKey>('30d')
   const [editingService, setEditingService] = useState<MetricsService | null>(null)
@@ -54,15 +54,15 @@ export function MetricsPage(): React.JSX.Element {
   const editingUsage = editingService !== null ? (usage[editingService] ?? null) : null
 
   return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="mb-8">
+    <div className={embedded ? '' : 'p-8'}>
+      <div className="mx-auto max-w-6xl space-y-6">
+        {!embedded && <div className="mb-8">
           <h1 className="text-2xl font-semibold text-neutral-100 flex items-center gap-3">
             <BarChart2 className="w-6 h-6 text-amber-500" />
             {t('page.title')}
           </h1>
           <p className="text-neutral-500 text-sm mt-1">{t('page.subtitle')}</p>
-        </div>
+        </div>}
 
         {/* Usage cards */}
         {usage.loading ? (

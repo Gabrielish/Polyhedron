@@ -1,23 +1,14 @@
 import {
-  BarChart3,
   BookOpen,
   Boxes,
   FlaskConical,
   FolderKanban,
   FolderSync,
-  FolderInput,
-  FolderOutput,
-  HardDriveDownload,
   GitBranch,
   Languages,
-  Merge,
   MonitorCog,
   LibraryBig,
-  Package,
-  PackageOpen,
   Settings,
-  Wrench,
-  ChartNoAxesColumn
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
@@ -48,25 +39,13 @@ const NAV_GROUPS: NavGroupConfig[] = [
     label: 'Workspace',
     icon: FolderSync,
     items: [
-      { to: '/inject', icon: HardDriveDownload, labelKey: 'injectLocalization', kbd: '' },
-      { to: '/workspace/import', icon: FolderInput, labelKey: 'importWorkspace', kbd: '' },
-      { to: '/workspace/export', icon: FolderOutput, labelKey: 'exportWorkspace', kbd: '' }
+      { to: '/workspace', icon: FolderSync, labelKey: 'workspace', kbd: '' }
     ]
   },
   {
-    label: 'Mod Tools',
-    icon: Wrench,
-    items: [
-      { to: '/mods', icon: Boxes, labelKey: 'mods', kbd: '' },
-      { to: '/merge', icon: Merge, labelKey: 'merge', kbd: '' },
-      { to: '/extract', icon: PackageOpen, labelKey: 'extract', kbd: '' },
-      { to: '/package', icon: Package, labelKey: 'package', kbd: '' }
-    ]
-  },
-  {
-    label: 'Metrics',
-    icon: ChartNoAxesColumn,
-    items: [{ to: '/metrics', icon: BarChart3, labelKey: 'metrics', kbd: '' }]
+    label: 'Mods',
+    icon: Boxes,
+    items: [{ to: '/mods', icon: Boxes, labelKey: 'mods', kbd: '' }]
   }
 ]
 

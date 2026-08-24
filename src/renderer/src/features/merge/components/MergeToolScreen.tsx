@@ -20,7 +20,7 @@ export function MergeToolScreen(): React.JSX.Element {
 
   return (
     <>
-      <div className="flex h-full min-h-0 flex-col">
+      <div className="merge-tool-screen flex flex-col">
         <div className="flex h-10 shrink-0 items-center gap-3 border-b border-[#1f2329] bg-[#131518] px-5">
           <span className="flex items-center gap-1.5 font-mono text-[12px] text-neutral-200">
             <Merge size={12} />
@@ -42,7 +42,7 @@ export function MergeToolScreen(): React.JSX.Element {
           </span>
         </div>
 
-        <div className="icosa-scroll min-h-0 flex-1 overflow-y-auto px-6 pt-7 pb-6 [scrollbar-gutter:stable]">
+        <div className="merge-tool-scroll px-6 pt-7 pb-0">
           <div className="mx-auto flex max-w-220 flex-col gap-3.5">
             <MergeFileStep
               step="01"

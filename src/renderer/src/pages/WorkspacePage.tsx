@@ -1,9 +1,10 @@
-import { Archive, FileDown, FileUp, FolderInput, FolderOutput, ShieldCheck } from 'lucide-react'
+import { Archive, FileDown, FileUp, FolderSync, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { InjectLocalizationPage } from './InjectLocalizationPage'
 
-export function WorkspacePage({ mode }: { mode: 'import' | 'export' }): React.JSX.Element {
-  const TitleIcon = mode === 'import' ? FolderInput : FolderOutput
+export function WorkspacePage(): React.JSX.Element {
+  const TitleIcon = FolderSync
   const [running, setRunning] = useState<'import' | 'export' | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [importedStats, setImportedStats] = useState<{ translated: number; total: number } | null>(null)
@@ -57,7 +58,7 @@ export function WorkspacePage({ mode }: { mode: 'import' | 'export' }): React.JS
         <div className="mb-7 flex items-start gap-3">
           <TitleIcon className="mt-1 text-amber-400" size={24} />
           <div>
-            <h1 className="text-2xl font-semibold">{mode === 'import' ? 'Import Workspace' : 'Export Workspace'}</h1>
+            <h1 className="text-2xl font-semibold">Workspace</h1>
             <p className="mt-1 text-sm text-neutral-500">Move your translations, dictionary and mod data between Windows and macOS.</p>
           </div>
         </div>
@@ -65,21 +66,25 @@ export function WorkspacePage({ mode }: { mode: 'import' | 'export' }): React.JS
           <ShieldCheck size={16} className="mt-0.5 shrink-0 text-amber-300" />
           <p><strong className="font-medium text-amber-200">icosa.db is protected.</strong> Export creates a consistent SQLite backup. Import replaces the current database only after saving a timestamped backup.</p>
         </div>
-        <div className="grid gap-4">
-          {mode === 'import' && <button type="button" disabled={running !== null} onClick={() => void importWorkspace()} className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
+        <div className="grid gap-4 md:grid-cols-2">
+          <button type="button" disabled={running !== null} onClick={() => void importWorkspace()} className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
             <div className="mb-4 flex items-center justify-between"><FileDown size={24} className="text-amber-400" /><span className="text-xs text-neutral-600">{running === 'import' ? 'Importing…' : 'Import'}</span></div>
             <div className="font-medium">Import Workspace</div>
             <div className="mt-1 text-xs leading-5 text-neutral-500">Restore icosa.db and imported mod data from an .icws file.</div>
             <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'import' ? 'Importing…' : 'Choose Workspace'}</span>
-          </button>}
-          {mode === 'export' && <button type="button" disabled={running !== null} onClick={() => void exportWorkspace()} className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
+          </button>
+          <button type="button" disabled={running !== null} onClick={() => void exportWorkspace()} className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
             <div className="mb-4 flex items-center justify-between"><FileUp size={24} className="text-amber-400" /><span className="text-xs text-neutral-600">{running === 'export' ? 'Exporting…' : 'Export'}</span></div>
             <div className="font-medium">Export Workspace</div>
             <div className="mt-1 text-xs leading-5 text-neutral-500">Create a portable backup containing the full translation database.</div>
             <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'export' ? 'Exporting…' : 'Export Workspace'}</span>
-          </button>}
+          </button>
         </div>
         {message && <div className="mt-5 flex items-start gap-2 rounded-lg border border-[#2a2f37] bg-[#131518] p-4 text-xs text-neutral-300"><Archive size={15} className="mt-0.5 shrink-0 text-amber-400" /><span className="break-all">{message}</span></div>}
+
+        <div className="mt-8 border-t border-[#1f2329] pt-8">
+          <InjectLocalizationPage embedded />
+        </div>
       </div>
 
       {importedStats && (

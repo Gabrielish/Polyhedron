@@ -34,14 +34,15 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
     return (
       <div
         className={cn(
-          'relative overflow-hidden rounded-md border border-[#1f2329] bg-[#131518] transition-[border-color,box-shadow] focus-within:border-amber-500/60 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.18)]',
+          'relative overflow-hidden rounded-md border border-[#1f2329] bg-[#131518] transition-[box-shadow] focus-within:border-amber-500/60 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.18)]',
           containerClassName
         )}
       >
         <div
           aria-hidden="true"
+          style={{ color: '#e5e5e5' }}
           className={cn(
-            'pointer-events-none absolute inset-0 overflow-hidden px-2.5 py-2 text-[13px] leading-[1.55] text-neutral-200 whitespace-pre-wrap wrap-break-word',
+            'pointer-events-none absolute inset-0 z-0 overflow-hidden px-2.5 py-2 text-[13px] leading-[1.55] text-neutral-200 whitespace-pre-wrap wrap-break-word',
             overlayClassName
           )}
         >
@@ -70,8 +71,14 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
             onChange?.(event)
           }}
           placeholder={placeholder}
+          style={{
+            ...props.style,
+            color: 'transparent',
+            WebkitTextFillColor: 'transparent',
+            caretColor: 'var(--color-neutral-200, #e5e5e5)'
+          }}
           className={cn(
-            'relative z-10 w-full resize-none bg-transparent px-2.5 py-2 text-[13px] leading-[1.55] text-transparent caret-neutral-200 placeholder:text-transparent focus:outline-none',
+            'relative z-10 w-full resize-none !bg-transparent px-2.5 py-2 text-[13px] leading-[1.55] !text-transparent caret-neutral-200 placeholder:!text-transparent focus:outline-none',
             className
           )}
         />
