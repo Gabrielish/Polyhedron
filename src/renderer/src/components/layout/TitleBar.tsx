@@ -48,6 +48,9 @@ export function TitleBar(): React.JSX.Element {
         <span className="text-[13px] font-bold tracking-[0.06em] text-neutral-300" style={{ fontFamily: 'Breathe Fire III, sans-serif' }}>
           Polyhedron
         </span>
+        <span className="text-[9px] font-normal tracking-normal text-neutral-600">
+          v2.1.0
+        </span>
       </div>
 
       <div style={NO_DRAG} className="flex h-full items-center">

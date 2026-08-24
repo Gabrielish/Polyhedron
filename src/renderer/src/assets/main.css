@@ -11,13 +11,13 @@
 /* Theme palettes. Tailwind's amber utilities resolve through these tokens,
    so changing the theme recolors existing buttons, badges and active states. */
 [data-theme='classic'] {
-  --color-amber-300: #fcd34d;
-  --color-amber-400: #fbbf24;
-  --color-amber-500: #f59e0b;
-  --color-amber-600: #d97706;
-  --color-amber-700: #b45309;
-  --color-amber-800: #92400e;
-  --color-amber-900: #78350f;
+  --color-amber-300: #ff8585;
+  --color-amber-400: #ff4a50;
+  --color-amber-500: #ed1c24;
+  --color-amber-600: #c9151c;
+  --color-amber-700: #a80f15;
+  --color-amber-800: #850b10;
+  --color-amber-900: #65080c;
   --color-background: #0f1114;
   --color-background-soft: #131518;
 }
@@ -122,7 +122,7 @@
    the tactile “press into the page” motion without changing button layout. */
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"],
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/90"] {
-  box-shadow: 0 3px 0 #a85f05;
+  box-shadow: 0 3px 0 #a80f15;
   transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"]:hover,
@@ -132,7 +132,7 @@ html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/9
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"]:active,
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/90"]:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 #a85f05;
+  box-shadow: 0 1px 0 #a80f15;
 }
 
 html[data-theme='icosa-green'] .app-content-shell main button[class~="bg-amber-500"],
