@@ -64,5 +64,8 @@ mac:
     - target: dmg
       arch:
         - arm64
+    - target: zip
+      arch:
+        - arm64
   artifactName: ${productName}-${version}-${arch}.${ext}
 npmRebuild: true
