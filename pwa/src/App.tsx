@@ -16,7 +16,7 @@ export function App(): React.JSX.Element {
   const [syncMessage, setSyncMessage] = useState('')
   const isConnected = driveToken !== null
 
-  async function connectDrive(): Promise<string | null> {
+  async function connectDrive(autoDownload = true): Promise<string | null> {
     if (!googleClientId) {
       setSyncMessage('Set VITE_GOOGLE_CLIENT_ID before connecting Google Drive.')
       return null
@@ -24,7 +24,18 @@ export function App(): React.JSX.Element {
     try {
       const token = await requestDriveAccessToken(googleClientId)
       setDriveToken(token)
-      setSyncMessage('Google Drive connected.')
+      if (autoDownload) {
+        try {
+          const nextDocument = await downloadWorkspaceSync(token)
+          setDocument(nextDocument)
+          setSyncMessage('Google Drive connected. Workspace downloaded automatically.')
+        } catch (error) {
+          const detail = error instanceof Error ? error.message : 'Workspace download failed.'
+          setSyncMessage(`Google Drive connected, but automatic download failed: ${detail}`)
+        }
+      } else {
+        setSyncMessage('Google Drive connected.')
+      }
       return token
     } catch (error) {
       setSyncMessage(error instanceof Error ? error.message : 'Google Drive authorization failed.')
@@ -33,7 +44,7 @@ export function App(): React.JSX.Element {
   }
 
   async function upload(): Promise<void> {
-    const token = driveToken ?? await connectDrive()
+    const token = driveToken ?? await connectDrive(false)
     if (!token) return
     if (document.sessions.length === 0) {
       setSyncMessage('Import or load a workspace before uploading.')
@@ -49,7 +60,7 @@ export function App(): React.JSX.Element {
   }
 
   async function download(): Promise<void> {
-    const token = driveToken ?? await connectDrive()
+    const token = driveToken ?? await connectDrive(false)
     if (!token) return
     try {
       const nextDocument = await downloadWorkspaceSync(token)

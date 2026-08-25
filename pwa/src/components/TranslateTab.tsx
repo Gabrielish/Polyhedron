@@ -17,6 +17,8 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   const [sessionId, setSessionId] = useState('')
   const [query, setQuery] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
+  const [page, setPage] = useState(1)
+  const pageSize = 25
   const [message, setMessage] = useState('Import a workspace-sync.json exported from Polyhedron Desktop.')
 
   useEffect(() => {
@@ -34,7 +36,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
     })
   }, [exactMatch, query, session])
 
+  const pageCount = Math.max(1, Math.ceil(entries.length / pageSize))
+  const visibleEntries = entries.slice((page - 1) * pageSize, page * pageSize)
   const translatedCount = session?.entries.filter((entry) => entry.target.trim()).length ?? 0
+
+  useEffect(() => {
+    setPage(1)
+  }, [query, exactMatch, session?.id])
 
   async function importDocument(file: File): Promise<void> {
     try {
@@ -42,6 +50,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       if (!isWorkspaceSyncDocument(parsed)) throw new Error('This file is not a supported workspace sync document.')
       onDocumentChange(parsed)
       setSessionId(parsed.sessions[0]?.id ?? '')
+      setPage(1)
       setMessage(`Loaded ${parsed.sessions.length} session${parsed.sessions.length === 1 ? '' : 's'} from ${file.name}.`)
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to read this sync file.')
@@ -76,7 +85,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
       {document.sessions.length > 0 && (
         <div className="translate-controls">
-          <select value={session?.id ?? ''} onChange={(event) => setSessionId(event.target.value)}>
+          <select value={session?.id ?? ''} onChange={(event) => { setSessionId(event.target.value); setPage(1) }}>
             {document.sessions.map((item) => <option key={item.id} value={item.id}>{item.modName} · {item.sourceLang} → {item.targetLang}</option>)}
           </select>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search strings..." />
@@ -86,8 +95,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       )}
 
       <div className="translate-list">
-        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : entries.map((entry) => <TranslationCard key={entry.uid} entry={entry} onChange={(target) => updateEntry(entry.uid, target)} />)}
+        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry) => <TranslationCard key={entry.uid} entry={entry} onChange={(target) => updateEntry(entry.uid, target)} />)}
       </div>
+      {entries.length > 0 && <div className="pagination-bar">
+        <button type="button" className="secondary-button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
+        <span>Page {page} of {pageCount} · {((page - 1) * pageSize + 1).toLocaleString()}–{Math.min(page * pageSize, entries.length).toLocaleString()} of {entries.length.toLocaleString()}</span>
+        <button type="button" className="secondary-button" disabled={page >= pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>Next</button>
+      </div>}
     </section>
   )
 }

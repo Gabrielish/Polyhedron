@@ -62,3 +62,8 @@ h2 { font-size: 20px; }
 .larian-tag { color: #f28bdc; background: rgb(242 139 220 / 14%); border-radius: 4px; padding: 1px 3px; }
 .translation-preview { margin-top: 8px; color: #858b94; font-size: 12px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 620px) { .exact-match { min-height: 40px; justify-content: flex-start; } }
+
+.pagination-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; color: #858b94; font-size: 12px; }
+.pagination-bar .secondary-button { padding: 7px 10px; }
+.pagination-bar button:disabled { cursor: not-allowed; opacity: .4; }
+@media (max-width: 560px) { .pagination-bar { justify-content: space-between; gap: 6px; } .pagination-bar span { font-size: 11px; text-align: center; } }
