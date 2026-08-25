@@ -138,11 +138,24 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const fileId = result.data.files?.[0]?.id
   if (!fileId) return
   const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
-  const document = response.data as { version?: number; sessions?: Array<{ modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string }> }> }
+  const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }> }> }
   if (document.version !== 1 || !Array.isArray(document.sessions)) return
   const dictionaryRepo = new DictionaryRepository(getDb())
+  const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
+  fs.mkdirSync(sessionsDir, { recursive: true })
   for (const session of document.sessions) {
     if (!session.sourceLang || !session.targetLang || !Array.isArray(session.entries)) continue
+    const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true }))
+    if (session.id && persistedEntries.length > 0) {
+      const sessionPath = path.join(sessionsDir, `${crypto.createHash('sha256').update(session.id).digest('hex')}.json`)
+      let existingEntries: typeof persistedEntries = []
+      if (fs.existsSync(sessionPath)) {
+        try { existingEntries = (JSON.parse(fs.readFileSync(sessionPath, 'utf8')) as { entries?: typeof persistedEntries }).entries ?? [] } catch { /* Rebuild an incomplete cache. */ }
+      }
+      const byUid = new Map(existingEntries.map((entry) => [entry.uid, entry]))
+      for (const entry of persistedEntries) byUid.set(entry.uid, entry)
+      fs.writeFileSync(sessionPath, JSON.stringify({ version: 1, entries: [...byUid.values()] }), 'utf8')
+    }
     for (const entry of session.entries) {
       if (!entry.source?.trim()) continue
       dictionaryRepo.upsert({ sourceLang: session.sourceLang, targetLang: session.targetLang, sourceText: entry.source, targetText: entry.target ?? '', modName: session.modName ?? null, uid: entry.uid ?? null })
