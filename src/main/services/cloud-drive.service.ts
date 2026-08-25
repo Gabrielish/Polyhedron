@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { app } from 'electron'
@@ -5,33 +6,55 @@ import { google } from 'googleapis'
 import { authenticate } from '@google-cloud/local-auth'
 import type { drive_v3 } from 'googleapis'
 import { getDb } from '../database/connection'
-import { dictionary } from '../database/schema'
+import { config, mod } from '../database/schema'
 import { DictionaryRepository } from '../database/repositories/dictionary.repo'
 import { exportWorkspace, getWorkspaceTranslationStats, importWorkspace, type WorkspaceTranslationStats } from './workspace.service'
 import { extractZip } from './zip.service'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
+import { parseLocalizationXml } from './xml-parser.service'
 
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const CLOUD_FILE_NAME = 'icosa-workspace.icws'
 const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
 
-type PwaSyncEntry = { uid: string; source: string; target: string; matchType: 'text'; needsReview: boolean }
+type PwaSyncEntry = { uid: string; source: string; target: string; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean }
+
+type SavedSessionEntry = { uid?: string; target?: string; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }
 
 function buildPwaSyncDocument() {
-  const rows = getDb().select().from(dictionary).all()
-  const grouped = new Map<string, { id: string; modName: string; sourceLang: string; targetLang: string; updatedAt: string; entries: PwaSyncEntry[] }>()
+  const db = getDb()
+  const configRows = db.select().from(config).all() as Array<{ key: string; value: string | null }>
+  const settings = new Map(configRows.map((row) => [row.key, row.value ?? '']))
+  const sourceLang = settings.get('last_source_lang') || 'en'
+  const targetLang = settings.get('last_target_lang') || 'ro'
+  const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
+  const sessions: Array<{ id: string; modName: string; sourceLang: string; targetLang: string; updatedAt: string; entries: PwaSyncEntry[] }> = []
   let hash = 2166136261
-  for (const row of rows) {
-    const modName = row.modName ?? 'Workspace'
-    const id = `${modName}\u0000${row.language1}\u0000${row.language2}`
-    let session = grouped.get(id)
-    if (!session) { session = { id, modName, sourceLang: row.language1, targetLang: row.language2, updatedAt: new Date().toISOString(), entries: [] }; grouped.set(id, session) }
-    const entry: PwaSyncEntry = { uid: row.uid ?? String(row.id), source: row.textLanguage1, target: row.textLanguage2, matchType: 'text', needsReview: false }
-    session.entries.push(entry)
-    const value = `${entry.uid}\u0000${entry.target}`
-    for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) }
+
+  for (const row of db.select().from(mod).all() as Array<{ name: string; lastFilePath: string | null; updatedAt: string | null }>) {
+    if (!row.lastFilePath || !fs.existsSync(row.lastFilePath)) continue
+    let xmlEntries: Array<{ contentuid: string; text: string }>
+    try { xmlEntries = parseLocalizationXml(row.lastFilePath) } catch { continue }
+    const sessionKey = `${row.lastFilePath}|${sourceLang}|${targetLang}`
+    const savedPath = path.join(sessionsDir, `${crypto.createHash('sha256').update(sessionKey).digest('hex')}.json`)
+    let savedByUid = new Map<string, SavedSessionEntry>()
+    if (fs.existsSync(savedPath)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(savedPath, 'utf8')) as { entries?: SavedSessionEntry[] }
+        savedByUid = new Map((parsed.entries ?? []).map((entry) => [entry.uid ?? '', entry]))
+      } catch { /* Ignore an incomplete session cache. */ }
+    }
+    const entries = xmlEntries.map((xmlEntry) => {
+      const saved = savedByUid.get(xmlEntry.contentuid)
+      const entry: PwaSyncEntry = { uid: xmlEntry.contentuid, source: xmlEntry.text, target: saved?.target ?? '', matchType: saved?.matchType ?? 'none', needsReview: saved?.needsReview === true }
+      const value = `${entry.uid}\u0000${entry.target}`
+      for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) }
+      return entry
+    })
+    sessions.push({ id: sessionKey, modName: row.name, sourceLang, targetLang, updatedAt: row.updatedAt ?? new Date().toISOString(), entries })
   }
-  return { version: 1 as const, generatedAt: new Date().toISOString(), fingerprint: (hash >>> 0).toString(16), sessions: [...grouped.values()] }
+
+  return { version: 1 as const, generatedAt: new Date().toISOString(), fingerprint: (hash >>> 0).toString(16), sessions }
 }
 
 
