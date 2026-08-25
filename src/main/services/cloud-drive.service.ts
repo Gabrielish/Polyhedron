@@ -7,7 +7,6 @@ import { authenticate } from '@google-cloud/local-auth'
 import type { drive_v3 } from 'googleapis'
 import { getDb } from '../database/connection'
 import { config, mod } from '../database/schema'
-import { DictionaryRepository } from '../database/repositories/dictionary.repo'
 import { exportWorkspace, getWorkspaceTranslationStats, importWorkspace, type WorkspaceTranslationStats } from './workspace.service'
 import { extractZip } from './zip.service'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
@@ -140,7 +139,6 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
   const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }> }> }
   if (document.version !== 1 || !Array.isArray(document.sessions)) return
-  const dictionaryRepo = new DictionaryRepository(getDb())
   const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
   fs.mkdirSync(sessionsDir, { recursive: true })
   for (const session of document.sessions) {
@@ -155,10 +153,6 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
       const byUid = new Map(existingEntries.map((entry) => [entry.uid, entry]))
       for (const entry of persistedEntries) byUid.set(entry.uid, entry)
       fs.writeFileSync(sessionPath, JSON.stringify({ version: 1, entries: [...byUid.values()] }), 'utf8')
-    }
-    for (const entry of session.entries) {
-      if (!entry.source?.trim()) continue
-      dictionaryRepo.upsert({ sourceLang: session.sourceLang, targetLang: session.targetLang, sourceText: entry.source, targetText: entry.target ?? '', modName: session.modName ?? null, uid: entry.uid ?? null })
     }
   }
 }
