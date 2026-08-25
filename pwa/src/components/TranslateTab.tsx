@@ -12,7 +12,7 @@ function downloadDocument(document: WorkspaceSyncDocument): void {
   URL.revokeObjectURL(url)
 }
 
-export function TranslateTab({ document, onDocumentChange, onSave, importSignal = 0 }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; onSave: () => void; importSignal?: number }): React.JSX.Element {
+export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; importSignal?: number }): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
@@ -75,10 +75,7 @@ export function TranslateTab({ document, onDocumentChange, onSave, importSignal 
           <h2>{session ? `${session.sourceLang.toUpperCase()} → ${session.targetLang.toUpperCase()}` : 'No workspace loaded'}</h2>
           <p className="toolbar-note">{message}</p>
         </div>
-        <div className="toolbar-actions">
-          <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
-          <button type="button" className="primary-button" disabled={!session} onClick={onSave}>Save</button>
-        </div>
+        <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
       </div>
 
       {document.sessions.length > 0 && (

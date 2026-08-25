@@ -12,6 +12,7 @@ export function App(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('Translate')
   const [document, setDocument] = useState<WorkspaceSyncDocument>(emptyDocument)
   const [driveToken, setDriveToken] = useState<string | null>(null)
+  const [hasWorkspace, setHasWorkspace] = useState(false)
   const [authReady, setAuthReady] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
   const isConnected = driveToken !== null
@@ -50,13 +51,15 @@ export function App(): React.JSX.Element {
   async function upload(): Promise<void> {
     const token = driveToken ?? await connectDrive()
     if (!token) return
-    if (document.sessions.length === 0) {
+    if (!hasWorkspace || document.sessions.length === 0) {
       setSyncMessage('Download a workspace before saving.')
       return
     }
     try {
       await uploadWorkspaceSync(token, document)
-      setSyncMessage('Workspace saved to Google Drive.')
+      const message = 'Workspace saved to Google Drive.'
+      setSyncMessage(message)
+      window.alert(message)
     } catch (error) {
       setSyncMessage(error instanceof Error ? error.message : 'Google Drive upload failed.')
     }
@@ -68,6 +71,7 @@ export function App(): React.JSX.Element {
     try {
       const nextDocument = await downloadWorkspaceSync(token)
       setDocument(nextDocument)
+      setHasWorkspace(true)
       setSyncMessage('Workspace downloaded from Google Drive.')
     } catch (error) {
       setSyncMessage(error instanceof Error ? error.message : 'Google Drive download failed.')
@@ -104,12 +108,12 @@ export function App(): React.JSX.Element {
           <span className="brand-platform">Mobile</span>
         </div>
     </header>
-      <div className="top-actions"><button type="button" className="secondary-button" onClick={() => void download()}>Download</button><button type="button" className="primary-button" onClick={() => void upload()}>Save</button></div>
+      <div className="top-actions"><button type="button" className="secondary-button" onClick={() => void download()}>Download</button>{hasWorkspace && <button type="button" className="primary-button" onClick={() => void upload()}>Save</button>}</div>
       {syncMessage && <p className="sync-status" role="status" aria-live="polite">{syncMessage}</p>}
       <nav className="tabs" aria-label="Companion tabs">
         {tabs.map((item) => <button key={item} type="button" className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>)}
       </nav>
-      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} onSave={() => void upload()} /> : <section className="placeholder-card"><p className="eyebrow">{tab}</p><h2>Companion foundation ready</h2><p>The shared workspace sync contract is in place. The next step connects this tab to the desktop workspace data.</p></section>}
+      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} /> : <section className="placeholder-card"><p className="eyebrow">{tab}</p><h2>Companion foundation ready</h2><p>The shared workspace sync contract is in place. The next step connects this tab to the desktop workspace data.</p></section>}
     </main>
   )
 }
