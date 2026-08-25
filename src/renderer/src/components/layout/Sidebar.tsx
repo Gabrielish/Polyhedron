@@ -1,7 +1,6 @@
 import {
   BookOpen,
-  Boxes,
-  FlaskConical,
+  Swords,
   FolderKanban,
   FolderSync,
   GitBranch,
@@ -31,7 +30,7 @@ const NAV_GROUPS: NavGroupConfig[] = [
     icon: LibraryBig,
     items: [
       { to: '/dialogues', icon: GitBranch, labelKey: 'dialogues', kbd: 'Ctrl 3' },
-      { to: '/game-data', icon: FlaskConical, labelKey: 'gameData', kbd: 'Ctrl 4' },
+      { to: '/game-data', icon: Swords, labelKey: 'gameData', kbd: 'Ctrl 4' },
       { to: '/game-interface', icon: MonitorCog, labelKey: 'gameInterface', kbd: 'Ctrl 5' }
     ]
   },
@@ -41,11 +40,6 @@ const NAV_GROUPS: NavGroupConfig[] = [
     items: [
       { to: '/workspace', icon: FolderSync, labelKey: 'workspace', kbd: '' }
     ]
-  },
-  {
-    label: 'Mods',
-    icon: Boxes,
-    items: [{ to: '/mods', icon: Boxes, labelKey: 'mods', kbd: '' }]
   }
 ]
 
@@ -67,7 +61,7 @@ function NavItem({ to, icon: Icon, label, kbd }: NavItemConfig & { label: string
     >
       <span className="flex w-8 shrink-0 items-center justify-center"><Icon size={17} /></span>
       <span className="flex-1 whitespace-nowrap text-xs font-medium opacity-0 transition-opacity duration-150 group-hover/sidebar:opacity-100">{label}</span>
-      <span className="whitespace-nowrap font-mono text-[9px] text-neutral-600 opacity-0 transition-opacity duration-150 group-hover/sidebar:opacity-100">{kbd}</span>
+      <span className="shortcut-hint whitespace-nowrap font-mono text-[9px] text-neutral-600 opacity-0 transition-opacity duration-150 group-hover/sidebar:opacity-100">{kbd}</span>
     </NavLink>
   )
 }

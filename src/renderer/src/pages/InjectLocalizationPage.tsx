@@ -46,7 +46,7 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
   }
 
   return (
-    <div className={`inject-localization-page flex h-full min-h-0 flex-col overflow-y-auto text-neutral-200 ${embedded ? 'p-0' : 'p-8'}`}>
+    <div className={`inject-localization-page flex min-h-0 flex-col overflow-y-auto text-neutral-200 ${embedded ? 'inject-localization-page-embedded h-auto p-0' : 'h-full p-8'}`}>
       <div className={embedded ? 'w-full' : 'mx-auto w-full max-w-4xl'}>
         <div className="mb-7 flex items-start gap-3">
           <HardDriveDownload className="mt-1 text-amber-400" size={24} />
@@ -67,11 +67,11 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
           <>
             <div className="mb-4 text-xs text-neutral-500">{session.entries.length.toLocaleString()} entries ready from {session.modName || 'the current XML'}.</div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <button type="button" disabled={running !== null} onClick={() => void inject('windows')} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
+              <button type="button" disabled={running !== null || isMacOS} onClick={() => { if (!isMacOS) void inject('windows') }} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
                 <div className="mb-4 flex items-center justify-between"><Monitor size={24} className="text-amber-400" />{running === 'windows' ? <span className="text-xs text-amber-300">Injecting…</span> : <span className="text-xs text-neutral-600">Windows</span>}</div>
                 <div className="font-medium">Inject for Windows</div>
                 <div className="mt-1 text-xs leading-5 text-neutral-500">Steam / Baldurs Gate 3 / Data / Localization</div>
-                <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'windows' ? 'Injecting…' : 'Inject English.pak'}</span>
+                <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'windows' ? 'Injecting…' : isMacOS ? 'Unavailable on macOS' : 'Inject English.pak'}</span>
               </button>
               <button type="button" disabled={running !== null || isMacOS} onClick={() => { if (!isMacOS) void inject('macos') }} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-not-allowed disabled:opacity-60">
                 <div className="mb-4 flex items-center justify-between"><Apple size={24} className="text-amber-400" /><span className="text-xs text-neutral-600">{isMacOS ? 'Coming soon' : 'macOS'}</span></div>
@@ -80,7 +80,7 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
                 <span className="mt-5 inline-flex rounded-md border border-[#3a3f47] bg-[#1b1e24] px-4 py-2 text-xs font-semibold text-neutral-500">Coming soon</span>
               </button>
             </div>
-            <div className="mt-4 max-w-xl rounded-xl border border-[#2a2f37] bg-[#131518] p-4 shadow-[0_3px_0_#0b0d0f]">
+            <div className="mt-4 w-full rounded-xl border border-[#2a2f37] bg-[#131518] p-4 shadow-[0_3px_0_#0b0d0f]">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-neutral-200">Export current translation</div>

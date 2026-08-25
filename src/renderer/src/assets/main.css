@@ -13,7 +13,7 @@
 [data-theme='classic'] {
   --color-amber-300: #ff8585;
   --color-amber-400: #ff4a50;
-  --color-amber-500: #ed1c24;
+  --color-amber-500: var(--poly-accent, #ed1c24);
   --color-amber-600: #c9151c;
   --color-amber-700: #a80f15;
   --color-amber-800: #850b10;
@@ -85,7 +85,7 @@
 [data-theme='liquid-glass'] {
   --color-amber-300: #ff9b9f;
   --color-amber-400: #ff6268;
-  --color-amber-500: #ed1c24;
+  --color-amber-500: var(--poly-accent, #ed1c24);
   --color-amber-600: #c9151c;
   --color-amber-700: #a80f15;
   --color-amber-800: #850b10;
@@ -134,7 +134,7 @@
    cool highlights. The effect is limited to this opt-in theme. */
 html[data-theme='liquid-glass'] body {
   background:
-    radial-gradient(circle at 12% 0%, rgb(237 28 36 / 14%), transparent 35%),
+    radial-gradient(circle at 12% 0%, rgb(var(--poly-accent-rgb, 237 28 36) / 14%), transparent 35%),
     radial-gradient(circle at 88% 100%, rgb(120 30 50 / 12%), transparent 38%),
     #080d14;
 }
@@ -147,7 +147,7 @@ html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#141416]'],
 html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#131518]'],
 html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0f1114]'] {
   background-color: rgb(21 32 45 / 56%);
-  border-color: rgb(255 125 130 / 18%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 12px 30px rgb(0 0 0 / 18%);
   backdrop-filter: blur(18px) saturate(125%);
 }
@@ -155,24 +155,24 @@ html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled),
 html[data-theme='liquid-glass'] .app-content-shell main input,
 html[data-theme='liquid-glass'] .app-content-shell main textarea,
 html[data-theme='liquid-glass'] .app-content-shell main select {
-  border-color: rgb(255 125 130 / 18%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
 }
 html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled):hover {
-  background-color: rgb(237 28 36 / 12%);
-  border-color: rgb(255 125 130 / 38%);
-  box-shadow: 0 0 22px rgb(237 28 36 / 12%);
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 38%);
+  box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
 }
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500'],
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90'] {
   color: #071018;
-  box-shadow: 0 0 18px rgb(237 28 36 / 20%), inset 0 1px 0 rgb(255 255 255 / 20%);
+  box-shadow: 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 20%), inset 0 1px 0 rgb(255 255 255 / 20%);
 }
 
 /* Duolingo-style primary buttons: a small lower shadow gives the button
    the tactile “press into the page” motion without changing button layout. */
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"],
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/90"] {
-  box-shadow: 0 3px 0 #a80f15;
+  box-shadow: 0 3px 0 var(--color-amber-700, #a80f15);
   transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"]:hover,
@@ -182,7 +182,7 @@ html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/9
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500"]:active,
 html[data-theme='classic'] .app-content-shell main button[class~="bg-amber-500/90"]:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 #a80f15;
+  box-shadow: 0 1px 0 var(--color-amber-700, #a80f15);
 }
 
 html[data-theme='icosa-green'] .app-content-shell main button[class~="bg-amber-500"],
@@ -410,7 +410,7 @@ html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#141416]'],
 html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#131518]'],
 html[data-theme='liquid-glass'] .app-content-shell [class~='bg-[#0f1114]'] {
   background-color: rgb(21 32 45 / 56%);
-  border-color: rgb(255 125 130 / 18%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 12px 30px rgb(0 0 0 / 18%);
   backdrop-filter: blur(18px) saturate(125%);
 }
@@ -438,16 +438,16 @@ html[data-theme='liquid-glass'] .sidebar-shell {
   transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
   flex-direction: row;
   overflow: visible;
-  border: 1px solid rgb(255 125 130 / 22%);
+  border: 1px solid rgb(var(--poly-accent-rgb, 237 28 36) / 22%);
   border-radius: 22px;
   background: rgb(15 18 24 / 76%);
-  box-shadow: 0 16px 45px rgb(0 0 0 / 42%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 28px rgb(237 28 36 / 9%);
+  box-shadow: 0 16px 45px rgb(0 0 0 / 42%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 28px rgb(var(--poly-accent-rgb, 237 28 36) / 9%);
   backdrop-filter: blur(24px) saturate(140%);
   isolation: isolate;
 }
 html[data-theme='liquid-glass'] .sidebar-shell:hover {
   transform: translateX(-50%) translateY(-4px);
-  box-shadow: 0 22px 52px rgb(0 0 0 / 48%), inset 0 1px 0 rgb(255 255 255 / 14%), 0 0 34px rgb(237 28 36 / 14%);
+  box-shadow: 0 22px 52px rgb(0 0 0 / 48%), inset 0 1px 0 rgb(255 255 255 / 14%), 0 0 34px rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
 }
 html[data-theme='liquid-glass'] .sidebar-nav {
   display: flex;
@@ -486,13 +486,13 @@ html[data-theme='liquid-glass'] .sidebar-footer a:hover {
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
-  color: #ed1c24;
-  background: rgb(237 28 36 / 14%);
-  box-shadow: 0 0 18px rgb(237 28 36 / 28%), inset 0 1px 0 rgb(255 125 130 / 28%);
+  color: var(--poly-accent, #ed1c24);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
+  box-shadow: 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 28%), inset 0 1px 0 rgb(var(--poly-accent-rgb, 237 28 36) / 28%);
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
-  filter: drop-shadow(0 0 5px rgb(237 28 36 / 80%));
+  filter: drop-shadow(0 0 5px rgb(var(--poly-accent-rgb, 237 28 36) / 80%));
 }
 html[data-theme='liquid-glass'] .sidebar-nav a > span:nth-child(n + 2),
 html[data-theme='liquid-glass'] .sidebar-footer a > span:nth-child(n + 2) {
@@ -540,10 +540,10 @@ html[data-theme='liquid-glass'] .translation-pagination-footer {
 html[data-theme='liquid-glass'] .translation-pagination-size,
 html[data-theme='liquid-glass'] .translation-pagination-controls {
   min-height: 42px;
-  border: 1px solid rgb(255 125 130 / 20%);
+  border: 1px solid rgb(var(--poly-accent-rgb, 237 28 36) / 20%);
   border-radius: 16px;
   background: rgb(15 18 24 / 72%);
-  box-shadow: 0 14px 36px rgb(0 0 0 / 34%), inset 0 1px 0 rgb(255 255 255 / 10%), 0 0 24px rgb(237 28 36 / 7%);
+  box-shadow: 0 14px 36px rgb(0 0 0 / 34%), inset 0 1px 0 rgb(255 255 255 / 10%), 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 7%);
   backdrop-filter: blur(22px) saturate(135%);
 }
 html[data-theme='liquid-glass'] .translation-pagination-size {
@@ -554,13 +554,13 @@ html[data-theme='liquid-glass'] .translation-pagination-controls {
 }
 html[data-theme='liquid-glass'] .translation-pagination-footer select,
 html[data-theme='liquid-glass'] .translation-pagination-footer button {
-  border-color: rgb(255 125 130 / 20%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 20%);
   background-color: rgb(21 25 33 / 72%);
 }
 html[data-theme='liquid-glass'] .translation-pagination-footer button:not(:disabled):hover {
-  border-color: rgb(237 28 36 / 52%);
-  background-color: rgb(237 28 36 / 13%);
-  box-shadow: 0 0 14px rgb(237 28 36 / 12%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 52%);
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 13%);
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
 }
 @media (max-width: 700px) {
   html[data-theme='liquid-glass'] .translation-pagination-footer {
@@ -619,17 +619,17 @@ html[data-theme='liquid-glass'] .app-content-shell main button:not(:disabled):ho
 }
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500'],
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90'] {
-  border-color: #ed1c24;
+  border-color: var(--poly-accent, #ed1c24);
   border-radius: 999px;
-  background-color: #ed1c24;
+  background-color: var(--poly-accent, #ed1c24);
   color: #ffffff;
-  box-shadow: 0 0 18px rgb(237 28 36 / 18%), inset 0 1px 0 rgb(255 255 255 / 18%);
+  box-shadow: 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%), inset 0 1px 0 rgb(255 255 255 / 18%);
 }
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500']:hover,
 html[data-theme='liquid-glass'] .app-content-shell main button[class~='bg-amber-500/90']:hover {
-  background-color: #ff3038;
-  border-color: #ff3038;
-  box-shadow: 0 0 24px rgb(237 28 36 / 32%);
+  background-color: var(--color-amber-400, #ff454c);
+  border-color: var(--color-amber-400, #ff454c);
+  box-shadow: 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 32%);
 }
 html[data-theme='liquid-glass'] .app-content-shell main input,
 html[data-theme='liquid-glass'] .app-content-shell main textarea,
@@ -641,8 +641,8 @@ html[data-theme='liquid-glass'] .app-content-shell main select {
 html[data-theme='liquid-glass'] .app-content-shell main input:focus,
 html[data-theme='liquid-glass'] .app-content-shell main textarea:focus,
 html[data-theme='liquid-glass'] .app-content-shell main select:focus {
-  border-color: rgb(237 28 36 / 72%);
-  box-shadow: 0 0 0 3px rgb(237 28 36 / 12%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%);
+  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
 }
 html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-500'] {
   color: #777777;
@@ -656,7 +656,7 @@ html[data-theme='liquid-glass'] .app-content-shell [class~='text-neutral-200'] {
 }
 html[data-theme='liquid-glass'] .app-content-shell [class~='text-amber-400'],
 html[data-theme='liquid-glass'] .app-content-shell [class~='text-amber-500'] {
-  color: #ed1c24;
+  color: var(--poly-accent, #ed1c24);
 }
 
 /* Stronger Liquid Glass treatment for floating navigation and pagination. */
@@ -664,18 +664,18 @@ html[data-theme='liquid-glass'] .sidebar-shell,
 html[data-theme='liquid-glass'] .translation-pagination-size,
 html[data-theme='liquid-glass'] .translation-pagination-controls {
   background-color: rgb(20 20 23 / 42%);
-  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(237 28 36 / 4%));
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
   border-color: rgb(255 255 255 / 18%);
   -webkit-backdrop-filter: blur(28px) saturate(155%);
   backdrop-filter: blur(28px) saturate(155%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(237 28 36 / 8%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
 }
 html[data-theme='liquid-glass'] .sidebar-shell:hover,
 html[data-theme='liquid-glass'] .translation-pagination-size:hover,
 html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
   border-color: rgb(255 255 255 / 26%);
   background-color: rgb(28 28 32 / 48%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 22px 52px rgb(0 0 0 / 48%), 0 0 30px rgb(237 28 36 / 12%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 22px 52px rgb(0 0 0 / 48%), 0 0 30px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
 }
 html[data-theme='liquid-glass'] .translation-pagination-size select,
 html[data-theme='liquid-glass'] .translation-pagination-controls button {
@@ -744,20 +744,20 @@ html[data-theme='liquid-glass'] .sidebar-footer a:hover {
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
-  border-color: rgb(237 28 36 / 40%);
-  background: rgb(237 28 36 / 14%);
-  color: #ed1c24;
-  box-shadow: 0 0 16px rgb(237 28 36 / 28%), inset 0 1px 0 rgb(255 125 130 / 18%);
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 40%);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
+  color: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 28%), inset 0 1px 0 rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page']:hover,
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
   border-color: rgb(255 255 255 / 78%);
-  background: rgb(237 28 36 / 18%);
-  color: #ff6268;
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
+  color: var(--color-amber-400, #ff6268);
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
-  filter: drop-shadow(0 0 5px rgb(237 28 36 / 85%));
+  filter: drop-shadow(0 0 5px rgb(var(--poly-accent-rgb, 237 28 36) / 85%));
 }
 html[data-theme='liquid-glass'] .sidebar-footer {
   gap: 2px;
@@ -811,14 +811,14 @@ html[data-theme='liquid-glass'] .sidebar-footer a:hover {
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'],
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] {
   border-color: transparent;
-  background: rgb(237 28 36 / 14%);
-  color: #ed1c24;
-  box-shadow: 0 0 16px rgb(237 28 36 / 26%);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
+  color: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 26%);
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page']:hover,
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
   border-color: transparent;
-  background: rgb(237 28 36 / 18%);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
 }
 
 /* Flatten navigation groups: Liquid Glass uses one outer dock only. */
@@ -852,13 +852,13 @@ html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page']:hover {
   border-color: transparent !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #ed1c24;
+  color: var(--poly-accent, #ed1c24);
 }
 html[data-theme='liquid-glass'] .sidebar-nav a[aria-current='page'] svg,
 html[data-theme='liquid-glass'] .sidebar-footer a[aria-current='page'] svg {
-  color: #ed1c24;
-  stroke: #ed1c24;
-  filter: drop-shadow(0 0 4px rgb(237 28 36 / 95%)) drop-shadow(0 0 11px rgb(237 28 36 / 62%));
+  color: var(--poly-accent, #ed1c24);
+  stroke: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 4px rgb(var(--poly-accent-rgb, 237 28 36) / 95%)) drop-shadow(0 0 11px rgb(var(--poly-accent-rgb, 237 28 36) / 62%));
 }
 
 
@@ -868,11 +868,11 @@ html[data-theme='liquid-glass'] .sidebar-shell:hover,
 html[data-theme='liquid-glass'] .sidebar-shell:focus,
 html[data-theme='liquid-glass'] .sidebar-shell:focus-within {
   background-color: rgb(20 20 23 / 48%) !important;
-  background-image: linear-gradient(135deg, rgb(255 255 255 / 11%), rgb(255 255 255 / 3%) 46%, rgb(237 28 36 / 5%)) !important;
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 11%), rgb(255 255 255 / 3%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 5%)) !important;
   border-color: rgb(255 255 255 / 22%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(155%) !important;
   backdrop-filter: blur(28px) saturate(155%) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(0 0 0 / 28%), 0 18px 44px rgb(0 0 0 / 44%), 0 0 28px rgb(237 28 36 / 10%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(0 0 0 / 28%), 0 18px 44px rgb(0 0 0 / 44%), 0 0 28px rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
   transform: translateX(-50%) translateY(0) !important;
 }
 
@@ -886,18 +886,18 @@ html[data-theme='liquid-glass'] .translate-idle-footer {
 html[data-theme='liquid-glass'] .translation-progress-track {
   border-color: rgb(255 255 255 / 18%);
   background: rgb(10 12 16 / 58%);
-  box-shadow: inset 0 2px 7px rgb(0 0 0 / 58%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 18px rgb(237 28 36 / 8%);
+  box-shadow: inset 0 2px 7px rgb(0 0 0 / 58%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
   -webkit-backdrop-filter: blur(16px) saturate(145%);
   backdrop-filter: blur(16px) saturate(145%);
 }
 html[data-theme='liquid-glass'] .translation-progress-fill {
-  background: linear-gradient(90deg, #ed1c24, #ff454c);
-  box-shadow: 0 0 14px rgb(237 28 36 / 58%), inset 0 1px 0 rgb(255 255 255 / 22%);
+  background: linear-gradient(90deg, var(--poly-accent, #ed1c24), var(--color-amber-400, #ff454c));
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 58%), inset 0 1px 0 rgb(255 255 255 / 22%);
 }
 html[data-theme='liquid-glass'] .translation-progress-track > div > span,
 html[data-theme='liquid-glass'] .translation-progress-bubble {
   border-color: #090b0f;
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 16%), 0 0 14px rgb(237 28 36 / 25%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 16%), 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 25%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
   backdrop-filter: blur(12px) saturate(140%);
 }
@@ -905,8 +905,8 @@ html[data-theme='liquid-glass'] .translation-progress-bubble {
   background: rgb(31 36 43 / 72%);
 }
 html[data-theme='liquid-glass'] .translation-progress-bubble.bg-amber-500 {
-  background: #ed1c24;
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 20%), 0 0 20px rgb(237 28 36 / 62%);
+  background: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 20%), 0 0 20px rgb(var(--poly-accent-rgb, 237 28 36) / 62%);
 }
 
 /* Larger Liquid Glass checkpoint markers at 25%, 50% and 75%. */
@@ -914,7 +914,7 @@ html[data-theme='liquid-glass'] .translation-progress-track > div > span {
   width: 30px;
   height: 30px;
   border-width: 3px;
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%), 0 0 16px rgb(237 28 36 / 30%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%), 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 30%);
 }
 html[data-theme='liquid-glass'] .translation-progress-track > div > span svg {
   width: 15px;
@@ -943,9 +943,9 @@ html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
   min-height: 34px;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
-  background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(237 28 36 / 4%));
+  background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
   padding: 6px 12px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 12px 28px rgb(0 0 0 / 28%), 0 0 18px rgb(237 28 36 / 6%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 12px 28px rgb(0 0 0 / 28%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 6%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   backdrop-filter: blur(24px) saturate(150%);
 }
@@ -954,8 +954,8 @@ html[data-theme='liquid-glass'] .dictionary-status-capsule {
   margin-right: auto;
 }
 html[data-theme='liquid-glass'] .dictionary-connection-capsule svg {
-  color: #ed1c24;
-  filter: drop-shadow(0 0 5px rgb(237 28 36 / 58%));
+  color: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 5px rgb(var(--poly-accent-rgb, 237 28 36) / 58%));
 }
 html[data-theme='liquid-glass'] .dictionary-pagination-capsule {
   margin-left: auto;
@@ -981,6 +981,9 @@ html[data-theme='liquid-glass'] .dictionary-pagination-capsule button:not(:disab
 
 html[data-theme='liquid-glass'] .inject-localization-page {
   padding-bottom: 112px;
+}
+html[data-theme='liquid-glass'] .inject-localization-page-embedded {
+  padding-bottom: 0;
 }
 
 /* Mods tools remain reachable above the floating Liquid Glass dock. */
@@ -1021,8 +1024,8 @@ html[data-theme='liquid-glass'] .translation-pagination-size:hover,
 html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
   border-color: rgb(255 255 255 / 18%);
   background-color: rgb(20 20 23 / 42%);
-  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(237 28 36 / 4%));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(237 28 36 / 8%);
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
 }
 
 /* Compact Translate layout: keep the editor controls readable instead of
@@ -1340,7 +1343,7 @@ html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
   }
   html[data-theme='liquid-glass'] .translation-page-menu-popover button:hover,
   html[data-theme='liquid-glass'] .translation-page-menu-popover button.is-selected {
-    background: rgb(237 28 36 / 16%);
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%);
     color: #ffffff;
   }
 }
@@ -1493,7 +1496,7 @@ html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
   }
   html[data-theme='liquid-glass'] .dictionary-page-menu-popover > button:hover,
   html[data-theme='liquid-glass'] .dictionary-page-menu-popover > button.is-selected {
-    background: rgb(237 28 36 / 16%) !important; color: #fff !important;
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; color: #fff !important;
   }
 }
 
@@ -1505,7 +1508,7 @@ html[data-theme='liquid-glass'] .translation-pagination-controls:hover {
     display: flex !important; align-items: center !important; gap: 4px !important;
     min-height: 42px !important; padding: 4px 6px !important;
     border: 1px solid rgb(255 255 255 / 18%) !important; border-radius: 18px !important;
-    background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(237 28 36 / 4%)) !important;
+    background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%)) !important;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), 0 12px 28px rgb(0 0 0 / 28%) !important;
     -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
     pointer-events: auto !important;
@@ -1936,7 +1939,7 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disable
   html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev svg,
   html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next svg { width: 18px !important; height: 18px !important; display: block !important; }
   html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-prev:not(:disabled):hover,
-  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next:not(:disabled):hover { border-color: rgb(237 28 36 / 70%) !important; background: rgb(237 28 36 / 16%) !important; }
+  html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-next:not(:disabled):hover { border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important; background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; }
 }
 
 
@@ -2002,7 +2005,7 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disable
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2)::after { content: '<' !important; }
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3)::after { content: '>' !important; }
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
-  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover { border-color: rgb(237 28 36 / 70%) !important; background: rgb(237 28 36 / 16%) !important; }
+  html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover { border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important; background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; }
 }
 
 
@@ -2090,9 +2093,9 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disable
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):disabled { display: none !important; }
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
   html[data-theme="liquid-glass"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover {
-    border-color: rgb(237 28 36 / 70%) !important;
-    background: rgb(237 28 36 / 16%) !important;
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(237 28 36 / 18%) !important;
+    border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important;
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%) !important;
   }
 }
 
@@ -2101,9 +2104,9 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disable
 @media (max-width: 700px) {
   html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev:not(:disabled):hover,
   html[data-theme="liquid-glass"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next:not(:disabled):hover {
-    border-color: rgb(237 28 36 / 70%) !important;
-    background: rgb(237 28 36 / 16%) !important;
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(237 28 36 / 18%) !important;
+    border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important;
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%) !important;
   }
 }
 
@@ -2222,4 +2225,171 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-last:disable
 /* Glossary pagination: hide duplicate range text. */
 html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-range {
   display: none !important;
+}
+
+
+/* The title-bar mark uses the same runtime accent as the rest of the interface. */
+.titlebar-dragon {
+  display: block;
+  color: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 4px rgb(var(--poly-accent-rgb, 237 28 36) / 42%));
+}
+
+/* User-configurable accent color. ThemeContext updates these variables at runtime. */
+html[data-theme='liquid-glass'] .accent-solid-button {
+  background-color: var(--poly-accent, #ed1c24) !important;
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 22%);
+}
+html[data-theme='liquid-glass'] .accent-solid-button:hover {
+  filter: brightness(0.86);
+}
+
+/* Glossary mobile stacked rows: source and target become two readable card sections. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > .grid:first-child {
+    display: none !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    min-width: 0 !important;
+    align-items: start !important;
+    border-radius: 12px !important;
+    margin: 6px 8px !important;
+    width: calc(100% - 16px) !important;
+    background: rgb(15 17 20 / 72%) !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(2) {
+    display: none !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3),
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4) {
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3) {
+    padding-top: 12px !important;
+    padding-bottom: 10px !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4) {
+    border-top: 1px solid rgb(var(--poly-accent-rgb, 237 28 36) / 14%) !important;
+    padding-top: 10px !important;
+    padding-bottom: 12px !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3)::before,
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4)::before {
+    display: block !important;
+    margin-bottom: 5px !important;
+    color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%) !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3)::before { content: "Language 1"; }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4)::before { content: "Language 2"; }
+}
+
+/* Keep Glossary actions inside the stacked mobile card instead of an off-screen table column. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(5),
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(6) {
+    display: none !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7) {
+    display: block !important;
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 0 12px 10px !important;
+    text-align: right !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7)::before {
+    content: "Actions";
+    display: block;
+    margin-bottom: 4px;
+    color: rgb(var(--poly-accent-rgb, 237 28 36) / 58%);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  html[data-theme="liquid-glass"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7) > div {
+    justify-content: flex-end !important;
+  }
+}
+
+
+/* Keep Glossary filter selects together in one compact mobile row. */
+@media (max-width: 700px) {
+  html[data-theme="liquid-glass"] .dictionary-filter-bar {
+    gap: 8px !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-mobile-filter-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-basis: 100% !important;
+    gap: 8px !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-mobile-filter-row > * {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  html[data-theme="liquid-glass"] .dictionary-filter-bar > .ml-auto {
+    width: 100% !important;
+    margin-left: 0 !important;
+    justify-content: flex-end !important;
+  }
+}
+
+
+/* Keyboard shortcut badges are not useful on touch layouts; keep the actual shortcuts active. */
+@media (max-width: 700px) {
+  .shortcut-hint {
+    display: none !important;
+  }
+}
+
+/* Shared page-header rhythm: icon/title/subtitle on the left, actions on the right. */
+.app-page-header {
+  min-width: 0;
+}
+.app-page-header > * {
+  min-width: 0;
+}
+.app-page-header h1 {
+  line-height: 1.15;
+}
+@media (max-width: 700px) {
+  .app-page-header {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .app-page-header > div:first-child {
+    min-width: 0;
+  }
+  .app-page-header h1 {
+    font-size: 1.05rem;
+  }
+  .app-page-header p {
+    max-width: 100%;
+    line-height: 1.35;
+  }
+  .app-page-header .dictionary-pagination-capsule,
+  .app-page-header .editor-header-actions {
+    width: 100%;
+    margin-left: 0 !important;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .app-page-header .dictionary-pagination-capsule {
+    order: 3;
+  }
+  .app-page-header .editor-header-top {
+    margin-bottom: 10px;
+  }
 }

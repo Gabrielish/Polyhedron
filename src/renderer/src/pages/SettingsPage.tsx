@@ -6,7 +6,7 @@ import { AiProvidersCard } from '@/features/settings/AiProvidersCard'
 import { PromptSlotsCard } from '@/features/settings/PromptSlotsCard'
 import { SimilaritySettingsCard } from '@/features/settings/SimilaritySettingsCard'
 import { MetricsPage } from './MetricsPage'
-import { THEMES, useTheme } from '@/context/ThemeContext'
+import { DEFAULT_ACCENT, THEMES, useTheme } from '@/context/ThemeContext'
 import { useConfig } from '@/hooks/useConfig'
 import { i18n } from '@/i18n'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
@@ -91,10 +91,12 @@ function SettingsCard({ title, children }: { title: string; children: React.Reac
 
 export function SettingsPage(): React.JSX.Element {
   const { config, loading, set } = useConfig()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, accent, setAccent } = useTheme()
+  const [accentDraft, setAccentDraft] = useState(accent)
   const [logPath, setLogPath] = useState('')
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
   const [checkingForUpdates, setCheckingForUpdates] = useState(false)
+  const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const { t } = useAppTranslation(['settings', 'common', 'toasts'])
 
   useEffect(() => {
@@ -154,12 +156,12 @@ export function SettingsPage(): React.JSX.Element {
   return (
     <div className="p-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-neutral-100 flex items-center gap-3">
-            <Settings className="w-6 h-6 text-amber-500" />
-            {t('title')}
-          </h1>
-          <p className="text-neutral-500 text-sm mt-1">{t('subtitle')}</p>
+        <div className="app-page-header mb-8 flex items-start gap-3">
+          <Settings className="mt-1 h-6 w-6 shrink-0 text-amber-500" />
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-neutral-100">{t('title')}</h1>
+            <p className="mt-1 text-sm text-neutral-500">{t('subtitle')}</p>
+          </div>
         </div>
 
         <SettingsCard title="Application updates">
@@ -168,7 +170,7 @@ export function SettingsPage(): React.JSX.Element {
               <RefreshCw size={18} className="mt-0.5 text-amber-400" />
               <div>
                 <p className="text-sm font-medium text-neutral-200">Check for updates</p>
-                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.</p>
+                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.{isMacOS ? ' macOS downloads are opened manually.' : ''}</p>
                 {updateState?.status === 'checking' && <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>}
                 {updateState?.status === 'not-available' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 size={13} /> You are up to date.</p>}
                 {updateState?.status === 'available' && <p className="mt-2 text-xs text-amber-300">Version {updateState.version} is available.</p>}
@@ -178,7 +180,7 @@ export function SettingsPage(): React.JSX.Element {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><Download size={15} /> Download update</button>}
+              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"><Download size={15} /> {isMacOS ? 'Download new version' : 'Download update'}</button>}
               {updateState?.status === 'downloaded' && <button type="button" onClick={() => void window.api.update.install()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><RefreshCw size={15} /> Restart to update</button>}
               <button type="button" disabled={checkingForUpdates || updateState?.status === 'downloading'} onClick={() => void handleCheckForUpdates()} className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"><RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates</button>
             </div>
@@ -188,24 +190,22 @@ export function SettingsPage(): React.JSX.Element {
         <SettingsCard title="Appearance">
           <div className="mb-4 flex items-center gap-2 text-sm text-neutral-400">
             <Palette size={16} className="text-amber-400" />
-            <span>Choose an interface theme. The accent color updates across the app.</span>
+            <span>Choose an interface theme and customize the accent color used across the app.</span>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {THEMES.map((item) => {
               const selected = theme === item.id
-              const outdated = item.id === 'classic'
               return (
                 <button
                   key={item.id}
                   type="button"
-                  disabled={outdated}
                   onClick={() => setTheme(item.id)}
-                  aria-label={outdated ? `${item.name} theme (outdated)` : `${item.name} theme`}
-                  className={`relative rounded-lg border p-3 text-left transition-colors ${outdated ? 'cursor-not-allowed border-neutral-800/60 bg-neutral-950/40 opacity-45 grayscale' : selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
+                  aria-label={`${item.name} theme`}
+                  className={`relative rounded-lg border p-3 text-left transition-colors ${selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
                 >
                   {selected && <Check size={14} className="absolute right-3 top-3 text-amber-400" />}
                   <div className="mb-3 flex gap-1.5">
-                    {item.swatches.map((color) => <span key={color} className="h-5 w-5 rounded-full border border-white/10" style={{ backgroundColor: color }} />)}
+                    {item.swatches.map((color) => <span key={color} className="h-5 w-5 rounded-full border border-white/10" style={{ backgroundColor: color.toLowerCase() === '#ed1c24' ? accent : color }} />)}
                   </div>
                   <div className="text-sm font-medium text-neutral-200">{item.name}</div>
                   <div className="mt-1 text-xs leading-5 text-neutral-500">{item.description}</div>
@@ -213,8 +213,51 @@ export function SettingsPage(): React.JSX.Element {
               )
             })}
           </div>
+          <div className="mt-5 border-t border-neutral-800/60 pt-5">
+            <div className="flex items-baseline justify-between gap-3">
+              <label htmlFor="accent-color" className="text-sm font-medium text-neutral-200">Accent color</label>
+              <span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">HEX</span>
+            </div>
+            <p className="mt-1 text-xs text-neutral-500">Choose the accent used for buttons, active states, borders and glow effects.</p>
+            <div className="mt-3 flex max-w-sm gap-2">
+              <input
+                id="accent-color"
+                type="text"
+                value={accentDraft}
+                maxLength={7}
+                placeholder="#ED1C24"
+                onChange={(event) => {
+                  const value = event.target.value.toUpperCase()
+                  setAccentDraft(value)
+                  if (/^#[0-9A-F]{6}$/.test(value)) setAccent(value)
+                }}
+                className="min-w-0 flex-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2.5 font-mono text-sm text-neutral-200 placeholder-neutral-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 focus:outline-none"
+              />
+              <input
+                aria-label="Pick accent color"
+                type="color"
+                value={/^#[0-9A-F]{6}$/.test(accentDraft) ? accentDraft : accent}
+                onChange={(event) => {
+                  const value = event.target.value.toUpperCase()
+                  setAccentDraft(value)
+                  setAccent(value)
+                }}
+                className="h-10 w-12 cursor-pointer rounded-md border border-neutral-800 bg-[#0a0a0c] p-1"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setAccentDraft(DEFAULT_ACCENT)
+                  setAccent(DEFAULT_ACCENT)
+                }}
+                className="rounded-md border border-neutral-800 px-3 py-2 text-xs font-medium text-neutral-300 transition-colors hover:border-neutral-600 hover:bg-neutral-900"
+              >
+                Reset default
+              </button>
+            </div>
+            {accentDraft && !/^#[0-9A-F]{6}$/.test(accentDraft) && <p className="mt-2 text-xs text-red-300">Enter a six-digit HEX value, for example #ED1C24.</p>}
+          </div>
         </SettingsCard>
-
         <SettingsCard title="Rows per page">
           <div className="flex max-w-sm flex-col gap-2">
             <label className="text-sm font-medium text-neutral-300">String count on each page</label>

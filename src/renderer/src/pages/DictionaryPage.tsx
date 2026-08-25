@@ -1,6 +1,5 @@
 import {
   BookOpen,
-  Box,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -510,30 +509,14 @@ export function DictionaryPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0f1114] text-neutral-100">
-      <header className="flex items-center justify-between border-b border-[#1f2329] px-5 py-3">
-        <div className="flex min-w-0 items-center gap-4">
-          <div className="inline-flex items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-2.5 py-1.5">
-            <BookOpen size={14} className="text-amber-400" />
-            <span className="text-sm font-semibold text-neutral-200">{t('brand', { ns: 'dictionary' })}</span>
-            <span className="font-mono text-[11px] text-neutral-500">.icosa</span>
-          </div>
-          <div className="hidden items-center gap-3 text-xs text-neutral-400 md:flex">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-              {t('stats.entries', { ns: 'dictionary', count: stats.total })}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Box size={12} />
-              {t('stats.mods', { ns: 'dictionary', count: stats.modCount })}
-            </span>
-            <span className="font-mono text-neutral-500">
-              {t('sync', {
-                ns: 'dictionary',
-                value: stats.latest
-                  ? formatRelativeDate(stats.latest, currentLanguage)
-                  : t('status.now', { ns: 'common' })
-              })}
-            </span>
+      <header className="app-page-header flex items-center justify-between border-b border-[#1f2329] px-5 py-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <BookOpen className="mt-0.5 shrink-0 text-amber-400" size={20} />
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold text-neutral-100">{t('brand', { ns: 'dictionary' })}</h1>
+            <p className="mt-0.5 truncate text-xs text-neutral-500">
+              {t('stats.entries', { ns: 'dictionary', count: stats.total })} · {t('stats.mods', { ns: 'dictionary', count: stats.modCount })}
+            </p>
           </div>
         </div>
 
@@ -558,7 +541,7 @@ export function DictionaryPage(): React.JSX.Element {
         </div>
       </header>
 
-      <div className="flex flex-wrap items-end gap-x-2 gap-y-3 border-b border-[#1f2329] bg-[#0f1114] px-4 py-3">
+      <div className="dictionary-filter-bar flex flex-wrap items-end gap-x-2 gap-y-3 border-b border-[#1f2329] bg-[#0f1114] px-4 py-3">
         <div className="flex h-8 min-w-70 flex-1 self-end items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 focus-within:border-neutral-600">
           <Search size={14} className="text-neutral-500" />
           <input
@@ -589,33 +572,35 @@ export function DictionaryPage(): React.JSX.Element {
           {t('filters.exactMatch', { ns: 'dictionary' })}
         </label>
 
-        <FilterSelect
-          label={t('filters.mod', { ns: 'dictionary' })}
-          value={modName}
-          options={modSelectOptions}
-          onChange={setModName}
-          className="w-[11.5rem]"
-          menuMinWidth={220}
-          t={t}
-        />
-        <FilterSelect
-          label={t('filters.sourceLanguage', { ns: 'dictionary' })}
-          value={sourceLang}
-          options={sourceSelectOptions}
-          onChange={setSourceLang}
-          className="w-40"
-          menuMinWidth={176}
-          t={t}
-        />
-        <FilterSelect
-          label={t('filters.targetLanguage', { ns: 'dictionary' })}
-          value={targetLang}
-          options={targetSelectOptions}
-          onChange={setTargetLang}
-          className="w-40"
-          menuMinWidth={176}
-          t={t}
-        />
+        <div className="dictionary-mobile-filter-row flex items-end gap-2">
+          <FilterSelect
+            label={t('filters.mod', { ns: 'dictionary' })}
+            value={modName}
+            options={modSelectOptions}
+            onChange={setModName}
+            className="w-[11.5rem]"
+            menuMinWidth={220}
+            t={t}
+          />
+          <FilterSelect
+            label={t('filters.sourceLanguage', { ns: 'dictionary' })}
+            value={sourceLang}
+            options={sourceSelectOptions}
+            onChange={setSourceLang}
+            className="w-40"
+            menuMinWidth={176}
+            t={t}
+          />
+          <FilterSelect
+            label={t('filters.targetLanguage', { ns: 'dictionary' })}
+            value={targetLang}
+            options={targetSelectOptions}
+            onChange={setTargetLang}
+            className="w-40"
+            menuMinWidth={176}
+            t={t}
+          />
+        </div>
 
         {hasFilters && (
           <button

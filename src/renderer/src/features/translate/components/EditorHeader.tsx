@@ -1,9 +1,9 @@
 import {
   ArrowLeft,
   ArrowRight,
-  ChevronRight,
   Columns2,
   Loader2,
+  Languages,
   Redo2,
   Rows2,
   Save,
@@ -47,21 +47,21 @@ export function EditorHeader({
   const { t } = useAppTranslation(['translate', 'common'])
 
   return (
-    <div className="editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
+    <div className="app-page-header editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
       <div className="editor-header-top flex flex-wrap items-center gap-3 mb-4">
         <button type="button" className={btnBase} onClick={session.resetSession}>
           <ArrowLeft />
           {t('editor.back')}
         </button>
 
-        <div className="editor-header-breadcrumb flex items-center gap-1.5 text-sm text-neutral-500 min-w-0">
-          <span className="max-w-50 truncate font-medium text-sm text-neutral-300">
-            {session.modName}
-          </span>
-          <span className="text-neutral-700 shrink-0">
-            <ChevronRight />
-          </span>
-          <span className="font-mono font-semibold text-neutral-200 shrink-0">{fileName}</span>
+        <div className="editor-header-title flex min-w-0 items-start gap-2.5">
+          <Languages className="mt-0.5 shrink-0 text-amber-500" size={20} />
+          <div className="min-w-0">
+            <h1 className="truncate text-lg font-semibold text-neutral-100">Translate</h1>
+            <p className="truncate text-xs text-neutral-500">
+              {session.modName} <span className="text-neutral-700">›</span> {fileName}
+            </p>
+          </div>
         </div>
 
         <div className="editor-header-actions ml-auto flex items-center gap-1.5 shrink-0">
@@ -122,7 +122,7 @@ export function EditorHeader({
           >
             {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Save />}
             SAVE
-            <span className="inline-flex items-center justify-center font-mono text-[10px] text-black/65">
+            <span className="shortcut-hint inline-flex items-center justify-center font-mono text-[10px] text-black/65">
               Ctrl S
             </span>
           </button>

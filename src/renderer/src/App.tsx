@@ -10,7 +10,6 @@ import { DictionaryPage } from './pages/DictionaryPage'
 import { EntryEditPage } from './pages/EntryEditPage'
 import { ReferencePage } from './pages/ReferencePage'
 import { SettingsPage } from './pages/SettingsPage'
-import { ModsPage } from './pages/ModsPage'
 import { TranslatePage } from './pages/TranslatePage'
 import { UpdateNotifier } from './components/layout/UpdateNotifier'
 
@@ -42,7 +41,7 @@ function App(): React.JSX.Element {
           <Route path="/workspace/import" element={<Navigate to="/workspace" replace />} />
           <Route path="/workspace/export" element={<Navigate to="/workspace" replace />} />
           <Route path="/inject" element={<Navigate to="/workspace" replace />} />
-          <Route path="/mods" element={<ModsPage />} />
+          <Route path="/mods" element={<Navigate to="/workspace" replace />} />
           <Route path="/extract" element={<Navigate to="/mods" replace />} />
           <Route path="/package" element={<Navigate to="/mods" replace />} />
           <Route path="/merge" element={<Navigate to="/mods" replace />} />

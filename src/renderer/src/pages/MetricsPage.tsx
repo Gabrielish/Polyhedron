@@ -56,7 +56,7 @@ export function MetricsPage({ embedded = false }: { embedded?: boolean }): React
   return (
     <div className={embedded ? '' : 'p-8'}>
       <div className="mx-auto max-w-6xl space-y-6">
-        {!embedded && <div className="mb-8">
+        {!embedded && <div className="app-page-header mb-8">
           <h1 className="text-2xl font-semibold text-neutral-100 flex items-center gap-3">
             <BarChart2 className="w-6 h-6 text-amber-500" />
             {t('page.title')}

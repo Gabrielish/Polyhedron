@@ -104,7 +104,7 @@ export function ManageModsPage(): React.JSX.Element {
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0f1114]">
       {/* header */}
-      <header className="flex items-center justify-between border-b border-[#1f2329] px-5 py-3">
+      <header className="app-page-header flex items-center justify-between border-b border-[#1f2329] px-5 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Boxes size={18} className="text-amber-500" />

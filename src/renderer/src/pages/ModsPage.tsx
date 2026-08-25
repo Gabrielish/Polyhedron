@@ -14,19 +14,20 @@ const TOOLS: Array<{ id: ModTool; label: string; icon: typeof Boxes }> = [
   { id: 'package', label: 'Create package', icon: Wrench }
 ]
 
-export function ModsPage(): React.JSX.Element {
+export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
   const [activeTool, setActiveTool] = useState<ModTool>('manage')
   return (
-    <div className="flex h-full min-h-0 flex-col text-neutral-200">
-      <header className="shrink-0 border-b border-[#1f2329] px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Boxes className="text-amber-400" size={22} />
-          <div>
-            <h1 className="text-lg font-semibold">Mods</h1>
-            <p className="text-xs text-neutral-500">Manage, merge, extract and package your mods.</p>
+    <div className={embedded ? 'mods-embedded flex min-h-0 flex-col text-neutral-200' : 'flex h-full min-h-0 flex-col text-neutral-200'}>
+      <header className="app-page-header shrink-0 border-b border-[#1f2329] px-8 pt-7 pb-5">
+        <div className="mx-auto w-full max-w-4xl">
+        <div className="flex items-start gap-3">
+          <Boxes className="mt-0.5 text-amber-400" size={24} />
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-neutral-100">Mods</h1>
+            <p className="mt-1 text-sm text-neutral-500">Manage, merge, extract and package your mods.</p>
           </div>
         </div>
-        <nav className="mt-4 flex flex-wrap gap-2" aria-label="Mod tools">
+        <nav className="mt-5 flex flex-wrap gap-2" aria-label="Mod tools">
           {TOOLS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -39,8 +40,9 @@ export function ModsPage(): React.JSX.Element {
             </button>
           ))}
         </nav>
+        </div>
       </header>
-      <main className="mods-page-main min-h-0 flex-1 overflow-y-auto">
+      <main className={embedded ? 'mods-page-main' : 'mods-page-main min-h-0 flex-1 overflow-y-auto'}>
         {activeTool === 'manage' && <ManageModsPage />}
         {activeTool === 'merge' && <MergeToolPage />}
         {activeTool === 'extract' && <ExtractPage />}

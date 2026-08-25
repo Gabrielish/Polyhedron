@@ -1206,7 +1206,7 @@ export function TranslationGrid({
             <X size={13} className="text-neutral-500 transition-colors hover:text-neutral-300" />
           </button>
         )}
-        <span className="inline-flex h-5 min-w-6 items-center justify-center rounded border border-[#2a2f37] bg-[#0f1114] px-1 font-mono text-[10px] text-neutral-500">
+        <span className="shortcut-hint inline-flex h-5 min-w-6 items-center justify-center rounded border border-[#2a2f37] bg-[#0f1114] px-1 font-mono text-[10px] text-neutral-500">
           Ctrl F
         </span>
       </div>

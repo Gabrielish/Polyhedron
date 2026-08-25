@@ -167,6 +167,14 @@ function treeCount(node: TreeNode): number {
     [...node.children.values()].reduce((sum, child) => sum + treeCount(child), 0)
   )
 }
+function visibleTreeRows(nodes: TreeNode[], expanded: Set<string>): number {
+  return nodes.reduce((count, node) => {
+    const childRows = expanded.has(node.key)
+      ? visibleTreeRows([...node.children.values()], expanded)
+      : 0
+    return count + 1 + childRows
+  }, 0)
+}
 function treePathForChoice(
   nodes: TreeNode[],
   selectedKey: string,
@@ -220,7 +228,7 @@ function TreeItems({
               className="flex w-full items-center gap-1 rounded px-2 py-1.5 text-left text-xs text-neutral-300 hover:bg-[#131518]"
             >
               {open ? (
-                <ChevronDown size={12} className="text-cyan-300" />
+                <ChevronDown size={12} className="text-amber-300" />
               ) : (
                 <ChevronRight size={12} className="text-neutral-600" />
               )}
@@ -255,7 +263,7 @@ function TreeItems({
                       className={cn(
                         'mb-1 block w-full truncate rounded border px-2 py-1 text-left text-[10px]',
                         selected?.file === choice.file && selected.dialogue === choice.dialogue
-                          ? 'border-cyan-400/30 bg-cyan-500/10 text-cyan-200'
+                          ? 'border-amber-400/30 bg-amber-500/10 text-amber-200'
                           : 'border-transparent text-neutral-500 hover:border-[#2a2f37]'
                       )}
                     >
@@ -489,18 +497,21 @@ export function DialogueNodesPage(): React.JSX.Element {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
         <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
-          <GitBranch className="mx-auto mb-3 text-cyan-300" size={28} />
+          <GitBranch className="mx-auto mb-3 text-amber-500" size={28} />
           <h1 className="mb-2 text-lg font-semibold text-neutral-100">Dialogue Nodes</h1>
           <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
         </div>
       </div>
     )
 
+  const treePanelRows = Math.min(4, Math.max(1, visibleTreeRows(tree, expandedNodes)))
+  const treePanelStyle = { '--dialogue-tree-mobile-height': `${treePanelRows * 42 + 24}px` } as React.CSSProperties
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
-      <header className="shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
+      <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
         <div className="mb-4 flex items-center gap-3">
-          <GitBranch className="text-cyan-300" size={20} />
+          <GitBranch className="text-amber-500" size={20} />
           <div>
             <h1 className="text-xl font-bold text-neutral-100">Dialogue Nodes</h1>
             <p className="text-xs text-neutral-500">
@@ -522,15 +533,15 @@ export function DialogueNodesPage(): React.JSX.Element {
               className={cn(
                 'rounded-md border px-4 py-2 text-xs font-semibold',
                 activeAct === act.label
-                  ? 'border-cyan-400/40 bg-cyan-500/15 text-cyan-200'
+                  ? 'border-amber-400/40 bg-amber-500/15 text-amber-200'
                   : 'border-transparent text-neutral-500 hover:border-[#2a2f37] hover:text-neutral-200'
               )}
             >
               {act.label}
             </button>
           ))}
-          <div className="ml-auto flex min-w-[280px] flex-1 justify-end gap-2 sm:min-w-[360px]">
-            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-cyan-400/40">
+          <div className="ml-0 flex min-w-0 flex-1 justify-end gap-2 sm:ml-auto sm:min-w-[280px] lg:min-w-[360px]">
+            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
               <Search size={14} />
               <input
                 value={dialogueSearch}
@@ -543,16 +554,16 @@ export function DialogueNodesPage(): React.JSX.Element {
               type="button"
               disabled={!selected}
               onClick={() => selected && window.api.dialogue.open(selected.dialogue)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-cyan-400/40 hover:text-cyan-200 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-amber-400/40 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ExternalLink size={12} /> Open online
             </button>
           </div>
         </div>
       </header>
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)]">
-        <aside className="grid min-h-0 grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] border-r border-[#1f2329]">
-          <div className="icosa-scroll min-h-0 overflow-y-auto border-b border-[#1f2329] p-3">
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)]">
+        <aside style={treePanelStyle} className="contents lg:grid lg:min-h-0 lg:max-h-none lg:grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] lg:border-r lg:border-[#1f2329]">
+          <div className="order-1 min-h-[var(--dialogue-tree-mobile-height)] overflow-y-auto border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0">
             <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
               Dialogue tree · {visibleChoices.length}
             </div>
@@ -570,9 +581,9 @@ export function DialogueNodesPage(): React.JSX.Element {
               </p>
             )}
           </div>
-          <div className="min-h-0 overflow-hidden p-3">
+          <div className="order-3 min-h-[420px] overflow-hidden border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0 lg:border-b-0">
             {selected ? (
-              <div className="flex h-full min-h-0 w-full flex-col rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
+              <div className="flex h-full min-h-0 w-full flex-col rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
                 <div className="relative flex min-h-0 flex-1 w-full min-w-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
                   <webview
                     ref={graphWebviewRef}
@@ -593,7 +604,7 @@ export function DialogueNodesPage(): React.JSX.Element {
             )}
           </div>
         </aside>
-        <section className="icosa-scroll min-h-0 overflow-y-auto p-5">
+        <section className="order-2 icosa-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
           {selected ? (
             <div className="w-full space-y-3">
               {nodes.map((node, index) => {
@@ -606,11 +617,11 @@ export function DialogueNodesPage(): React.JSX.Element {
                     className={cn(
                       'rounded-lg border bg-[#131518] p-4 transition-shadow',
                       borderClass,
-                      focusedNode === node.node && 'ring-2 ring-cyan-400/60 shadow-[0_0_24px_rgba(34,211,238,0.18)]'
+                      focusedNode === node.node && 'ring-2 ring-amber-400/60 shadow-[0_0_24px_rgba(34,211,238,0.18)]'
                     )}
                   >
                     <div className="mb-3 flex gap-2 font-mono text-[10px] text-neutral-500">
-                      <span className="text-cyan-300">Node {index + 1}</span>
+                      <span className="text-amber-300">Node {index + 1}</span>
                       <span>{node.node}</span>
                     </div>
                     {node.details.length > 0 && (

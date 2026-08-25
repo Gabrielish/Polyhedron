@@ -2,6 +2,7 @@ import { Archive, FileDown, FileUp, FolderSync, ShieldCheck } from 'lucide-react
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { InjectLocalizationPage } from './InjectLocalizationPage'
+import { ModsPage } from './ModsPage'
 
 export function WorkspacePage(): React.JSX.Element {
   const TitleIcon = FolderSync
@@ -55,7 +56,7 @@ export function WorkspacePage(): React.JSX.Element {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto p-8 text-neutral-200">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="mb-7 flex items-start gap-3">
+        <div className="app-page-header mb-7 flex items-start gap-3">
           <TitleIcon className="mt-1 text-amber-400" size={24} />
           <div>
             <h1 className="text-2xl font-semibold">Workspace</h1>
@@ -82,8 +83,11 @@ export function WorkspacePage(): React.JSX.Element {
         </div>
         {message && <div className="mt-5 flex items-start gap-2 rounded-lg border border-[#2a2f37] bg-[#131518] p-4 text-xs text-neutral-300"><Archive size={15} className="mt-0.5 shrink-0 text-amber-400" /><span className="break-all">{message}</span></div>}
 
-        <div className="mt-8 border-t border-[#1f2329] pt-8">
+        <div className="mt-4 border-t border-[#1f2329] pt-4">
           <InjectLocalizationPage embedded />
+        </div>
+        <div className="mt-4 border-t border-[#1f2329] pt-4">
+          <ModsPage embedded />
         </div>
       </div>
 

@@ -15,8 +15,8 @@ function ShortcutHint({
     <span
       className={
         subtle
-          ? 'inline-flex items-center justify-center font-mono text-[10px] text-black/65'
-          : 'inline-flex h-4.5 min-w-4.5 items-center justify-center rounded border border-[#2a2f37] border-b-2 bg-[#181b1f] px-1 font-mono text-[10px] text-neutral-400'
+          ? 'shortcut-hint inline-flex items-center justify-center font-mono text-[10px] text-black/65'
+          : 'shortcut-hint inline-flex h-4.5 min-w-4.5 items-center justify-center rounded border border-[#2a2f37] border-b-2 bg-[#181b1f] px-1 font-mono text-[10px] text-neutral-400'
       }
     >
       {children}
