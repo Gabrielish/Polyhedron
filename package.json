@@ -2,7 +2,7 @@
   "name": "icosa",
   "version": "2.1.4",
   "private": true,
-  "description": "Polyhedron — desktop translator for Baldur's Gate 3 mod localization.",
+  "description": "Polyhedron \u2014 desktop translator for Baldur's Gate 3 mod localization.",
   "main": "./out/main/index.js",
   "author": {
     "name": "kaironn",
@@ -32,7 +32,8 @@
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
     "db:studio": "drizzle-kit studio",
-    "build:reference-index": "node scripts/build-reference-index.mjs && node scripts/build-dialog-reference-module.mjs"
+    "build:reference-index": "node scripts/build-reference-index.mjs && node scripts/build-dialog-reference-module.mjs",
+    "pwa:build": "tsc --noEmit -p pwa/tsconfig.json && vite build --config pwa/vite.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -19,3 +19,5 @@ design/
 
 # Local Google Drive OAuth credentials
 tools/google-drive/google-drive-credentials.json
+
+pwa/.env.save

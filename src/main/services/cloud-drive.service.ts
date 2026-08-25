@@ -4,12 +4,35 @@ import { app } from 'electron'
 import { google } from 'googleapis'
 import { authenticate } from '@google-cloud/local-auth'
 import type { drive_v3 } from 'googleapis'
+import { getDb } from '../database/connection'
+import { dictionary } from '../database/schema'
+import { DictionaryRepository } from '../database/repositories/dictionary.repo'
 import { exportWorkspace, getWorkspaceTranslationStats, importWorkspace, type WorkspaceTranslationStats } from './workspace.service'
 import { extractZip } from './zip.service'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
 
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const CLOUD_FILE_NAME = 'icosa-workspace.icws'
+const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
+
+type PwaSyncEntry = { uid: string; source: string; target: string; matchType: 'text'; needsReview: boolean }
+
+function buildPwaSyncDocument() {
+  const rows = getDb().select().from(dictionary).all()
+  const grouped = new Map<string, { id: string; modName: string; sourceLang: string; targetLang: string; updatedAt: string; entries: PwaSyncEntry[] }>()
+  let hash = 2166136261
+  for (const row of rows) {
+    const modName = row.modName ?? 'Workspace'
+    const id = `${modName}\u0000${row.language1}\u0000${row.language2}`
+    let session = grouped.get(id)
+    if (!session) { session = { id, modName, sourceLang: row.language1, targetLang: row.language2, updatedAt: new Date().toISOString(), entries: [] }; grouped.set(id, session) }
+    const entry: PwaSyncEntry = { uid: row.uid ?? String(row.id), source: row.textLanguage1, target: row.textLanguage2, matchType: 'text', needsReview: false }
+    session.entries.push(entry)
+    const value = `${entry.uid}\u0000${entry.target}`
+    for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) }
+  }
+  return { version: 1 as const, generatedAt: new Date().toISOString(), fingerprint: (hash >>> 0).toString(16), sessions: [...grouped.values()] }
+}
 
 
 function credentialsPath(): string {
@@ -79,6 +102,31 @@ async function findWorkspaceFile(drive: drive_v3.Drive): Promise<drive_v3.Schema
   return result.data.files?.[0] ?? null
 }
 
+async function uploadPwaSyncFile(drive: drive_v3.Drive, document: ReturnType<typeof buildPwaSyncDocument>): Promise<void> {
+  const result = await drive.files.list({ q: `name = '${PWA_SYNC_FILE_NAME}' and trashed = false`, fields: 'files(id)', spaces: 'drive', pageSize: 1 })
+  const existing = result.data.files?.[0]
+  const media = { mimeType: 'application/json', body: JSON.stringify(document) }
+  if (existing?.id) await drive.files.update({ fileId: existing.id, media })
+  else await drive.files.create({ requestBody: { name: PWA_SYNC_FILE_NAME, mimeType: 'application/json' }, media })
+}
+
+async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
+  const result = await drive.files.list({ q: `name = '${PWA_SYNC_FILE_NAME}' and trashed = false`, fields: 'files(id)', spaces: 'drive', pageSize: 1 })
+  const fileId = result.data.files?.[0]?.id
+  if (!fileId) return
+  const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
+  const document = response.data as { version?: number; sessions?: Array<{ modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string }> }> }
+  if (document.version !== 1 || !Array.isArray(document.sessions)) return
+  const dictionaryRepo = new DictionaryRepository(getDb())
+  for (const session of document.sessions) {
+    if (!session.sourceLang || !session.targetLang || !Array.isArray(session.entries)) continue
+    for (const entry of session.entries) {
+      if (!entry.source?.trim()) continue
+      dictionaryRepo.upsert({ sourceLang: session.sourceLang, targetLang: session.targetLang, sourceText: entry.source, targetText: entry.target ?? '', modName: session.modName ?? null, uid: entry.uid ?? null })
+    }
+  }
+}
+
 export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
@@ -97,6 +145,7 @@ export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fil
           media,
           fields: 'id,name,modifiedTime'
         })
+    await uploadPwaSyncFile(drive, buildPwaSyncDocument())
     return { fileName: response.data.name ?? CLOUD_FILE_NAME, modifiedTime: response.data.modifiedTime ?? undefined, stats }
   } finally {
     cleanupTempDir(tempDir)
@@ -125,6 +174,7 @@ export async function downloadWorkspaceFromDrive(sessionKey?: string): Promise<{
     extractZip(workspacePath, extractedDir)
     const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'), sessionKey)
     await importWorkspace(workspacePath)
+    await applyPwaSyncFromDrive(drive)
     return { fileName: CLOUD_FILE_NAME, restartRequired: true, stats }
   } finally {
     cleanupTempDir(tempDir)
