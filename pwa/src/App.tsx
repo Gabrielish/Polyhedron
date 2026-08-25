@@ -22,13 +22,30 @@ export function App(): React.JSX.Element {
       setAuthReady(true)
       return
     }
+    let finished = false
+    const timeout = window.setTimeout(() => {
+      if (finished) return
+      finished = true
+      window.localStorage.removeItem(DRIVE_CONNECTED_KEY)
+      setAuthReady(true)
+    }, 5000)
     void requestDriveAccessToken(googleClientId, '').then((token) => {
+      if (finished) return
+      finished = true
+      window.clearTimeout(timeout)
       setDriveToken(token)
       setAuthReady(true)
     }).catch(() => {
+      if (finished) return
+      finished = true
+      window.clearTimeout(timeout)
       window.localStorage.removeItem(DRIVE_CONNECTED_KEY)
       setAuthReady(true)
     })
+    return () => {
+      finished = true
+      window.clearTimeout(timeout)
+    }
   }, [])
 
   async function connectDrive(): Promise<string | null> {
