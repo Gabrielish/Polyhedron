@@ -81,8 +81,8 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       {document.sessions.length > 0 && (
         <div className="translate-controls">
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search strings..." />
-          <label className="exact-match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /> Exact match</label>
-          <label className="exact-match"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /> Show IDs</label>
+          <label className="exact-match" title="Exact match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /><span className="control-icon" aria-hidden="true">⌕</span><span className="control-text">Exact</span></label>
+          <label className="exact-match" title="Show IDs"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /><span className="control-icon" aria-hidden="true">#</span><span className="control-text">IDs</span></label>
           <span className="counter">{translatedCount.toLocaleString()} / {(session?.entries.length ?? 0).toLocaleString()} translated</span>
         </div>
       )}
