@@ -57,6 +57,11 @@ h2 { font-size: 20px; }
 @media (max-width: 560px) { .sync-menu-wrap, .sync-menu { width: 100%; } .sync-menu-wrap { margin: 8px 0; } .sync-menu { position: static; margin-top: 8px; } }
 
 .sync-status { margin: 10px 0 0; border: 1px solid #3a2528; border-radius: 9px; padding: 8px 11px; color: #ffb4b7; background: #211316; font-size: 12px; }
+.top-actions { display: flex; justify-content: flex-end; gap: 8px; margin: 10px 0; }
+.connect-screen { min-height: 62vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 30px 16px; text-align: center; }
+.connect-screen h1 { font-size: clamp(30px, 9vw, 48px); }
+.connect-screen > p:not(.eyebrow):not(.sync-status) { max-width: 34rem; margin: 0; color: #858b94; line-height: 1.5; }
+.connect-button { min-width: 150px; margin-top: 8px; }
 .exact-match { display: flex; align-items: center; gap: 6px; border: 1px solid #2a2f37; border-radius: 9px; padding: 0 10px; color: #9da2ab; font-size: 12px; white-space: nowrap; }
 .exact-match input { accent-color: #ed1c24; }
 .larian-tag { color: #f28bdc; background: rgb(242 139 220 / 14%); border-radius: 4px; padding: 1px 3px; }
@@ -68,3 +73,4 @@ h2 { font-size: 20px; }
 @media (max-width: 560px) { .pagination-bar { justify-content: space-between; gap: 6px; } .pagination-bar span { font-size: 11px; text-align: center; } }
 
 @media (max-width: 620px) { .translation-card textarea { font-size: 16px; } }
+@media (max-width: 560px) { .top-actions { width: 100%; } .top-actions button { flex: 1; } }

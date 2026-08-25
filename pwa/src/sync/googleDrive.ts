@@ -24,7 +24,7 @@ function loadGoogleScript(): Promise<void> {
   return scriptPromise
 }
 
-export async function requestDriveAccessToken(clientId: string): Promise<string> {
+export async function requestDriveAccessToken(clientId: string, prompt = 'consent'): Promise<string> {
   await loadGoogleScript()
   return new Promise((resolve, reject) => {
     const client = window.google?.accounts.oauth2.initTokenClient({
@@ -33,7 +33,7 @@ export async function requestDriveAccessToken(clientId: string): Promise<string>
       callback: (response) => response.access_token ? resolve(response.access_token) : reject(new Error(response.error || 'Google authorization was cancelled.'))
     })
     if (!client) reject(new Error('Google Identity Services is unavailable.'))
-    else client.requestAccessToken({ prompt: 'consent' })
+    else client.requestAccessToken({ prompt })
   })
 }
 
