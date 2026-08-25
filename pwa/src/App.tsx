@@ -85,7 +85,6 @@ export function App(): React.JSX.Element {
         <div className="sync-menu-wrap">
           <button className="sync-button" type="button" aria-expanded={syncOpen} onClick={() => setSyncOpen((value) => !value)}>{isConnected ? 'Google Drive connected' : 'Sync workspace'}</button>
           {syncOpen && <div className="sync-menu" role="menu">
-            <button type="button" onClick={() => { setImportSignal((value) => value + 1); setSyncOpen(false) }}>Import sync file</button>
             {!isConnected && <button type="button" onClick={() => void connectDrive()}>Connect Google Drive</button>}
             <button type="button" disabled={!isConnected && !googleClientId} onClick={() => void upload()}>Upload workspace</button>
             <button type="button" disabled={!isConnected && !googleClientId} onClick={() => void download()}>Download workspace</button>
@@ -96,7 +95,7 @@ export function App(): React.JSX.Element {
       <nav className="tabs" aria-label="Companion tabs">
         {tabs.map((item) => <button key={item} type="button" className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>)}
       </nav>
-      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} importSignal={importSignal} /> : <section className="placeholder-card">
+      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} onSave={() => void upload()} importSignal={importSignal} /> : <section className="placeholder-card">
         <p className="eyebrow">{tab}</p>
         <h2>Companion foundation ready</h2>
         <p>The shared workspace sync contract is in place. The next step connects this tab to the desktop workspace data.</p>

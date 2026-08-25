@@ -12,11 +12,11 @@ function downloadDocument(document: WorkspaceSyncDocument): void {
   URL.revokeObjectURL(url)
 }
 
-export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; importSignal?: number }): React.JSX.Element {
+export function TranslateTab({ document, onDocumentChange, onSave, importSignal = 0 }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; onSave: () => void; importSignal?: number }): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
-  const [sessionId, setSessionId] = useState('')
   const [query, setQuery] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
+  const [showIds, setShowIds] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 25
   const [message, setMessage] = useState('Import a workspace-sync.json exported from Polyhedron Desktop.')
@@ -25,7 +25,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
     if (importSignal > 0) inputRef.current?.click()
   }, [importSignal])
 
-  const session = document.sessions.find((item) => item.id === sessionId) ?? document.sessions[0]
+  const session = document.sessions[0]
   const entries = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
     if (!session) return []
@@ -49,7 +49,6 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       const parsed: unknown = JSON.parse(await file.text())
       if (!isWorkspaceSyncDocument(parsed)) throw new Error('This file is not a supported workspace sync document.')
       onDocumentChange(parsed)
-      setSessionId(parsed.sessions[0]?.id ?? '')
       setPage(1)
       setMessage(`Loaded ${parsed.sessions.length} session${parsed.sessions.length === 1 ? '' : 's'} from ${file.name}.`)
     } catch (error) {
@@ -78,24 +77,21 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
         </div>
         <div className="toolbar-actions">
           <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
-          <button type="button" className="secondary-button" onClick={() => inputRef.current?.click()}>Import sync file</button>
-          <button type="button" className="primary-button" disabled={!session} onClick={() => downloadDocument(document)}>Export sync file</button>
+          <button type="button" className="primary-button" disabled={!session} onClick={onSave}>Save</button>
         </div>
       </div>
 
       {document.sessions.length > 0 && (
         <div className="translate-controls">
-          <select value={session?.id ?? ''} onChange={(event) => { setSessionId(event.target.value); setPage(1) }}>
-            {document.sessions.map((item) => <option key={item.id} value={item.id}>{item.modName} · {item.sourceLang} → {item.targetLang}</option>)}
-          </select>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search strings..." />
           <label className="exact-match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /> Exact match</label>
+          <label className="exact-match"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /> Show IDs</label>
           <span className="counter">{translatedCount.toLocaleString()} / {(session?.entries.length ?? 0).toLocaleString()} translated</span>
         </div>
       )}
 
       <div className="translate-list">
-        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry) => <TranslationCard key={entry.uid} entry={entry} onChange={(target) => updateEntry(entry.uid, target)} />)}
+        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry) => <TranslationCard key={entry.uid} entry={entry} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} />)}
       </div>
       {entries.length > 0 && <div className="pagination-bar">
         <button type="button" className="secondary-button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
@@ -106,8 +102,8 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   )
 }
 
-function TranslationCard({ entry, onChange }: { entry: SyncEntry; onChange: (value: string) => void }): React.JSX.Element {
-  return <article className="translation-card"><div className="translation-meta"><span>{entry.uid}</span>{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><textarea value={entry.target} onChange={(event) => onChange(event.target.value)} placeholder="Translation..." rows={2} /><div className="translation-preview"><LarianText value={entry.target} /></div></article>
+function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
+  return <article className="translation-card"><div className="translation-meta">{showId ? <span>{entry.uid}</span> : <span>Translation</span>}{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><textarea value={entry.target} onChange={(event) => onChange(event.target.value)} placeholder="Translation..." rows={2} /></article>
 }
 
 function LarianText({ value }: { value: string }): React.JSX.Element {
