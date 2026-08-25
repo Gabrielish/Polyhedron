@@ -82,6 +82,7 @@ export function App(): React.JSX.Element {
           <span className="brand-name">Polyhedron</span>
           <span className="brand-platform">Mobile</span>
         </div>
+      </header>
         <div className="sync-menu-wrap">
           <button className="sync-button" type="button" aria-expanded={syncOpen} onClick={() => setSyncOpen((value) => !value)}>{isConnected ? 'Google Drive connected' : 'Sync workspace'}</button>
           {syncOpen && <div className="sync-menu" role="menu">
@@ -91,7 +92,6 @@ export function App(): React.JSX.Element {
           </div>}
           {syncMessage && <p className="sync-status" role="status" aria-live="polite">{syncMessage}</p>}
         </div>
-      </header>
       <nav className="tabs" aria-label="Companion tabs">
         {tabs.map((item) => <button key={item} type="button" className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>)}
       </nav>

@@ -26,19 +26,19 @@ export function TranslateTab({ document, onDocumentChange, onSave, importSignal 
   }, [importSignal])
 
   const session = document.sessions[0]
+  const allEntries = useMemo(() => document.sessions.flatMap((item) => item.entries), [document.sessions])
   const entries = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
-    if (!session) return []
-    if (!normalized) return session.entries
-    return session.entries.filter((entry) => {
+    if (!normalized) return allEntries
+    return allEntries.filter((entry) => {
       const fields = [entry.source, entry.target, entry.uid].map((value) => value.toLocaleLowerCase())
       return exactMatch ? fields.some((value) => value === normalized) : fields.some((value) => value.includes(normalized))
     })
-  }, [exactMatch, query, session])
+  }, [allEntries, exactMatch, query])
 
   const pageCount = Math.max(1, Math.ceil(entries.length / pageSize))
   const visibleEntries = entries.slice((page - 1) * pageSize, page * pageSize)
-  const translatedCount = session?.entries.filter((entry) => entry.target.trim()).length ?? 0
+  const translatedCount = allEntries.filter((entry) => entry.target.trim()).length
 
   useEffect(() => {
     setPage(1)
@@ -60,10 +60,10 @@ export function TranslateTab({ document, onDocumentChange, onSave, importSignal 
     onDocumentChange({
       ...document,
       generatedAt: new Date().toISOString(),
-      sessions: document.sessions.map((item) => item.id !== session?.id ? item : {
+      sessions: document.sessions.map((item) => ({
         ...item,
         entries: item.entries.map((entry) => entry.uid === uid ? { ...entry, target, matchType: 'manual' as SyncEntry['matchType'] } : entry)
-      })
+      }))
     })
   }
 
