@@ -123,3 +123,8 @@ h2 { font-size: 20px; }
 .dialogue-empty { display: grid; min-height: 150px; place-items: center; color: #6f7680; text-align: center; font-size: 12px; }
 .dialogue-empty small { color: #858b94; }
 @media (max-width: 620px) { .dialogue-header { align-items: flex-start; } .dialogue-header .secondary-button { padding: 8px 9px; font-size: 11px; } .dialogue-acts { flex-wrap: wrap; } .dialogue-search { order: 5; flex-basis: 0; } .dialogue-open-button { order: 6; } .dialogue-layout { grid-template-columns: 1fr; } .dialogue-webview { display: block; min-height: 180px; } .node-fields { grid-template-columns: 1fr; } }
+
+.tree-group { margin-bottom: 8px; }
+.tree-group-title { display: flex; justify-content: space-between; padding: 7px 8px; color: #e7e9ed; font-size: 12px; font-weight: 700; }
+.tree-group-title span { color: #6f7680; font-size: 10px; }
+@media (max-width: 620px) { .dialogue-tree { position: sticky; top: 0; z-index: 3; max-height: 300px; overflow-y: auto; } }
