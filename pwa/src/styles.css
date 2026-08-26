@@ -128,3 +128,6 @@ h2 { font-size: 20px; }
 .tree-group-title { display: flex; width: 100%; justify-content: space-between; border: 0; background: transparent; cursor: pointer; text-align: left; padding: 7px 8px; color: #e7e9ed; font-size: 12px; font-weight: 700; }
 .tree-group-title span { color: #6f7680; font-size: 10px; }
 @media (max-width: 620px) { .dialogue-tree { position: sticky; top: 0; z-index: 3; max-height: 300px; overflow-y: auto; } }
+
+.node-translation-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.node-translation-label label { margin-bottom: 5px; }
