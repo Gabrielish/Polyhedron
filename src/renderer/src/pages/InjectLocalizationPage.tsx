@@ -32,8 +32,8 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
     try {
       const response = await window.api.mod.injectLocalizationPak({ platform, entries: session.entries })
       const backupMessage = response.backupCreated
-        ? 'English.pak was backed up as EnglishOld.pak.'
-        : 'EnglishOld.pak already existed, so the existing backup was preserved.'
+        ? 'English.pak was backed up as EnglishOld.pak.bak.'
+        : 'EnglishOld.pak.bak already existed, so the existing backup was preserved.'
       setResult(`${response.pakPath} — ${backupMessage}`)
       toast.success('English.pak injected successfully.')
     } catch (error) {
@@ -58,7 +58,7 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
 
         <div className="mb-5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-neutral-300">
           <div className="mb-2 flex items-center gap-2 font-medium text-amber-300"><ShieldCheck size={16} /> Safe replacement</div>
-          <p className="leading-6 text-neutral-400">The first injection renames the original English.pak to EnglishOld.pak. Later injections keep that backup and replace only the active English.pak.</p>
+          <p className="leading-6 text-neutral-400">The first injection renames the original English.pak to EnglishOld.pak.bak (so the game will not load the backup). Later injections keep that backup and replace only the active English.pak.</p>
         </div>
 
         {session.phase !== 'loaded' ? (

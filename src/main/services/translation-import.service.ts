@@ -214,13 +214,19 @@ export async function injectLocalizationPak(
   }
 
   const englishPath = path.join(localizationDir, 'English.pak')
-  const backupPath = path.join(localizationDir, 'EnglishOld.pak')
+  // Keep the backup outside the game's .pak scan. BG3 can load every .pak in
+  // this directory, so an `EnglishOld.pak` backup may override translations.
+  const backupPath = path.join(localizationDir, 'EnglishOld.pak.bak')
+  const legacyBackupPath = path.join(localizationDir, 'EnglishOld.pak')
   const tempDir = createTempDir('icosa_inject')
   const tempPak = path.join(tempDir, 'English.pak')
   let backupCreated = false
 
   try {
     await exportLocalizationPak(entries, tempPak)
+    if (fs.existsSync(legacyBackupPath) && !fs.existsSync(backupPath)) {
+      fs.renameSync(legacyBackupPath, backupPath)
+    }
     if (fs.existsSync(englishPath) && !fs.existsSync(backupPath)) {
       fs.renameSync(englishPath, backupPath)
       backupCreated = true
