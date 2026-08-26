@@ -32,7 +32,12 @@ export function GameDataTab({ document, onDocumentChange }: { document: Workspac
     const q = query.trim().toLocaleLowerCase()
     return catalog.filter((entry) => entry.category === category && (!q || `${entry.name} ${entry.description}`.toLocaleLowerCase().includes(q)))
   }, [catalog, category, query])
-  const current = selected?.category === category ? selected : null
+  // Keep the editor in sync with the visible list. When a category or search
+  // changes, fall back to the first matching entry instead of leaving stale
+  // content (or an empty editor) from the previous category.
+  const current = selected && selected.category === category && filtered.some((entry) => entry.name === selected.name && entry.description === selected.description)
+    ? selected
+    : filtered[0] ?? null
   const session = document.sessions[0]
   const linked = useMemo(() => {
     if (!current || !session) return { title: [] as SyncEntry[], description: [] as SyncEntry[] }
