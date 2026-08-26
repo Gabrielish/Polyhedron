@@ -85,14 +85,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
   return (
     <section className="translate-panel">
-      <div className="panel-toolbar">
-        <div>
-          <p className="eyebrow">Translate</p>
-          <h2>{session ? `${session.sourceLang.toUpperCase()} → ${session.targetLang.toUpperCase()}` : 'No workspace loaded'}</h2>
-          <p className="toolbar-note">{message}</p>
-        </div>
-        <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
-      </div>
+      <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
 
       {document.sessions.length > 0 && (
         <div className="translate-controls">
