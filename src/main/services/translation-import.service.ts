@@ -115,6 +115,7 @@ async function runDivine(args: string[]): Promise<void> {
   const divineDir = bundledAssetPath(path.join('tools', 'lslib', 'Tools'))
   const useWine = process.platform === 'darwin'
   const divinePath = path.join(divineDir, 'Divine.exe')
+  const divineAssemblyPath = path.join(divineDir, 'Divine.dll')
   if (!fs.existsSync(divinePath)) {
     throw new Error(`Divine.exe was not found at ${divinePath}`)
   }
@@ -133,7 +134,7 @@ async function runDivine(args: string[]): Promise<void> {
     }
     const executable = useWine ? winePath! : divinePath
     const executableArgs = useWine
-      ? [windowsDotnetPath!, toWinePath(divinePath), ...args.map(toWinePath)]
+      ? [windowsDotnetPath!, toWinePath(divineAssemblyPath), ...args.map(toWinePath)]
       : args
     await execFileAsync(executable, executableArgs, {
       cwd: divineDir,
