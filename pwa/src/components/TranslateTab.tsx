@@ -109,7 +109,7 @@ function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId
   async function pasteSource(): Promise<void> {
     try { onChange(await navigator.clipboard.readText()) } catch { /* Clipboard permissions may be unavailable. */ }
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={onChange} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}><span aria-hidden="true">⧉</span><span>Copy</span></button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}><span aria-hidden="true">↳</span><span>Paste</span></button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={onChange} /></article>
 }
 
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
