@@ -29,7 +29,10 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const session = useTranslationSession()
   const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
-  const syncKey = `icosa.cloud-sync.${sessionKey}`
+  // The workspace importer can rewrite stored/input paths. Keep the UI's saved
+  // fingerprint keyed by the stable session identity so Download remains
+  // "Synced" after the imported workspace is loaded or the app is restarted.
+  const syncKey = `icosa.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const currentFingerprint = useMemo(
     () => fingerprint(session.entries.map(({ uid, target, matchType, needsReview }) => ({ uid, target, matchType, needsReview }))),
     [session.entries]
