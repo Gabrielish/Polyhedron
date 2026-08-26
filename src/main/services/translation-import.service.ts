@@ -88,6 +88,15 @@ function resolveWinePath(): string | null {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
 }
 
+function resolveWindowsDotnetPath(): string | null {
+  const candidates = [
+    process.env.POLYHEDRON_DOTNET_EXE,
+    path.join(app.getPath('userData'), 'dotnet-win-x64', 'dotnet.exe'),
+    path.join(os.homedir(), '.polyhedron', 'dotnet-win-x64', 'dotnet.exe')
+  ].filter((candidate): candidate is string => Boolean(candidate))
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
+}
+
 function bundledAssetPath(relativePath: string): string {
   if (!app.isPackaged) return path.join(app.getAppPath(), relativePath)
 
@@ -113,7 +122,13 @@ async function runDivine(args: string[]): Promise<void> {
     if (useWine && !winePath) {
       throw new Error('macOS injection requires Wine to run Divine.exe. Install Wine (for example with “brew install --cask whisky” or WineBottler), then restart Polyhedron.')
     }
-    await execFileAsync(useWine ? winePath! : divinePath, useWine ? [divinePath, ...args] : args, {
+    const windowsDotnetPath = useWine ? resolveWindowsDotnetPath() : null
+    if (useWine && !windowsDotnetPath) {
+      throw new Error('Wine is installed, but Divine also requires the Windows .NET 8 runtime. Download the Windows x64 .NET 8 runtime and set POLYHEDRON_DOTNET_EXE to its dotnet.exe, then restart Polyhedron.')
+    }
+    const executable = useWine ? winePath! : divinePath
+    const executableArgs = useWine ? [windowsDotnetPath!, divinePath, ...args] : args
+    await execFileAsync(executable, executableArgs, {
       cwd: divineDir,
       windowsHide: true,
       maxBuffer: 20 * 1024 * 1024
