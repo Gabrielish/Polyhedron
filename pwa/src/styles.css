@@ -83,7 +83,8 @@ h2 { font-size: 20px; }
 @media (max-width: 560px) { .top-actions { width: 100%; } .top-actions button { flex: 1; } }
 
 .translation-actions { display: inline-flex; align-items: center; gap: 5px; }
-.translation-actions button { display: inline-flex; align-items: center; gap: 4px; min-width: 24px; height: 28px; padding: 0; border: 1px solid #3a2528; border-radius: 7px; color: #ffb4b7; background: #171316; cursor: pointer; font-size: 11px; font-weight: 700; }
+.translation-actions button { display: inline-grid; width: 30px; height: 26px; place-items: center; padding: 0; border: 1px solid #3a2528; border-radius: 8px; color: #ffb4b7; background: #171316; cursor: pointer; font-size: 15px; line-height: 1; }
+.translation-actions button:disabled { opacity: .35; cursor: not-allowed; }
 .translation-actions button:hover { border-color: #ed1c24; color: #fff; }
 .translation-editor { position: relative; min-height: 58px; border: 1px solid #2a2f37; border-radius: 9px; background: #131518; overflow: hidden; }
 .editor-highlight, .editor-input { width: 100%; min-height: 58px; margin: 0; padding: 10px 11px; font: inherit; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }

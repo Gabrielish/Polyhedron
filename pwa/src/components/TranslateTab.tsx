@@ -102,16 +102,25 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 }
 
 function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
+  const [previousValue, setPreviousValue] = useState<string | null>(null)
   const sourceText = decodeHtmlEntities(entry.source)
   async function copySource(): Promise<void> {
     try { await navigator.clipboard.writeText(sourceText) } catch { /* Clipboard permissions may be unavailable. */ }
   }
   async function pasteSource(): Promise<void> {
-    try { onChange(await navigator.clipboard.readText()) } catch { /* Clipboard permissions may be unavailable. */ }
+    try { setPreviousValue(entry.target); onChange(await navigator.clipboard.readText()) } catch { /* Clipboard permissions may be unavailable. */ }
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}><span aria-hidden="true">⧉</span><span>Copy</span></button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}><span aria-hidden="true">↳</span><span>Paste</span></button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={onChange} /></article>
+  function changeTarget(value: string): void {
+    setPreviousValue(entry.target)
+    onChange(value)
+  }
+  function undo(): void {
+    if (previousValue === null) return
+    onChange(previousValue)
+    setPreviousValue(null)
+  }
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
 }
-
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)
   function syncScroll(event: React.UIEvent<HTMLTextAreaElement>): void {
