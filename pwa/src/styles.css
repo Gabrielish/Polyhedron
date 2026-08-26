@@ -131,3 +131,7 @@ h2 { font-size: 20px; }
 
 .node-translation-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .node-translation-label label { margin-bottom: 5px; }
+
+.dialogue-subacts { display: flex; gap: 7px; padding: 0 0 8px; }
+.dialogue-subact { border: 1px solid #2a2f37; border-radius: 7px; padding: 6px 10px; color: #858b94; background: #131518; font-size: 11px; cursor: pointer; }
+.dialogue-subact.active { border-color: #ed1c24; color: #ffb4b7; background: #211316; }
