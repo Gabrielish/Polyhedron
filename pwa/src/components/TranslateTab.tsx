@@ -39,6 +39,8 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   const pageCount = Math.max(1, Math.ceil(entries.length / pageSize))
   const visibleEntries = entries.slice((page - 1) * pageSize, page * pageSize)
   const translatedCount = allEntries.filter((entry) => entry.target.trim()).length
+  const totalCount = allEntries.length
+  const translatedPercent = totalCount > 0 ? ((translatedCount / totalCount) * 100).toFixed(2).replace('.', ',') : '0,00'
 
   useEffect(() => {
     setPage(1)
@@ -83,7 +85,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
           <label className="search-field"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Începe o nouă căutare" /></label>
           <label className="exact-match" title="Exact match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /><span className="control-icon" aria-hidden="true">⌕</span><span className="control-text">Exact</span></label>
           <label className="exact-match" title="Show IDs"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /><span className="control-icon" aria-hidden="true">#</span><span className="control-text">IDs</span></label>
-          <span className="counter">{translatedCount.toLocaleString()} / {(session?.entries.length ?? 0).toLocaleString()} translated</span>
+          <span className="counter">{translatedCount.toLocaleString()} / {totalCount.toLocaleString()} translated ({translatedPercent}%)</span>
         </div>
       )}
 
