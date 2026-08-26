@@ -33,7 +33,7 @@
     "build:linux": "npm run build && electron-builder --linux",
     "db:studio": "drizzle-kit studio",
     "build:reference-index": "node scripts/build-reference-index.mjs && node scripts/build-dialog-reference-module.mjs",
-    "pwa:build": "node scripts/build-dialog-index.mjs && node scripts/build-dialog-reference-module.mjs && node scripts/build-pwa-dialogue-index.mjs && node scripts/build-pwa-game-reference.mjs && tsc --noEmit -p pwa/tsconfig.json && vite build --config pwa/vite.config.ts"
+    "pwa:build": "node scripts/build-dialog-index.mjs && node scripts/build-dialog-reference-module.mjs && node scripts/build-pwa-dialogue-index.mjs && node scripts/build-reference-index.mjs && node scripts/build-pwa-game-reference.mjs && tsc --noEmit -p pwa/tsconfig.json && vite build --config pwa/vite.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
