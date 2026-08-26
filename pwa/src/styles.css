@@ -89,6 +89,6 @@ h2 { font-size: 20px; }
 .translation-editor { position: relative; min-height: 58px; border: 1px solid #2a2f37; border-radius: 9px; background: #131518; overflow: hidden; }
 .editor-highlight, .editor-input { width: 100%; min-height: 58px; margin: 0; padding: 10px 11px; font: inherit; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
 .editor-highlight { position: absolute; inset: 0; overflow: hidden; color: #e7e9ed; pointer-events: none; }
-.editor-input { position: relative; display: block; resize: vertical; border: 0 !important; background: transparent !important; color: transparent !important; caret-color: #e7e9ed; outline: none; }
+.editor-input { position: relative; display: block; resize: none; max-height: 320px; overflow-y: auto; border: 0 !important; background: transparent !important; color: transparent !important; caret-color: #e7e9ed; outline: none; }
 .editor-input::selection { background: rgb(237 28 36 / 35%); }
 .translation-editor:focus-within { border-color: #ed1c24; }
