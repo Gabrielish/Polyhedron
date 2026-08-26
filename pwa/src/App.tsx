@@ -54,7 +54,14 @@ export function App(): React.JSX.Element {
       return null
     }
     try {
-      const token = await requestDriveAccessToken(googleClientId, 'consent')
+      let token: string
+      try {
+        // Reuse the existing Google grant without showing account/consent screens.
+        token = await requestDriveAccessToken(googleClientId, '')
+      } catch {
+        // First-time connection (or a revoked grant) needs Google's approval once.
+        token = await requestDriveAccessToken(googleClientId, 'consent')
+      }
       setDriveToken(token)
       window.localStorage.setItem(DRIVE_CONNECTED_KEY, 'true')
       setSyncMessage('Google Drive connected.')
