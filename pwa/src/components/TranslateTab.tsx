@@ -103,12 +103,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
 function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
   const [previousValue, setPreviousValue] = useState<string | null>(null)
+  const [actionMessage, setActionMessage] = useState('')
   const sourceText = decodeHtmlEntities(entry.source)
   async function copySource(): Promise<void> {
-    try { await navigator.clipboard.writeText(sourceText) } catch { /* Clipboard permissions may be unavailable. */ }
+    try { await navigator.clipboard.writeText(sourceText); setActionMessage('Copied') } catch { setActionMessage('Copy unavailable') }
   }
   async function pasteSource(): Promise<void> {
-    try { setPreviousValue(entry.target); onChange(await navigator.clipboard.readText()) } catch { /* Clipboard permissions may be unavailable. */ }
+    try { setPreviousValue(entry.target); onChange(await navigator.clipboard.readText()); setActionMessage('Pasted') } catch { setActionMessage('Paste unavailable') }
   }
   function changeTarget(value: string): void {
     setPreviousValue(entry.target)
@@ -118,8 +119,9 @@ function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: Syn
     if (previousValue === null) return
     onChange(previousValue)
     setPreviousValue(null)
+    setActionMessage('Undone')
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{actionMessage && <small className="action-message" role="status">{actionMessage}</small>}{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
 }
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)

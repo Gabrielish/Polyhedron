@@ -92,3 +92,6 @@ h2 { font-size: 20px; }
 .editor-input { position: relative; display: block; resize: none; overflow: hidden; border: 0 !important; background: transparent !important; color: transparent !important; caret-color: #e7e9ed; outline: none; }
 .editor-input::selection { background: rgb(237 28 36 / 35%); }
 .translation-editor:focus-within { border-color: #ed1c24; }
+
+.action-message { color: #858b94; font-size: 10px; white-space: nowrap; animation: action-fade 2.2s ease forwards; }
+@keyframes action-fade { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
