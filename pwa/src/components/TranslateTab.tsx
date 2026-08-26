@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
 import { isWorkspaceSyncDocument } from '../sync/workspaceSync'
+import { TranslationActions } from './TranslationActions'
 
 function downloadDocument(document: WorkspaceSyncDocument): void {
   const blob = new Blob([JSON.stringify(document, null, 2)], { type: 'application/json' })
@@ -121,7 +122,7 @@ function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: Syn
     setPreviousValue(null)
     setActionMessage('Undone')
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{actionMessage && <small className="action-message" role="status">{actionMessage}</small>}{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><TranslationActions onCopy={() => void copySource()} onPaste={() => void pasteSource()} onUndo={undo} canUndo={previousValue !== null} message={actionMessage} />{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
 }
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)
@@ -158,4 +159,3 @@ function LarianText({ value }: { value: string }): React.JSX.Element {
   const parts = decoded.split(/(<\/?(?:LSTag|LSTagValue)\b[^>]*>)/gi)
   return <>{parts.map((part, index) => /<\/?(?:LSTag|LSTagValue)\b[^>]*>/i.test(part) ? <span className="larian-tag" key={`${part}-${index}`}>{part}</span> : <span key={`${part}-${index}`}>{part}</span>)}</>
 }
-

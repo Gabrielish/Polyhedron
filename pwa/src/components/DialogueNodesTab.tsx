@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { WorkspaceSyncDocument } from '../sync/workspaceSync'
+import { TranslationActions } from './TranslationActions'
 
 type DialogueItem = { act: string; name: string; file: string; nodes: Array<{ id: string; uid: string; source: string; target: string }> }
 const ACTS = ['Act 1', 'Act 2', 'Act 3', 'Global']
@@ -15,7 +16,7 @@ function DialogueNodeEditor({ node, onChange }: { node: { source: string; target
   async function copy(): Promise<void> { try { await navigator.clipboard.writeText(node.source); setMessage('Copied') } catch { setMessage('Copy unavailable') } }
   async function paste(): Promise<void> { try { setPrevious(node.target); onChange(await navigator.clipboard.readText()); setMessage('Pasted') } catch { setMessage('Paste unavailable') } }
   function undo(): void { if (previous === null) return; onChange(previous); setPrevious(null); setMessage('Undone') }
-  return <div className="node-fields"><div><label>Source · EN</label><p>{node.source}</p></div><div><div className="node-translation-label"><label>Translation · RO</label><span className="translation-actions"><button type="button" title="Copy source" aria-label="Copy source" onClick={() => void copy()}>⧉</button><button type="button" title="Paste translation" aria-label="Paste translation" onClick={() => void paste()}>↳</button><button type="button" title="Undo translation" aria-label="Undo translation" disabled={previous === null} onClick={undo}>↶</button>{message && <small className="action-message">{message}</small>}</span></div><textarea value={node.target} onChange={(event) => { setPrevious(node.target); onChange(event.target.value) }} rows={3} /></div></div>
+  return <div className="node-fields"><div><label>Source · EN</label><p>{node.source}</p></div><div><div className="node-translation-label"><label>Translation · RO</label><TranslationActions onCopy={() => void copy()} onPaste={() => void paste()} onUndo={undo} canUndo={previous !== null} message={message} /></div><textarea value={node.target} onChange={(event) => { setPrevious(node.target); onChange(event.target.value) }} rows={3} /></div></div>
 }
 
 export function DialogueNodesTab({ document, onDocumentChange }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void }): React.JSX.Element {
