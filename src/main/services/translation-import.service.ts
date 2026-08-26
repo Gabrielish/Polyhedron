@@ -74,11 +74,14 @@ const execFileAsync = promisify(execFile)
 
 function resolveDotnetPath(): string | null {
   const candidates = [
+    process.env.DOTNET_ROOT ? path.join(process.env.DOTNET_ROOT, 'dotnet') : '',
+    process.env.DOTNET_ROOT_ARM64 ? path.join(process.env.DOTNET_ROOT_ARM64, 'dotnet') : '',
     '/opt/homebrew/share/dotnet/dotnet',
     '/opt/homebrew/bin/dotnet',
     '/usr/local/share/dotnet/dotnet',
-    '/usr/local/bin/dotnet'
-  ]
+    '/usr/local/bin/dotnet',
+    '/usr/bin/dotnet'
+  ].filter(Boolean)
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
 }
 
