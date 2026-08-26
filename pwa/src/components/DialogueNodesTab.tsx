@@ -29,7 +29,7 @@ export function DialogueNodesTab({ document, onDocumentChange }: { document: Wor
   const items = useMemo<DialogueItem[]>(() => {
     if (!index) return []
     const hashText = (value: string) => { let hash = 14695981039346656037n; for (const byte of new TextEncoder().encode(value)) { hash ^= BigInt(byte); hash = BigInt.asUintN(64, hash * 1099511628211n) } return hash.toString(16).padStart(16, '0') }
-    const normalize = (value: string) => value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase()
+    const normalize = (value: string) => value.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&#39;|&#x27;/gi, "'").replace(/\s+/g, ' ').trim().toLocaleLowerCase()
     const categoryNames = index.categories as string[]
     const files = index.files as string[]
     const dialogues = index.dialogues as string[]
