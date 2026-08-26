@@ -22,6 +22,7 @@ function downloadDocument(document: WorkspaceSyncDocument): void {
 export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; importSignal?: number }): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   const [query, setQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
   const [showIds, setShowIds] = useState(false)
   const [filter, setFilter] = useState<'all' | 'untranslated' | 'translated' | 'tags' | 'needs-review'>('all')
@@ -30,20 +31,25 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   const [message, setMessage] = useState('Import a workspace-sync.json exported from Polyhedron Desktop.')
 
   useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedQuery(query), 250)
+    return () => window.clearTimeout(timer)
+  }, [query])
+
+  useEffect(() => {
     if (importSignal > 0) inputRef.current?.click()
   }, [importSignal])
 
   const session = document.sessions[0]
   const allEntries = useMemo(() => document.sessions.flatMap((item) => item.entries).filter((entry) => !isDeveloperNote(entry.source)), [document.sessions])
   const entries = useMemo(() => {
-    const normalized = query.trim().toLocaleLowerCase()
+    const normalized = debouncedQuery.trim().toLocaleLowerCase()
     const matchesFilter = (entry: SyncEntry) => filter === 'all' || (filter === 'untranslated' ? !entry.target.trim() : filter === 'translated' ? Boolean(entry.target.trim()) : filter === 'needs-review' ? entry.needsReview : /<[^>]+>|&lt;\/?[A-Za-z]/i.test(entry.source))
     if (!normalized) return allEntries.filter(matchesFilter)
     return allEntries.filter((entry) => {
       const fields = [entry.source, entry.target, entry.uid].map((value) => value.toLocaleLowerCase())
       return matchesFilter(entry) && (exactMatch ? fields.some((value) => value === normalized) : fields.some((value) => value.includes(normalized)))
     })
-  }, [allEntries, exactMatch, filter, query])
+  }, [allEntries, debouncedQuery, exactMatch, filter])
 
   const pageCount = Math.max(1, Math.ceil(entries.length / pageSize))
   const visibleEntries = entries.slice((page - 1) * pageSize, page * pageSize)
