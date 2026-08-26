@@ -230,6 +230,7 @@ export type ConfigKey =
   | 'dictionary_page_size'
   | 'translation_page_size'
   | 'show_translation_counters'
+  | 'hide_developer_notes'
   | 'divine_path'
 
 export type UserErrorCode =

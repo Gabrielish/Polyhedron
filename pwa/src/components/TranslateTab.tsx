@@ -4,6 +4,11 @@ import { isWorkspaceSyncDocument } from '../sync/workspaceSync'
 import { TranslationActions } from './TranslationActions'
 import { Search } from 'lucide-react'
 
+function isDeveloperNote(source: string): boolean {
+  const value = source.trim()
+  return value.startsWith('%%%') || (value.startsWith('|') && value.endsWith('|'))
+}
+
 function downloadDocument(document: WorkspaceSyncDocument): void {
   const blob = new Blob([JSON.stringify(document, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
@@ -29,7 +34,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   }, [importSignal])
 
   const session = document.sessions[0]
-  const allEntries = useMemo(() => document.sessions.flatMap((item) => item.entries), [document.sessions])
+  const allEntries = useMemo(() => document.sessions.flatMap((item) => item.entries).filter((entry) => !isDeveloperNote(entry.source)), [document.sessions])
   const entries = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
     const matchesFilter = (entry: SyncEntry) => filter === 'all' || (filter === 'untranslated' ? !entry.target.trim() : filter === 'translated' ? Boolean(entry.target.trim()) : filter === 'needs-review' ? entry.needsReview : /<[^>]+>|&lt;\/?[A-Za-z]/i.test(entry.source))

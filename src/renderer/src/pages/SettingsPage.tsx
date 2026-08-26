@@ -350,6 +350,13 @@ export function SettingsPage(): React.JSX.Element {
               <span className="text-xs text-neutral-500">{t('descriptions.showCounters')}</span>
             </span>
           </label>
+          <label className="mt-4 flex cursor-pointer items-start gap-3">
+            <input type="checkbox" checked={config['hide_developer_notes'] !== 'false'} onChange={(event) => { void set('hide_developer_notes', String(event.target.checked)) }} className="mt-0.5 cursor-pointer accent-amber-500" />
+            <span className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-neutral-300">Hide developer notes</span>
+              <span className="text-xs text-neutral-500">Hide internal strings beginning with %%% or wrapped in | ... | from the editor and progress counters.</span>
+            </span>
+          </label>
         </SettingsCard>
 
         <SettingsCard title={t('sections.defaults')}>

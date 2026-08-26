@@ -6,6 +6,7 @@ import { QuotaExceededDialog } from '@/components/translation/QuotaExceededDialo
 import { TranslationGrid } from '@/components/translation/TranslationGrid'
 import { getProviderMeta } from '@/features/settings/aiProviders'
 import { useAISettings } from '@/hooks/useAISettings'
+import { useConfig } from '@/hooks/useConfig'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { Language } from '@/types'
 import { useBatchTranslation } from '../hooks/useBatchTranslation'
@@ -13,6 +14,7 @@ import { useDictionarySave } from '../hooks/useDictionarySave'
 import { useLoadedEditorShortcuts } from '../hooks/useLoadedEditorShortcuts'
 import { useTranslationExport } from '../hooks/useTranslationExport'
 import type { TranslationSession } from '../types'
+import { isDeveloperNote } from '@/context/TranslationSession'
 import { EditorHeader } from './EditorHeader'
 import { PackageExportModal } from './PackageExportModal'
 
@@ -31,9 +33,14 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   const batch = useBatchTranslation(session)
   const exportFlow = useTranslationExport(session, languages)
   const { provider: aiProvider } = useAISettings()
+  const { config } = useConfig()
+  const hideDeveloperNotes = config['hide_developer_notes'] !== 'false'
+  const visibleEntries = hideDeveloperNotes
+    ? session.entries.filter((entry) => !isDeveloperNote(entry.source))
+    : session.entries
 
-  const translatedCount = session.entries.filter((entry) => entry.target.trim() !== '').length
-  const total = session.entries.length
+  const translatedCount = visibleEntries.filter((entry) => entry.target.trim() !== '').length
+  const total = visibleEntries.length
   const pct = total > 0 ? (translatedCount / total) * 100 : 0
   const fileName = session.inputPath
     ? (session.inputPath.split(/[\\/]/).pop() ?? session.modName)
@@ -108,7 +115,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
 
       <div className="flex-1 min-h-0">
         <TranslationGrid
-          entries={session.entries}
+          entries={visibleEntries}
           onEntryChange={session.updateEntry}
           onEntryManualEdit={handleEntryManualEdit}
           viewMode={isCompactViewport ? 'stacked' : viewMode}
