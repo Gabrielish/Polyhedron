@@ -4,12 +4,12 @@
 body { margin: 0; min-width: 320px; min-height: 100vh; background: #0c0d0f; }
 button { font: inherit; }
 .app-shell { width: min(100%, 900px); margin: 0 auto; padding: 28px 18px 42px; }
-.app-header { position: relative; top: auto; z-index: 6; display: flex; align-items: center; gap: 18px; min-height: 54px; padding: 14px 0; border-bottom: 1px solid #252a31; background: rgb(12 13 15 / 96%); backdrop-filter: blur(10px); }
+.app-header { position: relative; top: auto; z-index: 6; display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 54px; padding: 14px 0; border-bottom: 1px solid #252a31; background: rgb(12 13 15 / 96%); backdrop-filter: blur(10px); }
 
-.brand-lockup { display: flex; align-items: baseline; gap: 7px; min-width: 0; color: #d7d9de; }
+.brand-lockup { display: flex; align-items: center; gap: 8px; min-width: 0; color: #d7d9de; }
 .brand-dragon { width: 25px; height: 22px; flex: 0 0 auto; color: #ed1c24; }
-.brand-name { font-family: 'Breathe Fire III', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: .05em; white-space: nowrap; }
-.brand-platform { color: #6f7680; font-size: 11px; font-weight: 400; white-space: nowrap; }
+.brand-name { font-family: 'Breathe Fire III', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; }
+.brand-platform { color: #6f7680; font-size: 9px; font-weight: 400; white-space: nowrap; }
 
 .eyebrow { margin: 0 0 6px; color: #ed1c24; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 h1, h2 { margin: 0; }
