@@ -1,5 +1,5 @@
 import { CheckCircle2, CloudOff, Download, LoaderCircle, Upload } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
 
@@ -42,6 +42,21 @@ export function CloudSyncMenu(): React.JSX.Element {
   useEffect(() => {
     setSavedFingerprint(localStorage.getItem(syncKey))
   }, [syncKey])
+
+  const loadedOnce = useRef(session.phase === 'loaded')
+  useEffect(() => {
+    if (session.phase !== 'loaded') {
+      loadedOnce.current = false
+      return
+    }
+    if (loadedOnce.current) return
+    loadedOnce.current = true
+    if (localStorage.getItem(syncKey) !== 'download-pending') return
+    // The imported workspace is now loaded; use the fingerprint of the actual
+    // in-memory session rather than the pre-restart archive fingerprint.
+    localStorage.setItem(syncKey, currentFingerprint)
+    setSavedFingerprint(currentFingerprint)
+  }, [currentFingerprint, session.phase, syncKey])
 
   const remoteStampKey = `icosa.cloud-sync-remote.${syncKey}`
   const isSynced = session.phase === 'loaded' && !remoteChanged && savedFingerprint !== null && savedFingerprint === currentFingerprint
@@ -98,8 +113,8 @@ export function CloudSyncMenu(): React.JSX.Element {
     setBusy(true)
     try {
       const result = await window.api.cloud.download({ sessionKey })
-      localStorage.setItem(syncKey, result.stats.fingerprint)
-      setSavedFingerprint(result.stats.fingerprint)
+      localStorage.setItem(syncKey, 'download-pending')
+      setSavedFingerprint('download-pending')
       const stamp = await window.api.cloud.syncStamp()
       if (stamp) localStorage.setItem(remoteStampKey, stamp)
       setRemoteChanged(false)
