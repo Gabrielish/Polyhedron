@@ -25,14 +25,9 @@ export function App(): React.JSX.Element {
       return null
     }
     try {
-      let token: string
-      try {
-        // Reuse the existing Google grant without showing account/consent screens.
-        token = await requestDriveAccessToken(googleClientId, '')
-      } catch {
-        // First-time connection (or a revoked grant) needs Google's approval once.
-        token = await requestDriveAccessToken(googleClientId, 'consent')
-      }
+      // The user explicitly pressed Connect, so use the interactive flow directly.
+      // iOS Safari can leave a silent GIS request pending indefinitely.
+      const token = await requestDriveAccessToken(googleClientId, 'consent')
       setDriveToken(token)
       window.localStorage.setItem(DRIVE_CONNECTED_KEY, 'true')
       setSyncMessage('Google Drive connected.')
