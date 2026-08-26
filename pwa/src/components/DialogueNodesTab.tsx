@@ -12,7 +12,7 @@ export function DialogueNodesTab({ document, onDocumentChange }: { document: Wor
   useEffect(() => { void fetch('./data/dialogue-index.json').then((response) => response.json()).then(setIndex).catch(() => setIndex(null)) }, [])
   const items = useMemo<DialogueItem[]>(() => {
     if (!index) return []
-    const hashText = (value: string) => { let hash = 2166136261; for (const byte of new TextEncoder().encode(value)) { hash ^= byte; hash = Math.imul(hash, 16777619) } return (hash >>> 0).toString(16) }
+    const hashText = (value: string) => { let hash = 14695981039346656037n; for (const byte of new TextEncoder().encode(value)) { hash ^= BigInt(byte); hash = BigInt.asUintN(64, hash * 1099511628211n) } return hash.toString(16).padStart(16, '0') }
     const normalize = (value: string) => value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase()
     const categoryNames = index.categories as string[]
     const files = index.files as string[]
