@@ -72,16 +72,17 @@ interface StagedImport {
 const stagedImports = new Map<string, StagedImport>()
 const execFileAsync = promisify(execFile)
 
-function resolveDotnetPath(): string | null {
+function resolveWinePath(): string | null {
   const candidates = [
-    process.env.DOTNET_ROOT ? path.join(process.env.DOTNET_ROOT, 'dotnet') : '',
-    process.env.DOTNET_ROOT_ARM64 ? path.join(process.env.DOTNET_ROOT_ARM64, 'dotnet') : '',
-    '/opt/homebrew/share/dotnet/dotnet',
-    '/opt/homebrew/bin/dotnet',
-    '/usr/local/share/dotnet/dotnet',
-    '/usr/local/bin/dotnet',
-    '/usr/bin/dotnet'
-  ].filter(Boolean)
+    process.env.WINE,
+    process.env.WINE64,
+    '/opt/homebrew/bin/wine64',
+    '/opt/homebrew/bin/wine',
+    '/usr/local/bin/wine64',
+    '/usr/local/bin/wine',
+    '/usr/bin/wine64',
+    '/usr/bin/wine'
+  ].filter((candidate): candidate is string => Boolean(candidate))
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
 }
 
@@ -96,20 +97,21 @@ function bundledAssetPath(relativePath: string): string {
 
 async function runDivine(args: string[]): Promise<void> {
   const divineDir = bundledAssetPath(path.join('tools', 'lslib', 'Tools'))
-  const useDotnet = process.platform === 'darwin'
-  const divinePath = path.join(divineDir, useDotnet ? 'Divine.dll' : 'Divine.exe')
+  const useWine = process.platform === 'darwin'
+  const divinePath = path.join(divineDir, 'Divine.exe')
   if (!fs.existsSync(divinePath)) {
-    throw new Error(`${useDotnet ? 'Divine.dll' : 'Divine.exe'} was not found at ${divinePath}`)
+    throw new Error(`Divine.exe was not found at ${divinePath}`)
   }
 
   try {
-    // macOS cannot execute the bundled Windows PE executable directly.
-    // Run the portable .NET assembly through the installed dotnet runtime.
-    const dotnetPath = useDotnet ? resolveDotnetPath() : null
-    if (useDotnet && !dotnetPath) {
-      throw new Error('The .NET runtime is required on macOS to build localization PAK files. Install the .NET 8 runtime, then restart Icosa.')
+    // Divine distributed with LSLib is a Windows executable. On macOS it must
+    // be launched by a Windows compatibility runtime; the bundled DLL is a
+    // .NET Framework assembly and cannot be run by macOS .NET directly.
+    const winePath = useWine ? resolveWinePath() : null
+    if (useWine && !winePath) {
+      throw new Error('macOS injection requires Wine to run Divine.exe. Install Wine (for example with “brew install --cask whisky” or WineBottler), then restart Polyhedron.')
     }
-    await execFileAsync(useDotnet ? dotnetPath! : divinePath, useDotnet ? [divinePath, ...args] : args, {
+    await execFileAsync(useWine ? winePath! : divinePath, useWine ? [divinePath, ...args] : args, {
       cwd: divineDir,
       windowsHide: true,
       maxBuffer: 20 * 1024 * 1024
