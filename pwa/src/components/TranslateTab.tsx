@@ -18,6 +18,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   const [query, setQuery] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
   const [showIds, setShowIds] = useState(false)
+  const [filter, setFilter] = useState<'all' | 'untranslated' | 'translated' | 'tags' | 'needs-review'>('all')
   const [page, setPage] = useState(1)
   const pageSize = 25
   const [message, setMessage] = useState('Import a workspace-sync.json exported from Polyhedron Desktop.')
@@ -30,12 +31,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   const allEntries = useMemo(() => document.sessions.flatMap((item) => item.entries), [document.sessions])
   const entries = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase()
-    if (!normalized) return allEntries
+    const matchesFilter = (entry: SyncEntry) => filter === 'all' || (filter === 'untranslated' ? !entry.target.trim() : filter === 'translated' ? Boolean(entry.target.trim()) : filter === 'needs-review' ? entry.needsReview : /<[^>]+>|&lt;\/?[A-Za-z]/i.test(entry.source))
+    if (!normalized) return allEntries.filter(matchesFilter)
     return allEntries.filter((entry) => {
       const fields = [entry.source, entry.target, entry.uid].map((value) => value.toLocaleLowerCase())
-      return exactMatch ? fields.some((value) => value === normalized) : fields.some((value) => value.includes(normalized))
+      return matchesFilter(entry) && (exactMatch ? fields.some((value) => value === normalized) : fields.some((value) => value.includes(normalized)))
     })
-  }, [allEntries, exactMatch, query])
+  }, [allEntries, exactMatch, filter, query])
 
   const pageCount = Math.max(1, Math.ceil(entries.length / pageSize))
   const visibleEntries = entries.slice((page - 1) * pageSize, page * pageSize)
@@ -45,7 +47,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
   useEffect(() => {
     setPage(1)
-  }, [query, exactMatch, session?.id])
+  }, [query, exactMatch, filter, session?.id])
 
   async function importDocument(file: File): Promise<void> {
     try {
@@ -70,6 +72,17 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
     })
   }
 
+  function toggleReview(uid: string): void {
+    onDocumentChange({
+      ...document,
+      generatedAt: new Date().toISOString(),
+      sessions: document.sessions.map((item) => ({
+        ...item,
+        entries: item.entries.map((entry) => entry.uid === uid ? { ...entry, needsReview: !entry.needsReview } : entry)
+      }))
+    })
+  }
+
   return (
     <section className="translate-panel">
       <div className="panel-toolbar">
@@ -86,12 +99,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
           <label className="search-field"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Începe o nouă căutare" /></label>
           <label className="exact-match" title="Exact match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /><span className="control-icon" aria-hidden="true">⌕</span><span className="control-text">Exact</span></label>
           <label className="exact-match" title="Show IDs"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /><span className="control-icon" aria-hidden="true">#</span><span className="control-text">IDs</span></label>
+          <div className="translation-filters" role="group" aria-label="Translation filters">{([['all', 'All'], ['untranslated', 'Untranslated'], ['translated', 'Translated'], ['tags', 'With XML tags'], ['needs-review', 'Needs review']] as const).map(([value, label]) => <button key={value} type="button" className={filter === value ? 'translation-filter active' : 'translation-filter'} onClick={() => setFilter(value)}>{label}</button>)}</div>
           <span className="counter">{translatedCount.toLocaleString()} / {totalCount.toLocaleString()} translated ({translatedPercent}%)</span>
         </div>
       )}
 
       <div className="translate-list">
-        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry, index) => <TranslationCard key={entry.uid} entry={entry} stringNumber={(page - 1) * pageSize + index + 1} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} />)}
+        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry, index) => <TranslationCard key={entry.uid} entry={entry} stringNumber={(page - 1) * pageSize + index + 1} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} onReview={() => toggleReview(entry.uid)} />)}
       </div>
       {entries.length > 0 && <div className="pagination-bar">
         <button type="button" className="secondary-button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
@@ -102,7 +116,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   )
 }
 
-function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
+function TranslationCard({ entry, stringNumber, showId, onChange, onReview }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string) => void; onReview: () => void }): React.JSX.Element {
   const [previousValue, setPreviousValue] = useState<string | null>(null)
   const [actionMessage, setActionMessage] = useState('')
   const sourceText = decodeHtmlEntities(entry.source)
@@ -122,7 +136,7 @@ function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: Syn
     setPreviousValue(null)
     setActionMessage('Undone')
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><TranslationActions onCopy={() => void copySource()} onPaste={() => void pasteSource()} onUndo={undo} canUndo={previousValue !== null} message={actionMessage} />{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><TranslationActions onCopy={() => void copySource()} onPaste={() => void pasteSource()} onUndo={undo} canUndo={previousValue !== null} message={actionMessage} onReview={onReview} needsReview={entry.needsReview} /></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
 }
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)

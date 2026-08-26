@@ -4,6 +4,8 @@ type TranslationActionsProps = {
   onUndo: () => void
   canUndo: boolean
   message?: string
+  onReview?: () => void
+  needsReview?: boolean
 }
 
 function ActionIcon({ type }: { type: 'copy' | 'paste' | 'undo' }): React.JSX.Element {
@@ -12,11 +14,12 @@ function ActionIcon({ type }: { type: 'copy' | 'paste' | 'undo' }): React.JSX.El
   return <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 5.5 2.5 8 5 10.5" /><path d="M2.8 8h6.5a4 4 0 1 1 0 4" /></svg>
 }
 
-export function TranslationActions({ onCopy, onPaste, onUndo, canUndo, message }: TranslationActionsProps): React.JSX.Element {
+export function TranslationActions({ onCopy, onPaste, onUndo, canUndo, message, onReview, needsReview }: TranslationActionsProps): React.JSX.Element {
   return <span className="translation-actions">
     <button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={onCopy}><ActionIcon type="copy" /></button>
     <button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={onPaste}><ActionIcon type="paste" /></button>
     <button type="button" title="Undo last change" aria-label="Undo last change" disabled={!canUndo} onClick={onUndo}><ActionIcon type="undo" /></button>
+    {onReview && <button type="button" className={needsReview ? 'review-active' : ''} title={needsReview ? 'Remove needs review' : 'Mark as needs review'} aria-label={needsReview ? 'Remove needs review' : 'Mark as needs review'} onClick={onReview}>!</button>}
     {message && <small className="action-message" role="status">{message}</small>}
   </span>
 }
