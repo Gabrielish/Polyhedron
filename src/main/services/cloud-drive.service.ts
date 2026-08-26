@@ -124,6 +124,12 @@ async function findWorkspaceFile(drive: drive_v3.Drive): Promise<drive_v3.Schema
   return result.data.files?.[0] ?? null
 }
 
+export async function getPwaSyncModifiedTime(): Promise<string | null> {
+  const drive = google.drive({ version: 'v3', auth: await getAuth() })
+  const result = await drive.files.list({ q: `name = '${PWA_SYNC_FILE_NAME}' and trashed = false`, fields: 'files(modifiedTime)', spaces: 'drive', pageSize: 1 })
+  return result.data.files?.[0]?.modifiedTime ?? null
+}
+
 async function uploadPwaSyncFile(drive: drive_v3.Drive, document: ReturnType<typeof buildPwaSyncDocument>): Promise<void> {
   const result = await drive.files.list({ q: `name = '${PWA_SYNC_FILE_NAME}' and trashed = false`, fields: 'files(id)', spaces: 'drive', pageSize: 1 })
   const existing = result.data.files?.[0]

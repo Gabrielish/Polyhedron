@@ -646,6 +646,7 @@ export interface WorkspaceApi {
 export interface CloudApi {
   upload(params?: { sessionKey?: string }): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }>
   download(params?: { sessionKey?: string }): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }>
+  syncStamp(): Promise<string | null>
 }
 
 export interface AppWindow {

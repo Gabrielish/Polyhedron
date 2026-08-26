@@ -27,6 +27,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [busy, setBusy] = useState(false)
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
+  const [remoteChanged, setRemoteChanged] = useState(false)
   const session = useTranslationSession()
   const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
   // The workspace importer can rewrite stored/input paths. Keep the UI's saved
@@ -42,7 +43,28 @@ export function CloudSyncMenu(): React.JSX.Element {
     setSavedFingerprint(localStorage.getItem(syncKey))
   }, [syncKey])
 
-  const isSynced = session.phase === 'loaded' && savedFingerprint !== null && savedFingerprint === currentFingerprint
+  const remoteStampKey = `icosa.cloud-sync-remote.${syncKey}`
+  const isSynced = session.phase === 'loaded' && !remoteChanged && savedFingerprint !== null && savedFingerprint === currentFingerprint
+
+  useEffect(() => {
+    if (session.phase !== 'loaded') return
+    // Do not trigger Google's interactive auth just because a session is open;
+    // polling starts only after this session has already been synced once.
+    if (!localStorage.getItem(syncKey)) return
+    let cancelled = false
+    const checkRemote = async () => {
+      try {
+        const stamp = await window.api.cloud.syncStamp()
+        if (cancelled || !stamp) return
+        const previous = localStorage.getItem(remoteStampKey)
+        if (!previous) localStorage.setItem(remoteStampKey, stamp)
+        else if (previous !== stamp) setRemoteChanged(true)
+      } catch { /* Keep the current status when Drive is temporarily unavailable. */ }
+    }
+    void checkRemote()
+    const timer = window.setInterval(() => void checkRemote(), 5 * 60 * 1000)
+    return () => { cancelled = true; window.clearInterval(timer) }
+  }, [remoteStampKey, session.phase])
 
   async function saveCurrentSession(): Promise<void> {
     if (session.phase !== 'loaded' || session.entries.length === 0) return
@@ -60,6 +82,9 @@ export function CloudSyncMenu(): React.JSX.Element {
       const result = await window.api.cloud.upload({ sessionKey })
       localStorage.setItem(syncKey, result.stats.fingerprint || currentFingerprint)
       setSavedFingerprint(result.stats.fingerprint || currentFingerprint)
+      const stamp = await window.api.cloud.syncStamp()
+      if (stamp) localStorage.setItem(remoteStampKey, stamp)
+      setRemoteChanged(false)
       setSyncResult({ direction: 'upload', ...result.stats })
       setOpen(false)
     } catch (error) {
@@ -75,6 +100,9 @@ export function CloudSyncMenu(): React.JSX.Element {
       const result = await window.api.cloud.download({ sessionKey })
       localStorage.setItem(syncKey, result.stats.fingerprint)
       setSavedFingerprint(result.stats.fingerprint)
+      const stamp = await window.api.cloud.syncStamp()
+      if (stamp) localStorage.setItem(remoteStampKey, stamp)
+      setRemoteChanged(false)
       setSyncResult({ direction: 'download', ...result.stats })
       setOpen(false)
     } catch (error) {

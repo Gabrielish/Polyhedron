@@ -401,6 +401,7 @@ const api: AppApi = {
   cloud: {
     upload: (params: { sessionKey?: string } = {}): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }> => ipcRenderer.invoke('cloud:upload', params),
     download: (params: { sessionKey?: string } = {}): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }> => ipcRenderer.invoke('cloud:download', params)
+    ,syncStamp: (): Promise<string | null> => ipcRenderer.invoke('cloud:syncStamp')
   },
 
   update: {
