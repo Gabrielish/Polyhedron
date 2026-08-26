@@ -128,7 +128,7 @@ function HighlightedEditor({ value, onChange }: { value: string; onChange: (valu
     const editor = editorRef.current
     if (!editor) return
     editor.style.height = 'auto'
-    editor.style.height = `${Math.min(editor.scrollHeight, 320)}px`
+    editor.style.height = `${editor.scrollHeight}px`
   }, [value])
   function syncScroll(event: React.UIEvent<HTMLTextAreaElement>): void {
     if (highlightRef.current) {
