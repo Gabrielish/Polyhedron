@@ -99,7 +99,7 @@ export function App(): React.JSX.Element {
       <nav className="tabs" aria-label="Companion tabs">
         {tabs.map((item) => <button key={item} type="button" className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>)}
       </nav>
-      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} /> : <section className="placeholder-card"><p className="eyebrow">{tab}</p><h2>Companion foundation ready</h2><p>The shared workspace sync contract is in place. The next step connects this tab to the desktop workspace data.</p></section>}
+      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : <section className="placeholder-card"><p className="eyebrow">{tab}</p><h2>Companion foundation ready</h2><p>The shared workspace sync contract is in place. The next step connects this tab to the desktop workspace data.</p></section>}
     </main>
   )
 }
