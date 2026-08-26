@@ -25,9 +25,19 @@ export function App(): React.JSX.Element {
       return null
     }
     try {
-      // The user explicitly pressed Connect, so use the interactive flow directly.
-      // iOS Safari can leave a silent GIS request pending indefinitely.
-      const token = await requestDriveAccessToken(googleClientId, 'consent')
+      // After the user has authorized once, ask Google for a token silently. This
+      // reuses the active Google session and skips the account picker/consent UI.
+      // A first-time connection still needs the normal consent screen.
+      const previouslyConnected = window.localStorage.getItem(DRIVE_CONNECTED_KEY) === 'true'
+      let token: string
+      try {
+        token = await requestDriveAccessToken(googleClientId, previouslyConnected ? '' : 'consent')
+      } catch (silentError) {
+        if (!previouslyConnected) throw silentError
+        // The Google session may have expired; fall back to the interactive flow
+        // so Connect remains reliable instead of leaving the user stuck.
+        token = await requestDriveAccessToken(googleClientId, 'consent')
+      }
       setDriveToken(token)
       window.localStorage.setItem(DRIVE_CONNECTED_KEY, 'true')
       setSyncMessage('Google Drive connected.')

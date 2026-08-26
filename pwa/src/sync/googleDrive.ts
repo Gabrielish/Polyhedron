@@ -27,13 +27,27 @@ function loadGoogleScript(): Promise<void> {
 export async function requestDriveAccessToken(clientId: string, prompt = 'consent'): Promise<string> {
   await loadGoogleScript()
   return new Promise((resolve, reject) => {
+    let settled = false
+    const finish = (callback: () => void) => {
+      if (settled) return
+      settled = true
+      callback()
+    }
     const client = window.google?.accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: DRIVE_SCOPE,
-      callback: (response) => response.access_token ? resolve(response.access_token) : reject(new Error(response.error || 'Google authorization was cancelled.'))
+      callback: (response) => response.access_token
+        ? finish(() => resolve(response.access_token as string))
+        : finish(() => reject(new Error(response.error || 'Google authorization was cancelled.')))
     })
-    if (!client) reject(new Error('Google Identity Services is unavailable.'))
-    else client.requestAccessToken({ prompt })
+    if (!client) {
+      finish(() => reject(new Error('Google Identity Services is unavailable.')))
+      return
+    }
+    client.requestAccessToken({ prompt })
+    // Safari can occasionally leave a silent GIS request pending. Let the caller
+    // recover with an interactive request rather than waiting forever.
+    if (prompt === '') window.setTimeout(() => finish(() => reject(new Error('Silent Google authorization timed out.'))), 4000)
   })
 }
 
