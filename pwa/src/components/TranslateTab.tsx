@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
 import { isWorkspaceSyncDocument } from '../sync/workspaceSync'
 import { TranslationActions } from './TranslationActions'
+import { Search } from 'lucide-react'
 
 function downloadDocument(document: WorkspaceSyncDocument): void {
   const blob = new Blob([JSON.stringify(document, null, 2)], { type: 'application/json' })
@@ -89,7 +90,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
       {document.sessions.length > 0 && (
         <div className="translate-controls">
-          <label className="search-field"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Începe o nouă căutare" /></label>
+          <label className="search-field"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search..." /><Search aria-hidden="true" size={17} /></label>
           <label className="exact-match" title="Exact match"><input type="checkbox" checked={exactMatch} onChange={(event) => setExactMatch(event.target.checked)} /><span className="control-icon" aria-hidden="true">⌕</span><span className="control-text">Exact</span></label>
           <label className="exact-match" title="Show IDs"><input type="checkbox" checked={showIds} onChange={(event) => setShowIds(event.target.checked)} /><span className="control-icon" aria-hidden="true">#</span><span className="control-text">IDs</span></label>
           <div className="translation-filters" role="group" aria-label="Translation filters">{([['all', 'All'], ['untranslated', 'Untranslated'], ['translated', 'Translated'], ['tags', 'With XML tags'], ['needs-review', 'Needs review']] as const).map(([value, label]) => <button key={value} type="button" className={filter === value ? 'translation-filter active' : 'translation-filter'} onClick={() => setFilter(value)}>{label}</button>)}</div>
