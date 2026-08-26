@@ -70,7 +70,7 @@ h2 { font-size: 20px; }
 .control-icon { display: inline-grid; width: 18px; height: 18px; place-items: center; color: #ffb4b7; font-size: 15px; font-weight: 800; }
 .control-text { font-size: 12px; }
 .exact-match:has(input:checked) { border-color: #ed1c24; color: #fff; background: #211316; }
-.larian-tag { color: #f28bdc; background: rgb(242 139 220 / 14%); border-radius: 4px; padding: 1px 3px; }
+.larian-tag { color: #f28bdc; background: rgb(242 139 220 / 16%); border: 1px solid rgb(242 139 220 / 28%); border-radius: 4px; padding: 1px 4px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: .92em; }
 @media (max-width: 620px) { .exact-match { min-height: 40px; justify-content: center; padding: 0 8px; } .exact-match .control-text { display: none; } }
 
 .pagination-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; color: #858b94; font-size: 12px; }

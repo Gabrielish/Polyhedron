@@ -103,8 +103,15 @@ function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId
   return <article className="translation-card"><div className="translation-meta">{showId ? <span>{entry.uid}</span> : <span>Translation</span>}{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><textarea value={entry.target} onChange={(event) => onChange(event.target.value)} placeholder="Translation..." rows={2} /></article>
 }
 
+function decodeHtmlEntities(value: string): string {
+  const textarea = window.document.createElement('textarea')
+  textarea.innerHTML = value
+  return textarea.value
+}
+
 function LarianText({ value }: { value: string }): React.JSX.Element {
-  const parts = value.split(/(<\/?LSTag\b[^>]*>)/gi)
-  return <>{parts.map((part, index) => /<\/?LSTag\b[^>]*>/i.test(part) ? <span className="larian-tag" key={`${part}-${index}`}>{part}</span> : <span key={`${part}-${index}`}>{part}</span>)}</>
+  const decoded = decodeHtmlEntities(value)
+  const parts = decoded.split(/(<\/?(?:LSTag|LSTagValue)\b[^>]*>)/gi)
+  return <>{parts.map((part, index) => /<\/?(?:LSTag|LSTagValue)\b[^>]*>/i.test(part) ? <span className="larian-tag" key={`${part}-${index}`}>{part}</span> : <span key={`${part}-${index}`}>{part}</span>)}</>
 }
 
