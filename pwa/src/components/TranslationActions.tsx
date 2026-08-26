@@ -1,4 +1,4 @@
-import { Copy, Flag, Undo2 } from 'lucide-react'
+import { ClipboardPaste, Copy, Flag, Undo2 } from 'lucide-react'
 
 type TranslationActionsProps = {
   onCopy: () => void
@@ -12,10 +12,10 @@ type TranslationActionsProps = {
 
 export function TranslationActions({ onCopy, onPaste, onUndo, canUndo, message, onReview, needsReview }: TranslationActionsProps): React.JSX.Element {
   return <span className="translation-actions">
+    {message && <small className="action-message" role="status">{message}</small>}
     <button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={onCopy}><Copy size={15} /></button>
-    <button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={onPaste}><Copy size={15} /></button>
+    <button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={onPaste}><ClipboardPaste size={15} /></button>
     <button type="button" title="Undo last change" aria-label="Undo last change" disabled={!canUndo} onClick={onUndo}><Undo2 size={15} /></button>
     {onReview && <button type="button" className={needsReview ? 'review-active' : ''} title={needsReview ? 'Remove needs review' : 'Mark as needs review'} aria-label={needsReview ? 'Remove needs review' : 'Mark as needs review'} onClick={onReview}><Flag size={15} /></button>}
-    {message && <small className="action-message" role="status">{message}</small>}
   </span>
 }

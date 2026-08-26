@@ -87,6 +87,7 @@ h2 { font-size: 20px; }
 @media (max-width: 560px) { .top-actions { width: 100%; } .top-actions button { flex: 1; } }
 
 .translation-actions { display: inline-flex; align-items: center; gap: 5px; }
+.translation-actions .action-message { order: -1; margin-right: 2px; }
 .translation-actions button { display: inline-grid; width: 30px; height: 26px; place-items: center; padding: 0; border: 1px solid #3a2528; border-radius: 8px; color: #ffb4b7; background: #171316; cursor: pointer; font-size: 15px; line-height: 1; }
 .translation-actions button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .translation-actions button.review-active { border-color: #6ee7a0; color: #6ee7a0; background: rgb(45 120 74 / 18%); }
