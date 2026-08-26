@@ -100,7 +100,25 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 }
 
 function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
-  return <article className="translation-card"><div className="translation-meta">{showId ? <span>{entry.uid}</span> : <span>Translation</span>}{entry.needsReview && <b>Needs review</b>}</div><div className="translation-source"><LarianText value={entry.source} /></div><textarea value={entry.target} onChange={(event) => onChange(event.target.value)} placeholder="Translation..." rows={2} /></article>
+  const sourceText = decodeHtmlEntities(entry.source)
+  async function copySource(): Promise<void> {
+    try { await navigator.clipboard.writeText(sourceText) } catch { /* Clipboard permissions may be unavailable. */ }
+  }
+  async function pasteSource(): Promise<void> {
+    try { onChange(await navigator.clipboard.readText()) } catch { /* Clipboard permissions may be unavailable. */ }
+  }
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={onChange} /></article>
+}
+
+function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
+  const highlightRef = useRef<HTMLDivElement>(null)
+  function syncScroll(event: React.UIEvent<HTMLTextAreaElement>): void {
+    if (highlightRef.current) {
+      highlightRef.current.scrollTop = event.currentTarget.scrollTop
+      highlightRef.current.scrollLeft = event.currentTarget.scrollLeft
+    }
+  }
+  return <div className="translation-editor"><div ref={highlightRef} className="editor-highlight" aria-hidden="true"><LarianText value={value || ' '} /></div><textarea className="editor-input" value={value} onChange={(event) => onChange(event.target.value)} onScroll={syncScroll} placeholder="Translation..." rows={2} /></div>
 }
 
 function decodeHtmlEntities(value: string): string {
