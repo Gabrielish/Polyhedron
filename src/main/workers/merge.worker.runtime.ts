@@ -61,6 +61,15 @@ export async function runMergeWorker(
     const [l1, l2, swapped] = normalizeLangs(input.sourceLang, input.targetLang)
     const updateColumn: 'language1' | 'language2' = swapped ? 'language1' : 'language2'
 
+    // A previous merge could have stored English→English rows for entries
+    // whose target file still contained the source text. They must not count
+    // as translations; remove them before rebuilding this mod's matches.
+    sqlite
+      .prepare(
+        'DELETE FROM dictionary WHERE mod_name = ? AND language1 = ? AND language2 = ? AND text_language1_key = text_language2_key'
+      )
+      .run(input.modName, l1, l2)
+
     const inserts: NewDictionaryEntry[] = []
     const updates: PendingUpdate[] = []
     let matched = 0
@@ -72,6 +81,10 @@ export async function runMergeWorker(
       const sourceText = normalizeDictionaryText(sourceEntry.text)
       const targetText = normalizeDictionaryText(targetEntry.text)
       if (!sourceText || !targetText) continue
+
+      // Identical source/target text means this entry is untranslated. Keep
+      // it out of the dictionary so Translate renders an empty target field.
+      if (dictionaryTextKey(sourceText) === dictionaryTextKey(targetText)) continue
 
       matched++
 
