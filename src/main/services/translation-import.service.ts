@@ -81,7 +81,9 @@ function resolveWinePath(): string | null {
     '/usr/local/bin/wine64',
     '/usr/local/bin/wine',
     '/usr/bin/wine64',
-    '/usr/bin/wine'
+    '/usr/bin/wine',
+    '/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine',
+    '/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine64'
   ].filter((candidate): candidate is string => Boolean(candidate))
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
 }
