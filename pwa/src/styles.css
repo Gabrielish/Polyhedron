@@ -46,7 +46,7 @@ h2 { font-size: 20px; }
 .translation-card { border: 1px solid #2a2f37; border-radius: 12px; padding: 14px; background: #131518; }
 .translation-meta { display: flex; justify-content: space-between; gap: 10px; color: #6f7680; font: 11px ui-monospace, SFMono-Regular, monospace; }
 .translation-meta b { color: #ffb4b7; font: inherit; }
-.translation-source { margin: 10px 0; color: #f0f1f3; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.translation-source { margin: 10px 0; color: #f0f1f3; font-family: ui-monospace, SFMono-Regular, monospace; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .translation-card textarea { width: 100%; resize: vertical; line-height: 1.45; }
 .empty-state { border: 1px dashed #3a3f47; border-radius: 12px; padding: 28px 16px; color: #858b94; text-align: center; }
 @media (max-width: 620px) { .translate-controls { grid-template-columns: minmax(0, 1fr) auto auto; margin: 0 -18px; } .panel-toolbar { flex-direction: column; } .toolbar-actions { width: 100%; justify-content: stretch; } .toolbar-actions button { flex: 1; } .translate-controls { grid-template-columns: minmax(0, 1fr) auto auto; } .counter { justify-self: end; } }

@@ -105,8 +105,14 @@ function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId
 
 function decodeHtmlEntities(value: string): string {
   const textarea = window.document.createElement('textarea')
-  textarea.innerHTML = value
-  return textarea.value
+  let decoded = value
+  for (let pass = 0; pass < 3; pass += 1) {
+    textarea.innerHTML = decoded
+    const next = textarea.value
+    if (next === decoded) break
+    decoded = next
+  }
+  return decoded
 }
 
 function LarianText({ value }: { value: string }): React.JSX.Element {
