@@ -76,7 +76,7 @@ export function InjectLocalizationPage({ embedded = false }: { embedded?: boolea
               <button type="button" disabled={running !== null} onClick={() => void inject('macos')} className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60">
                 <div className="mb-4 flex items-center justify-between"><Apple size={24} className="text-amber-400" /><span className="text-xs text-neutral-600">macOS</span></div>
                 <div className="font-medium">Inject for macOS</div>
-                <div className="mt-1 text-xs leading-5 text-neutral-500">Runs Divine through Wine and the Windows .NET 8 runtime.</div>
+                <div className="mt-1 text-xs leading-5 text-neutral-500">Builds the localization PAK natively for macOS.</div>
                 <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">{running === 'macos' ? 'Injecting…' : 'Inject English.pak'}</span>
               </button>
             </div>
