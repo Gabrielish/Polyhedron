@@ -24,6 +24,8 @@ import {
 import { encodeEntities } from './xml-entities.service'
 import { parseLocalizationXml, writeLocalizationXml } from './xml-parser.service'
 import { createZip, extract } from './zip.service'
+import { writePackage } from './pak/pak-writer'
+import { writeLoca } from './pak/loca-writer'
 
 export interface TranslationXmlCandidate {
   id: string
@@ -168,20 +170,32 @@ export async function exportLocalizationPak(
     fs.cpSync(templateRoot, packageRoot, { recursive: true })
     fs.mkdirSync(languageDir, { recursive: true })
 
-    writeLocalizationXml(
-      entries.map((entry) => ({
-        contentuid: entry.uid,
-        version: entry.version,
-        text: encodeEntities(entry.target || entry.source)
-      })),
-      xmlPath
-    )
-
-    await runDivine(['-g', 'bg3', '-s', xmlPath, '-d', locaPath, '-a', 'convert-loca'])
-    if (!fs.existsSync(locaPath)) throw new Error('Divine did not create english.loca')
-    fs.rmSync(xmlPath, { force: true })
+    const locaEntries = entries.map((entry) => ({
+      key: entry.uid,
+      version: entry.version,
+      text: entry.target || entry.source
+    }))
+    if (process.platform === 'darwin') {
+      writeLoca(locaEntries, locaPath)
+    } else {
+      writeLocalizationXml(
+        entries.map((entry) => ({
+          contentuid: entry.uid,
+          version: entry.version,
+          text: encodeEntities(entry.target || entry.source)
+        })),
+        xmlPath
+      )
+      await runDivine(['-g', 'bg3', '-s', xmlPath, '-d', locaPath, '-a', 'convert-loca'])
+      if (!fs.existsSync(locaPath)) throw new Error('Divine did not create english.loca')
+      fs.rmSync(xmlPath, { force: true })
+    }
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-    await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])
+    if (process.platform === 'darwin') {
+      await writePackage(packageRoot, outputPath)
+    } else {
+      await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])
+    }
     if (!fs.existsSync(outputPath)) throw new Error('Divine did not create the PAK file')
 
     return { outputPath }
