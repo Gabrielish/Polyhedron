@@ -97,6 +97,11 @@ function resolveWindowsDotnetPath(): string | null {
   return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
 }
 
+function toWinePath(value: string): string {
+  if (process.platform !== 'darwin' || !value.startsWith('/')) return value
+  return `Z:${value.replaceAll('/', '\\')}`
+}
+
 function bundledAssetPath(relativePath: string): string {
   if (!app.isPackaged) return path.join(app.getAppPath(), relativePath)
 
@@ -127,7 +132,9 @@ async function runDivine(args: string[]): Promise<void> {
       throw new Error('Wine is installed, but Divine also requires the Windows .NET 8 runtime. Download the Windows x64 .NET 8 runtime and set POLYHEDRON_DOTNET_EXE to its dotnet.exe, then restart Polyhedron.')
     }
     const executable = useWine ? winePath! : divinePath
-    const executableArgs = useWine ? [windowsDotnetPath!, divinePath, ...args] : args
+    const executableArgs = useWine
+      ? [windowsDotnetPath!, toWinePath(divinePath), ...args.map(toWinePath)]
+      : args
     await execFileAsync(executable, executableArgs, {
       cwd: divineDir,
       windowsHide: true,
