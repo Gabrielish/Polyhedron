@@ -90,7 +90,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       )}
 
       <div className="translate-list">
-        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry) => <TranslationCard key={entry.uid} entry={entry} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} />)}
+        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry, index) => <TranslationCard key={entry.uid} entry={entry} stringNumber={(page - 1) * pageSize + index + 1} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} />)}
       </div>
       {entries.length > 0 && <div className="pagination-bar">
         <button type="button" className="secondary-button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
@@ -101,7 +101,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   )
 }
 
-function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
+function TranslationCard({ entry, stringNumber, showId, onChange }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string) => void }): React.JSX.Element {
   const [previousValue, setPreviousValue] = useState<string | null>(null)
   const sourceText = decodeHtmlEntities(entry.source)
   async function copySource(): Promise<void> {
@@ -119,7 +119,7 @@ function TranslationCard({ entry, showId, onChange }: { entry: SyncEntry; showId
     onChange(previousValue)
     setPreviousValue(null)
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? entry.uid : 'Translation'}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><span className="translation-actions"><button type="button" title="Copy untranslated string" aria-label="Copy untranslated string" onClick={() => void copySource()}>⧉</button><button type="button" title="Paste into translation" aria-label="Paste into translation" onClick={() => void pasteSource()}>↳</button><button type="button" title="Undo last change" aria-label="Undo last change" disabled={previousValue === null} onClick={undo}>↶</button>{entry.needsReview && <b>Needs review</b>}</span></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
 }
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)
