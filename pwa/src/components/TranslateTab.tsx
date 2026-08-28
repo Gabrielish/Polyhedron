@@ -6,7 +6,7 @@ import { Search } from 'lucide-react'
 
 function isDeveloperNote(source: string): boolean {
   const value = source.trim()
-  return value.startsWith('%%%') || (value.startsWith('|') && value.endsWith('|'))
+  return value.startsWith('%%%') || (value.startsWith('|') && value.indexOf('|', 1) > 0)
 }
 
 function downloadDocument(document: WorkspaceSyncDocument): void {

@@ -43,7 +43,9 @@ function hasXmlTags(entry: TranslationSessionEntry): boolean {
 
 export function isDeveloperNote(source: string): boolean {
   const value = source.trim()
-  return value.startsWith('%%%') || (value.startsWith('|') && value.endsWith('|'))
+  // Larian notes can have XML markup after the closing pipe (for example
+  // `|internal note|<br>`), so do not require the string to end with `|`.
+  return value.startsWith('%%%') || (value.startsWith('|') && value.indexOf('|', 1) > 0)
 }
 
 const searchCache = new WeakMap<TranslationSessionEntry, { source: string; uid: string; uidShort: string }>()
