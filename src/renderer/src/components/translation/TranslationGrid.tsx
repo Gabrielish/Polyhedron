@@ -38,7 +38,6 @@ import {
   type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
-import { useAISettings } from '@/hooks/useAISettings'
 import { useConfig } from '@/hooks/useConfig'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
