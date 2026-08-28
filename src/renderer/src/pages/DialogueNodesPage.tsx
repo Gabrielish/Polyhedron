@@ -356,6 +356,7 @@ export function DialogueNodesPage(): React.JSX.Element {
   const [dialogueSearch, setDialogueSearch] = useState(
     () => (navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? ''))
   )
+  const [dialogueTextSearch, setDialogueTextSearch] = useState('')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     () => new Set(loadDialogueViewState().expandedNodes ?? [])
   )
@@ -418,10 +419,15 @@ export function DialogueNodesPage(): React.JSX.Element {
     return translated
   }, [choices, dialogueEntryIndex])
   const visibleChoices = useMemo(() => {
-    const query = dialogueSearch.trim().toLocaleLowerCase()
-    if (!query) return choices
-    return choices.filter((choice) => choice.dialogue.toLocaleLowerCase().includes(query))
-  }, [choices, dialogueSearch])
+    const nameQuery = dialogueSearch.trim().toLocaleLowerCase()
+    const textQuery = dialogueTextSearch.trim().toLocaleLowerCase()
+    return choices.filter((choice) => {
+      if (nameQuery && !choice.dialogue.toLocaleLowerCase().includes(nameQuery)) return false
+      if (!textQuery) return true
+      const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
+      return rows.some((entry) => `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(textQuery))
+    })
+  }, [choices, dialogueEntryIndex, dialogueSearch, dialogueTextSearch])
   const tree = useMemo(() => makeTree(visibleChoices), [visibleChoices])
   useEffect(() => {
     if (!selectedKey) return
@@ -548,6 +554,15 @@ export function DialogueNodesPage(): React.JSX.Element {
                 value={dialogueSearch}
                 onChange={(event) => setDialogueSearch(event.target.value)}
                 placeholder="Search dialogue node name..."
+                className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
+              />
+            </label>
+            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
+              <Search size={14} />
+              <input
+                value={dialogueTextSearch}
+                onChange={(event) => setDialogueTextSearch(event.target.value)}
+                placeholder="Search source or translation..."
                 className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
               />
             </label>
