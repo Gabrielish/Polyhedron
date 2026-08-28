@@ -77,9 +77,10 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     try {
       await window.api.session.save({
         key: sessionKey,
-        entries: session.entries.map(({ uid, target, matchType, needsReview }) => ({
+        entries: session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({
           uid,
           target,
+          genderTargets,
           matchType,
           needsReview
         }))

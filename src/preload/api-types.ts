@@ -637,8 +637,8 @@ export interface UpdateApi {
 }
 
 export interface SessionApi {
-  save(params: { key: string; entries: Array<{ uid: string; target: string; matchType: XmlMatchType; needsReview: boolean }> }): Promise<{ success: boolean }>
-  load(params: { key: string }): Promise<Array<{ uid: string; target: string; matchType: XmlMatchType; needsReview?: boolean }> | null>
+  save(params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview: boolean }> }): Promise<{ success: boolean }>
+  load(params: { key: string }): Promise<Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview?: boolean }> | null>
 }
 
 export interface WorkspaceApi {

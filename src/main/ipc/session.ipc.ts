@@ -6,6 +6,7 @@ import { app, ipcMain } from 'electron'
 interface SessionEntry {
   uid: string
   target: string
+  genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
 }
