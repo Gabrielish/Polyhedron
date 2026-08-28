@@ -16,9 +16,9 @@ const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const CLOUD_FILE_NAME = 'icosa-workspace.icws'
 const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
 
-type PwaSyncEntry = { uid: string; source: string; target: string; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean }
+type PwaSyncEntry = { uid: string; source: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean }
 
-type SavedSessionEntry = { uid?: string; target?: string; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }
+type SavedSessionEntry = { uid?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }
 
 function buildPwaSyncDocument() {
   const db = getDb()
@@ -45,7 +45,7 @@ function buildPwaSyncDocument() {
     }
     const entries = xmlEntries.map((xmlEntry) => {
       const saved = savedByUid.get(xmlEntry.contentuid)
-      const entry: PwaSyncEntry = { uid: xmlEntry.contentuid, source: xmlEntry.text, target: saved?.target ?? '', matchType: saved?.matchType ?? 'none', needsReview: saved?.needsReview === true }
+      const entry: PwaSyncEntry = { uid: xmlEntry.contentuid, source: xmlEntry.text, target: saved?.target ?? '', genderTargets: saved?.genderTargets, matchType: saved?.matchType ?? 'none', needsReview: saved?.needsReview === true }
       const value = `${entry.uid}\u0000${entry.target}`
       for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) }
       return entry
@@ -143,13 +143,13 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const fileId = result.data.files?.[0]?.id
   if (!fileId) return
   const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
-  const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }> }> }
+  const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean }> }> }
   if (document.version !== 1 || !Array.isArray(document.sessions)) return
   const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
   fs.mkdirSync(sessionsDir, { recursive: true })
   for (const session of document.sessions) {
     if (!session.sourceLang || !session.targetLang || !Array.isArray(session.entries)) continue
-    const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true }))
+    const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', genderTargets: entry.genderTargets, matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true }))
     if (session.id && persistedEntries.length > 0) {
       const sessionPath = path.join(sessionsDir, `${crypto.createHash('sha256').update(session.id).digest('hex')}.json`)
       let existingEntries: typeof persistedEntries = []
