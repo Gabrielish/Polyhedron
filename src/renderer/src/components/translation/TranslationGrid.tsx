@@ -1056,6 +1056,10 @@ export function TranslationGrid({
     </div>
   )
 
+  // Keep enough scroll room for the floating pagination dock so the final
+  // translation row can always be brought fully above it.
+  const paginationBottomSpacer = 96
+
   const filterItems: Array<{
     mode: FilterMode
     label: string
@@ -1363,7 +1367,7 @@ export function TranslationGrid({
           ref={sideParentRef}
           className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]"
         >
-          <div style={{ height: sideVirtualizer.getTotalSize(), position: 'relative' }}>
+          <div style={{ height: sideVirtualizer.getTotalSize() + paginationBottomSpacer, position: 'relative' }}>
             {sideVirtualizer.getVirtualItems().map((virtualItem) => {
               const entry = pageEntries[virtualItem.index]
               const category = getCategory(entry)
@@ -1551,8 +1555,7 @@ export function TranslationGrid({
       </div>
 
       <div ref={stackedParentRef} className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto">
-        {/* 44px = pt-5 (20px) + pb-6 (24px) added to total size so padding is preserved */}
-        <div style={{ height: stackedVirtualizer.getTotalSize() + 44, position: 'relative' }}>
+        <div style={{ height: stackedVirtualizer.getTotalSize() + paginationBottomSpacer, position: 'relative' }}>
           {stackedVirtualizer.getVirtualItems().map((virtualItem) => {
             const entry = pageEntries[virtualItem.index]
             const category = getCategory(entry)
