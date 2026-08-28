@@ -155,7 +155,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
         </div>
 
         <div className="translate-idle-footer shrink-0 px-6 pb-5 pt-3">
-          <div className="mx-auto flex max-w-220 items-center gap-2.5 rounded-2xl border border-[#2a2f37] bg-[#111317]/95 px-4 py-3 shadow-[0_12px_32px_rgb(0_0_0_/_28%)] backdrop-blur-xl">
+          <div className="mx-auto flex max-w-220 items-center gap-2.5 rounded-xl border border-neutral-800/80 bg-[#141416] px-4 py-3 shadow-xl">
             <div className="flex-1 text-xs text-neutral-400">
               {setup.ready
                 ? t('setup.ready', {
