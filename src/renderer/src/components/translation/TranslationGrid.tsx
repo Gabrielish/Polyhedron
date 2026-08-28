@@ -1498,6 +1498,7 @@ export function TranslationGrid({
                       }}
                       value={genderValue(entry)}
                       onFocus={() => setEditingRowId(entry.rowId)}
+                      onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                       onKeyDown={(event) => handleEnterKey(event, entry)}
                       rows={1}
@@ -1771,6 +1772,7 @@ export function TranslationGrid({
                         }}
                       value={genderValue(entry)}
                       onFocus={() => setEditingRowId(entry.rowId)}
+                      onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                         onKeyDown={(event) => handleEnterKey(event, entry)}
                         rows={rows}
