@@ -1510,9 +1510,7 @@ export function TranslationGrid({
                   <div
                     className="translate-target-cell flex min-w-0 flex-col gap-2 border-l border-[#1f2329] px-4 py-3"
                     onClick={(event) => event.stopPropagation()}
-                  >
-                    {renderGenderControls(entry)}
-                    <HighlightedTextarea
+                  >                    <HighlightedTextarea
                       ref={(element) => {
                         if (element) textareaRefs.current.set(entry.rowId, element)
                         else textareaRefs.current.delete(entry.rowId)
@@ -1526,6 +1524,7 @@ export function TranslationGrid({
                       containerClassName="rounded-md"
                       className="field-sizing-content"
                     />
+                    {renderGenderControls(entry)}
                     <div className="flex items-center gap-1.5">
                       {entry.target && targetOccurrenceCount > 1 && (
                         <span className="inline-flex items-center rounded bg-amber-500/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-400">
@@ -1757,7 +1756,7 @@ export function TranslationGrid({
                         </div>
                       )}
 
-                      <div className="mt-1 flex items-center gap-2.5 border-t border-dashed border-[#1f2329] pt-1">
+                      <div className="order-3 mt-1 flex items-center gap-2.5 border-t border-dashed border-[#1f2329] pt-1">
                         <LangTag accent>{targetLang.toUpperCase()}</LangTag>
                         {entry.target && targetOccurrenceCount > 1 && (
                           <span className="inline-flex items-center rounded bg-amber-500/12 px-2 py-0.5 font-mono text-[10px] font-semibold text-amber-400">
@@ -1783,10 +1782,7 @@ export function TranslationGrid({
                             <KbdHint>Shift Enter</KbdHint> {t('grid.newLine', { ns: 'translate' })}
                           </span>
                         </div>
-                      </div>
-
-                      {renderGenderControls(entry)}
-                    <HighlightedTextarea
+                      </div>                    <HighlightedTextarea
                         ref={(element) => {
                           if (element) textareaRefs.current.set(entry.rowId, element)
                           else textareaRefs.current.delete(entry.rowId)
@@ -1801,7 +1797,7 @@ export function TranslationGrid({
                         overlayClassName="px-3.5 py-3 text-[13px] leading-[1.6]"
                         className="min-h-11 px-3.5 py-3 text-[13px] leading-[1.6]"
                       />
-                    </div>
+                      {renderGenderControls(entry)}                    </div>
                   </div>
                 </div>
               </div>
