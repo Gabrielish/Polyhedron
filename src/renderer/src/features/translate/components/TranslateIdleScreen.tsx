@@ -153,7 +153,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
             </SetupStepCard>
           </div>
 
-        <div className="translate-idle-footer shrink-0 px-6 pb-5 pt-3">
+        <div className="translate-idle-footer shrink-0 pb-1 pt-3">
           <div className="mx-auto flex w-full max-w-220 items-center gap-2.5 rounded-xl border border-neutral-800/80 bg-[#141416] px-4 py-3 shadow-xl">
             <div className="flex-1 text-xs text-neutral-400">
               {setup.ready
