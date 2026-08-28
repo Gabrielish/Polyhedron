@@ -33,7 +33,6 @@ import {
   type FilterSpec,
   entryMatchesSearch,
   materializeSelectedEntries,
-  isDeveloperNote,
   type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
@@ -318,7 +317,6 @@ export function TranslationGrid({
       if (editingRowId === entry.rowId) return true
       if (stickyRowIds.has(entry.rowId)) return true
       if (effectiveSearch) {
-        if (isDeveloperNote(entry.source)) return false
         const directMatch = entryMatchesSearch(entry, effectiveSearch, deferredExactMatch)
         if (!directMatch && !deferredLinkNameDescription) return false
         if (!directMatch && deferredLinkNameDescription) {

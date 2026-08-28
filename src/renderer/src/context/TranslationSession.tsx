@@ -82,7 +82,6 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
   if (!matchesDialogueFilters(entry.source, filter.dialogueFilters)) return false
   if (!matchesDialogueScope(entry.source, filter.dialogueScope)) return false
   if (filter.search) {
-    if (isDeveloperNote(entry.source)) return false
     const directMatch = entryMatchesSearch(entry, filter.search, filter.exactMatch)
     if (directMatch) return true
     if (filter.linkNameDescription) {
