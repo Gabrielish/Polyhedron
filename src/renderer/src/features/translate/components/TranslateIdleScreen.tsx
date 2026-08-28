@@ -1,4 +1,5 @@
 import { ArrowRight, File, Loader2, Sparkles } from 'lucide-react'
+import { useEffect } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import { useTranslateSetup } from '../hooks/useTranslateSetup'
@@ -30,6 +31,18 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
       ? t('setup.loadingPreparingFile', { ns: 'translate' })
       : session.loadingLabel || t('setup.loadingEditor', { ns: 'translate' })
   const loadingProgress = session.loadingProgress
+
+  useEffect(() => {
+    const handleOpenShortcut = (event: KeyboardEvent) => {
+      if (event.key !== 'Enter' || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return
+      if (!setup.ready || isLoading) return
+      event.preventDefault()
+      void importFlow.openFile(setup.filePath, setup.ready)
+    }
+    window.addEventListener('keydown', handleOpenShortcut)
+    return () => window.removeEventListener('keydown', handleOpenShortcut)
+  }, [importFlow.openFile, isLoading, setup.filePath, setup.ready])
+
   const loadingLabel = (() => {
     if (!loadingProgress || importFlow.isPreparing) return baseLabel
     if (loadingProgress.phase === 'unpacking')

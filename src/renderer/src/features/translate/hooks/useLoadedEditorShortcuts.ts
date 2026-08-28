@@ -12,7 +12,7 @@ export function useLoadedEditorShortcuts({
   onOpenExport
 }: LoadedEditorShortcutsOptions): void {
   const handleShortcut = useEffectEvent((event: KeyboardEvent) => {
-    if (!event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) return
+    if ((!event.ctrlKey && !event.metaKey) || event.shiftKey || event.altKey) return
 
     const key = event.key.toLowerCase()
     if (key === 's') {
