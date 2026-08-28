@@ -152,7 +152,6 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
               />
             </SetupStepCard>
           </div>
-        </div>
 
         <div className="translate-idle-footer shrink-0 px-6 pb-5 pt-3">
           <div className="mx-auto flex w-full max-w-220 items-center gap-2.5 rounded-xl border border-neutral-800/80 bg-[#141416] px-4 py-3 shadow-xl">
@@ -187,6 +186,9 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
             </button>
           </div>
         </div>
+        </div>
+
+
 
         {isLoading && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0f1114]/80 backdrop-blur-[2px]">
