@@ -450,7 +450,18 @@ export function DialogueNodesPage(): React.JSX.Element {
     visibleChoices.find((choice) => `${choice.file}:${choice.dialogue}` === selectedKey) ??
     visibleChoices[0] ??
     null
-  const nodes = useMemo(() => (selected ? getDialogueNodes(selected.dialogue) : []), [selected])
+  const nodes = useMemo(() => {
+    if (!selected) return []
+    const allNodes = getDialogueNodes(selected.dialogue)
+    const query = dialogueTextSearch.trim().toLocaleLowerCase()
+    if (!query) return allNodes
+    const entriesByNode = dialogueEntryIndex.get(selected.dialogue)
+    return allNodes.filter((node) =>
+      (entriesByNode?.get(node.node) ?? []).some((entry) =>
+        `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query)
+      )
+    )
+  }, [dialogueEntryIndex, dialogueTextSearch, selected])
 
   useEffect(() => {
     if (!focusedNode || !selected) return
@@ -624,7 +635,11 @@ export function DialogueNodesPage(): React.JSX.Element {
           {selected ? (
             <div className="w-full space-y-3">
               {nodes.map((node, index) => {
-                const matches = dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []
+                const query = dialogueTextSearch.trim().toLocaleLowerCase()
+                const matches = (dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []).filter(
+                  (entry) =>
+                    !query || `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query)
+                )
                 const borderClass = 'border-[#1f2329]'
                 return (
                   <div
