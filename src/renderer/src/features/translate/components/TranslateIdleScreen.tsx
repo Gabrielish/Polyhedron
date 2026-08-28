@@ -83,7 +83,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
             <SetupStepCard step="01">
               <div>
                 <h3 className="m-0 text-[15px] font-semibold tracking-tight text-neutral-200">
-                  {t('setup.languagePair.title', { ns: 'translate' })}
+                  <span className="mr-2 font-mono text-base text-amber-400">01 |</span>{t('setup.languagePair.title', { ns: 'translate' })}
                 </h3>
                 <p className="mt-1 m-0 text-xs text-neutral-500">
                   {t('setup.languagePair.description', { ns: 'translate' })}

@@ -28,7 +28,7 @@ export function FileInputCard({
     <>
       <div>
         <h3 className="text-[15px] font-semibold text-neutral-200 tracking-tight m-0">
-          {t('setup.fileCard.title', { ns: 'translate' })}
+          <span className="mr-2 font-mono text-base text-amber-400">03 |</span>{t('setup.fileCard.title', { ns: 'translate' })}
         </h3>
         <p className="text-xs text-neutral-500 mt-1 m-0">
           {t('setup.fileCard.description', { ns: 'translate' })}

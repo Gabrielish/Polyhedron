@@ -47,7 +47,7 @@ export function ModSelectionCard({
       <div className="flex items-start gap-3">
         <div className="flex-1">
           <h3 className="text-[15px] font-semibold text-neutral-200 tracking-tight m-0">
-            {t('setup.modSelection.title')}
+            <span className="mr-2 font-mono text-base text-amber-400">02 |</span>{t('setup.modSelection.title')}
           </h3>
           <p className="text-xs text-neutral-500 mt-1 m-0">
             {t('setup.modSelection.description')}
