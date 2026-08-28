@@ -212,8 +212,6 @@ export function SettingsPage(): React.JSX.Element {
                 </button>
               )
             })}
-          </div>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div className="relative rounded-lg border border-neutral-800 bg-[#0f1114] p-3 opacity-55">
               <div className="absolute right-3 top-3 rounded-full border border-neutral-700 px-2 py-0.5 text-[10px] uppercase tracking-wider text-neutral-500">Coming Soon</div>
               <div className="mb-3 flex gap-1.5">
