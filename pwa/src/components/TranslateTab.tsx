@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
 import { isWorkspaceSyncDocument } from '../sync/workspaceSync'
 import { TranslationActions } from './TranslationActions'
-import { Search } from 'lucide-react'
+import { Check, Search } from 'lucide-react'
 
 function isDeveloperNote(source: string): boolean {
   const value = source.trim()
@@ -73,13 +73,13 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
     }
   }
 
-  function updateEntry(uid: string, target: string): void {
+  function updateEntry(uid: string, target: string, variant: 'default' | 'female' | 'neutral' = 'default'): void {
     onDocumentChange({
       ...document,
       generatedAt: new Date().toISOString(),
       sessions: document.sessions.map((item) => ({
         ...item,
-        entries: item.entries.map((entry) => entry.uid === uid ? { ...entry, target, matchType: 'manual' as SyncEntry['matchType'] } : entry)
+        entries: item.entries.map((entry) => entry.uid === uid ? { ...entry, ...(variant === 'default' ? { target } : { genderTargets: { ...(entry.genderTargets ?? {}), [variant]: target } }), matchType: 'manual' as SyncEntry['matchType'] } : entry)
       }))
     })
   }
@@ -110,7 +110,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
       )}
 
       <div className="translate-list">
-        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry, index) => <TranslationCard key={entry.uid} entry={entry} stringNumber={(page - 1) * pageSize + index + 1} showId={showIds} onChange={(target) => updateEntry(entry.uid, target)} onReview={() => toggleReview(entry.uid)} />)}
+        {entries.length === 0 ? <div className="empty-state">Load a sync file from the desktop workspace to see your strings here.</div> : visibleEntries.map((entry, index) => <TranslationCard key={entry.uid} entry={entry} stringNumber={(page - 1) * pageSize + index + 1} showId={showIds} onChange={(target, variant) => updateEntry(entry.uid, target, variant)} onReview={() => toggleReview(entry.uid)} />)}
       </div>
       {entries.length > 0 && <div className="pagination-bar">
         <button type="button" className="secondary-button" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</button>
@@ -121,9 +121,10 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
   )
 }
 
-function TranslationCard({ entry, stringNumber, showId, onChange, onReview }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string) => void; onReview: () => void }): React.JSX.Element {
+function TranslationCard({ entry, stringNumber, showId, onChange, onReview }: { entry: SyncEntry; stringNumber: number; showId: boolean; onChange: (value: string, variant?: 'default' | 'female' | 'neutral') => void; onReview: () => void }): React.JSX.Element {
   const [previousValue, setPreviousValue] = useState<string | null>(null)
   const [actionMessage, setActionMessage] = useState('')
+  const [variant, setVariant] = useState<'default' | 'female' | 'neutral'>('default')
   const sourceText = decodeHtmlEntities(entry.source)
   async function copySource(): Promise<void> {
     try { await navigator.clipboard.writeText(sourceText); setActionMessage('Copied') } catch { setActionMessage('Copy unavailable') }
@@ -133,15 +134,15 @@ function TranslationCard({ entry, stringNumber, showId, onChange, onReview }: { 
   }
   function changeTarget(value: string): void {
     setPreviousValue(entry.target)
-    onChange(value)
+    onChange(value, variant)
   }
   function undo(): void {
     if (previousValue === null) return
-    onChange(previousValue)
+    onChange(previousValue, variant)
     setPreviousValue(null)
     setActionMessage('Undone')
   }
-  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><TranslationActions onCopy={() => void copySource()} onPaste={() => void pasteSource()} onUndo={undo} canUndo={previousValue !== null} message={actionMessage} onReview={onReview} needsReview={entry.needsReview} /></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={entry.target} onChange={changeTarget} /></article>
+  return <article className="translation-card"><div className="translation-meta"><span>{showId ? `#${stringNumber} | ${entry.uid}` : `#${stringNumber}`}</span><TranslationActions onCopy={() => void copySource()} onPaste={() => void pasteSource()} onUndo={undo} canUndo={previousValue !== null} message={actionMessage} onReview={onReview} needsReview={entry.needsReview} /></div><div className="translation-source"><LarianText value={entry.source} /></div><HighlightedEditor value={variant === 'default' ? entry.target : (entry.genderTargets?.[variant] ?? '')} onChange={changeTarget} /><div className="gender-controls">{(['default','female','neutral'] as const).map((item) => { const value = item === 'default' ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" className={variant === item ? 'active' : ''} onClick={() => setVariant(item)}>{value.trim() && <Check size={11} />} {item}</button> })}</div></article>
 }
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)

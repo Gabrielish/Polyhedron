@@ -4,6 +4,7 @@ export type SyncEntry = {
   uid: string
   source: string
   target: string
+  genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
 }
