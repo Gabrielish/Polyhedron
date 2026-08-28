@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import Database from 'better-sqlite3'
 import { drizzle } from 'drizzle-orm/better-sqlite3'
@@ -17,6 +18,7 @@ import {
 import { extract } from '../services/zip.service'
 import { findPakFiles } from '../utils/findPakFiles'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
+import { readLoca } from '../services/pak/loca-reader'
 
 export interface XmlLoadWorkerInput {
   inputPath: string
@@ -34,6 +36,7 @@ export interface XmlEntry {
   target: string
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
+  genderVariant?: 'default' | 'female' | 'neutral'
 }
 
 export interface XmlLoadResult {
@@ -50,12 +53,34 @@ export type XmlLoadProgress =
 
 const MATCH_CHUNK = 500
 
-function toUiEntry(entry: LocalizationEntry): Pick<XmlEntry, 'uid' | 'version' | 'source'> {
+function toUiEntry(entry: LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }): Pick<XmlEntry, 'uid' | 'version' | 'source' | 'genderVariant'> {
   return {
     uid: entry.contentuid,
     version: entry.version,
-    source: decodeEntities(entry.text)
+    source: decodeEntities(entry.text),
+    genderVariant: entry.genderVariant
   }
+}
+
+function findGenderLocas(rootDir: string): string[] {
+  const result: string[] = []
+  const visit = (dir: string): void => {
+    if (!fs.existsSync(dir)) return
+    for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, item.name)
+      if (item.isDirectory()) visit(full)
+      else if (item.name.toLowerCase().endsWith('.loca') && /[\\/]Gender[\\/](Female|Neutral)[\\/]/i.test(full)) result.push(full)
+    }
+  }
+  visit(rootDir)
+  return result.sort()
+}
+
+function variantForPath(filePath: string): XmlEntry['genderVariant'] {
+  const normalized = filePath.replace(/\\/g, '/').toLowerCase()
+  if (normalized.includes('/gender/female/')) return 'female'
+  if (normalized.includes('/gender/neutral/')) return 'neutral'
+  return 'default'
 }
 
 export async function runXmlLoadWorker(
@@ -78,6 +103,7 @@ export async function runXmlLoadWorker(
     const ext = path.extname(inputPath).toLowerCase()
 
     let xmlPath: string
+    let packageRoot: string | null = null
 
     if (ext === '.xml') {
       xmlPath = inputPath
@@ -86,6 +112,7 @@ export async function runXmlLoadWorker(
       const tempDir = createTempDir('icosa_xml')
       tempDirs.push(tempDir)
       await unpackMod(inputPath, tempDir)
+      packageRoot = tempDir
       const xmlFiles = findLocalizationXmls(tempDir, sourceFolder)
       if (xmlFiles.length === 0)
         throw new Error(`No XML found for language "${sourceFolder}" in pak`)
@@ -100,6 +127,7 @@ export async function runXmlLoadWorker(
       const unpackedDir = createTempDir('icosa_pak')
       tempDirs.push(unpackedDir)
       await unpackMod(pakFiles[0], unpackedDir)
+      packageRoot = unpackedDir
       const xmlFiles = findLocalizationXmls(unpackedDir, sourceFolder)
       if (xmlFiles.length === 0)
         throw new Error(`No XML found for language "${sourceFolder}" in pak`)
@@ -109,7 +137,14 @@ export async function runXmlLoadWorker(
     }
 
     post({ phase: 'parsing' })
-    const localizationEntries = parseLocalizationXml(xmlPath)
+    const localizationEntries: Array<LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }> = parseLocalizationXml(xmlPath)
+    if (packageRoot) {
+      for (const locaPath of findGenderLocas(packageRoot)) {
+        for (const entry of readLoca(locaPath)) {
+          localizationEntries.push({ contentuid: entry.key, version: String(entry.version), text: entry.text, genderVariant: variantForPath(locaPath) })
+        }
+      }
+    }
     const total = localizationEntries.length
     const result: XmlEntry[] = new Array(total)
 

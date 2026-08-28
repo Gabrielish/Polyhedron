@@ -301,6 +301,7 @@ export interface XmlEntry {
   target: string
   matchType: XmlMatchType
   needsReview: boolean
+  genderVariant?: 'default' | 'female' | 'neutral'
 }
 
 export interface TranslationApi {
