@@ -82,6 +82,54 @@
   --color-background-soft: #101d2b;
 }
 
+[data-theme='light'] {
+  --color-amber-300: #8f1d24;
+  --color-amber-400: #b3262d;
+  --color-amber-500: var(--poly-accent, #c62828);
+  --color-amber-600: #a51f25;
+  --color-amber-700: #84191e;
+  --color-amber-800: #651319;
+  --color-amber-900: #481014;
+  --color-background: #f4f1ed;
+  --color-background-soft: #ebe7e1;
+  --color-neutral-100: #241f1b;
+  --color-neutral-200: #302a25;
+  --color-neutral-300: #403831;
+  --color-neutral-400: #655b52;
+  --color-neutral-500: #756a60;
+  --color-neutral-600: #8b8075;
+  --color-neutral-700: #b8aea4;
+  --color-neutral-800: #d8d0c8;
+  --color-neutral-900: #e7e1da;
+}
+
+html[data-theme='light'] body {
+  background: #f4f1ed;
+  color: #241f1b;
+}
+html[data-theme='light'] .app-content-shell,
+html[data-theme='light'] .sidebar-shell,
+html[data-theme='light'] .app-content-shell main {
+  background-color: #f4f1ed;
+}
+html[data-theme='light'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0f1114]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0a0a0c]'] {
+  background-color: #fffdfa;
+  border-color: #d8d0c8;
+}
+html[data-theme='light'] .app-content-shell main input,
+html[data-theme='light'] .app-content-shell main textarea,
+html[data-theme='light'] .app-content-shell main select {
+  background-color: #fffdfa;
+  color: #241f1b;
+  border-color: #cfc5bb;
+}
+html[data-theme='light'] .app-content-shell main button:not(:disabled):hover {
+  background-color: rgb(var(--poly-accent-rgb, 198 40 40) / 10%);
+}
+
 [data-theme='liquid-glass'] {
   --color-amber-300: #ff9b9f;
   --color-amber-400: #ff6268;
