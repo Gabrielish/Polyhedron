@@ -496,12 +496,12 @@ export function TranslationGrid({
 
   const genderValue = (entry: TranslationSessionEntry): string => {
     const variant = selectedGenderVariant(entry)
-    return variant === "default" ? entry.target : (entry.genderTargets?.[variant] ?? "")
+    return variant === "default" || entry.genderVariant === variant ? entry.target : (entry.genderTargets?.[variant] ?? "")
   }
 
   const updateGenderValue = (entry: TranslationSessionEntry, value: string) => {
     const variant = selectedGenderVariant(entry)
-    if (variant === "default") updateEntryTarget(entry, value)
+    if (variant === "default" || entry.genderVariant === variant) updateEntryTarget(entry, value)
     else if (value !== (entry.genderTargets?.[variant] ?? "")) { session.updateGenderVariant(entry.rowId, variant, value); onEntryManualEdit(entry.rowId) }
   }
 

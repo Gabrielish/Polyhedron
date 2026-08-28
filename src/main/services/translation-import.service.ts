@@ -62,6 +62,8 @@ export interface ExportPackageEntry {
   version: string
   source: string
   target: string
+  genderVariant?: "default" | "female" | "neutral"
+  genderTargets?: Partial<Record<"default" | "female" | "neutral", string>>
 }
 
 interface StagedImport {
@@ -109,48 +111,42 @@ export async function exportLocalizationPak(
   outputPath: string
 ): Promise<{ outputPath: string }> {
   const templateRoot = bundledAssetPath(path.join('work', 'pak'))
-  if (!fs.existsSync(templateRoot)) {
-    throw new Error(`PAK template was not found at ${templateRoot}`)
-  }
+  if (!fs.existsSync(templateRoot)) throw new Error(`PAK template was not found at ${templateRoot}`)
 
   const tempDir = createTempDir('icosa_pak_export')
   const packageRoot = path.join(tempDir, 'pak')
   const languageDir = path.join(packageRoot, 'Localization', 'English')
-  const xmlPath = path.join(languageDir, 'english.xml')
-  const locaPath = path.join(languageDir, 'english.loca')
+  const variantPaths = {
+    female: path.join(languageDir, 'Gender', 'Female', 'english_to_F.loca'),
+    neutral: path.join(languageDir, 'Gender', 'Neutral', 'english_X_to_X.loca')
+  }
+
+  const writeEntries = async (items: ExportPackageEntry[], locaPath: string, xmlPath: string) => {
+    const nonEmpty = items.filter((entry) => entry.target.trim())
+    if (process.platform === 'darwin') {
+      writeLoca(nonEmpty.map((entry) => ({ key: entry.uid, version: entry.version, text: entry.target })), locaPath)
+    } else {
+      writeLocalizationXml(nonEmpty.map((entry) => ({ contentuid: entry.uid, version: entry.version, text: encodeEntities(entry.target) })), xmlPath)
+      await runDivine(['-g', 'bg3', '-s', xmlPath, '-d', locaPath, '-a', 'convert-loca'])
+      fs.rmSync(xmlPath, { force: true })
+    }
+  }
 
   try {
     fs.cpSync(templateRoot, packageRoot, { recursive: true })
     fs.mkdirSync(languageDir, { recursive: true })
-
-    const locaEntries = entries.map((entry) => ({
-      key: entry.uid,
-      version: entry.version,
-      text: entry.target || entry.source
-    }))
-    if (process.platform === 'darwin') {
-      writeLoca(locaEntries, locaPath)
-    } else {
-      writeLocalizationXml(
-        entries.map((entry) => ({
-          contentuid: entry.uid,
-          version: entry.version,
-          text: encodeEntities(entry.target || entry.source)
-        })),
-        xmlPath
-      )
-      await runDivine(['-g', 'bg3', '-s', xmlPath, '-d', locaPath, '-a', 'convert-loca'])
-      if (!fs.existsSync(locaPath)) throw new Error('Divine did not create english.loca')
-      fs.rmSync(xmlPath, { force: true })
-    }
+    const defaults = entries.filter((entry) => !entry.genderVariant || entry.genderVariant === 'default').map((entry) => ({ ...entry, target: entry.target || entry.source }))
+    const female = entries.filter((entry) => entry.genderVariant === 'female')
+    const neutral = entries.filter((entry) => entry.genderVariant === 'neutral')
+    const femaleFromTargets = entries.flatMap((entry) => entry.genderTargets?.female?.trim() ? [{ ...entry, target: entry.genderTargets.female, genderVariant: 'female' as const }] : [])
+    const neutralFromTargets = entries.flatMap((entry) => entry.genderTargets?.neutral?.trim() ? [{ ...entry, target: entry.genderTargets.neutral, genderVariant: 'neutral' as const }] : [])
+    await writeEntries(defaults, path.join(languageDir, 'english.loca'), path.join(languageDir, 'english.xml'))
+    await writeEntries([...female, ...femaleFromTargets], variantPaths.female, path.join(languageDir, 'Gender', 'Female', 'english_to_F.xml'))
+    await writeEntries([...neutral, ...neutralFromTargets], variantPaths.neutral, path.join(languageDir, 'Gender', 'Neutral', 'english_X_to_X.xml'))
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-    if (process.platform === 'darwin') {
-      await writePackage(packageRoot, outputPath)
-    } else {
-      await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])
-    }
-    if (!fs.existsSync(outputPath)) throw new Error('Divine did not create the PAK file')
-
+    if (process.platform === 'darwin') await writePackage(packageRoot, outputPath)
+    else await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])
+    if (!fs.existsSync(outputPath)) throw new Error(process.platform === 'darwin' ? 'PAK writer did not create the PAK file' : 'Divine did not create the PAK file')
     return { outputPath }
   } finally {
     cleanupTempDir(tempDir)
