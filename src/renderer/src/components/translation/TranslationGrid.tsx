@@ -38,7 +38,6 @@ import {
   type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
-import { getProviderMeta } from '@/features/settings/aiProviders'
 import { useAISettings } from '@/hooks/useAISettings'
 import { useConfig } from '@/hooks/useConfig'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
@@ -288,8 +287,6 @@ export function TranslationGrid({
   const [dialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
   const [showLiveGraph, setShowLiveGraph] = useState(true)
   const [onlineNodeMeta, setOnlineNodeMeta] = useState<Record<string, OnlineNodeMeta>>({})
-  const { provider: aiProvider } = useAISettings()
-  const aiMeta = getProviderMeta(aiProvider)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const savedByEnterRef = useRef<Set<string>>(new Set())
@@ -482,17 +479,7 @@ export function TranslationGrid({
     })
   }
 
-  const handleEntryBlur = (entry: TranslationSessionEntry, value: string) => {
-    if (savedByEnterRef.current.has(entry.rowId)) {
-      savedByEnterRef.current.delete(entry.rowId)
-      return
-    }
-    updateEntryTarget(entry, value)
-    markSticky(entry.rowId)
-    setEditingRowId(null)
-  }
-
-  const selectedGenderVariant = (entry: TranslationSessionEntry): GenderVariant => genderVariants[entry.rowId] ?? entry.genderVariant ?? "default"
+   const selectedGenderVariant = (entry: TranslationSessionEntry): GenderVariant => genderVariants[entry.rowId] ?? entry.genderVariant ?? "default"
 
   const genderValue = (entry: TranslationSessionEntry): string => {
     const variant = selectedGenderVariant(entry)
