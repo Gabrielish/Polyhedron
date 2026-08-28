@@ -4515,3 +4515,24 @@ html[data-theme='light'] .app-content-shell [class~='text-neutral-300'],
 html[data-theme='light'] .app-content-shell [class~='text-neutral-200'] { color: #403831 !important; }
 html[data-theme='light'] .sidebar-nav a { color: #756a60 !important; }
 html[data-theme='light'] .sidebar-nav a:hover { color: #302a25 !important; background: rgb(var(--poly-accent-rgb, 198 40 40) / 8%) !important; }
+
+/* Light dock hover: retain the Dark Liquid Glass interaction without the harsh light flash. */
+html[data-theme='light'] .sidebar-nav a:not([aria-current='page']):hover,
+html[data-theme='light'] .sidebar-footer a:not([aria-current='page']):hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #403831 !important;
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page'],
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] {
+  background: rgb(var(--poly-accent-rgb, 198 40 40) / 12%) !important;
+  border-color: transparent !important;
+  color: var(--poly-accent, #c62828) !important;
+  box-shadow: 0 0 16px rgb(var(--poly-accent-rgb, 198 40 40) / 18%) !important;
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='light'] .sidebar-footer a[aria-current='page']:hover {
+  background: rgb(var(--poly-accent-rgb, 198 40 40) / 16%) !important;
+  color: var(--poly-accent, #c62828) !important;
+}
