@@ -14,6 +14,7 @@ import {
   GitBranch,
   RefreshCw,
   Search,
+  Sparkles,
   X
 } from 'lucide-react'
 import {
@@ -506,7 +507,7 @@ export function TranslationGrid({
 
   const renderGenderControls = (entry: TranslationSessionEntry) => {
     const variant = selectedGenderVariant(entry)
-    return <div className="flex items-center gap-1">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{item}</button>)}</div>
+    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{item}</button>)}</div>
   }
 
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
@@ -520,13 +521,7 @@ export function TranslationGrid({
       }}
       className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1.5 rounded border border-[#1f2329] bg-[#131518] px-2 text-[11px] font-medium text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-400"
     >
-      <span
-        className="flex h-3.5 w-3.5 items-center justify-center rounded-sm font-mono text-[7px] font-bold text-white"
-        style={{ background: aiMeta.color }}
-      >
-        {aiMeta.mark}
-      </span>
-      {t('grid.translateWith', { ns: 'ai', provider: aiMeta.short })}
+      <Sparkles size={13} /> Gemini
     </button>
   )
 
@@ -1524,7 +1519,6 @@ export function TranslationGrid({
                       containerClassName="rounded-md"
                       className="field-sizing-content"
                     />
-                    {renderGenderControls(entry)}
                     <div className="flex items-center gap-1.5">
                       {entry.target && targetOccurrenceCount > 1 && (
                         <span className="inline-flex items-center rounded bg-amber-500/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-400">
@@ -1534,6 +1528,7 @@ export function TranslationGrid({
                           })}
                         </span>
                       )}
+                      {renderGenderControls(entry)}
                       {renderAiButton(entry)}
                       {renderReviewButton(entry)}
                       <div className="pointer-events-none flex flex-1 items-center gap-1.5 opacity-0 transition-opacity duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
@@ -1766,6 +1761,7 @@ export function TranslationGrid({
                             })}
                           </span>
                         )}
+                      {renderGenderControls(entry)}
                         {renderAiButton(entry)}
                         {renderReviewButton(entry)}
                         <div className="pointer-events-none flex flex-1 items-center gap-1.5 opacity-0 transition-opacity duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
@@ -1797,7 +1793,7 @@ export function TranslationGrid({
                         overlayClassName="px-3.5 py-3 text-[13px] leading-[1.6]"
                         className="min-h-11 px-3.5 py-3 text-[13px] leading-[1.6]"
                       />
-                      {renderGenderControls(entry)}                    </div>
+                      </div>
                   </div>
                 </div>
               </div>
