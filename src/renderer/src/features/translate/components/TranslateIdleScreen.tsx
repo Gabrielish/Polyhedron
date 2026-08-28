@@ -1,4 +1,4 @@
-import { ArrowRight, File, Loader2 } from 'lucide-react'
+import { ArrowRight, File, Loader2, Sparkles } from 'lucide-react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import { useTranslateSetup } from '../hooks/useTranslateSetup'
@@ -50,26 +50,33 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
   return (
     <>
       <div className="relative flex h-full min-h-0 flex-col">
-        <div className="flex h-10 shrink-0 items-center gap-3 border-b border-[#1f2329] bg-[#131518] px-5">
-          <span className="flex items-center gap-1.5 font-mono text-[12px] text-neutral-200">
-            <File size={12} />
-            {t('newProject', { ns: 'translate' })}
-          </span>
-          <span className="flex-1" />
-          <span className="flex items-center gap-2 font-mono text-[11px]">
-            <span className={setup.step1Done ? 'text-amber-400' : 'text-neutral-600'}>
-              1 {t('setup.steps.languages', { ns: 'translate' })}
-            </span>
-            <span className="text-neutral-700">-</span>
-            <span className={setup.step2Done ? 'text-amber-400' : 'text-neutral-600'}>
-              2 {t('setup.steps.mod', { ns: 'translate' })}
-            </span>
-            <span className="text-neutral-700">-</span>
-            <span className={setup.step3Done ? 'text-amber-400' : 'text-neutral-600'}>
-              3 {t('setup.steps.file', { ns: 'translate' })}
-            </span>
-          </span>
-        </div>
+        <header className="shrink-0 border-b border-[#1f2329] bg-[#101114] px-6 py-4">
+          <div className="mx-auto flex max-w-220 items-center justify-between gap-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-400">
+                <Sparkles size={17} />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+                  <File size={14} className="text-amber-400" />
+                  {t('newProject', { ns: 'translate' })}
+                </div>
+                <p className="mt-0.5 truncate text-xs text-neutral-500">Set up your language pair, mod and source file.</p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5 rounded-xl border border-neutral-800 bg-[#0b0c0f] p-1">
+              {[
+                [1, t('setup.steps.languages', { ns: 'translate' }), setup.step1Done],
+                [2, t('setup.steps.mod', { ns: 'translate' }), setup.step2Done],
+                [3, t('setup.steps.file', { ns: 'translate' }), setup.step3Done]
+              ].map(([number, label, done]) => (
+                <span key={String(number)} className={`rounded-lg px-2.5 py-1.5 font-mono text-[10px] ${done ? 'bg-amber-500/12 text-amber-300' : 'text-neutral-600'}`}>
+                  {number} · {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </header>
 
         <div className="icosa-scroll min-h-0 flex-1 overflow-y-auto px-6 pt-7 pb-6 [scrollbar-gutter:stable]">
           <div className="mx-auto flex max-w-220 flex-col gap-3.5">
