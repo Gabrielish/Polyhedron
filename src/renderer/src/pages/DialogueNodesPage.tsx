@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { useTranslationSession } from '@/context/TranslationSession'
+import { type GenderVariant, useTranslationSession } from '@/context/TranslationSession'
 import { type DialogueCategory, getDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
@@ -349,6 +349,7 @@ export function DialogueNodesPage(): React.JSX.Element {
   const [focusedSource, setFocusedSource] = useState<string | null>(
     () => navigationState.source ?? null
   )
+  const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
   const [focusedUid, setFocusedUid] = useState<string | null>(
     () => navigationState.uid ?? null
   )
@@ -664,6 +665,11 @@ export function DialogueNodesPage(): React.JSX.Element {
                             </div>
                           </div>
                           <div>
+                            {(() => {
+                              const variant = genderVariants[entry.rowId] ?? entry.genderVariant ?? 'default'
+                              const value = variant === 'default' ? entry.target : (entry.genderTargets?.[variant] ?? '')
+                              return (
+                                <>
                             <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-500/70">
                               Translation · {session.targetLang.toUpperCase()}
                               <button
@@ -677,14 +683,24 @@ export function DialogueNodesPage(): React.JSX.Element {
                               </button>
                             </div>
                             <TranslationInput
-                              value={entry.target}
+                              value={value}
                               onCommit={(value) => {
-                                if (value !== entry.target) {
-                                  session.updateEntry(entry.rowId, value)
-                                  session.markManual(entry.rowId)
+                                if (variant === 'default') {
+                                  if (value !== entry.target) session.updateEntry(entry.rowId, value)
+                                } else if (value !== (entry.genderTargets?.[variant] ?? '')) {
+                                  session.updateGenderVariant(entry.rowId, variant, value)
                                 }
+                                session.markManual(entry.rowId)
                               }}
                             />
+                            <div className="mt-1 flex gap-1">
+                              {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => (
+                                <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{item}</button>
+                              ))}
+                            </div>
+                                </>
+                              )
+                            })()}
                           </div>
                         </div>
                       ))

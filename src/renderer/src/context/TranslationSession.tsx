@@ -12,6 +12,7 @@ import type { XmlEntry, XmlLoadProgress } from '@/types'
 export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
 }
+export type GenderVariant = 'default' | 'female' | 'neutral'
 
 type Phase = 'idle' | 'loading' | 'loaded'
 
@@ -129,6 +130,7 @@ type Action =
   | { type: 'SET_LOADING_PROGRESS'; progress: XmlLoadProgress | null }
   | { type: 'SET_ENTRIES'; entries: TranslationSessionEntry[] }
   | { type: 'UPDATE_ENTRY'; rowId: string; target: string }
+  | { type: 'UPDATE_GENDER_VARIANT'; rowId: string; variant: GenderVariant; target: string }
   | { type: 'MARK_MANUAL'; rowId: string }
   | { type: 'TOGGLE_NEEDS_REVIEW'; rowId: string }
   | { type: 'SELECT_ALL_MATCHING'; filter: FilterSpec }
@@ -193,6 +195,12 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
           e.rowId === action.rowId ? { ...e, target: action.target } : e
         )
       }
+    }
+    case 'UPDATE_GENDER_VARIANT': {
+      const currentEntry = state.entries.find((entry) => entry.rowId === action.rowId)
+      if (!currentEntry) return state
+      const genderTargets = { ...(currentEntry.genderTargets ?? {}), [action.variant]: action.target }
+      return { ...state, entries: state.entries.map((entry) => entry.rowId === action.rowId ? { ...entry, genderTargets } : entry) }
     }
     case 'MARK_MANUAL':
       return {
@@ -284,6 +292,7 @@ interface TranslationSessionContext extends TranslationSessionState {
     options?: { storedPath?: string }
   ) => Promise<void>
   updateEntry: (rowId: string, target: string) => void
+  updateGenderVariant: (rowId: string, variant: GenderVariant, target: string) => void
   markManual: (rowId: string) => void
   toggleNeedsReview: (rowId: string) => void
   setModName: (name: string) => void
@@ -433,6 +442,10 @@ export function TranslationSessionProvider({
     dispatch({ type: 'UPDATE_ENTRY', rowId, target })
   }, [state.entries])
 
+  const updateGenderVariant = useCallback((rowId: string, variant: GenderVariant, target: string) => {
+    dispatch({ type: 'UPDATE_GENDER_VARIANT', rowId, variant, target })
+  }, [])
+
   const markManual = useCallback((rowId: string) => {
     dispatch({ type: 'MARK_MANUAL', rowId })
   }, [])
@@ -542,7 +555,8 @@ export function TranslationSessionProvider({
         selectEntry,
         selectEntries,
         loadSession,
-        updateEntry,
+    updateEntry,
+    updateGenderVariant,
         markManual,
         toggleNeedsReview,
         setModName,

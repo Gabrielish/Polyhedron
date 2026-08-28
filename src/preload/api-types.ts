@@ -302,6 +302,7 @@ export interface XmlEntry {
   matchType: XmlMatchType
   needsReview: boolean
   genderVariant?: 'default' | 'female' | 'neutral'
+  genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
 }
 
 export interface TranslationApi {
