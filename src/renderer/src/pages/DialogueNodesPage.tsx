@@ -641,6 +641,11 @@ export function DialogueNodesPage(): React.JSX.Element {
                           data-dialogue-uid={entry.uid}
                           className="mb-3 grid grid-cols-1 gap-3 last:mb-0 lg:grid-cols-2"
                         >
+                          {entry.genderVariant && entry.genderVariant !== 'default' && (
+                            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-400">
+                              <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5">{entry.genderVariant}</span>
+                            </div>
+                          )}
                           <div>
                             <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
                               Source · {session.sourceLang.toUpperCase()}
