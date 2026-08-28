@@ -1,10 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
-export type ThemeId = 'liquid-glass' | 'light'
+export type ThemeId = 'liquid-glass'
 
 export const THEMES: Array<{ id: ThemeId; name: string; description: string; swatches: string[] }> = [
-  { id: 'liquid-glass', name: 'Dark', description: 'A dark translucent interface with soft blur, glass surfaces and a customizable accent color.', swatches: ['#ed1c24', '#0a0d12'] },
-  { id: 'light', name: 'Light', description: 'A bright, clean interface with warm Dungeons & Dragons-inspired red accents.', swatches: ['#c62828', '#f4f1ed'] }
+  { id: 'liquid-glass', name: 'Liquid Glass (Dark)', description: 'A dark translucent interface with soft blur, glass surfaces and a customizable accent color.', swatches: ['#ed1c24', '#0a0d12'] }
 ]
 
 interface ThemeContextValue {
@@ -39,8 +38,7 @@ function hexToRgb(hex: string): string {
 }
 
 function readTheme(): ThemeId {
-  const stored = window.localStorage.getItem(STORAGE_KEY)
-  return stored === 'light' ? 'light' : 'liquid-glass'
+  return 'liquid-glass'
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {

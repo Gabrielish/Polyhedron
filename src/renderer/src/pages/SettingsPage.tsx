@@ -213,6 +213,17 @@ export function SettingsPage(): React.JSX.Element {
               )
             })}
           </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div className="relative rounded-lg border border-neutral-800 bg-[#0f1114] p-3 opacity-55">
+              <div className="absolute right-3 top-3 rounded-full border border-neutral-700 px-2 py-0.5 text-[10px] uppercase tracking-wider text-neutral-500">Coming Soon</div>
+              <div className="mb-3 flex gap-1.5">
+                <span className="h-5 w-5 rounded-full border border-white/10 bg-[#c62828]" />
+                <span className="h-5 w-5 rounded-full border border-white/10 bg-[#f4f1ed]" />
+              </div>
+              <div className="text-sm font-medium text-neutral-200">Liquid Glass (Light)</div>
+              <div className="mt-1 text-xs leading-5 text-neutral-500">A light variant of Liquid Glass is planned for a future update.</div>
+            </div>
+          </div>
           <div className="mt-5 border-t border-neutral-800/60 pt-5">
             <div className="flex items-baseline justify-between gap-3">
               <label htmlFor="accent-color" className="text-sm font-medium text-neutral-200">Accent color</label>
