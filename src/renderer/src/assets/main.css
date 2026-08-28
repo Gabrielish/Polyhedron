@@ -2639,3 +2639,1879 @@ html[data-theme='light'] .app-content-shell [class~='text-neutral-500'] { color:
 html[data-theme='light'] .app-content-shell [class~='text-neutral-400'] { color: #655b52; }
 html[data-theme='light'] .app-content-shell [class~='text-neutral-300'],
 html[data-theme='light'] .app-content-shell [class~='text-neutral-200'] { color: #403831; }
+
+
+/* Light theme mirrors every Liquid Glass layout rule above. */
+/* theSVG-inspired dark language for Liquid Glass. Keep the Polyhedron red
+   accent while using near-black surfaces, graphite borders and pill controls. */
+html[data-theme='light'] body,
+html[data-theme='light'] .app-content-shell,
+html[data-theme='light'] .app-content-shell main {
+  background-color: #050505;
+  color: #f1f1f1;
+}
+html[data-theme='light'] .app-content-shell [class~='bg-[#0c0d0f]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0a0a0c]'] {
+  background-color: #090909;
+  border-color: #252525;
+}
+html[data-theme='light'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0f1114]'] {
+  background-color: #101010;
+  border-color: #292929;
+}
+html[data-theme='light'] .app-content-shell [class~='border-[#1f2329]'],
+html[data-theme='light'] .app-content-shell [class~='border-[#2a2f37]'],
+html[data-theme='light'] .app-content-shell [class~='border-neutral-800'],
+html[data-theme='light'] .app-content-shell [class~='border-neutral-800/80'] {
+  border-color: #292929;
+}
+html[data-theme='light'] .app-content-shell main button:not(:disabled) {
+  border-radius: 10px;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+html[data-theme='light'] .app-content-shell main button:not(:disabled):hover {
+  background-color: #181818;
+  border-color: #454545;
+  color: #ffffff;
+}
+html[data-theme='light'] .app-content-shell main button[class~='bg-amber-500'],
+html[data-theme='light'] .app-content-shell main button[class~='bg-amber-500/90'] {
+  border-color: var(--poly-accent, #ed1c24);
+  border-radius: 999px;
+  background-color: var(--poly-accent, #ed1c24);
+  color: #ffffff;
+  box-shadow: 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%), inset 0 1px 0 rgb(255 255 255 / 18%);
+}
+html[data-theme='light'] .app-content-shell main button[class~='bg-amber-500']:hover,
+html[data-theme='light'] .app-content-shell main button[class~='bg-amber-500/90']:hover {
+  background-color: var(--color-amber-400, #ff454c);
+  border-color: var(--color-amber-400, #ff454c);
+  box-shadow: 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 32%);
+}
+html[data-theme='light'] .app-content-shell main input,
+html[data-theme='light'] .app-content-shell main textarea,
+html[data-theme='light'] .app-content-shell main select {
+  border-color: #292929;
+  background-color: #0b0b0b;
+  color: #eeeeee;
+}
+html[data-theme='light'] .app-content-shell main input:focus,
+html[data-theme='light'] .app-content-shell main textarea:focus,
+html[data-theme='light'] .app-content-shell main select:focus {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%);
+  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+html[data-theme='light'] .app-content-shell [class~='text-neutral-500'] {
+  color: #777777;
+}
+html[data-theme='light'] .app-content-shell [class~='text-neutral-400'] {
+  color: #a3a3a3;
+}
+html[data-theme='light'] .app-content-shell [class~='text-neutral-300'],
+html[data-theme='light'] .app-content-shell [class~='text-neutral-200'] {
+  color: #e7e7e7;
+}
+html[data-theme='light'] .app-content-shell [class~='text-amber-400'],
+html[data-theme='light'] .app-content-shell [class~='text-amber-500'] {
+  color: var(--poly-accent, #ed1c24);
+}
+
+/* Stronger Liquid Glass treatment for floating navigation and pagination. */
+html[data-theme='light'] .sidebar-shell,
+html[data-theme='light'] .translation-pagination-size,
+html[data-theme='light'] .translation-pagination-controls {
+  background-color: rgb(20 20 23 / 42%);
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
+  border-color: rgb(255 255 255 / 18%);
+  -webkit-backdrop-filter: blur(28px) saturate(155%);
+  backdrop-filter: blur(28px) saturate(155%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
+}
+html[data-theme='light'] .sidebar-shell:hover,
+html[data-theme='light'] .translation-pagination-size:hover,
+html[data-theme='light'] .translation-pagination-controls:hover {
+  border-color: rgb(255 255 255 / 26%);
+  background-color: rgb(28 28 32 / 48%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 22px 52px rgb(0 0 0 / 48%), 0 0 30px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+html[data-theme='light'] .translation-pagination-size select,
+html[data-theme='light'] .translation-pagination-controls button {
+  background-color: rgb(10 10 12 / 34%);
+  border-color: rgb(255 255 255 / 15%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+/* Compact theSVG-style navigation state for Liquid Glass. */
+html[data-theme='light'] .sidebar-shell:hover {
+  transform: translateX(-50%) translateY(0);
+}
+html[data-theme='light'] .sidebar-shell {
+  max-width: min(760px, calc(100vw - 24px));
+}
+html[data-theme='light'] .sidebar-nav {
+  gap: 2px;
+  padding: 6px;
+}
+html[data-theme='light'] .sidebar-nav a,
+html[data-theme='light'] .sidebar-footer a {
+  width: 58px;
+  height: 56px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 5px 3px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #929292;
+}
+html[data-theme='light'] .sidebar-nav a > span:first-child,
+html[data-theme='light'] .sidebar-footer a > span:first-child {
+  display: flex;
+  width: auto;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+}
+html[data-theme='light'] .sidebar-nav a > span:nth-child(2),
+html[data-theme='light'] .sidebar-footer a > span:nth-child(2) {
+  display: block !important;
+  width: 100%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  opacity: 1;
+  color: inherit;
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html[data-theme='light'] .sidebar-nav a > span:nth-child(3),
+html[data-theme='light'] .sidebar-footer a > span:nth-child(3) {
+  display: none !important;
+}
+html[data-theme='light'] .sidebar-nav a:hover,
+html[data-theme='light'] .sidebar-footer a:hover {
+  border-color: rgb(255 255 255 / 72%);
+  background: rgb(255 255 255 / 5%);
+  color: #eeeeee;
+  box-shadow: none;
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page'],
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 40%);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
+  color: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 28%), inset 0 1px 0 rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='light'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: rgb(255 255 255 / 78%);
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
+  color: var(--color-amber-400, #ff6268);
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page'] svg,
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] svg {
+  filter: drop-shadow(0 0 5px rgb(var(--poly-accent-rgb, 237 28 36) / 85%));
+}
+html[data-theme='light'] .sidebar-footer {
+  gap: 2px;
+  padding: 6px;
+}
+@media (max-width: 700px) {
+  html[data-theme='light'] .sidebar-shell {
+    max-width: calc(100vw - 12px);
+  }
+  html[data-theme='light'] .sidebar-nav a,
+  html[data-theme='light'] .sidebar-footer a {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Minimal Liquid Glass dock: only the outer capsule remains visible. */
+html[data-theme='light'] .sidebar-shell:hover {
+  transform: translateX(-50%) translateY(0);
+}
+html[data-theme='light'] .sidebar-nav a,
+html[data-theme='light'] .sidebar-footer a {
+  width: 42px;
+  height: 42px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-color: transparent;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
+}
+html[data-theme='light'] .sidebar-nav a > span:first-child,
+html[data-theme='light'] .sidebar-footer a > span:first-child {
+  width: auto;
+  height: auto;
+}
+html[data-theme='light'] .sidebar-nav a > span:nth-child(2),
+html[data-theme='light'] .sidebar-footer a > span:nth-child(2),
+html[data-theme='light'] .sidebar-nav a > span:nth-child(3),
+html[data-theme='light'] .sidebar-footer a > span:nth-child(3) {
+  display: none !important;
+}
+html[data-theme='light'] .sidebar-nav a:hover,
+html[data-theme='light'] .sidebar-footer a:hover {
+  border-color: transparent;
+  background: rgb(255 255 255 / 6%);
+  box-shadow: none;
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page'],
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] {
+  border-color: transparent;
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 14%);
+  color: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 26%);
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='light'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: transparent;
+  background: rgb(var(--poly-accent-rgb, 237 28 36) / 18%);
+}
+
+/* Flatten navigation groups: Liquid Glass uses one outer dock only. */
+html[data-theme='light'] .sidebar-nav section {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-theme='light'] .sidebar-nav section > div {
+  display: none !important;
+}
+
+/* Inactive dock items stay transparent on hover; only the active route is red. */
+html[data-theme='light'] .sidebar-nav a:not([aria-current='page']):hover,
+html[data-theme='light'] .sidebar-footer a:not([aria-current='page']):hover {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: #eeeeee;
+}
+
+/* Focused/active dock items are represented by the glowing icon only. */
+html[data-theme='light'] .sidebar-nav a[aria-current='page'],
+html[data-theme='light'] .sidebar-footer a[aria-current='page'],
+html[data-theme='light'] .sidebar-nav a[aria-current='page']:hover,
+html[data-theme='light'] .sidebar-footer a[aria-current='page']:hover {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--poly-accent, #ed1c24);
+}
+html[data-theme='light'] .sidebar-nav a[aria-current='page'] svg,
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] svg {
+  color: var(--poly-accent, #ed1c24);
+  stroke: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 4px rgb(var(--poly-accent-rgb, 237 28 36) / 95%)) drop-shadow(0 0 11px rgb(var(--poly-accent-rgb, 237 28 36) / 62%));
+}
+
+
+/* Keep the Liquid Glass dock visibly glassy at rest, not only while focused. */
+html[data-theme='light'] .sidebar-shell,
+html[data-theme='light'] .sidebar-shell:hover,
+html[data-theme='light'] .sidebar-shell:focus,
+html[data-theme='light'] .sidebar-shell:focus-within {
+  background-color: rgb(20 20 23 / 48%) !important;
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 11%), rgb(255 255 255 / 3%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 5%)) !important;
+  border-color: rgb(255 255 255 / 22%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(155%) !important;
+  backdrop-filter: blur(28px) saturate(155%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(0 0 0 / 28%), 0 18px 44px rgb(0 0 0 / 44%), 0 0 28px rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+
+
+/* Keep the setup action row above the floating Liquid Glass dock. */
+html[data-theme='light'] .translate-idle-footer {
+  margin-bottom: 96px;
+}
+
+/* Liquid Glass treatment for the Translate progress indicator. */
+html[data-theme='light'] .translation-progress-track {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(10 12 16 / 58%);
+  box-shadow: inset 0 2px 7px rgb(0 0 0 / 58%), inset 0 1px 0 rgb(255 255 255 / 12%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
+  -webkit-backdrop-filter: blur(16px) saturate(145%);
+  backdrop-filter: blur(16px) saturate(145%);
+}
+html[data-theme='light'] .translation-progress-fill {
+  background: linear-gradient(90deg, var(--poly-accent, #ed1c24), var(--color-amber-400, #ff454c));
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 58%), inset 0 1px 0 rgb(255 255 255 / 22%);
+}
+html[data-theme='light'] .translation-progress-track > div > span,
+html[data-theme='light'] .translation-progress-bubble {
+  border-color: #090b0f;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 16%), 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 25%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+html[data-theme='light'] .translation-progress-bubble {
+  background: rgb(31 36 43 / 72%);
+}
+html[data-theme='light'] .translation-progress-bubble.bg-amber-500 {
+  background: var(--poly-accent, #ed1c24);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 20%), 0 0 20px rgb(var(--poly-accent-rgb, 237 28 36) / 62%);
+}
+
+/* Larger Liquid Glass checkpoint markers at 25%, 50% and 75%. */
+html[data-theme='light'] .translation-progress-track > div > span {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%), 0 0 16px rgb(var(--poly-accent-rgb, 237 28 36) / 30%);
+}
+html[data-theme='light'] .translation-progress-track > div > span svg {
+  width: 15px;
+  height: 15px;
+}
+
+
+/* Glossary footer capsules for Liquid Glass. */
+html[data-theme='light'] .dictionary-footer {
+  position: fixed;
+  right: 14px;
+  bottom: 36px;
+  left: 14px;
+  z-index: 35;
+  display: flex;
+  gap: 10px;
+  min-height: 0;
+  padding: 0;
+  border: 0 !important;
+  background: transparent !important;
+  pointer-events: none;
+}
+html[data-theme='light'] .dictionary-status-capsule,
+html[data-theme='light'] .dictionary-pagination-capsule {
+  pointer-events: auto;
+  min-height: 34px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
+  padding: 6px 12px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 12px 28px rgb(0 0 0 / 28%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 6%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+html[data-theme='light'] .dictionary-status-capsule {
+  color: #a3a3a3;
+  margin-right: auto;
+}
+html[data-theme='light'] .dictionary-connection-capsule svg {
+  color: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 5px rgb(var(--poly-accent-rgb, 237 28 36) / 58%));
+}
+html[data-theme='light'] .dictionary-pagination-capsule {
+  margin-left: auto;
+}
+html[data-theme='light'] .dictionary-pagination-capsule button {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(10 10 12 / 28%);
+  border-radius: 999px;
+}
+html[data-theme='light'] .dictionary-pagination-capsule button:not(:disabled):hover {
+  border-color: rgb(255 255 255 / 40%);
+  background: rgb(255 255 255 / 8%);
+}
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer {
+    flex-wrap: wrap;
+  }
+  html[data-theme='light'] .dictionary-pagination-capsule {
+    margin-left: auto;
+  }
+}
+
+
+html[data-theme='light'] .inject-localization-page {
+  padding-bottom: 112px;
+}
+html[data-theme='light'] .inject-localization-page-embedded {
+  padding-bottom: 0;
+}
+
+/* Mods tools remain reachable above the floating Liquid Glass dock. */
+html[data-theme="light"] .mods-page-main {
+  padding-bottom: 112px;
+  scrollbar-gutter: stable;
+}
+
+html[data-theme="light"] .merge-tool-screen {
+  min-height: 0;
+}
+
+html[data-theme="light"] .merge-bottom-bar {
+  position: relative;
+  z-index: 2;
+  padding-bottom: 112px;
+}
+
+/* Keep the Settings item on the same rhythm as the navigation icons. */
+html[data-theme='light'] .sidebar-nav {
+  padding-right: 0;
+}
+html[data-theme='light'] .sidebar-footer {
+  padding-left: 0;
+}
+
+/* Align the Translate and Glossary side capsules to the dock's bottom edge. */
+@media (min-width: 701px) {
+  html[data-theme='light'] .translation-pagination-footer,
+  html[data-theme='light'] .dictionary-footer {
+    bottom: 24px;
+  }
+}
+
+/* Pagination capsules use the same resting glass surface as the dock;
+   hovering them must not add a brighter border or glow. */
+html[data-theme='light'] .translation-pagination-size:hover,
+html[data-theme='light'] .translation-pagination-controls:hover {
+  border-color: rgb(255 255 255 / 18%);
+  background-color: rgb(20 20 23 / 42%);
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 2%) 46%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 24%), 0 18px 44px rgb(0 0 0 / 40%), 0 0 26px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
+}
+
+/* Compact Translate layout: keep the editor controls readable instead of
+   letting the breadcrumb and actions occupy the same row. */
+@media (max-width: 899px) {
+  html[data-theme] .editor-header {
+    padding: 12px 16px;
+  }
+  html[data-theme] .editor-header-top {
+    row-gap: 8px;
+  }
+  html[data-theme] .editor-header-breadcrumb {
+    min-width: 0;
+    flex: 1 1 0%;
+  }
+  html[data-theme] .editor-header-breadcrumb > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  html[data-theme] .editor-header-actions {
+    min-width: 0;
+    flex: 1 0 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  html[data-theme] .editor-header-actions::-webkit-scrollbar {
+    display: none;
+  }
+  html[data-theme] .editor-header-actions > * {
+    flex-shrink: 0;
+  }
+  html[data-theme] .editor-header-language-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  html[data-theme] .editor-header-language-block,
+  html[data-theme] .translation-stats {
+    width: 100%;
+    min-width: 0;
+  }
+  html[data-theme] #translation-status-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  html[data-theme] #translation-status-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  html[data-theme] #translation-status-tabs > div {
+    width: max-content;
+    flex-wrap: nowrap;
+  }
+  html[data-theme] .translation-search-bar {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  html[data-theme] .translation-search-controls > div:first-child {
+    width: auto;
+    min-width: 0;
+    flex: 1 1 220px;
+  }
+}
+
+/* Mobile footer capsules sit above the floating navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .translation-pagination-footer,
+  html[data-theme='light'] .dictionary-footer {
+    bottom: 68px;
+    align-items: flex-end;
+  }
+  html[data-theme='light'] .dictionary-footer {
+    left: 6px;
+    right: 6px;
+  }
+}
+
+@media (max-width: 520px) {
+  html[data-theme='light'] .translation-pagination-footer,
+  html[data-theme='light'] .dictionary-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+  html[data-theme='light'] .translation-pagination-size,
+  html[data-theme='light'] .dictionary-status-capsule {
+    align-self: flex-start;
+  }
+  html[data-theme='light'] .translation-pagination-controls,
+  html[data-theme='light'] .dictionary-pagination-capsule {
+    align-self: flex-end;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Compact pagination for narrow Translate windows. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .translation-pagination-footer {
+    flex-direction: row;
+    align-items: flex-end;
+    bottom: 68px;
+  }
+  html[data-theme='light'] .translation-pagination-size {
+    min-height: 34px;
+    padding: 5px 8px;
+  }
+  html[data-theme='light'] .translation-pagination-size span {
+    display: none;
+  }
+  html[data-theme='light'] .translation-pagination-controls {
+    min-height: 34px;
+    padding: 5px 6px;
+    gap: 3px;
+  }
+  html[data-theme='light'] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed;
+    z-index: 36;
+    right: auto;
+    bottom: 112px;
+    left: 50%;
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    transform: translateX(-50%);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 999px;
+    background: rgb(20 20 23 / 72%);
+    padding: 5px 12px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    backdrop-filter: blur(22px) saturate(145%);
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button {
+    width: 29px;
+    min-width: 29px;
+    justify-content: center;
+    padding: 0;
+    font-size: 0;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button::after {
+    font-size: 15px;
+    line-height: 1;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(1)::after { content: '«'; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(2)::after { content: '‹'; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(3)::after { content: '›'; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(4)::after { content: '»'; }
+}
+
+@media (max-width: 520px) {
+  html[data-theme='light'] .translation-pagination-footer {
+    flex-direction: row;
+  }
+  html[data-theme='light'] .translation-pagination-controls > .translation-page-indicator {
+    bottom: 108px;
+  }
+}
+
+/* Mobile Translate navigation: four independent circular arrow buttons flank
+   the dock, while page size lives inside the centered page menu. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .translation-pagination-size {
+    display: none;
+  }
+  html[data-theme='light'] .translation-pagination-controls {
+    position: static;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div {
+    display: contents;
+  }
+  html[data-theme='light'] .translation-page-indicator {
+    display: none;
+  }
+  html[data-theme='light'] .translation-page-menu-trigger {
+    position: fixed;
+    z-index: 36;
+    right: auto;
+    bottom: 112px;
+    left: 50%;
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    gap: 5px;
+    transform: translateX(-50%);
+    cursor: pointer;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 999px;
+    background: rgb(20 20 23 / 72%);
+    padding: 6px 12px;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    backdrop-filter: blur(22px) saturate(145%);
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button {
+    position: fixed;
+    z-index: 36;
+    bottom: 68px;
+    display: inline-flex;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 999px;
+    font-size: 0;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(1) { left: 10px; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(2) { left: 50px; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(3) { right: 50px; }
+  html[data-theme='light'] .translation-pagination-controls > div > button:nth-child(4) { right: 10px; }
+  html[data-theme='light'] .translation-page-menu-popover {
+    position: fixed;
+    z-index: 37;
+    right: auto;
+    bottom: 154px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid rgb(255 255 255 / 20%);
+    border-radius: 14px;
+    background: rgb(18 18 21 / 94%);
+    padding: 10px 12px;
+    color: #a3a3a3;
+    font-size: 11px;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+  html[data-theme='light'] .translation-page-menu-popover label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+  }
+  html[data-theme='light'] .translation-page-menu-popover select {
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
+    background: #101014;
+    padding: 4px 7px;
+    color: #eeeeee;
+  }
+}
+
+@media (min-width: 701px) {
+  html[data-theme='light'] .translation-page-menu-trigger,
+  html[data-theme='light'] .translation-page-menu-popover {
+    display: none;
+  }
+}
+
+/* Final narrow-viewport pagination alignment. */
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-pagination-size {
+    display: none !important;
+  }
+  html[data-theme='light'] .translation-page-menu-trigger {
+    bottom: 68px;
+  }
+  html[data-theme='light'] .translation-page-menu-popover {
+    bottom: 112px;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button {
+    bottom: 68px;
+  }
+}
+
+/* Mobile arrow controls share the dock's bottom edge; they flank it without
+   changing the dock itself. */
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-pagination-controls > div > button {
+    bottom: 16px;
+  }
+}
+
+/* Put the mobile page indicator above the right-side next/last controls. */
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-page-menu-trigger {
+    right: 10px;
+    bottom: 58px;
+    left: auto;
+    transform: none;
+  }
+  html[data-theme='light'] .translation-page-menu-popover {
+    right: 10px;
+    bottom: 102px;
+    left: auto;
+    display: flex;
+    min-width: 84px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px;
+    transform: none;
+  }
+  html[data-theme='light'] .translation-page-menu-popover button {
+    min-height: 28px;
+    cursor: pointer;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    padding: 4px 10px;
+    color: #b8b8b8;
+    text-align: left;
+  }
+  html[data-theme='light'] .translation-page-menu-popover button:hover,
+  html[data-theme='light'] .translation-page-menu-popover button.is-selected {
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%);
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-page-indicator {
+    display: none !important;
+  }
+  html[data-theme='light'] .translation-page-menu-trigger {
+    pointer-events: auto;
+    right: 10px;
+    bottom: 58px;
+    left: auto;
+    transform: none;
+  }
+  html[data-theme='light'] .translation-page-menu-popover {
+    pointer-events: auto;
+    right: 10px;
+    bottom: 102px;
+    left: auto;
+    transform: none;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-page-menu-trigger {
+    display: inline-flex !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .translation-page-menu-popover {
+    pointer-events: auto !important;
+  }
+}
+
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-page-menu-trigger {
+    z-index: 100 !important;
+  }
+  html[data-theme='light'] .translation-page-menu-popover {
+    z-index: 101 !important;
+  }
+  html[data-theme='light'] .translation-pagination-controls > div > button:disabled {
+    display: none !important;
+  }
+}
+
+/* The page-size menu has buttons too; keep them out of the arrow-control
+   selector used by the four mobile navigation buttons. */
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-page-menu-popover button {
+    position: static !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 28px !important;
+    padding: 4px 10px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    justify-content: flex-start !important;
+  }
+  html[data-theme='light'] .translation-page-menu-popover button::after {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+/* Keep the mobile page-size menu in one floating capsule above the dock. */
+@media (max-width: 899px) {
+  html[data-theme='light'] .translation-pagination-controls > .translation-page-menu-popover {
+    position: fixed !important; z-index: 101 !important; top: auto !important;
+    right: 10px !important; bottom: 102px !important; left: auto !important;
+    display: flex !important; width: 84px !important; min-width: 84px !important;
+    height: auto !important; flex-direction: column !important; align-items: stretch !important;
+    gap: 3px !important; transform: none !important;
+    border: 1px solid rgb(255 255 255 / 20%) !important; border-radius: 14px !important;
+    background: rgb(18 18 21 / 96%) !important; padding: 6px !important;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+  }
+  html[data-theme='light'] .translation-page-menu-popover > button {
+    position: static !important; inset: auto !important; display: block !important;
+    width: 100% !important; height: 28px !important; min-height: 28px !important; margin: 0 !important;
+    padding: 4px 10px !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; color: #b8b8b8 !important; font-size: 11px !important;
+    line-height: 20px !important; text-align: left !important; justify-content: flex-start !important;
+  }
+  html[data-theme='light'] .translation-page-menu-popover > button::before,
+  html[data-theme='light'] .translation-page-menu-popover > button::after { content: none !important; display: none !important; }
+}
+
+
+/* Mobile Glossary pagination follows the floating Liquid Glass controls used by Translate. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer {
+    right: 10px !important; bottom: 16px !important; left: 10px !important;
+    display: block !important; height: 0 !important; min-height: 0 !important;
+    padding: 0 !important; pointer-events: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important; z-index: 35 !important; right: auto !important; bottom: 16px !important; left: 10px !important;
+    margin: 0 !important; min-height: 34px !important; padding: 6px 12px !important;
+    pointer-events: auto !important; white-space: nowrap !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule {
+    position: static !important; display: contents !important; margin: 0 !important;
+    border: 0 !important; background: transparent !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: fixed !important; z-index: 36 !important; bottom: 16px !important;
+    display: inline-flex !important; width: 34px !important; min-width: 34px !important; height: 34px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border-radius: 999px !important; font-size: 0 !important; pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-first { left: 10px !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev { left: 50px !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next { right: 50px !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-last { right: 10px !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important; z-index: 37 !important; right: 10px !important; bottom: 58px !important;
+    left: auto !important; display: inline-flex !important; min-height: 34px !important;
+    align-items: center !important; gap: 5px !important; cursor: pointer !important;
+    border: 1px solid rgb(255 255 255 / 18%) !important; border-radius: 999px !important;
+    background: rgb(20 20 23 / 72%) !important; padding: 6px 12px !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), 0 12px 28px rgb(0 0 0 / 32%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(145%) !important; backdrop-filter: blur(22px) saturate(145%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important; z-index: 38 !important; right: 10px !important; bottom: 102px !important; left: auto !important;
+    display: flex !important; width: 84px !important; min-width: 84px !important;
+    flex-direction: column !important; gap: 3px !important; transform: none !important;
+    border: 1px solid rgb(255 255 255 / 20%) !important; border-radius: 14px !important;
+    background: rgb(18 18 21 / 96%) !important; padding: 6px !important;
+    box-shadow: 0 16px 36px rgb(0 0 0 / 46%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-page-menu-popover > button {
+    position: static !important; inset: auto !important; display: block !important; width: 100% !important;
+    height: 28px !important; min-height: 28px !important; margin: 0 !important; padding: 4px 10px !important;
+    border: 0 !important; border-radius: 8px !important; background: transparent !important;
+    color: #b8b8b8 !important; font-size: 11px !important; line-height: 20px !important;
+    text-align: left !important; justify-content: flex-start !important;
+  }
+  html[data-theme='light'] .dictionary-page-menu-popover > button:hover,
+  html[data-theme='light'] .dictionary-page-menu-popover > button.is-selected {
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; color: #fff !important;
+  }
+}
+
+/* Final Glossary mobile layout: status and pagination sit above the navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-status-capsule { bottom: 64px !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule {
+    position: fixed !important; z-index: 36 !important; right: 10px !important; bottom: 64px !important; left: auto !important;
+    display: flex !important; align-items: center !important; gap: 4px !important;
+    min-height: 42px !important; padding: 4px 6px !important;
+    border: 1px solid rgb(255 255 255 / 18%) !important; border-radius: 18px !important;
+    background: linear-gradient(135deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 3%) 48%, rgb(var(--poly-accent-rgb, 237 28 36) / 4%)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), 0 12px 28px rgb(0 0 0 / 28%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: static !important; inset: auto !important; display: inline-flex !important;
+    width: 30px !important; min-width: 30px !important; height: 30px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border: 1px solid rgb(255 255 255 / 12%) !important; border-radius: 9px !important;
+    background: rgb(10 10 12 / 28%) !important; font-size: 0 !important; pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > button:not(:disabled):hover {
+    border-color: rgb(255 255 255 / 38%) !important; background: rgb(255 255 255 / 8%) !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: static !important; inset: auto !important; display: inline-flex !important;
+    width: auto !important; min-width: 76px !important; height: 30px !important; min-height: 30px !important;
+    justify-content: center !important; padding: 5px 8px !important; border-radius: 9px !important;
+    background: rgb(10 10 12 / 28%) !important; font-size: 11px !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important; z-index: 39 !important; right: 10px !important; bottom: 112px !important; left: auto !important;
+  }
+}
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > button:disabled { display: none !important; }
+}
+
+/* Translate keeps its single pagination capsule on the right after page-size
+   controls moved to Settings. */
+html[data-theme='light'] .translation-pagination-footer {
+  justify-content: flex-end !important;
+}
+html[data-theme='light'] .translation-pagination-controls {
+  margin-left: auto !important;
+}
+
+/* Ensure the Glossary mobile page-size menu never participates in the
+   pagination row layout. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 200 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    height: auto !important;
+    right: 10px !important;
+    bottom: 112px !important;
+    left: auto !important;
+    top: auto !important;
+    gap: 3px !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    transform: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover > button {
+    position: static !important;
+    display: block !important;
+    flex: 0 0 28px !important;
+    width: 100% !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    white-space: nowrap !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-range {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    white-space: nowrap !important;
+    line-height: 20px !important;
+  }
+}
+
+/* Glossary page-size menu is mobile-only; never let its options enter the
+   desktop pagination row. */
+@media (min-width: 701px) {
+  html[data-theme='light'] .dictionary-page-menu-trigger,
+  html[data-theme='light'] .dictionary-page-menu-popover {
+    display: none !important;
+  }
+  html[data-theme='light'] .dictionary-page-first,
+  html[data-theme='light'] .dictionary-page-last {
+    display: none !important;
+  }
+}
+
+/* The page indicator is a text button, not one of the arrow buttons. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-menu-trigger {
+    position: static !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    max-width: none !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 5px 8px !important;
+    border-radius: 9px !important;
+    font-size: 11px !important;
+    line-height: 20px !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Glossary mobile pagination mirrors Translate: arrows flank the dock. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule {
+    position: static !important;
+    display: contents !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > button {
+    position: fixed !important;
+    z-index: 36 !important;
+    top: auto !important;
+    bottom: 16px !important;
+    display: inline-flex !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    border-radius: 9px !important;
+    font-size: 0 !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-first { left: 10px !important; right: auto !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev { left: 50px !important; right: auto !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next { right: 50px !important; left: auto !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-last { right: 10px !important; left: auto !important; }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 37 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 58px !important;
+    left: auto !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 5px !important;
+    padding: 5px 8px !important;
+    border-radius: 9px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 38 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 102px !important;
+    left: auto !important;
+  }
+}
+
+/* Simplified Glossary mobile navigation: only previous/next controls. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important;
+    z-index: 60 !important;
+    right: auto !important;
+    bottom: 64px !important;
+    left: 10px !important;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-first,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-last {
+    display: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next {
+    position: fixed !important;
+    z-index: 60 !important;
+    top: auto !important;
+    bottom: 16px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    border-radius: 999px !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev {
+    left: 10px !important;
+    right: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next {
+    right: 10px !important;
+    left: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 61 !important;
+    top: 48px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 62 !important;
+    top: 84px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+}
+
+/* Glossary mobile controls share the dock's bottom alignment. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer {
+    position: fixed !important;
+    z-index: 55 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-status-capsule {
+    position: fixed !important;
+    z-index: 70 !important;
+    right: auto !important;
+    bottom: 16px !important;
+    left: 10px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next {
+    position: fixed !important;
+    z-index: 70 !important;
+    top: auto !important;
+    bottom: 16px !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 71 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 58px !important;
+    left: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 72 !important;
+    top: auto !important;
+    right: 10px !important;
+    bottom: 102px !important;
+    left: auto !important;
+  }
+}
+
+/* Final mobile Glossary cleanup: no status capsule, page indicator at top. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-status-capsule {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-menu-trigger {
+    position: fixed !important;
+    z-index: 80 !important;
+    top: 48px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 76px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-menu-popover {
+    position: fixed !important;
+    z-index: 81 !important;
+    top: 84px !important;
+    right: 10px !important;
+    bottom: auto !important;
+    left: auto !important;
+  }
+}
+
+/* Glossary mobile arrows: explicit, stable left/right controls. */
+@media (max-width: 700px) {
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    display: inline-flex !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev {
+    left: 10px !important;
+    right: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    right: 10px !important;
+    left: auto !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev::before,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev::after,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next::before,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next::after {
+    content: none !important;
+    display: none !important;
+  }
+  html[data-theme='light'] .dictionary-footer .dictionary-page-prev svg,
+  html[data-theme='light'] .dictionary-footer .dictionary-page-next svg {
+    display: block !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+}
+
+
+/* Final size lock: Glossary navigation bubbles match the Liquid Glass dock. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .sidebar-shell {
+    --mobile-liquid-dock-size: 58px;
+  }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-next {
+    width: var(--mobile-liquid-dock-size) !important;
+    min-width: var(--mobile-liquid-dock-size) !important;
+    max-width: var(--mobile-liquid-dock-size) !important;
+    height: var(--mobile-liquid-dock-size) !important;
+    min-height: var(--mobile-liquid-dock-size) !important;
+    max-height: var(--mobile-liquid-dock-size) !important;
+    flex: 0 0 var(--mobile-liquid-dock-size) !important;
+    aspect-ratio: 1 / 1 !important;
+    bottom: 16px !important;
+    border-radius: 50% !important;
+  }
+}
+/* Final mobile pagination placement: two visible bubbles outside the dock. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule {
+    display: flex !important;
+    position: fixed !important;
+    right: 0 !important;
+    bottom: 16px !important;
+    left: 0 !important;
+    z-index: 200 !important;
+    height: 58px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-next {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: auto !important;
+    z-index: 201 !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    height: 58px !important;
+    min-height: 58px !important;
+    max-height: 58px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-next { right: 10px !important; left: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-indicator,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule .dictionary-page-range { display: none !important; }
+}
+
+/* Final responsive Glossary mobile layout. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-table-scroll { overflow-x: hidden !important; }
+  html[data-theme="light"] .dictionary-table-scroll > .grid { grid-template-columns: 34px 56px minmax(0, 1fr) minmax(0, 1fr) !important; min-width: 0 !important; }
+  html[data-theme="light"] .dictionary-table-scroll > .grid > :nth-child(n + 5) { display: none !important; }
+  html[data-theme="light"] .dictionary-table-scroll > .grid > :nth-child(3),
+  html[data-theme="light"] .dictionary-table-scroll > .grid > :nth-child(4) { min-width: 0 !important; overflow-wrap: anywhere !important; }
+  html[data-theme="light"] .dictionary-table-scroll > .grid > :nth-child(3) > *,
+  html[data-theme="light"] .dictionary-table-scroll > .grid > :nth-child(4) > * { min-width: 0 !important; max-width: 100% !important; overflow-wrap: anywhere !important; white-space: pre-wrap !important; }
+  html[data-theme="light"] .dictionary-footer { position: fixed !important; right: 0 !important; bottom: 0 !important; left: 0 !important; z-index: 100 !important; height: 0 !important; min-height: 0 !important; padding: 0 !important; pointer-events: none !important; overflow: visible !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-status-capsule,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-first,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-last,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-range { display: none !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule { display: contents !important; pointer-events: none !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-next { position: fixed !important; top: auto !important; bottom: 24px !important; z-index: 110 !important; display: inline-flex !important; width: 58px !important; min-width: 58px !important; height: 58px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; border: 1px solid rgb(255 255 255 / 22%) !important; border-radius: 999px !important; background: linear-gradient(145deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 4%)) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 10px 26px rgb(0 0 0 / 38%) !important; -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important; font-size: 0 !important; pointer-events: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-next { right: 10px !important; left: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-first:disabled,
+html[data-theme="light"] .dictionary-footer .dictionary-page-prev:disabled,
+html[data-theme="light"] .dictionary-footer .dictionary-page-next:disabled,
+html[data-theme="light"] .dictionary-footer .dictionary-page-last:disabled { display: none !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-prev svg,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-next svg { width: 18px !important; height: 18px !important; display: block !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-page-prev:not(:disabled):hover,
+  html[data-theme="light"] .dictionary-footer .dictionary-page-next:not(:disabled):hover { border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important; background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; }
+}
+
+
+/* Last mobile override: keep the two Glossary bubbles visible and compact. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule { display: flex !important; position: fixed !important; inset: auto 0 16px 0 !important; z-index: 200 !important; height: 58px !important; align-items: center !important; justify-content: space-between !important; pointer-events: none !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next { position: absolute !important; top: 0 !important; bottom: auto !important; width: 58px !important; min-width: 58px !important; max-width: 58px !important; height: 58px !important; min-height: 58px !important; max-height: 58px !important; flex: 0 0 58px !important; padding: 0 !important; border-radius: 50% !important; pointer-events: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev { left: 10px !important; right: auto !important; }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next { right: 10px !important; left: auto !important; }
+}
+
+
+/* Compact Glossary arrows: smaller than the Liquid Glass navigation dock. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    flex-basis: 44px !important;
+    border-radius: 50% !important;
+  }
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev svg,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next svg {
+    width: 17px !important;
+    height: 17px !important;
+  }
+}
+
+
+/* Center Glossary arrows vertically against the Liquid Glass dock. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%) !important;
+  }
+}
+
+
+/* Mobile Translate pagination: only Previous and Next bubbles. */
+@media (max-width: 899px) {
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(4) { display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) {
+    position: fixed !important; top: auto !important; bottom: 23px !important; z-index: 200 !important; display: inline-flex !important;
+    width: 44px !important; min-width: 44px !important; max-width: 44px !important; height: 44px !important; min-height: 44px !important; max-height: 44px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important; border: 1px solid rgb(255 255 255 / 22%) !important; border-radius: 50% !important;
+    background: linear-gradient(145deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 4%)) !important;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 18%), 0 10px 26px rgb(0 0 0 / 38%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important; backdrop-filter: blur(24px) saturate(150%) !important; font-size: 0 !important; transform: none !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2) { left: 10px !important; right: auto !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) { right: 10px !important; left: auto !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2)::after,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3)::after { display: block !important; font-size: 20px !important; line-height: 1 !important; color: #d7d9df !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2)::after { content: '<' !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3)::after { content: '>' !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover { border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important; background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important; }
+}
+
+
+/* Use the same Lucide chevrons as Glossary in Translate bubbles. */
+@media (max-width: 899px) {
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2)::after,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3)::after { content: none !important; display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2) svg,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) svg { display: block !important; width: 18px !important; height: 18px !important; color: #d7d9df !important; }
+}
+
+
+/* Mobile Translate page indicator: static text, no dropdown. */
+@media (max-width: 899px) {
+  html[data-theme="light"] .translation-page-menu-trigger,
+  html[data-theme="light"] .translation-page-menu-popover {
+    display: none !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed !important;
+    right: auto !important;
+    bottom: 82px !important;
+    left: 50% !important;
+    z-index: 205 !important;
+    display: block !important;
+    transform: translateX(-50%) !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #a7abb5 !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+  }
+}
+
+
+/* Compact Translate header on mobile without changing desktop layout. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .editor-header { padding: 8px 12px 6px !important; }
+  html[data-theme="light"] .editor-header-top { gap: 5px !important; margin-bottom: 6px !important; }
+  html[data-theme="light"] .editor-header-top > button { height: 34px !important; padding: 0 10px !important; font-size: 13px !important; }
+  html[data-theme="light"] .editor-header-breadcrumb { max-width: calc(100vw - 150px) !important; gap: 3px !important; font-size: 12px !important; }
+  html[data-theme="light"] .editor-header-breadcrumb > span:first-child { max-width: 110px !important; }
+  html[data-theme="light"] .editor-header-actions { width: 100% !important; margin-left: 0 !important; justify-content: flex-end !important; gap: 4px !important; }
+  html[data-theme="light"] .editor-header-actions > button { height: 32px !important; }
+  html[data-theme="light"] .editor-header-actions > button[title="Save to Glossary"] { padding: 0 9px !important; font-size: 12px !important; }
+  html[data-theme="light"] .editor-header-actions > button[title="Save"] { padding: 0 10px !important; font-size: 12px !important; }
+  html[data-theme="light"] .editor-header-language-row { flex-direction: column !important; align-items: stretch !important; gap: 4px !important; }
+  html[data-theme="light"] .editor-header-language-block { width: 100% !important; }
+  html[data-theme="light"] .editor-header-language-block h1 { margin-bottom: 2px !important; gap: 8px !important; font-size: 25px !important; }
+  html[data-theme="light"] #translation-status-tabs { min-height: 0 !important; height: 30px !important; overflow: hidden !important; }
+  html[data-theme="light"] #translation-status-tabs > div { flex-wrap: nowrap !important; max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; scrollbar-width: none !important; }
+  html[data-theme="light"] #translation-status-tabs > div::-webkit-scrollbar { display: none !important; }
+  html[data-theme="light"] #translation-status-tabs > div > button { height: 27px !important; padding: 0 8px !important; white-space: nowrap !important; }
+  html[data-theme="light"] .translation-stats { min-width: 0 !important; width: 100% !important; gap: 1px !important; }
+  html[data-theme="light"] .translation-stats > div:first-child { font-size: 16px !important; }
+  html[data-theme="light"] .translation-stats > div:nth-child(2) { height: 30px !important; padding-right: 18px !important; }
+  html[data-theme="light"] .translation-stats .translation-progress-bubble { width: 30px !important; height: 30px !important; border-width: 3px !important; }
+  html[data-theme="light"] .translation-stats .translation-progress-bubble svg { width: 16px !important; height: 16px !important; }
+  html[data-theme="light"] .translation-stats .translation-progress-track > div > span { width: 22px !important; height: 22px !important; border-width: 3px !important; }
+  html[data-theme="light"] .translation-stats .translation-progress-track > div > span svg { width: 11px !important; height: 11px !important; }
+}
+
+
+/* Place EN -> RO alongside mobile save actions. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .editor-header-language-block h1 {
+    position: relative !important;
+    z-index: 3 !important;
+    width: max-content !important;
+    max-width: 48vw !important;
+    margin-top: -36px !important;
+    margin-bottom: 2px !important;
+    font-size: 25px !important;
+  }
+}
+
+
+/* Final Translate mobile spacing, hover and page-edge states. */
+@media (max-width: 899px) {
+  html[data-theme="light"] #translation-status-tabs { margin-top: 8px !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2):disabled,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3):disabled { display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2):not(:disabled):hover,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3):not(:disabled):hover {
+    border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important;
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%) !important;
+  }
+}
+
+
+/* Match Glossary arrow hover to Translate: red glass accent. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-prev:not(:disabled):hover,
+  html[data-theme="light"] .dictionary-footer .dictionary-pagination-capsule > .dictionary-page-next:not(:disabled):hover {
+    border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%) !important;
+    background: rgb(var(--poly-accent-rgb, 237 28 36) / 16%) !important;
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 10%), 0 10px 26px rgb(0 0 0 / 38%), 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%) !important;
+  }
+}
+
+
+/* Intermediate widths use the normal desktop Translate pagination. */
+@media (min-width: 501px) and (max-width: 899px) {
+  html[data-theme="light"] .translation-pagination-footer {
+    position: static !important;
+    left: auto !important; right: auto !important; bottom: auto !important;
+    z-index: auto !important; width: auto !important; max-width: none !important;
+    display: flex !important; align-items: center !important; justify-content: flex-end !important;
+    padding: 8px 20px !important; border-top: 1px solid #1f2329 !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls {
+    position: static !important; display: flex !important; align-items: center !important; gap: 8px !important;
+    min-height: 42px !important; padding: 7px 10px !important; border: 1px solid rgb(255 255 255 / 18%) !important;
+    border-radius: 16px !important; pointer-events: auto !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > .translation-page-indicator {
+    position: static !important; display: inline-flex !important; transform: none !important;
+    border: 0 !important; background: transparent !important; color: #9298a4 !important; font-size: 11px !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div {
+    display: flex !important; position: static !important; gap: 6px !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button {
+    position: static !important; display: inline-flex !important; width: auto !important; min-width: 0 !important; max-width: none !important;
+    height: 28px !important; min-height: 28px !important; max-height: 28px !important; flex: none !important;
+    padding: 0 10px !important; border-radius: 6px !important; font-size: 11px !important; transform: none !important;
+    pointer-events: auto !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(4) { display: inline-flex !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button::after { content: none !important; display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button svg { display: inline-block !important; width: 14px !important; height: 14px !important; }
+  html[data-theme="light"] .translation-page-menu-trigger,
+  html[data-theme="light"] .translation-page-menu-popover { display: none !important; }
+}
+
+
+/* Final mobile-style Translate pagination for compact windows: bubbles only. */
+@media (min-width: 401px) and (max-width: 899px) {
+  html[data-theme="light"] .translation-pagination-footer {
+    position: fixed !important; inset: auto 0 0 0 !important; height: 0 !important; padding: 0 !important;
+    z-index: 100 !important; border: 0 !important; pointer-events: none !important; overflow: visible !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls {
+    display: contents !important; pointer-events: none !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > .translation-page-indicator {
+    position: fixed !important; right: auto !important; bottom: 82px !important; left: 50% !important;
+    z-index: 205 !important; display: block !important; transform: translateX(-50%) !important;
+    border: 0 !important; background: transparent !important; color: #a7abb5 !important; font-size: 12px !important;
+    pointer-events: none !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > .translation-page-menu-trigger,
+  html[data-theme="light"] .translation-page-menu-popover { display: none !important; pointer-events: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(4) { display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) {
+    position: fixed !important; top: auto !important; bottom: 23px !important; z-index: 210 !important;
+    display: inline-flex !important; width: 44px !important; min-width: 44px !important; max-width: 44px !important;
+    height: 44px !important; min-height: 44px !important; max-height: 44px !important;
+    align-items: center !important; justify-content: center !important; padding: 0 !important;
+    border-radius: 50% !important; font-size: 0 !important; transform: none !important; pointer-events: auto !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2) { left: 10px !important; right: auto !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) { right: 10px !important; left: auto !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2):disabled,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3):disabled { display: none !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2) svg,
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3) svg { display: block !important; width: 18px !important; height: 18px !important; }
+}
+
+
+/* Compact desktop Translate pagination: icon-only controls. */
+@media (min-width: 900px) {
+  html[data-theme="light"] .translation-pagination-controls > div > button {
+    width: 32px !important; min-width: 32px !important; max-width: 32px !important;
+    height: 28px !important; min-height: 28px !important; padding: 0 !important;
+    justify-content: center !important; gap: 0 !important; font-size: 0 !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button svg {
+    display: block !important; width: 16px !important; height: 16px !important;
+  }
+}
+
+
+/* Desktop pagination hides controls that cannot be used on the current edge page. */
+@media (min-width: 900px) {
+  html[data-theme="light"] .translation-pagination-controls > div > button:disabled {
+    display: none !important;
+  }
+}
+
+
+/* Desktop pagination order: << < page > >>. */
+@media (min-width: 900px) {
+  html[data-theme="light"] .translation-pagination-controls {
+    display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 6px !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div {
+    display: contents !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > .translation-page-indicator {
+    order: 2 !important; margin: 0 2px !important;
+  }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(1),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(2) { order: 1 !important; }
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(3),
+  html[data-theme="light"] .translation-pagination-controls > div > button:nth-child(4) { order: 3 !important; }
+}
+
+
+/* Glossary pagination: hide duplicate range text. */
+html[data-theme="light"] .dictionary-footer .dictionary-page-range {
+  display: none !important;
+}
+
+
+/* The title-bar mark uses the same runtime accent as the rest of the interface. */
+.titlebar-dragon {
+  display: block;
+  color: var(--poly-accent, #ed1c24);
+  filter: drop-shadow(0 0 4px rgb(var(--poly-accent-rgb, 237 28 36) / 42%));
+}
+
+/* User-configurable accent color. ThemeContext updates these variables at runtime. */
+html[data-theme='light'] .accent-solid-button {
+  background-color: var(--poly-accent, #ed1c24) !important;
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 22%);
+}
+html[data-theme='light'] .accent-solid-button:hover {
+  filter: brightness(0.86);
+}
+
+/* Glossary mobile stacked rows: source and target become two readable card sections. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-table-scroll > .grid:first-child {
+    display: none !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    min-width: 0 !important;
+    align-items: start !important;
+    border-radius: 12px !important;
+    margin: 6px 8px !important;
+    width: calc(100% - 16px) !important;
+    background: rgb(15 17 20 / 72%) !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(2) {
+    display: none !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3),
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4) {
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3) {
+    padding-top: 12px !important;
+    padding-bottom: 10px !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4) {
+    border-top: 1px solid rgb(var(--poly-accent-rgb, 237 28 36) / 14%) !important;
+    padding-top: 10px !important;
+    padding-bottom: 12px !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3)::before,
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4)::before {
+    display: block !important;
+    margin-bottom: 5px !important;
+    color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%) !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(3)::before { content: "Language 1"; }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(4)::before { content: "Language 2"; }
+}
+
+/* Keep Glossary actions inside the stacked mobile card instead of an off-screen table column. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(5),
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(6) {
+    display: none !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7) {
+    display: block !important;
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 0 12px 10px !important;
+    text-align: right !important;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7)::before {
+    content: "Actions";
+    display: block;
+    margin-bottom: 4px;
+    color: rgb(var(--poly-accent-rgb, 237 28 36) / 58%);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  html[data-theme="light"] .dictionary-table-scroll > div[style*="position: relative"] > .grid > :nth-child(7) > div {
+    justify-content: flex-end !important;
+  }
+}
+
+
+/* Keep Glossary filter selects together in one compact mobile row. */
+@media (max-width: 700px) {
+  html[data-theme="light"] .dictionary-filter-bar {
+    gap: 8px !important;
+  }
+  html[data-theme="light"] .dictionary-mobile-filter-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    flex-basis: 100% !important;
+    gap: 8px !important;
+  }
+  html[data-theme="light"] .dictionary-mobile-filter-row > * {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  html[data-theme="light"] .dictionary-filter-bar > .ml-auto {
+    width: 100% !important;
+    margin-left: 0 !important;
+    justify-content: flex-end !important;
+  }
+}
+
+
+/* Keyboard shortcut badges are not useful on touch layouts; keep the actual shortcuts active. */
+@media (max-width: 700px) {
+  .shortcut-hint {
+    display: none !important;
+  }
+}
+
+/* Shared page-header rhythm: icon/title/subtitle on the left, actions on the right. */
+.app-page-header {
+  min-width: 0;
+}
+.app-page-header > * {
+  min-width: 0;
+}
+.app-page-header h1 {
+  line-height: 1.15;
+}
+@media (max-width: 700px) {
+  .app-page-header {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .app-page-header > div:first-child {
+    min-width: 0;
+  }
+  .app-page-header h1 {
+    font-size: 1.05rem;
+  }
+  .app-page-header p {
+    max-width: 100%;
+    line-height: 1.35;
+  }
+  .app-page-header .dictionary-pagination-capsule,
+  .app-page-header .editor-header-actions {
+    width: 100%;
+    margin-left: 0 !important;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .app-page-header .dictionary-pagination-capsule {
+    order: 3;
+  }
+  .app-page-header .editor-header-top {
+    margin-bottom: 10px;
+  }
+}
+
+
+/* Light Liquid Glass: same dock/layout as Dark, with a bright D&D-inspired palette. */
+html[data-theme='light'] body,
+html[data-theme='light'] .app-content-shell,
+html[data-theme='light'] .app-content-shell main {
+  background:
+    radial-gradient(circle at 12% 0%, rgb(var(--poly-accent-rgb, 198 40 40) / 10%), transparent 35%),
+    radial-gradient(circle at 88% 100%, rgb(190 120 70 / 8%), transparent 38%),
+    #f4f1ed;
+  color: #241f1b;
+}
+html[data-theme='light'] .sidebar-shell {
+  background: rgb(255 253 250 / 88%);
+  border-color: rgb(var(--poly-accent-rgb, 198 40 40) / 24%);
+  box-shadow: 0 16px 45px rgb(80 55 35 / 18%), inset 0 1px 0 rgb(255 255 255 / 90%), 0 0 28px rgb(var(--poly-accent-rgb, 198 40 40) / 10%);
+}
+html[data-theme='light'] .sidebar-nav a,
+html[data-theme='light'] .sidebar-footer a { color: #756a60; }
+html[data-theme='light'] .sidebar-nav a:hover,
+html[data-theme='light'] .sidebar-footer a:hover { color: #302a25; background: rgb(var(--poly-accent-rgb, 198 40 40) / 8%); }
+html[data-theme='light'] .sidebar-nav a[aria-current='page'],
+html[data-theme='light'] .sidebar-footer a[aria-current='page'] { color: var(--poly-accent, #c62828); background: rgb(var(--poly-accent-rgb, 198 40 40) / 12%); }
+html[data-theme='light'] .app-content-shell [class~='bg-[#0c0d0f]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0a0a0c]'] { background-color: #fffdfa; border-color: #d8d0c8; }
+html[data-theme='light'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0f1114]'] { background-color: #fffdfa; border-color: #d8d0c8; }
+html[data-theme='light'] .app-content-shell main input,
+html[data-theme='light'] .app-content-shell main textarea,
+html[data-theme='light'] .app-content-shell main select { background-color: #fffdfa; color: #241f1b; border-color: #cfc5bb; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-500'] { color: #756a60; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-400'] { color: #655b52; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-300'],
+html[data-theme='light'] .app-content-shell [class~='text-neutral-200'] { color: #403831; }
+
+
+html[data-theme='light'] body,
+html[data-theme='light'] .app-content-shell,
+html[data-theme='light'] .app-content-shell main { background: #f4f1ed; color: #241f1b; }
+html[data-theme='light'] .sidebar-shell,
+html[data-theme='light'] .translation-pagination-size,
+html[data-theme='light'] .translation-pagination-controls,
+html[data-theme='light'] .dictionary-footer .dictionary-pagination-capsule {
+  background-color: rgb(255 253 250 / 88%) !important;
+  background-image: linear-gradient(135deg, rgb(255 255 255 / 90%), rgb(255 255 255 / 45%) 46%, rgb(var(--poly-accent-rgb, 198 40 40) / 5%)) !important;
+  border-color: rgb(var(--poly-accent-rgb, 198 40 40) / 22%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 95%), 0 18px 44px rgb(80 55 35 / 18%), 0 0 26px rgb(var(--poly-accent-rgb, 198 40 40) / 8%) !important;
+}
+html[data-theme='light'] .app-content-shell [class~='bg-[#0c0d0f]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0a0a0c]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#131518]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#141416]'],
+html[data-theme='light'] .app-content-shell [class~='bg-[#0f1114]'] { background-color: #fffdfa !important; border-color: #d8d0c8 !important; }
+html[data-theme='light'] .app-content-shell main input,
+html[data-theme='light'] .app-content-shell main textarea,
+html[data-theme='light'] .app-content-shell main select { background-color: #fffdfa !important; color: #241f1b !important; border-color: #cfc5bb !important; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-500'] { color: #756a60 !important; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-400'] { color: #655b52 !important; }
+html[data-theme='light'] .app-content-shell [class~='text-neutral-300'],
+html[data-theme='light'] .app-content-shell [class~='text-neutral-200'] { color: #403831 !important; }
+html[data-theme='light'] .sidebar-nav a { color: #756a60 !important; }
+html[data-theme='light'] .sidebar-nav a:hover { color: #302a25 !important; background: rgb(var(--poly-accent-rgb, 198 40 40) / 8%) !important; }
