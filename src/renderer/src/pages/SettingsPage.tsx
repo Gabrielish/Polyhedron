@@ -258,18 +258,6 @@ export function SettingsPage(): React.JSX.Element {
             {accentDraft && !/^#[0-9A-F]{6}$/.test(accentDraft) && <p className="mt-2 text-xs text-red-300">Enter a six-digit HEX value, for example #ED1C24.</p>}
           </div>
         </SettingsCard>
-        <SettingsCard title="Rows per page">
-          <div className="flex max-w-sm flex-col gap-2">
-            <label className="text-sm font-medium text-neutral-300">String count on each page</label>
-            <span className="text-xs text-neutral-500">Choose how many translation and glossary entries are shown at once.</span>
-            <ThemedSelect
-              value={config['translation_page_size'] || '250'}
-              onChange={(value) => { void set('translation_page_size', value) }}
-              options={[100, 250, 500, 1000].map((value) => ({ value: String(value), label: `${value} strings` }))}
-            />
-          </div>
-        </SettingsCard>
-
         <AiProvidersCard />
         <PromptSlotsCard />
         <SimilaritySettingsCard />
@@ -336,27 +324,51 @@ export function SettingsPage(): React.JSX.Element {
         </SettingsCard>
 
         <SettingsCard title={t('sections.interface')}>
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              type="checkbox"
-              checked={config['show_translation_counters'] === 'true'}
-              onChange={(event) => {
-                void set('show_translation_counters', String(event.target.checked))
-              }}
-              className="mt-0.5 cursor-pointer accent-amber-500"
-            />
-            <span className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-neutral-300">{t('fields.showCounters')}</span>
-              <span className="text-xs text-neutral-500">{t('descriptions.showCounters')}</span>
-            </span>
-          </label>
-          <label className="mt-4 flex cursor-pointer items-start gap-3">
-            <input type="checkbox" checked={config['hide_developer_notes'] !== 'false'} onChange={(event) => { void set('hide_developer_notes', String(event.target.checked)) }} className="mt-0.5 cursor-pointer accent-amber-500" />
-            <span className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-neutral-300">Hide developer notes</span>
-              <span className="text-xs text-neutral-500">Hide internal strings beginning with %%% or wrapped in | ... | from the editor and progress counters.</span>
-            </span>
-          </label>
+          <div className="divide-y divide-neutral-800/70">
+            <div className="flex items-center justify-between gap-5 py-3 first:pt-0">
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-neutral-200">String count on each page</div>
+                <div className="mt-0.5 text-xs text-neutral-500">Choose how many translation and glossary entries are shown at once.</div>
+              </div>
+              <div className="w-40 shrink-0">
+                <ThemedSelect
+                  value={config['translation_page_size'] || '250'}
+                  onChange={(value) => { void set('translation_page_size', value) }}
+                  options={[100, 250, 500, 1000].map((value) => ({ value: String(value), label: `${value} strings` }))}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-5 py-3">
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-neutral-200">{t('fields.showCounters')}</div>
+                <div className="mt-0.5 text-xs text-neutral-500">{t('descriptions.showCounters')}</div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={config['show_translation_counters'] === 'true'}
+                onClick={() => void set('show_translation_counters', String(config['show_translation_counters'] !== 'true'))}
+                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_translation_counters'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_translation_counters'] === 'true' ? 'translate-x-4' : ''}`} />
+              </button>
+            </div>
+            <div className="flex items-center justify-between gap-5 py-3 last:pb-0">
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-neutral-200">Hide developer notes</div>
+                <div className="mt-0.5 text-xs text-neutral-500">Hide internal strings beginning with %%% or wrapped in | ... | from the editor and progress counters.</div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={config['hide_developer_notes'] !== 'false'}
+                onClick={() => void set('hide_developer_notes', String(config['hide_developer_notes'] === 'false'))}
+                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['hide_developer_notes'] !== 'false' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['hide_developer_notes'] !== 'false' ? 'translate-x-4' : ''}`} />
+              </button>
+            </div>
+          </div>
         </SettingsCard>
 
         <SettingsCard title={t('sections.defaults')}>
