@@ -725,7 +725,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                               }}
                             />
                             <div className="mt-1 flex gap-1">
-                              {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => { const value = item === 'default' || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}
+                              {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => { const value = item === 'default' || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}
                             </div>
                                 </>
                               )

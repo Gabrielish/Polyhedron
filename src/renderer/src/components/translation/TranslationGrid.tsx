@@ -507,7 +507,7 @@ export function TranslationGrid({
 
   const renderGenderControls = (entry: TranslationSessionEntry) => {
     const variant = selectedGenderVariant(entry)
-    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => { const value = item === "default" || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ""); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}</div>
+    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => { const value = item === "default" || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ""); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}</div>
   }
 
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
