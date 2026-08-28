@@ -35,6 +35,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
   useEffect(() => {
     const handleOpenShortcut = (event: KeyboardEvent) => {
       if (event.key !== 'Enter' || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return
+      if (event.target instanceof HTMLElement && event.target.closest('input, textarea, select, button')) return
       if (!setup.ready || isLoading) return
       event.preventDefault()
       void importFlow.openFile(setup.filePath, setup.ready)
