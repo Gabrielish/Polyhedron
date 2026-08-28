@@ -31,6 +31,7 @@ import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import {
   type FilterSpec,
+  type GenderVariant,
   entryMatchesSearch,
   materializeSelectedEntries,
   type TranslationSessionEntry,
@@ -279,6 +280,7 @@ export function TranslationGrid({
   const [currentPage, setCurrentPage] = useState(1)
   const [stickyRowIds, setStickyRowIds] = useState<Set<string>>(() => new Set())
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
+  const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
   // Row the per-line "Translate with AI" modal is open for (null = closed).
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [dialogueKey, setDialogueKey] = useState<{ file: string; dialogue: string } | null>(null)
@@ -487,6 +489,24 @@ export function TranslationGrid({
     updateEntryTarget(entry, value)
     markSticky(entry.rowId)
     setEditingRowId(null)
+  }
+
+  const selectedGenderVariant = (entry: TranslationSessionEntry): GenderVariant => genderVariants[entry.rowId] ?? entry.genderVariant ?? "default"
+
+  const genderValue = (entry: TranslationSessionEntry): string => {
+    const variant = selectedGenderVariant(entry)
+    return variant === "default" ? entry.target : (entry.genderTargets?.[variant] ?? "")
+  }
+
+  const updateGenderValue = (entry: TranslationSessionEntry, value: string) => {
+    const variant = selectedGenderVariant(entry)
+    if (variant === "default") updateEntryTarget(entry, value)
+    else if (value !== (entry.genderTargets?.[variant] ?? "")) { session.updateGenderVariant(entry.rowId, variant, value); onEntryManualEdit(entry.rowId) }
+  }
+
+  const renderGenderControls = (entry: TranslationSessionEntry) => {
+    const variant = selectedGenderVariant(entry)
+    return <div className="flex items-center gap-1">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{item}</button>)}</div>
   }
 
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
@@ -1491,14 +1511,15 @@ export function TranslationGrid({
                     className="translate-target-cell flex min-w-0 flex-col gap-2 border-l border-[#1f2329] px-4 py-3"
                     onClick={(event) => event.stopPropagation()}
                   >
+                    {renderGenderControls(entry)}
                     <HighlightedTextarea
                       ref={(element) => {
                         if (element) textareaRefs.current.set(entry.rowId, element)
                         else textareaRefs.current.delete(entry.rowId)
                       }}
-                      value={entry.target}
+                      value={genderValue(entry)}
                       onFocus={() => setEditingRowId(entry.rowId)}
-                      onBlur={(event) => handleEntryBlur(entry, event.target.value)}
+                      onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                       onKeyDown={(event) => handleEnterKey(event, entry)}
                       rows={1}
                       placeholder={t('grid.translationPlaceholder', { ns: 'translate' })}
@@ -1764,14 +1785,15 @@ export function TranslationGrid({
                         </div>
                       </div>
 
-                      <HighlightedTextarea
+                      {renderGenderControls(entry)}
+                    <HighlightedTextarea
                         ref={(element) => {
                           if (element) textareaRefs.current.set(entry.rowId, element)
                           else textareaRefs.current.delete(entry.rowId)
                         }}
-                      value={entry.target}
+                      value={genderValue(entry)}
                       onFocus={() => setEditingRowId(entry.rowId)}
-                      onBlur={(event) => handleEntryBlur(entry, event.target.value)}
+                      onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                         onKeyDown={(event) => handleEnterKey(event, entry)}
                         rows={rows}
                         placeholder={isDone ? '' : t('grid.startTyping', { ns: 'translate' })}
