@@ -59,5 +59,8 @@ export function GameDataTab({ document, onDocumentChange }: { document: Workspac
 }
 
 function GameDataField({ label, source, value, onChange }: { label: string; source: string; value: string; onChange: (value: string) => void }): React.JSX.Element {
-  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder="Translation..." rows={Math.max(2, Math.min(8, value.split('\n').length + 1))} /></section>
+  const [draft, setDraft] = useState(value)
+  useEffect(() => setDraft(value), [value])
+  function commit(): void { if (draft !== value) onChange(draft) }
+  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></section>
 }
