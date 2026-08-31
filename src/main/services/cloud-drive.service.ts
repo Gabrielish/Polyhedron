@@ -94,7 +94,16 @@ async function getAuth() {
     }
     const auth = new google.auth.OAuth2(clientId, clientSecret)
     auth.setCredentials({ refresh_token: credentials.refresh_token })
-    return auth
+    try {
+      await auth.getAccessToken()
+      return auth
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      if (!/invalid_grant|invalid credentials|unauthorized/i.test(message)) throw error
+      // Refresh tokens can be revoked or expire. Remove the stale token so the
+      // next authentication transparently opens the Google consent flow again.
+      fs.rmSync(savedTokenPath, { force: true })
+    }
   }
 
   const authenticated = await authenticate({ keyfilePath, scopes: [DRIVE_SCOPE] })

@@ -401,7 +401,7 @@ export function TranslationSessionProvider({
                   target: previous.target.trim() || previous.needsReview ? previous.target : entry.target,
                   matchType: previous.target.trim() || previous.matchType === 'manual' ? previous.matchType : entry.matchType,
                   needsReview: previous.needsReview === true,
-                  genderTargets: previous.genderTargets
+                  genderTargets: previous.genderTargets ?? entry.genderTargets
                 }
               : entry
           })
