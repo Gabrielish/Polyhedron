@@ -10,10 +10,10 @@ type SyncResult = {
   fingerprint: string
 }
 
-function fingerprint(entries: Array<{ uid: string; target: string; matchType: string; needsReview: boolean }>): string {
+function fingerprint(entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: string; needsReview: boolean }>): string {
   let hash = 2166136261
   for (const entry of entries) {
-    const value = `${entry.uid}\u0000${entry.target}\u0000${entry.matchType}\u0000${entry.needsReview}`
+    const value = `${entry.uid}\u0000${entry.target}\u0000${JSON.stringify(entry.genderTargets ?? {})}\u0000${entry.matchType}\u0000${entry.needsReview}`
     for (let index = 0; index < value.length; index += 1) {
       hash ^= value.charCodeAt(index)
       hash = Math.imul(hash, 16777619)
@@ -35,7 +35,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   // "Synced" after the imported workspace is loaded or the app is restarted.
   const syncKey = `icosa.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const currentFingerprint = useMemo(
-    () => fingerprint(session.entries.map(({ uid, target, matchType, needsReview }) => ({ uid, target, matchType, needsReview }))),
+    () => fingerprint(session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))),
     [session.entries]
   )
 
@@ -86,7 +86,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
     await window.api.session.save({
       key: sessionKey,
-      entries: session.entries.map(({ uid, target, matchType, needsReview }) => ({ uid, target, matchType, needsReview }))
+      entries: session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
     })
   }
 
