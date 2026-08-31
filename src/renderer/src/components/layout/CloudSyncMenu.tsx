@@ -29,6 +29,8 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const [remoteChanged, setRemoteChanged] = useState(false)
   const session = useTranslationSession()
+  const sessionRef = useRef(session)
+  sessionRef.current = session
   const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
   // The workspace importer can rewrite stored/input paths. Keep the UI's saved
   // fingerprint keyed by the stable session identity so Download remains
@@ -82,11 +84,13 @@ export function CloudSyncMenu(): React.JSX.Element {
   }, [remoteStampKey, session.phase])
 
   async function saveCurrentSession(): Promise<void> {
-    if (session.phase !== 'loaded' || session.entries.length === 0) return
-    const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
+    await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+    const latest = sessionRef.current
+    if (latest.phase !== 'loaded' || latest.entries.length === 0) return
+    const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
     await window.api.session.save({
       key: sessionKey,
-      entries: session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
+      entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
     })
   }
 
