@@ -1,5 +1,5 @@
 import { Loader2, Save } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
 import type { TranslationSession } from '../types'
@@ -15,6 +15,8 @@ interface SessionSaveButtonProps {
 export function SessionSaveButton({ session, className, portalSelector }: SessionSaveButtonProps): React.JSX.Element {
   const [isSaving, setIsSaving] = useState(false)
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null)
+  const sessionRef = useRef(session)
+  sessionRef.current = session
 
   useEffect(() => {
     if (!portalSelector) return
@@ -24,11 +26,16 @@ export function SessionSaveButton({ session, className, portalSelector }: Sessio
 
   const saveTranslations = async () => {
     setIsSaving(true)
-    const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
     try {
+      // Let a focused textarea finish its blur commit before taking the
+      // snapshot. Without this, clicking SAVE could serialize the previous
+      // render and silently drop the last gender-variant edit.
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+      const latest = sessionRef.current
+      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
       })
       toast.success('Translations saved')
     } catch (error) {

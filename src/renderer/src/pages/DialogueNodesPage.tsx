@@ -307,6 +307,12 @@ function TranslationInput({
         setFocused(false)
         onCommit(draft)
       }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault()
+          onCommit(draft)
+        }
+      }}
       rows={4}
       placeholder="Translate here..."
       className="min-h-24 w-full resize-y rounded border border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-amber-500/60 focus:ring-2 focus:ring-amber-500/15"
