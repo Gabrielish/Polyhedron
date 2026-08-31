@@ -17,10 +17,16 @@ function DialogueNodeEditor({ node, onChange }: { node: { source: string; target
   const [previous, setPrevious] = useState<string | null>(null)
   const [message, setMessage] = useState('')
   const [variant, setVariant] = useState<GenderVariant>('default')
+  const readValue = (selected: GenderVariant): string => selected === 'default' ? node.target : (node.genderTargets?.[selected] ?? '')
+  const [draft, setDraft] = useState(() => readValue('default'))
+  useEffect(() => { setDraft(readValue(variant)) }, [node.target, node.genderTargets, variant])
+  function commit(): void {
+    if (draft !== readValue(variant)) { setPrevious(readValue(variant)); onChange(draft, variant) }
+  }
   async function copy(): Promise<void> { try { await navigator.clipboard.writeText(node.source); setMessage('Copied') } catch { setMessage('Copy unavailable') } }
-  async function paste(): Promise<void> { try { setPrevious(node.target); onChange(await navigator.clipboard.readText(), variant); setMessage('Pasted') } catch { setMessage('Paste unavailable') } }
-  function undo(): void { if (previous === null) return; onChange(previous, variant); setPrevious(null); setMessage('Undone') }
-  return <div className="node-fields"><div><label>Source · EN</label><p>{node.source}</p></div><div><div className="node-translation-label"><label>Translation · RO</label><TranslationActions onCopy={() => void copy()} onPaste={() => void paste()} onUndo={undo} canUndo={previous !== null} message={message} /></div><textarea value={variant === 'default' ? node.target : (node.genderTargets?.[variant] ?? '')} onChange={(event) => { setPrevious(variant === 'default' ? node.target : (node.genderTargets?.[variant] ?? '')); onChange(event.target.value, variant) }} rows={3} /><div className="gender-controls">{(['default','female','neutral'] as const).map((item) => { const value = item === 'default' ? node.target : (node.genderTargets?.[item] ?? ''); return <button key={item} type="button" className={variant === item ? 'active' : ''} onClick={() => setVariant(item)}>{value.trim() && <Check size={11} />} {item}</button> })}</div></div></div>
+  async function paste(): Promise<void> { try { setPrevious(draft); setDraft(await navigator.clipboard.readText()); setMessage('Pasted') } catch { setMessage('Paste unavailable') } }
+  function undo(): void { if (previous === null) return; setDraft(previous); onChange(previous, variant); setPrevious(null); setMessage('Undone') }
+  return <div className="node-fields"><div><label>Source · EN</label><p>{node.source}</p></div><div><div className="node-translation-label"><label>Translation · RO</label><TranslationActions onCopy={() => void copy()} onPaste={() => void paste()} onUndo={undo} canUndo={previous !== null} message={message} /></div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} rows={3} /><div className="gender-controls">{(['default','female','neutral'] as const).map((item) => { const value = item === 'default' ? node.target : (node.genderTargets?.[item] ?? ''); return <button key={item} type="button" className={variant === item ? 'active' : ''} onClick={() => { commit(); setVariant(item) }}>{value.trim() && <Check size={11} />} {item}</button> })}</div></div></div>
 }
 
 export function DialogueNodesTab({ document, onDocumentChange }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void }): React.JSX.Element {

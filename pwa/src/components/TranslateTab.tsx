@@ -147,19 +147,22 @@ function TranslationCard({ entry, stringNumber, showId, onChange, onReview }: { 
 function HighlightedEditor({ value, onChange }: { value: string; onChange: (value: string) => void }): React.JSX.Element {
   const highlightRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLTextAreaElement>(null)
+  const [draft, setDraft] = useState(value)
+  useEffect(() => setDraft(value), [value])
   useEffect(() => {
     const editor = editorRef.current
     if (!editor) return
     editor.style.height = 'auto'
     editor.style.height = `${editor.scrollHeight}px`
-  }, [value])
+  }, [draft])
+  function commit(): void { if (draft !== value) onChange(draft) }
   function syncScroll(event: React.UIEvent<HTMLTextAreaElement>): void {
     if (highlightRef.current) {
       highlightRef.current.scrollTop = event.currentTarget.scrollTop
       highlightRef.current.scrollLeft = event.currentTarget.scrollLeft
     }
   }
-  return <div className="translation-editor"><div ref={highlightRef} className="editor-highlight" aria-hidden="true"><LarianText value={value || ' '} /></div><textarea ref={editorRef} className="editor-input" value={value} onChange={(event) => onChange(event.target.value)} onScroll={syncScroll} placeholder="Translation..." rows={2} /></div>
+  return <div className="translation-editor"><div ref={highlightRef} className="editor-highlight" aria-hidden="true"><LarianText value={draft || ' '} /></div><textarea ref={editorRef} className="editor-input" value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} onScroll={syncScroll} placeholder="Translation..." rows={2} /></div>
 }
 
 function decodeHtmlEntities(value: string): string {
