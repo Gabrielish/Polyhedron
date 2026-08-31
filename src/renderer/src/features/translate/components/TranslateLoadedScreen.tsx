@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { AlreadyTranslatedDialog } from '@/components/translation/AlreadyTranslatedDialog'
 import { BatchActionBar } from '@/components/translation/BatchActionBar'
@@ -29,6 +29,8 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
   )
   const [languages, setLanguages] = useState<Language[]>([])
+  const sessionRef = useRef(session)
+  sessionRef.current = session
   const dictionarySave = useDictionarySave(session)
   const batch = useBatchTranslation(session)
   const exportFlow = useTranslationExport(session, languages)
@@ -73,11 +75,13 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   }, [dictionarySave.saveAll])
 
   const handleSaveSession = useCallback(async () => {
-    const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
     try {
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+      const latest = sessionRef.current
+      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({
           uid,
           target,
           genderTargets,
@@ -89,7 +93,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     } catch (error) {
       toast.error(String(error))
     }
-  }, [session.entries, session.inputPath, session.storedPath, t])
+  }, [t])
 
   useLoadedEditorShortcuts({
     onSave: handleSaveSession,
