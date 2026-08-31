@@ -156,11 +156,19 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   if (document.version !== 1 || !Array.isArray(document.sessions)) return
   const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
   fs.mkdirSync(sessionsDir, { recursive: true })
+  // The sync document may have been created on another machine, so its
+  // session id can contain a foreign absolute file path. Resolve it against
+  // the freshly imported local mod record instead of hashing that path.
+  const localMods = dbModRows()
   for (const session of document.sessions) {
     if (!session.sourceLang || !session.targetLang || !Array.isArray(session.entries)) continue
     const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', genderTargets: entry.genderTargets, matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true }))
     if (session.id && persistedEntries.length > 0) {
-      const sessionPath = path.join(sessionsDir, `${crypto.createHash('sha256').update(session.id).digest('hex')}.json`)
+      const localMod = localMods.find((modRow) => modRow.name === session.modName)
+      const localSessionKey = localMod?.lastFilePath
+        ? `${localMod.lastFilePath}|${session.sourceLang}|${session.targetLang}`
+        : session.id
+      const sessionPath = path.join(sessionsDir, `${crypto.createHash('sha256').update(localSessionKey).digest('hex')}.json`)
       let existingEntries: typeof persistedEntries = []
       if (fs.existsSync(sessionPath)) {
         try { existingEntries = (JSON.parse(fs.readFileSync(sessionPath, 'utf8')) as { entries?: typeof persistedEntries }).entries ?? [] } catch { /* Rebuild an incomplete cache. */ }
@@ -170,6 +178,10 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
       fs.writeFileSync(sessionPath, JSON.stringify({ version: 1, entries: [...byUid.values()] }), 'utf8')
     }
   }
+}
+
+function dbModRows(): Array<{ name: string; lastFilePath: string | null }> {
+  return getDb().select().from(mod).all() as Array<{ name: string; lastFilePath: string | null }>
 }
 
 export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
