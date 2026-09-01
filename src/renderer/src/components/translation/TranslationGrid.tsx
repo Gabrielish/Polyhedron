@@ -249,7 +249,7 @@ export function TranslationGrid({
   const [exactMatch, setExactMatch] = useState(false)
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(false)
-  const [highlightSearchMatches, setHighlightSearchMatches] = useState(false)
+  const [highlightSearchMatches, setHighlightSearchMatches] = useState(true)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
