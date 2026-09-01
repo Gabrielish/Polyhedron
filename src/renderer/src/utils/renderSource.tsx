@@ -1,18 +1,29 @@
+import React from 'react'
+
 interface RenderSourceOptions {
   variant?: 'display' | 'editor'
+  highlightQuery?: string
 }
 
 export function renderSource(
   text: string,
-  { variant = 'display' }: RenderSourceOptions = {}
+  { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
+  const query = highlightQuery.trim()
+  const queryPattern = query ? new RegExp(`(${query.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')})`, 'ig') : null
+  const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
+    if (!queryPattern) return value
+    return value.split(queryPattern).map((part, index) => part.toLocaleLowerCase() === query.toLocaleLowerCase()
+      ? <mark key={`${keyPrefix}-${index}`} className="search-text-highlight">{part}</mark>
+      : <React.Fragment key={`${keyPrefix}-${index}`}>{part}</React.Fragment>)
+  }
   const parts: React.ReactNode[] = []
   let lastIndex = 0
   const re = /(<[^>]+>|\{[^}]+\})/g
   let match: RegExpExecArray | null
   while ((match = re.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      parts.push(<span key={`t${lastIndex}`}>{text.slice(lastIndex, match.index)}</span>)
+      parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex, match.index), `t${lastIndex}`)}</span>)
     }
     const isTag = match[0].startsWith('<')
     const highlightClass =
@@ -28,13 +39,13 @@ export function renderSource(
         key={`m${match.index}`}
         className={highlightClass}
       >
-        {match[0]}
+        {highlightText(match[0], `m${match.index}`)}
       </span>
     )
     lastIndex = match.index + match[0].length
   }
   if (lastIndex < text.length) {
-    parts.push(<span key={`t${lastIndex}`}>{text.slice(lastIndex)}</span>)
+    parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex), `t${lastIndex}`)}</span>)
   }
   return parts.length > 0 ? parts : text
 }

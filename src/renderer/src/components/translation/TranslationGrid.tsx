@@ -1427,7 +1427,7 @@ export function TranslationGrid({
                   <div className="translate-source-cell flex min-w-0 cursor-text flex-col gap-2 px-4 py-3">
                     <div className="wrap-break-word font-mono text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
                       {entry.source ? (
-                        renderSource(entry.source)
+                        renderSource(entry.source, { highlightQuery: effectiveSearch })
                       ) : (
                         <span className="italic text-neutral-600">
                           {t('grid.emptySource', { ns: 'translate' })}
@@ -1497,6 +1497,7 @@ export function TranslationGrid({
                         else textareaRefs.current.delete(entry.rowId)
                       }}
                       value={genderValue(entry)}
+                      highlightQuery={effectiveSearch}
                       onFocus={() => setEditingRowId(entry.rowId)}
                       onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
@@ -1706,7 +1707,7 @@ export function TranslationGrid({
 
                       <div className="wrap-break-word font-mono text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
                         {entry.source ? (
-                          renderSource(entry.source)
+                          renderSource(entry.source, { highlightQuery: effectiveSearch })
                         ) : (
                           <span className="italic text-neutral-600">
                             {t('grid.emptySource', { ns: 'translate' })}
@@ -1771,6 +1772,7 @@ export function TranslationGrid({
                           else textareaRefs.current.delete(entry.rowId)
                         }}
                       value={genderValue(entry)}
+                      highlightQuery={effectiveSearch}
                       onFocus={() => setEditingRowId(entry.rowId)}
                       onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}

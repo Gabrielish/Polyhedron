@@ -7,6 +7,7 @@ interface HighlightedTextareaProps
   value: string
   containerClassName?: string
   overlayClassName?: string
+  highlightQuery?: string
 }
 
 export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTextareaProps>(
@@ -19,6 +20,7 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
       className,
       containerClassName,
       overlayClassName,
+      highlightQuery,
       placeholder,
       ...props
     },
@@ -47,7 +49,7 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
           )}
         >
           {draft ? (
-            renderSource(draft, { variant: 'editor' })
+            renderSource(draft, { variant: 'editor', highlightQuery })
           ) : (
             <span className="italic text-neutral-600">{placeholder}</span>
           )}
