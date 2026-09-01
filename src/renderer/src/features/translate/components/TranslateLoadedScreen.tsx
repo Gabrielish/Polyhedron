@@ -113,6 +113,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
         pct={pct}
         batchCompleted={batch.batchCompleted}
         batchTotal={batch.batchTotal}
+        dailyCheckpoint={Math.max(1, Number(config['daily_progress_checkpoint']) || 250)}
         onViewModeChange={setViewMode}
         onSave={handleSaveSession}
         onSaveToGlossary={handleSaveToDictionary}
