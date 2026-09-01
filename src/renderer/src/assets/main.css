@@ -9,6 +9,16 @@
   background: transparent;
 }
 
+.daily-progress-checkpoint::-webkit-inner-spin-button,
+.daily-progress-checkpoint::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.daily-progress-checkpoint {
+  -moz-appearance: textfield;
+}
+
 @font-face {
   font-family: 'Breathe Fire III';
   src: url('./fonts/BreatheFireIII.otf') format('opentype');

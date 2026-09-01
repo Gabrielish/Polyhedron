@@ -298,7 +298,7 @@ export function SettingsPage(): React.JSX.Element {
                   const value = Math.max(1, Math.min(100000, Number(event.target.value) || 250))
                   void set('daily_progress_checkpoint', String(value))
                 }}
-                className="w-28 shrink-0 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2 text-right font-mono text-sm text-neutral-200 focus:border-amber-500 focus:outline-none"
+                className="daily-progress-checkpoint w-28 shrink-0 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2 text-right font-mono text-sm text-neutral-200 focus:border-amber-500 focus:outline-none"
               />
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
