@@ -10,7 +10,8 @@ export function renderSource(
   { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
-  const queryTokens = query.split(/[^\p{L}\p{N}_]+/u).filter((token) => token.length >= 3)
+  // Keep short numeric placeholders such as [1] and [2] searchable too.
+  const queryTokens = query.split(/[^\p{L}\p{N}_]+/u).filter((token) => token.length >= 3 || /\d/.test(token))
   // Ignore one-character highlights to avoid recursively creating a mark for
   // every character in a long string while the user is still typing.
   const searchTerms = [query.length >= 2 ? query : '', ...queryTokens].filter(Boolean)
