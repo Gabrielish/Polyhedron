@@ -135,10 +135,16 @@ h2 { font-size: 20px; }
 .tree-group { margin-bottom: 8px; }
 .tree-group-title { display: flex; width: 100%; justify-content: space-between; border: 0; background: transparent; cursor: pointer; text-align: left; padding: 7px 8px; color: #e7e9ed; font-size: 12px; font-weight: 700; }
 .tree-group-title span { color: #6f7680; font-size: 10px; }
-@media (max-width: 620px) { .dialogue-tree { max-height: none; overflow: visible; } }
+@media (max-width: 620px) {
+  /* Keep the tree compact while allowing its long node list to scroll locally. */
+  .dialogue-tree { height: min(38vh, 360px); min-height: 220px; max-height: 360px; overflow-y: auto; overscroll-behavior: contain; }
+  /* iOS Safari only avoids input zoom when controls are at least 16px. */
+  .dialogue-search input, .node-fields textarea, .game-data-field textarea { font-size: 16px !important; }
+}
 
 .node-translation-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .node-translation-label label { margin-bottom: 5px; }
+.node-fields textarea:focus { border-color: #ed1c24; outline: none; box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.18); }
 
 .dialogue-subacts { display: flex; gap: 7px; padding: 0 0 8px; }
 .dialogue-subact { border: 1px solid #2a2f37; border-radius: 7px; padding: 6px 10px; color: #858b94; background: #131518; font-size: 11px; cursor: pointer; }
