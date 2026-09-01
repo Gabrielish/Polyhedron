@@ -1236,7 +1236,7 @@ export function TranslationGrid({
           type="checkbox"
           checked={showId}
           onChange={(event) => setShowId(event.target.checked)}
-          className="cursor-pointer accent-sky-500"
+          className="cursor-pointer accent-amber-500"
         />
         ID
       </label>
