@@ -249,6 +249,7 @@ export function TranslationGrid({
   const [exactMatch, setExactMatch] = useState(false)
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(false)
+  const [highlightSearchMatches, setHighlightSearchMatches] = useState(false)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
@@ -1240,6 +1241,19 @@ export function TranslationGrid({
         ID
       </label>
 
+      <label
+        title="Highlight search matches"
+        className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+      >
+        <input
+          type="checkbox"
+          checked={highlightSearchMatches}
+          onChange={(event) => setHighlightSearchMatches(event.target.checked)}
+          className="cursor-pointer accent-amber-500"
+        />
+        Highlight
+      </label>
+
       </div>
 
       <div className="hidden">
@@ -1427,7 +1441,7 @@ export function TranslationGrid({
                   <div className="translate-source-cell flex min-w-0 cursor-text flex-col gap-2 px-4 py-3">
                     <div className="wrap-break-word font-mono text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
                       {entry.source ? (
-                        renderSource(entry.source, { highlightQuery: effectiveSearch })
+                        renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
                       ) : (
                         <span className="italic text-neutral-600">
                           {t('grid.emptySource', { ns: 'translate' })}
@@ -1497,7 +1511,7 @@ export function TranslationGrid({
                         else textareaRefs.current.delete(entry.rowId)
                       }}
                       value={genderValue(entry)}
-                      highlightQuery={effectiveSearch}
+                      highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
                       onFocus={() => setEditingRowId(entry.rowId)}
                       onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
@@ -1707,7 +1721,7 @@ export function TranslationGrid({
 
                       <div className="wrap-break-word font-mono text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
                         {entry.source ? (
-                          renderSource(entry.source, { highlightQuery: effectiveSearch })
+                          renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
                         ) : (
                           <span className="italic text-neutral-600">
                             {t('grid.emptySource', { ns: 'translate' })}
@@ -1772,7 +1786,7 @@ export function TranslationGrid({
                           else textareaRefs.current.delete(entry.rowId)
                         }}
                       value={genderValue(entry)}
-                      highlightQuery={effectiveSearch}
+                      highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
                       onFocus={() => setEditingRowId(entry.rowId)}
                       onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
