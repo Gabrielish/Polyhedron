@@ -10,14 +10,15 @@ export function renderSource(
   { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
-  const queryPattern = query ? new RegExp(`(${query.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')})`, 'ig') : null
+  const escapeRegex = (value: string): string => value.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')
+  const queryPattern = query ? new RegExp(`(${escapeRegex(query)})`, 'ig') : null
   const queryTokens = query.split(/[^\p{L}\p{N}_]+/u).filter((token) => token.length >= 3)
-  const tokenPattern = queryTokens.length > 0 ? new RegExp(`(${queryTokens.map((token) => token.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')).join('|')})`, 'ig') : null
+  const tokenPattern = queryTokens.length > 0 ? new RegExp(`(${queryTokens.map(escapeRegex).join('|')})`, 'ig') : null
   const decodeEntities = (value: string): string => value.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&amp;/gi, '&')
   const tagHasQuery = (value: string): boolean => query.length > 0 && (decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase()) || queryTokens.some((token) => decodeEntities(value).toLocaleLowerCase().includes(token.toLocaleLowerCase())))
   const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
     if (!queryPattern && !tokenPattern) return value
-    const pattern = queryPattern && queryPattern.test(value) ? queryPattern : tokenPattern
+    const pattern = queryPattern && value.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ? queryPattern : tokenPattern
     if (!pattern) return value
     return value.split(pattern).map((part, index) => queryTokens.some((token) => part.toLocaleLowerCase() === token.toLocaleLowerCase()) || part.toLocaleLowerCase() === query.toLocaleLowerCase()
       ? <mark key={`${keyPrefix}-${index}`} className="search-text-highlight">{part}</mark>
