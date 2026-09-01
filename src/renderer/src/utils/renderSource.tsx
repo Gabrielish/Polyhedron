@@ -10,19 +10,23 @@ export function renderSource(
   { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
-  const escapeRegex = (value: string): string => value.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')
-  const queryPattern = query ? new RegExp(`(${escapeRegex(query)})`, 'ig') : null
   const queryTokens = query.split(/[^\p{L}\p{N}_]+/u).filter((token) => token.length >= 3)
-  const tokenPattern = queryTokens.length > 0 ? new RegExp(`(${queryTokens.map(escapeRegex).join('|')})`, 'ig') : null
+  // Ignore one-character highlights to avoid recursively creating a mark for
+  // every character in a long string while the user is still typing.
+  const searchTerms = [query.length >= 2 ? query : '', ...queryTokens].filter(Boolean)
   const decodeEntities = (value: string): string => value.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&amp;/gi, '&')
   const tagHasQuery = (value: string): boolean => query.length > 0 && (decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase()) || queryTokens.some((token) => decodeEntities(value).toLocaleLowerCase().includes(token.toLocaleLowerCase())))
   const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
-    if (!queryPattern && !tokenPattern) return value
-    const pattern = queryPattern && value.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ? queryPattern : tokenPattern
-    if (!pattern) return value
-    return value.split(pattern).map((part, index) => queryTokens.some((token) => part.toLocaleLowerCase() === token.toLocaleLowerCase()) || part.toLocaleLowerCase() === query.toLocaleLowerCase()
-      ? <mark key={`${keyPrefix}-${index}`} className="search-text-highlight">{part}</mark>
-      : <React.Fragment key={`${keyPrefix}-${index}`}>{part}</React.Fragment>)
+    if (searchTerms.length === 0) return value
+    const lower = value.toLocaleLowerCase()
+    let matchIndex = -1
+    let matchLength = 0
+    for (const term of searchTerms) {
+      const index = lower.indexOf(term.toLocaleLowerCase())
+      if (index >= 0 && (matchIndex < 0 || index < matchIndex)) { matchIndex = index; matchLength = term.length }
+    }
+    if (matchIndex < 0) return value
+    return <>{value.slice(0, matchIndex)}<mark className="search-text-highlight">{value.slice(matchIndex, matchIndex + matchLength)}</mark>{highlightText(value.slice(matchIndex + matchLength), `${keyPrefix}-${matchIndex}`)}</>
   }
   const parts: React.ReactNode[] = []
   let lastIndex = 0
