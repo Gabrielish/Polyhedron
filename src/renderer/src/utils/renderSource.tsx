@@ -10,13 +10,11 @@ export function renderSource(
   { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
-  // Keep short numeric placeholders such as [1] and [2] searchable too.
-  const queryTokens = query.split(/[^\p{L}\p{N}_]+/u).filter((token) => token.length >= 3 || /\d/.test(token))
-  // Ignore one-character highlights to avoid recursively creating a mark for
-  // every character in a long string while the user is still typing.
-  const searchTerms = [query.length >= 2 ? query : '', ...queryTokens].filter(Boolean)
+  // Highlight only the exact literal query; do not underline individual words
+  // or tag fragments when the search contains a larger phrase.
+  const searchTerms = query.length >= 2 ? [query] : []
   const decodeEntities = (value: string): string => value.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&amp;/gi, '&')
-  const tagHasQuery = (value: string): boolean => query.length > 0 && (decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase()) || queryTokens.some((token) => decodeEntities(value).toLocaleLowerCase().includes(token.toLocaleLowerCase())))
+  const tagHasQuery = (value: string): boolean => query.length >= 2 && decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase())
   const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
     if (searchTerms.length === 0) return value
     const lower = value.toLocaleLowerCase()
