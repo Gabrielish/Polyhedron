@@ -11,6 +11,8 @@ export function renderSource(
 ): React.ReactNode {
   const query = highlightQuery.trim()
   const queryPattern = query ? new RegExp(`(${query.replace(/[\\^$.*+?()[\]{}|]/g, '\\\\$&')})`, 'ig') : null
+  const decodeEntities = (value: string): string => value.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&amp;/gi, '&')
+  const tagHasQuery = (value: string): boolean => query.length > 0 && decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase())
   const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
     if (!queryPattern) return value
     return value.split(queryPattern).map((part, index) => part.toLocaleLowerCase() === query.toLocaleLowerCase()
@@ -37,7 +39,7 @@ export function renderSource(
     parts.push(
       <span
         key={`m${match.index}`}
-        className={highlightClass}
+        className={`${highlightClass}${tagHasQuery(match[0]) ? ' search-text-highlight' : ''}`}
       >
         {highlightText(match[0], `m${match.index}`)}
       </span>
