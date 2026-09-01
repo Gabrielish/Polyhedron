@@ -9,6 +9,13 @@
   background: transparent;
 }
 
+.search-tag-highlight {
+  text-decoration: underline;
+  text-decoration-color: var(--poly-accent, #ed1c24);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
 .daily-progress-checkpoint::-webkit-inner-spin-button,
 .daily-progress-checkpoint::-webkit-outer-spin-button {
   appearance: none;
