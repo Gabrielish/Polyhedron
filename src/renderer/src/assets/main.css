@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 .search-text-highlight {
-  color: var(--poly-accent, #ed1c24);
+  color: inherit;
   text-decoration: underline;
   text-decoration-color: var(--poly-accent, #ed1c24);
   text-decoration-thickness: 2px;
