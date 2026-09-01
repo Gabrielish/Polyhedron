@@ -10,22 +10,34 @@ export function renderSource(
   { variant = 'display', highlightQuery = '' }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
-  // Highlight only the exact literal query; do not underline individual words
-  // or tag fragments when the search contains a larger phrase.
-  const searchTerms = query.length >= 2 ? [query] : []
-  const decodeEntities = (value: string): string => value.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '"').replace(/&amp;/gi, '&')
-  const tagHasQuery = (value: string): boolean => query.length >= 2 && decodeEntities(value).toLocaleLowerCase().includes(decodeEntities(query).toLocaleLowerCase())
-  const highlightText = (value: string, keyPrefix: string): React.ReactNode => {
-    if (searchTerms.length === 0) return value
-    const lower = value.toLocaleLowerCase()
-    let matchIndex = -1
-    let matchLength = 0
-    for (const term of searchTerms) {
-      const index = lower.indexOf(term.toLocaleLowerCase())
-      if (index >= 0 && (matchIndex < 0 || index < matchIndex)) { matchIndex = index; matchLength = term.length }
+  // Compute matches against the complete string so a query can cross a
+  // rendered Larian tag boundary (plain text + <LSTag> + plain text).
+  const matchRanges: Array<[number, number]> = []
+  if (query.length >= 2) {
+    const haystack = text.toLocaleLowerCase()
+    const needle = query.toLocaleLowerCase()
+    let from = 0
+    while (from < haystack.length) {
+      const index = haystack.indexOf(needle, from)
+      if (index < 0) break
+      matchRanges.push([index, index + needle.length])
+      from = index + needle.length
     }
-    if (matchIndex < 0) return value
-    return <>{value.slice(0, matchIndex)}<mark className="search-text-highlight">{value.slice(matchIndex, matchIndex + matchLength)}</mark>{highlightText(value.slice(matchIndex + matchLength), `${keyPrefix}-${matchIndex}`)}</>
+  }
+  const highlightText = (value: string, keyPrefix: string, offset: number): React.ReactNode => {
+    const ranges = matchRanges.map(([start, end]) => [Math.max(start, offset), Math.min(end, offset + value.length)] as [number, number]).filter(([start, end]) => end > start)
+    if (ranges.length === 0) return value
+    const children: React.ReactNode[] = []
+    let cursor = 0
+    for (const [start, end] of ranges) {
+      const localStart = start - offset
+      const localEnd = end - offset
+      if (localStart > cursor) children.push(<React.Fragment key={`${keyPrefix}-text-${cursor}`}>{value.slice(cursor, localStart)}</React.Fragment>)
+      children.push(<mark key={`${keyPrefix}-mark-${localStart}`} className="search-text-highlight">{value.slice(localStart, localEnd)}</mark>)
+      cursor = localEnd
+    }
+    if (cursor < value.length) children.push(<React.Fragment key={`${keyPrefix}-text-${cursor}`}>{value.slice(cursor)}</React.Fragment>)
+    return children
   }
   const parts: React.ReactNode[] = []
   let lastIndex = 0
@@ -33,7 +45,7 @@ export function renderSource(
   let match: RegExpExecArray | null
   while ((match = re.exec(text)) !== null) {
     if (match.index > lastIndex) {
-      parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex, match.index), `t${lastIndex}`)}</span>)
+      parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex, match.index), `t${lastIndex}`, lastIndex)}</span>)
     }
     const isTag = match[0].startsWith('<')
     const highlightClass =
@@ -47,15 +59,15 @@ export function renderSource(
     parts.push(
       <span
         key={`m${match.index}`}
-        className={`${highlightClass}${tagHasQuery(match[0]) ? ' search-tag-highlight' : ''}`}
+        className={`${highlightClass}${matchRanges.some(([start, end]) => end > match!.index && start < match!.index + match![0].length) ? ' search-tag-highlight' : ''}`}
       >
-        {highlightText(match[0], `m${match.index}`)}
+        {highlightText(match[0], `m${match.index}`, match.index)}
       </span>
     )
     lastIndex = match.index + match[0].length
   }
   if (lastIndex < text.length) {
-    parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex), `t${lastIndex}`)}</span>)
+    parts.push(<span key={`t${lastIndex}`}>{highlightText(text.slice(lastIndex), `t${lastIndex}`, lastIndex)}</span>)
   }
   return parts.length > 0 ? parts : text
 }
