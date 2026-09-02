@@ -231,6 +231,7 @@ export type ConfigKey =
   | 'translation_page_size'
   | 'show_translation_counters'
   | 'daily_progress_checkpoint'
+  | 'show_game_interface'
   | 'hide_developer_notes'
   | 'divine_path'
 

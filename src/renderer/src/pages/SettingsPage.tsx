@@ -303,6 +303,15 @@ export function SettingsPage(): React.JSX.Element {
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
+                <div className="text-sm font-medium text-neutral-200">Show Game Interface tab</div>
+                <div className="mt-0.5 text-xs text-neutral-500">Show the Game Interface reference tab in the navigation bar.</div>
+              </div>
+              <button type="button" role="switch" aria-checked={config['show_game_interface'] === 'true'} onClick={() => void set('show_game_interface', String(config['show_game_interface'] !== 'true'))} className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_game_interface'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}>
+                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_game_interface'] === 'true' ? 'translate-x-4' : ''}`} />
+              </button>
+            </div>
+            <div className="flex items-center justify-between gap-5 py-3">
+              <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">{t('fields.showCounters')}</div>
                 <div className="mt-0.5 text-xs text-neutral-500">{t('descriptions.showCounters')}</div>
               </div>
