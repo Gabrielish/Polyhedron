@@ -262,6 +262,16 @@ export function TranslationGrid({
   useEffect(() => {
     setStatusTabsTarget(document.getElementById('translation-status-tabs'))
   }, [])
+  useEffect(() => {
+    const reveal = (event: Event) => {
+      const uid = (event as CustomEvent<{ uid?: string }>).detail?.uid
+      if (!uid) return
+      setSearch(uid)
+      window.setTimeout(() => searchInputRef.current?.focus(), 0)
+    }
+    window.addEventListener('polyhedron:reveal-translation', reveal)
+    return () => window.removeEventListener('polyhedron:reveal-translation', reveal)
+  }, [])
   const effectiveSearch = useDeferredValue(debouncedSearch)
   const deferredExactMatch = useDeferredValue(exactMatch)
   const deferredLinkNameDescription = useDeferredValue(linkNameDescription)
