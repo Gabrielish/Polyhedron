@@ -1470,11 +1470,6 @@ export function TranslationGrid({
                           {t('grid.charCount', { ns: 'translate', count: entry.source.length })}
                         </span>
                       )}
-                      {showId && (
-                        <div className="basis-full font-mono text-[10px] text-neutral-500">
-                          {entry.uid}
-                        </div>
-                      )}
                       {occurrenceCount > 1 && (
                         <span className="inline-flex items-center rounded bg-amber-500/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-400">
                           {t('grid.appearsCount', {
@@ -1508,6 +1503,11 @@ export function TranslationGrid({
                         </button>
                       </span>
                     </div>
+                    {showId && (
+                      <div className="font-mono text-[10px] text-neutral-500">
+                        {entry.uid}
+                      </div>
+                    )}
                   </div>
 
                   <div
