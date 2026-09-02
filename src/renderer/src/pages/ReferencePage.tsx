@@ -14,10 +14,7 @@ function LocalTranslationInput({ value, onCommit }: { value: string; onCommit: (
   const [draft, setDraft] = useState(value)
   const [focused, setFocused] = useState(false)
   useEffect(() => { if (!focused) setDraft(value) }, [value, focused])
-  return <div className="relative min-h-16 rounded border border-[#2a2f37] bg-[#131518] focus-within:border-amber-500/60">
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 whitespace-pre-wrap break-words overflow-hidden rounded px-3 py-2 text-xs leading-5 text-neutral-200">{draft ? renderSource(draft) : <span className="italic text-neutral-600">Translate here...</span>}</div>
-    <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); if (draft !== value) onCommit(draft) }} rows={2} placeholder="" className="relative z-10 min-h-16 w-full resize-y rounded bg-transparent px-3 py-2 text-xs leading-5 text-transparent caret-neutral-200 outline-none placeholder:text-transparent" style={{ WebkitTextFillColor: 'transparent' }} />
-  </div>
+  return <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); if (draft !== value) onCommit(draft) }} rows={2} placeholder="Translate here..." className="min-h-16 w-full resize-y rounded border border-[#2a2f37] bg-[#131518] px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-amber-500/60" />
 }
 function GameDataSearch({ onSearch }: { onSearch: (value: string) => void }): React.JSX.Element {
   const [draft, setDraft] = useState('')
