@@ -263,6 +263,11 @@ export function TranslationGrid({
     setStatusTabsTarget(document.getElementById('translation-status-tabs'))
   }, [])
   useEffect(() => {
+    const pendingUid = window.sessionStorage.getItem('polyhedron:reveal-uid')
+    if (pendingUid) {
+      window.sessionStorage.removeItem('polyhedron:reveal-uid')
+      setSearch(pendingUid)
+    }
     const reveal = (event: Event) => {
       const uid = (event as CustomEvent<{ uid?: string }>).detail?.uid
       if (!uid) return
