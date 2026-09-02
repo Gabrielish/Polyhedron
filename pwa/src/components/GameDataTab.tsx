@@ -62,5 +62,13 @@ function GameDataField({ label, source, value, onChange }: { label: string; sour
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
   function commit(): void { if (draft !== value) onChange(draft) }
-  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></section>
+  return <section className="game-data-field"><label>{label}</label><div className="game-data-source"><LarianText value={source} /></div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></section>
+}
+
+function LarianText({ value }: { value: string }): React.JSX.Element {
+  const decoded = decodeHtml(value)
+  const parts = decoded.split(/(<\/?(?:LSTag|LSTagValue)\b[^>]*>)/gi)
+  return <>{parts.map((part, index) => /<\/?(?:LSTag|LSTagValue)\b[^>]*>/i.test(part)
+    ? <span className="larian-tag" key={`${part}-${index}`}>{part}</span>
+    : <span key={`${part}-${index}`}>{part}</span>)}</>
 }
