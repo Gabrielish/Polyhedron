@@ -2429,3 +2429,8 @@ html[data-theme='liquid-glass'] .accent-solid-button:hover {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+.app-content-shell span[class~="border-emerald-500/30"] {
+  border-color: color-mix(in srgb, var(--color-amber-500) 35%, transparent) !important;
+  background-color: color-mix(in srgb, var(--color-amber-500) 10%, transparent) !important;
+  color: color-mix(in srgb, var(--color-amber-500) 72%, white) !important;
+}
