@@ -83,6 +83,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  app.setName('Polyhedron')
   ipcMain.handle('app:version', () => app.getVersion())
   electronApp.setAppUserModelId('com.icosa.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())
