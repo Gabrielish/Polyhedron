@@ -1400,10 +1400,8 @@ export function TranslationGrid({
           <div style={{ height: sideVirtualizer.getTotalSize() + paginationBottomSpacer, position: 'relative' }}>
             {sideVirtualizer.getVirtualItems().map((virtualItem) => {
               const entry = pageEntries[virtualItem.index]
-              const category = getCategory(entry)
               const isDone = entry.target.trim() !== ''
               const isRowSelected = isSelected(entry.rowId)
-              const isDictionary = category === 'dictionary'
               const occurrenceCount = session.sourceFrequencies.get(entry.source) ?? 0
               const targetOccurrenceCount = session.targetFrequencies.get(entry.target) ?? 0
               const itemTags = getItemTags(entry.source)
@@ -1464,11 +1462,6 @@ export function TranslationGrid({
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
-                      {isDictionary && (
-                        <span className="inline-flex items-center gap-1 rounded bg-blue-500/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-blue-400">
-                          <BookOpen size={10} /> D <span className="text-blue-500/70">1</span>
-                        </span>
-                      )}
                       <ItemTags tags={itemTags} />
                       <DialogueTags tags={getDialogueFilterTags(entry.source)} />
                       <ReferenceLinks links={linkedReferences} />
