@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+::selection {
+  background-color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 34%, transparent);
+  color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 72%, white);
+}
+
 .search-text-highlight {
   color: inherit;
   text-decoration: underline;
