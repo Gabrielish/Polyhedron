@@ -1462,6 +1462,11 @@ export function TranslationGrid({
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
+                      {showId && (
+                        <span className="font-mono text-[10px] text-neutral-500">
+                          {entry.uid}
+                        </span>
+                      )}
                       <ItemTags tags={itemTags} />
                       <DialogueTags tags={getDialogueFilterTags(entry.source)} />
                       <ReferenceLinks links={linkedReferences} />
@@ -1503,11 +1508,6 @@ export function TranslationGrid({
                         </button>
                       </span>
                     </div>
-                    {showId && (
-                      <div className="font-mono text-[10px] text-neutral-500">
-                        {entry.uid}
-                      </div>
-                    )}
                   </div>
 
                   <div
