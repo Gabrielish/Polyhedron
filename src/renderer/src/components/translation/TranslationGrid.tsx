@@ -174,10 +174,11 @@ function ItemTags({ tags }: { tags: ReturnType<typeof getItemTags> }) {
 }
 
 function DialogueTags({ tags }: { tags: string[] }) {
-  if (tags.length === 0) return null
+  const visibleTags = tags.filter((tag) => tag.toLowerCase() !== 'answer')
+  if (visibleTags.length === 0) return null
   return (
     <>
-      {tags.map((tag) => (
+      {visibleTags.map((tag) => (
         <span
           key={tag}
           className={cn(
