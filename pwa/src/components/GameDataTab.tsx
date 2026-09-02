@@ -46,11 +46,7 @@ export function GameDataTab({ document, onDocumentChange }: { document: Workspac
   const linked = useMemo(() => {
     if (!current || !session) return { title: [] as SyncEntry[], description: [] as SyncEntry[] }
     const title = normalize(current.name); const description = normalize(current.description)
-    const match = (entry: SyncEntry, value: string): boolean => {
-      const source = normalize(entry.source)
-      return source === value || source.includes(value) || value.includes(source)
-    }
-    return { title: session.entries.filter((entry) => match(entry, title)), description: session.entries.filter((entry) => match(entry, description)) }
+    return { title: session.entries.filter((entry) => normalize(entry.source) === title), description: session.entries.filter((entry) => normalize(entry.source) === description) }
   }, [current, session])
   const updateEntries = (entries: SyncEntry[], value: string) => {
     const ids = new Set(entries.map((entry) => entry.uid))
@@ -58,7 +54,7 @@ export function GameDataTab({ document, onDocumentChange }: { document: Workspac
   }
   return <section className="game-data-panel">
     <div className="game-data-controls"><div className="game-data-search-row"><label className="search-field"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search..." /><Search aria-hidden="true" size={17} /></label><a className="game-data-open" href={current ? wikiUrl(current) : 'https://bg3.wiki/wiki/Weapons'} target="_blank" rel="noreferrer" title="Open selected entry on Baldur's Gate wiki" aria-label="Open selected entry on Baldur's Gate wiki">↗</a></div><div className="game-data-categories">{CATEGORIES.map((item) => <button key={item.value} type="button" className={category === item.value ? 'game-data-category active' : 'game-data-category'} onClick={() => { setCategory(item.value); setQuery(''); setSelected(null) }}><CategoryIcon category={item.value} /> <span>{item.label}</span></button>)}</div></div>
-    <div className="game-data-layout"><aside key={category} className="game-data-list"><p className="tree-label">{CATEGORIES.find((item) => item.value === category)?.label} · {filtered.length.toLocaleString()} entries</p>{filtered.length ? filtered.map((entry) => <button type="button" key={`${entry.category}-${entry.name}`} className={current?.name === entry.name ? 'game-data-item selected' : 'game-data-item'} onClick={() => setSelected(entry)}><span>{entry.name}</span></button>) : <p className="dialogue-empty">{catalog.length ? 'No matching entries.' : 'Loading game data…'}</p>}</aside><main className="game-data-editor" key={`${category}-${current?.name ?? 'empty'}`}>{current && session ? <><div className="game-data-title"><span className="game-data-entry-icon"><CategoryIcon category={current.category} /></span><h3>{current.name}</h3></div><GameDataField label="Title · EN" source={linked.title[0]?.source ?? current.name} value={linked.title[0]?.target ?? ''} onChange={(value) => updateEntries(linked.title, value)} /><GameDataField label="Description · EN" source={linked.description.find((entry) => /<\/?LSTag\b/i.test(entry.source))?.source ?? linked.description[0]?.source ?? current.description} value={linked.description[0]?.target ?? ''} onChange={(value) => updateEntries(linked.description, value)} /></> : <div className="dialogue-empty">Select an entry from the list.</div>}</main></div>
+    <div className="game-data-layout"><aside key={category} className="game-data-list"><p className="tree-label">{CATEGORIES.find((item) => item.value === category)?.label} · {filtered.length.toLocaleString()} entries</p>{filtered.length ? filtered.map((entry) => <button type="button" key={`${entry.category}-${entry.name}`} className={current?.name === entry.name ? 'game-data-item selected' : 'game-data-item'} onClick={() => setSelected(entry)}><span>{entry.name}</span></button>) : <p className="dialogue-empty">{catalog.length ? 'No matching entries.' : 'Loading game data…'}</p>}</aside><main className="game-data-editor" key={`${category}-${current?.name ?? 'empty'}`}>{current && session ? <><div className="game-data-title"><span className="game-data-entry-icon"><CategoryIcon category={current.category} /></span><h3>{current.name}</h3></div><GameDataField label="Title · EN" source={current.name} value={linked.title[0]?.target ?? ''} onChange={(value) => updateEntries(linked.title, value)} /><GameDataField label="Description · EN" source={current.description} value={linked.description[0]?.target ?? ''} onChange={(value) => updateEntries(linked.description, value)} /></> : <div className="dialogue-empty">Select an entry from the list.</div>}</main></div>
   </section>
 }
 
@@ -66,13 +62,5 @@ function GameDataField({ label, source, value, onChange }: { label: string; sour
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
   function commit(): void { if (draft !== value) onChange(draft) }
-  return <section className="game-data-field"><label>{label}</label><div className="game-data-source"><LarianText value={source} /></div><div className="game-data-editor-input"><div className="game-data-editor-overlay" aria-hidden="true"><LarianText value={draft || ' '} /></div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></div></section>
-}
-
-function LarianText({ value }: { value: string }): React.JSX.Element {
-  const decoded = decodeHtml(value)
-  const parts = decoded.split(/(<\/?(?:LSTag|LSTagValue)\b[^>]*>)/gi)
-  return <>{parts.map((part, index) => /<\/?(?:LSTag|LSTagValue)\b[^>]*>/i.test(part)
-    ? <span className="larian-tag" key={`${part}-${index}`}>{part}</span>
-    : <span key={`${part}-${index}`}>{part}</span>)}</>
+  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></section>
 }
