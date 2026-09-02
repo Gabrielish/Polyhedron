@@ -180,7 +180,7 @@ h2 { font-size: 20px; }
 .game-data-editor-input { position: relative; overflow: hidden; min-height: 58px; margin-top: 7px; border: 1px solid #2a2f37; border-radius: 9px; background: #0c0d0f; }
 .game-data-editor-overlay, .game-data-editor-input textarea { width: 100%; min-height: 58px; margin: 0; padding: 10px 11px; font: inherit; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
 .game-data-editor-overlay { position: absolute; inset: 0; pointer-events: none; color: #e7e9ed; }
-.game-data-editor-input textarea { position: relative; z-index: 1; display: block; resize: vertical; border: 0; outline: none; background: transparent; color: transparent; caret-color: #e7e9ed; }
+.game-data-editor-input textarea { position: relative; z-index: 1; display: block; resize: vertical; border: 0 !important; outline: none; background: transparent !important; color: transparent !important; -webkit-text-fill-color: transparent; caret-color: #e7e9ed; }
 .game-data-editor-input:focus-within { border-color: #ed1c24; }
 .game-data-field textarea:focus { border-color: #ed1c24; }
 @media (max-width: 620px) { .game-data-layout { grid-template-columns: 1fr; } .game-data-list { max-height: 38vh; min-height: 220px; } .game-data-header { padding: 16px 0; } .game-data-category span { display: none; } }
