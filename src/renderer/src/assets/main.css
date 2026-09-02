@@ -26,6 +26,13 @@
   -moz-appearance: textfield;
 }
 
+/* Game Data selection follows the configurable theme accent instead of the
+   default amber text used by Tailwind utility classes. */
+aside div.icosa-scroll button[class~="bg-amber-500/10"] {
+  background-color: color-mix(in srgb, var(--color-amber-500) 10%, transparent) !important;
+  color: color-mix(in srgb, var(--color-amber-500) 72%, white) !important;
+}
+
 @font-face {
   font-family: 'Breathe Fire III';
   src: url('./fonts/BreatheFireIII.otf') format('opentype');
@@ -2428,9 +2435,4 @@ html[data-theme='liquid-glass'] .accent-solid-button:hover {
   box-shadow: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
-}
-.app-content-shell span[class~="border-emerald-500/30"] {
-  border-color: color-mix(in srgb, var(--color-amber-500) 35%, transparent) !important;
-  background-color: color-mix(in srgb, var(--color-amber-500) 10%, transparent) !important;
-  color: color-mix(in srgb, var(--color-amber-500) 72%, white) !important;
 }
