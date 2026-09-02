@@ -1,20 +1,18 @@
 import { Search, ExternalLink, Swords, Shield, FlaskConical, Sparkles, BookOpen, Copy, ClipboardPaste, Eye } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { getReferenceCatalog, type ReferenceCatalogEntry, type ReferenceCategory } from '@/data/gameReference'
 import { useTranslationSession } from '@/context/TranslationSession'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
 import { renderSource } from '@/utils/renderSource'
+import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [{ label: 'All' }, { label: 'Weapons', value: 'Weapon' }, { label: 'Armour', value: 'Armour' }, { label: 'Objects', value: 'Object' }, { label: 'Spells', value: 'Spell' }, { label: 'Passives', value: 'Passive' }, { label: 'Statuses', value: 'Status' }, { label: 'Interrupts', value: 'Interrupt' }]
 function iconFor(category: string): typeof Swords { if (category === 'Armour') return Shield; if (category === 'Spell' || category === 'Status') return Sparkles; if (category === 'Object') return FlaskConical; if (category === 'Passive') return BookOpen; return Swords }
 function wikiPath(category: ReferenceCategory, name?: string): string { const names: Record<ReferenceCategory, string> = { Weapon: 'Weapons', Armour: 'Armour', Object: 'Objects', Passive: 'Passives', Spell: 'Spells', Status: 'Statuses', Interrupt: 'Interrupts' }; return name ? `/wiki/${encodeURIComponent(name.trim().replace(/\s+/g, '_'))}` : `/wiki/${names[category]}` }
 function normalize(value: string): string { return value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase() }
 function LocalTranslationInput({ value, onCommit }: { value: string; onCommit: (value: string) => void }): React.JSX.Element {
-  const [draft, setDraft] = useState(value)
-  const [focused, setFocused] = useState(false)
-  useEffect(() => { if (!focused) setDraft(value) }, [value, focused])
-  return <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onFocus={() => setFocused(true)} onBlur={() => { setFocused(false); if (draft !== value) onCommit(draft) }} rows={2} placeholder="Translate here..." className="min-h-16 w-full resize-y rounded border border-[#2a2f37] bg-[#131518] px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-amber-500/60" />
+  return <HighlightedTextarea value={value} rows={2} placeholder="Translate here..." onBlur={(event) => { if (event.currentTarget.value !== value) onCommit(event.currentTarget.value) }} containerClassName="min-h-16 rounded border-[#2a2f37]" className="min-h-16 resize-y text-xs leading-5" />
 }
 function GameDataSearch({ onSearch }: { onSearch: (value: string) => void }): React.JSX.Element {
   const [draft, setDraft] = useState('')
