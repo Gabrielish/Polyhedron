@@ -697,7 +697,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                                 <Copy size={11} />
                               </button>
                             </div>
-                            <div className="rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
+                            <div className="translation-source-text rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
                               {entry.source}
                             </div>
                           </div>

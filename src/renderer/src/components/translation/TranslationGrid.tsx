@@ -1600,7 +1600,7 @@ export function TranslationGrid({
                   </div>
 
                   <div className="translate-source-cell flex min-w-0 cursor-text flex-col gap-2 px-4 py-3">
-                    <div className="wrap-break-word font-mono text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
+                    <div className="translation-source-text wrap-break-word text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
                       {entry.source ? (
                         renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
                       ) : (
@@ -1875,7 +1875,7 @@ export function TranslationGrid({
                         </button>
                       </div>
 
-                      <div className="wrap-break-word font-mono text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
+                      <div className="translation-source-text wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
                         {entry.source ? (
                           renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
                         ) : (

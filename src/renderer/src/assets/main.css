@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Cascadia Code';
+  src: url('./fonts/Cascadia.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+.translation-source-text {
+  font-family: 'Cascadia Code', monospace;
+}
+
 ::selection {
   background-color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 34%, transparent);
   color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 72%, white);
