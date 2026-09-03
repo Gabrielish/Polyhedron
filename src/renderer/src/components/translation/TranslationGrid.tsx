@@ -1,6 +1,7 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   AlertTriangle,
+  ArrowRight,
   BookOpen,
   Check,
   ChevronDown,
@@ -13,8 +14,12 @@ import {
   Flag,
   GitBranch,
   RefreshCw,
+  Replace,
+  ReplaceAll,
   Search,
   Sparkles,
+  Redo2,
+  Undo2,
   X
 } from 'lucide-react'
 import {
@@ -68,6 +73,13 @@ type OnlineNodeMeta = {
   speaker: string | null
 }
 
+type ReplaceChange = {
+  rowId: string
+  variant: GenderVariant
+  before: string
+  after: string
+}
+
 interface TranslationGridProps {
   entries: TranslationSessionEntry[]
   onEntryChange: (rowId: string, target: string) => void
@@ -84,6 +96,26 @@ function getCategory(entry: TranslationSessionEntry): TranslationCategory {
 
 function hasXmlTags(entry: TranslationSessionEntry): boolean {
   return /(<[^>]+>|\{[^}]+\})/.test(entry.source)
+}
+
+// Search is deliberately literal: in particular, em dash (—), en dash (–),
+// and hyphen-minus (-) remain different characters. Do not normalize or use
+// a regex here, since translation strings frequently contain XML and symbols.
+function replaceLiteral(value: string, find: string, replacement: string, all: boolean): string {
+  if (!find) return value
+  const lowerValue = value.toLocaleLowerCase()
+  const lowerFind = find.toLocaleLowerCase()
+  let from = 0
+  let result = ''
+  let count = 0
+  while (from < value.length) {
+    const index = lowerValue.indexOf(lowerFind, from)
+    if (index < 0 || (!all && count > 0)) break
+    result += value.slice(from, index) + replacement
+    from = index + find.length
+    count += 1
+  }
+  return count === 0 ? value : result + value.slice(from)
 }
 
 function getDialogueSpeaker(source: string, node: { details: string[]; next: string[] }): string | null {
@@ -246,6 +278,11 @@ export function TranslationGrid({
     toggleNeedsReview
   } = session
   const [search, setSearch] = useState('')
+  const [replaceOpen, setReplaceOpen] = useState(false)
+  const [replaceFind, setReplaceFind] = useState('')
+  const [replaceWith, setReplaceWith] = useState('')
+  const [replaceUndo, setReplaceUndo] = useState<ReplaceChange[][]>([])
+  const [replaceRedo, setReplaceRedo] = useState<ReplaceChange[][]>([])
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [exactMatch, setExactMatch] = useState(false)
   const [linkNameDescription] = useState(false)
@@ -442,17 +479,94 @@ export function TranslationGrid({
     JSON.stringify(selection.filter.dialogueScope) === JSON.stringify(dialogueScope)
 
   useEffect(() => {
+    const toggleFindReplace = () => {
+      setReplaceOpen((open) => !open)
+      window.setTimeout(() => searchInputRef.current?.focus(), 0)
+    }
     const handleFindShortcut = (event: KeyboardEvent) => {
-      if (!event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) return
+      if ((!event.ctrlKey && !event.metaKey) || event.shiftKey || event.altKey) return
       if (event.key.toLowerCase() !== 'f') return
       event.preventDefault()
-      searchInputRef.current?.focus()
+      toggleFindReplace()
       searchInputRef.current?.select()
     }
 
     window.addEventListener('keydown', handleFindShortcut)
-    return () => window.removeEventListener('keydown', handleFindShortcut)
+    window.addEventListener('polyhedron:toggle-find-replace', toggleFindReplace)
+    return () => {
+      window.removeEventListener('keydown', handleFindShortcut)
+      window.removeEventListener('polyhedron:toggle-find-replace', toggleFindReplace)
+    }
   }, [])
+
+  const replaceMatches = (all: boolean) => {
+    const find = replaceFind
+    if (!find) return
+    let changed = 0
+    let done = false
+    const changes: ReplaceChange[] = []
+    // Single replacement follows the currently visible page; Replace All uses
+    // the complete filtered result set, while never touching the English source.
+    const replacementEntries = all ? filteredEntries : pageEntries
+    for (const entry of replacementEntries) {
+      const target = replaceLiteral(entry.target, find, replaceWith, all)
+      if (target !== entry.target) {
+        changes.push({ rowId: entry.rowId, variant: 'default', before: entry.target, after: target })
+        updateEntryTarget(entry, target)
+        changed += 1
+        if (!all) { done = true; break }
+      }
+      if (entry.genderTargets) {
+        for (const variant of ['female', 'neutral'] as const) {
+          const previous = entry.genderTargets[variant] ?? ''
+          const next = replaceLiteral(previous, find, replaceWith, all)
+          if (next !== previous) {
+            changes.push({ rowId: entry.rowId, variant, before: previous, after: next })
+            session.updateGenderVariant(entry.rowId, variant, next)
+            onEntryManualEdit(entry.rowId)
+            changed += 1
+            if (!all) { done = true; break }
+          }
+        }
+      }
+      if (done) break
+    }
+    if (changed > 0) {
+      setReplaceUndo((history) => [...history, changes])
+      setReplaceRedo([])
+      toast.success(`${all ? 'Replaced in' : 'Replaced'} ${changed} ${changed === 1 ? 'translation' : 'translations'}`)
+    }
+    else toast.info('No matching text found in translations')
+  }
+
+  const applyReplaceChanges = (changes: ReplaceChange[], useAfter: boolean) => {
+    for (const change of changes) {
+      const value = useAfter ? change.after : change.before
+      if (change.variant === 'default') {
+        onEntryChange(change.rowId, value)
+        onEntryManualEdit(change.rowId)
+      } else {
+        session.updateGenderVariant(change.rowId, change.variant, value)
+        onEntryManualEdit(change.rowId)
+      }
+    }
+  }
+
+  const undoReplace = () => {
+    const changes = replaceUndo.at(-1)
+    if (!changes) return
+    applyReplaceChanges(changes, false)
+    setReplaceUndo((history) => history.slice(0, -1))
+    setReplaceRedo((history) => [...history, changes])
+  }
+
+  const redoReplace = () => {
+    const changes = replaceRedo.at(-1)
+    if (!changes) return
+    applyReplaceChanges(changes, true)
+    setReplaceRedo((history) => history.slice(0, -1))
+    setReplaceUndo((history) => [...history, changes])
+  }
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -1227,7 +1341,7 @@ export function TranslationGrid({
           </button>
         )}
         <span className="shortcut-hint inline-flex h-5 min-w-6 items-center justify-center rounded border border-[#2a2f37] bg-[#0f1114] px-1 font-mono text-[10px] text-neutral-500">
-          Ctrl F
+          Ctrl / ⌘ F
         </span>
       </div>
 
@@ -1271,6 +1385,39 @@ export function TranslationGrid({
       </label>
 
       </div>
+
+      {replaceOpen && (
+        <div className="translation-replace-controls flex min-w-0 flex-wrap items-center gap-2 pb-1">
+          <div className="flex h-8 w-[clamp(180px,20vw,260px)] min-w-40 max-w-full flex-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 focus-within:border-amber-500/60">
+            <Replace size={13} className="shrink-0 text-neutral-500" />
+            <input
+              value={replaceFind}
+              onChange={(event) => setReplaceFind(event.target.value)}
+              onKeyDown={(event) => { if (event.key === 'Enter') replaceMatches(false); if (event.key === 'Escape') setReplaceOpen(false) }}
+              placeholder="Find"
+              aria-label="Find text to replace"
+              className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
+            />
+          </div>
+          <ArrowRight size={14} className="shrink-0 text-neutral-600" />
+          <div className="flex h-8 w-[clamp(180px,20vw,260px)] min-w-40 max-w-full flex-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 focus-within:border-amber-500/60">
+            <input
+              value={replaceWith}
+              onChange={(event) => setReplaceWith(event.target.value)}
+              onKeyDown={(event) => { if (event.key === 'Enter') replaceMatches(false); if (event.key === 'Escape') setReplaceOpen(false) }}
+              placeholder="Replace"
+              aria-label="Replace text"
+              className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
+            />
+          </div>
+          <button type="button" disabled={!replaceFind} onClick={() => replaceMatches(false)} aria-label="Replace first match" title="Replace" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Replace size={14} /></button>
+          <button type="button" disabled={!replaceFind} onClick={() => replaceMatches(true)} aria-label="Replace all matches" title="Replace All" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><ReplaceAll size={14} /></button>
+          <span className="mx-1 h-5 w-px bg-[#2a2f37]" />
+          <button type="button" disabled={replaceUndo.length === 0} onClick={undoReplace} aria-label="Undo replace" title="Undo" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Undo2 size={14} /></button>
+          <button type="button" disabled={replaceRedo.length === 0} onClick={redoReplace} aria-label="Redo replace" title="Redo" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Redo2 size={14} /></button>
+          <button type="button" aria-label="Close find and replace" title="Close (Ctrl/⌘+F)" onClick={() => setReplaceOpen(false)} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-500 hover:text-neutral-200"><X size={14} /></button>
+        </div>
+      )}
 
       <div className="hidden">
         {dialogueScope && (

@@ -75,6 +75,18 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
+  // macOS reserves Command+F for Chromium's native find bar. Translate has its
+  // own Find & Replace panel, so intercept the accelerator and notify the
+  // renderer instead of opening the browser search UI.
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown' || input.key.toLowerCase() !== 'f') return
+    if (!input.meta || input.shift || input.alt || input.control) return
+    event.preventDefault()
+    void mainWindow?.webContents.executeJavaScript(
+      "window.dispatchEvent(new CustomEvent('polyhedron:toggle-find-replace'))"
+    )
+  })
+
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
