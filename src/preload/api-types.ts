@@ -296,6 +296,8 @@ export interface DictionaryImportPreview {
   rows: DictionaryImportPreviewRow[]
 }
 
+export type ReviewStatus = 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
+
 export interface XmlEntry {
   uid: string
   version: string
@@ -303,6 +305,7 @@ export interface XmlEntry {
   target: string
   matchType: XmlMatchType
   needsReview: boolean
+  reviewStatus?: ReviewStatus
   genderVariant?: 'default' | 'female' | 'neutral'
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
 }
@@ -639,8 +642,8 @@ export interface UpdateApi {
 }
 
 export interface SessionApi {
-  save(params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview: boolean }> }): Promise<{ success: boolean }>
-  load(params: { key: string }): Promise<Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview?: boolean }> | null>
+  save(params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview: boolean; reviewStatus?: ReviewStatus }> }): Promise<{ success: boolean }>
+  load(params: { key: string }): Promise<Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview?: boolean; reviewStatus?: ReviewStatus }> | null>
 }
 
 export interface WorkspaceApi {

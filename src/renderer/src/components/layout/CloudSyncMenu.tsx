@@ -37,7 +37,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   // "Synced" after the imported workspace is loaded or the app is restarted.
   const syncKey = `icosa.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const currentFingerprint = useMemo(
-    () => fingerprint(session.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))),
+    () => fingerprint(session.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus }))),
     [session.entries]
   )
 
@@ -90,7 +90,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
     await window.api.session.save({
       key: sessionKey,
-      entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({ uid, target, genderTargets, matchType, needsReview }))
+      entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus }))
     })
   }
 

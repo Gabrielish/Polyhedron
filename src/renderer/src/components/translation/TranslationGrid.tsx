@@ -1,9 +1,11 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   AlertTriangle,
+  ArrowDownUp,
   ArrowRight,
   BookOpen,
   Check,
+  ClipboardCheck,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -11,6 +13,10 @@ import {
   ChevronsRight,
   ChevronUp,
   Copy,
+  CircleAlert,
+  CircleCheck,
+  CircleDashed,
+  CircleX,
   Flag,
   GitBranch,
   RefreshCw,
@@ -20,6 +26,7 @@ import {
   Sparkles,
   Redo2,
   Undo2,
+  UserRound,
   X
 } from 'lucide-react'
 import {
@@ -38,6 +45,7 @@ import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import {
   type FilterSpec,
   type GenderVariant,
+  type ReviewStatus,
   entryMatchesSearch,
   materializeSelectedEntries,
   type TranslationSessionEntry,
@@ -62,15 +70,23 @@ import {
   type DialogueFilter,
   type DialogueScope
 } from '@/data/dialogReference'
+import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { cn } from '@/lib/utils'
 import { getItemTags } from '@/data/armorReference'
 import { renderSource } from '@/utils/renderSource'
 
 type TranslationCategory = 'dictionary' | 'tool' | 'manual' | 'none'
 type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'needs-review'
+type SortMode = 'default' | 'most-repeated' | 'least-repeated'
 type OnlineNodeMeta = {
   kind: 'Question' | 'Answer' | 'Cinematic' | 'Technical'
   speaker: string | null
+}
+
+function speakerForGroups(groups: Array<{ dialogue: string }>) {
+  const speakers = groups.map((group) => getSpeakerForDialogue(group.dialogue)).filter((speaker): speaker is NonNullable<ReturnType<typeof getSpeakerForDialogue>> => speaker !== null)
+  const unique = [...new Map(speakers.map((speaker) => [speaker.name, speaker])).values()]
+  return unique.length === 1 ? unique[0] : null
 }
 
 type ReplaceChange = {
@@ -275,7 +291,9 @@ export function TranslationGrid({
     clearSelection,
     sourceLang,
     targetLang,
-    toggleNeedsReview
+    sourceFrequencies,
+    toggleNeedsReview,
+    setReviewStatus
   } = session
   const [search, setSearch] = useState('')
   const [replaceOpen, setReplaceOpen] = useState(false)
@@ -291,7 +309,11 @@ export function TranslationGrid({
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
+  const [speakerFilter, setSpeakerFilter] = useState('all')
+  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>('all')
+  const speakerCacheRef = useRef<Map<string, ReturnType<typeof speakerForGroups>>>(new Map())
   const [filter, setFilter] = useState<FilterMode>('all')
+  const [sortMode, setSortMode] = useState<SortMode>('default')
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
   useEffect(() => {
     const handle = window.setTimeout(() => setDebouncedSearch(search), 140)
@@ -364,7 +386,7 @@ export function TranslationGrid({
   }, [entries])
 
   const filteredEntries = useMemo(() => {
-    return entries.filter((entry) => {
+    const matchingEntries = entries.filter((entry) => {
       // Keep the row being edited mounted until blur/Enter commits the value.
       // Otherwise Exact Match can remove its textarea on the first keystroke.
       if (editingRowId === entry.rowId) return true
@@ -392,15 +414,53 @@ export function TranslationGrid({
       }
       if (!matchesDialogueFilters(entry.source, deferredDialogueFilters)) return false
       if (!matchesDialogueScope(entry.source, dialogueScope)) return false
+      if (speakerFilter !== 'all') {
+        let speaker = speakerCacheRef.current.get(entry.source)
+        if (speaker === undefined) {
+          speaker = speakerForGroups(getDialogueGroups(entry.source))
+          speakerCacheRef.current.set(entry.source, speaker)
+        }
+        if (!speaker || speaker.name !== speakerFilter) return false
+      }
+      const entryReviewStatus: ReviewStatus = !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
+      if (reviewFilter !== 'all' && entryReviewStatus !== reviewFilter) return false
       return true
     })
+    if (sortMode === 'default') return matchingEntries
+
+    // Group identical source strings first, then sort the groups. Sorting every
+    // row individually is needlessly expensive for large localization files.
+    const groups = new Map<string, { source: string; entries: TranslationSessionEntry[]; firstIndex: number; count: number }>()
+    matchingEntries.forEach((entry, index) => {
+      const existing = groups.get(entry.source)
+      if (existing) existing.entries.push(entry)
+      else groups.set(entry.source, {
+        source: entry.source,
+        entries: [entry],
+        firstIndex: index,
+        count: sourceFrequencies.get(entry.source) ?? 1
+      })
+    })
+    return Array.from(groups.values())
+      .sort((a, b) => {
+        const countOrder = sortMode === 'most-repeated' ? b.count - a.count : a.count - b.count
+        if (countOrder !== 0) return countOrder
+        if (a.source < b.source) return -1
+        if (a.source > b.source) return 1
+        return a.firstIndex - b.firstIndex
+      })
+      .flatMap((group) => group.entries)
   }, [
+    sortMode,
+    sourceFrequencies,
     deferredExactMatch,
     deferredFilter,
     deferredLinkNameDescription,
     deferredReferenceTag,
     deferredDialogueFilters,
     dialogueScope,
+    speakerFilter,
+    reviewFilter,
     effectiveSearch,
     entries,
     stickyRowIds,
@@ -409,19 +469,22 @@ export function TranslationGrid({
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [deferredExactMatch, deferredFilter, deferredLinkNameDescription, deferredReferenceTag, deferredDialogueFilters, dialogueScope, effectiveSearch])
+  }, [sortMode, deferredExactMatch, deferredFilter, deferredLinkNameDescription, deferredReferenceTag, deferredDialogueFilters, dialogueScope, speakerFilter, reviewFilter, effectiveSearch])
 
   // clear selection and sticky rows when filter or search changes
   useEffect(() => {
     clearSelection()
     setStickyRowIds(new Set())
   }, [
+    sortMode,
     deferredExactMatch,
     deferredFilter,
     deferredLinkNameDescription,
     deferredReferenceTag,
     deferredDialogueFilters,
     dialogueScope,
+    speakerFilter,
+    reviewFilter,
     effectiveSearch,
     clearSelection
   ])
@@ -622,9 +685,23 @@ export function TranslationGrid({
     else if (value !== (entry.genderTargets?.[variant] ?? "")) { session.updateGenderVariant(entry.rowId, variant, value); onEntryManualEdit(entry.rowId) }
   }
 
+  const reviewStatus = (entry: TranslationSessionEntry): ReviewStatus =>
+    !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
+
+  const renderReviewStatusControls = (entry: TranslationSessionEntry) => {
+    const status = reviewStatus(entry)
+    const options: Array<{ value: ReviewStatus; title: string; icon: typeof CircleX; active: string; idle: string }> = [
+      { value: 'untranslated', title: 'Untranslated', icon: CircleDashed, active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200', idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10' },
+      { value: 'not-verified', title: 'Not verified', icon: CircleX, active: 'border-red-400/60 bg-red-500/15 text-red-300', idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10' },
+      { value: 'needs-review', title: 'Needs review', icon: CircleAlert, active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300', idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10' },
+      { value: 'verified', title: 'Verified', icon: CircleCheck, active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300', idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10' }
+    ]
+    return <div className="contents">{options.map((option) => { const Icon = option.icon; return <button key={option.value} type="button" title={option.title} aria-label={`${option.title} translation`} onClick={(event) => { event.stopPropagation(); setReviewStatus(entry.rowId, option.value) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', status === option.value ? option.active : option.idle)}><Icon size={13} /></button> })}</div>
+  }
+
   const renderGenderControls = (entry: TranslationSessionEntry) => {
     const variant = selectedGenderVariant(entry)
-    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => { const value = item === "default" || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ""); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}</div>
+    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => { const value = item === "default" || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ""); return <span key={item} className="inline-flex items-center gap-1"><button type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button></span> })}</div>
   }
 
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
@@ -636,9 +713,11 @@ export function TranslationGrid({
         event.stopPropagation()
         setAiEntry(entry)
       }}
-      className="inline-flex h-6 shrink-0 cursor-pointer items-center gap-1.5 rounded border border-[#1f2329] bg-[#131518] px-2 text-[11px] font-medium text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-400"
+      className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-400"
+      aria-label="Translate with Gemini"
+      title="Translate with Gemini"
     >
-      <Sparkles size={13} /> Gemini
+      <Sparkles size={13} />
     </button>
   )
 
@@ -670,6 +749,7 @@ export function TranslationGrid({
       targetLang={targetLang}
       onApply={(result) => {
         updateEntryTarget(aiEntry, result)
+        setReviewStatus(aiEntry.rowId, 'not-verified')
         markSticky(aiEntry.rowId)
       }}
       onClose={() => setAiEntry(null)}
@@ -1384,6 +1464,40 @@ export function TranslationGrid({
         Highlight
       </label>
 
+      <label title="Filter by speaker" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
+        <UserRound size={13} className="text-neutral-500" />
+        <select value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)} aria-label="Filter by speaker" className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
+          <option value="all">All speakers</option>
+          {getKnownSpeakers().map((speaker) => <option key={speaker.name} value={speaker.name}>{speaker.name}</option>)}
+        </select>
+      </label>
+
+      <label title="Filter by review status" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
+        <ClipboardCheck size={13} className="text-neutral-500" />
+        <select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)} aria-label="Filter by review status" className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
+          <option value="all">All statuses</option>
+          <option value="untranslated">Untranslated</option>
+          <option value="not-verified">Not verified</option>
+          <option value="needs-review">Needs review</option>
+          <option value="verified">Verified</option>
+        </select>
+      </label>
+
+      <label className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
+        <ArrowDownUp size={13} className="text-neutral-500" />
+        <span className="sr-only">Sort translations</span>
+        <select
+          value={sortMode}
+          onChange={(event) => setSortMode(event.target.value as SortMode)}
+          aria-label="Sort translations"
+          className="cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
+        >
+          <option value="default">Default order</option>
+          <option value="most-repeated">Most repeated first</option>
+          <option value="least-repeated">Least repeated first</option>
+        </select>
+      </label>
+
       </div>
 
       {replaceOpen && (
@@ -1554,6 +1668,7 @@ export function TranslationGrid({
               const targetOccurrenceCount = session.targetFrequencies.get(entry.target) ?? 0
               const itemTags = getItemTags(entry.source)
               const dialogueGroups = getDialogueGroups(entry.source)
+              const speaker = speakerForGroups(dialogueGroups)
               const linkedReferences = deferredLinkNameDescription
                 ? getReferenceLinks(entry.source)
                 : []
@@ -1645,6 +1760,11 @@ export function TranslationGrid({
                             <GitBranch size={11} />
                           </button>
                         )}
+                        {speaker && (
+                          <span className={cn('mr-1 inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium', speaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${speaker.name}`}>
+                            {speaker.name}
+                          </span>
+                        )}
                         <button
                           type="button"
                           aria-label={t('grid.copySource', { ns: 'translate' })}
@@ -1687,8 +1807,11 @@ export function TranslationGrid({
                         </span>
                       )}
                       {renderGenderControls(entry)}
+                      <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                       {renderAiButton(entry)}
                       {renderReviewButton(entry)}
+                      <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
+                      {renderReviewStatusControls(entry)}
                       <div className="pointer-events-none flex flex-1 items-center gap-1.5 opacity-0 transition-opacity duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
                         <span className="ml-auto flex items-center gap-1 text-[11px] text-neutral-500">
                           <KbdHint>Enter</KbdHint> {t('grid.next', { ns: 'translate' })}
@@ -1741,6 +1864,7 @@ export function TranslationGrid({
             const targetOccurrenceCount = session.targetFrequencies.get(entry.target) ?? 0
             const itemTags = getItemTags(entry.source)
             const dialogueGroups = getDialogueGroups(entry.source)
+            const speaker = speakerForGroups(dialogueGroups)
             const linkedReferences = deferredLinkNameDescription
               ? getReferenceLinks(entry.source)
               : []
@@ -1864,6 +1988,11 @@ export function TranslationGrid({
                             <GitBranch size={11} />
                           </button>
                         )}
+                        {speaker && (
+                          <span className={cn('inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium', speaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${speaker.name}`}>
+                            {speaker.name}
+                          </span>
+                        )}
                         <button
                           type="button"
                           aria-label={t('grid.copySource', { ns: 'translate' })}
@@ -1920,8 +2049,11 @@ export function TranslationGrid({
                           </span>
                         )}
                       {renderGenderControls(entry)}
+                        <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                         {renderAiButton(entry)}
                         {renderReviewButton(entry)}
+                        <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
+                        {renderReviewStatusControls(entry)}
                         <div className="pointer-events-none flex flex-1 items-center gap-1.5 opacity-0 transition-opacity duration-150 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
                           <button
                             type="button"

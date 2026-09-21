@@ -13,6 +13,7 @@ export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
 }
 export type GenderVariant = 'default' | 'female' | 'neutral'
+export type ReviewStatus = 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
 
 type Phase = 'idle' | 'loading' | 'loaded'
 
@@ -133,6 +134,7 @@ type Action =
   | { type: 'UPDATE_GENDER_VARIANT'; rowId: string; variant: GenderVariant; target: string }
   | { type: 'MARK_MANUAL'; rowId: string }
   | { type: 'TOGGLE_NEEDS_REVIEW'; rowId: string }
+  | { type: 'SET_REVIEW_STATUS'; rowId: string; status: ReviewStatus }
   | { type: 'SELECT_ALL_MATCHING'; filter: FilterSpec }
   | { type: 'SELECT_ROWS'; rowIds: string[] }
   | { type: 'TOGGLE_ENTRY'; rowId: string }
@@ -206,7 +208,14 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
       return {
         ...state,
         entries: state.entries.map((e) =>
-          e.rowId === action.rowId ? { ...e, matchType: 'manual' } : e
+          e.rowId === action.rowId ? { ...e, matchType: 'manual', reviewStatus: 'needs-review' } : e
+        )
+      }
+    case 'SET_REVIEW_STATUS':
+      return {
+        ...state,
+        entries: state.entries.map((e) =>
+          e.rowId === action.rowId ? { ...e, reviewStatus: action.status } : e
         )
       }
     case 'TOGGLE_NEEDS_REVIEW':
@@ -295,6 +304,7 @@ interface TranslationSessionContext extends TranslationSessionState {
   updateGenderVariant: (rowId: string, variant: GenderVariant, target: string) => void
   markManual: (rowId: string) => void
   toggleNeedsReview: (rowId: string) => void
+  setReviewStatus: (rowId: string, status: ReviewStatus) => void
   setModName: (name: string) => void
   setSourceLang: (lang: string) => void
   setTargetLang: (lang: string) => void
@@ -401,6 +411,7 @@ export function TranslationSessionProvider({
                   target: previous.target.trim() || previous.needsReview ? previous.target : entry.target,
                   matchType: previous.target.trim() || previous.matchType === 'manual' ? previous.matchType : entry.matchType,
                   needsReview: previous.needsReview === true,
+                  reviewStatus: previous.reviewStatus ?? (previous.target?.trim() ? 'needs-review' : 'untranslated'),
                   genderTargets: previous.genderTargets ?? entry.genderTargets
                 }
               : entry
@@ -453,6 +464,10 @@ export function TranslationSessionProvider({
 
   const toggleNeedsReview = useCallback((rowId: string) => {
     dispatch({ type: 'TOGGLE_NEEDS_REVIEW', rowId })
+  }, [])
+
+  const setReviewStatus = useCallback((rowId: string, status: ReviewStatus) => {
+    dispatch({ type: 'SET_REVIEW_STATUS', rowId, status })
   }, [])
 
   const selectAllMatching = useCallback((filter: FilterSpec) => {
@@ -560,6 +575,7 @@ export function TranslationSessionProvider({
     updateGenderVariant,
         markManual,
         toggleNeedsReview,
+    setReviewStatus,
         setModName,
         setSourceLang,
         setTargetLang,

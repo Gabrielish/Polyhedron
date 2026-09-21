@@ -9,6 +9,7 @@ interface SessionEntry {
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
+  reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
 }
 
 function sessionPath(key: string): string {

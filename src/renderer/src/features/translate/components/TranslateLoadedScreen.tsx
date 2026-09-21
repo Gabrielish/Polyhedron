@@ -81,12 +81,13 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview }) => ({
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus }) => ({
           uid,
           target,
           genderTargets,
           matchType,
-          needsReview
+          needsReview,
+          reviewStatus
         }))
       })
       toast.success(t('translate.sessionSaved', { ns: 'toasts' }))

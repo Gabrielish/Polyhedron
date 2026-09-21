@@ -116,9 +116,11 @@ export async function exportLocalizationPak(
   const tempDir = createTempDir('icosa_pak_export')
   const packageRoot = path.join(tempDir, 'pak')
   const languageDir = path.join(packageRoot, 'Localization', 'English')
+  // Stage 1 gender workflow: Female/Neutral represent the player/addressee,
+  // not the speaker. BG3 reads these files from the language root.
   const variantPaths = {
-    female: path.join(languageDir, 'Gender', 'Female', 'english_to_F.loca'),
-    neutral: path.join(languageDir, 'Gender', 'Neutral', 'english_X_to_X.loca')
+    female: path.join(languageDir, 'english_to_F.loca'),
+    neutral: path.join(languageDir, 'english_M_to_X.loca')
   }
 
   const writeEntries = async (items: ExportPackageEntry[], locaPath: string, xmlPath: string) => {
@@ -141,8 +143,8 @@ export async function exportLocalizationPak(
     const femaleFromTargets = entries.flatMap((entry) => entry.genderTargets?.female?.trim() ? [{ ...entry, target: entry.genderTargets.female, genderVariant: 'female' as const }] : [])
     const neutralFromTargets = entries.flatMap((entry) => entry.genderTargets?.neutral?.trim() ? [{ ...entry, target: entry.genderTargets.neutral, genderVariant: 'neutral' as const }] : [])
     await writeEntries(defaults, path.join(languageDir, 'english.loca'), path.join(languageDir, 'english.xml'))
-    await writeEntries([...female, ...femaleFromTargets], variantPaths.female, path.join(languageDir, 'Gender', 'Female', 'english_to_F.xml'))
-    await writeEntries([...neutral, ...neutralFromTargets], variantPaths.neutral, path.join(languageDir, 'Gender', 'Neutral', 'english_X_to_X.xml'))
+    await writeEntries([...female, ...femaleFromTargets], variantPaths.female, path.join(languageDir, 'english_to_F.xml'))
+    await writeEntries([...neutral, ...neutralFromTargets], variantPaths.neutral, path.join(languageDir, 'english_M_to_X.xml'))
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
     if (process.platform === 'darwin') await writePackage(packageRoot, outputPath)
     else await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])

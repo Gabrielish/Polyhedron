@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+  <version major="4" minor="0" revision="9" build="0" />
+  <region id="MetaData">
+    <node id="MetaData">
+      <attribute id="Name" type="LSString" value="Polyhedron Gender Test" />
+      <attribute id="Folder" type="LSString" value="PolyhedronGenderTest" />
+      <attribute id="Author" type="LSString" value="Gabrielish" />
+      <attribute id="Description" type="LSString" value="Automatic Default/Female localization test" />
+      <attribute id="UUID" type="FixedString" value="f4f1d2e7-2a10-4c71-9ab7-9e6d3b8c4a12" />
+      <attribute id="Version64" type="int64" value="134217728" />
+      <attribute id="PublishVersion" type="int64" value="134217728" />
+      <attribute id="Tags" type="LSString" value="" />
+    </node>
+  </region>
+</save>

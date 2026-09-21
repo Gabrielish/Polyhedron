@@ -3,15 +3,24 @@ import {
   ChevronRight,
   ClipboardPaste,
   Check,
+  ClipboardCheck,
+  CircleAlert,
+  CircleCheck,
+  CircleDashed,
+  CircleX,
   Copy,
   ExternalLink,
+  Flag,
   GitBranch,
-  Search
+  Search,
+  Sparkles
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { type GenderVariant, useTranslationSession } from '@/context/TranslationSession'
+import { type GenderVariant, type ReviewStatus, useTranslationSession } from '@/context/TranslationSession'
+import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { type DialogueCategory, getDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
+import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
 
@@ -357,6 +366,7 @@ export function DialogueNodesPage(): React.JSX.Element {
     () => navigationState.source ?? null
   )
   const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
+  const [aiEntry, setAiEntry] = useState<ReturnType<typeof useTranslationSession>['entries'][number] | null>(null)
   const [focusedUid, setFocusedUid] = useState<string | null>(
     () => navigationState.uid ?? null
   )
@@ -364,6 +374,7 @@ export function DialogueNodesPage(): React.JSX.Element {
     () => (navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? ''))
   )
   const [dialogueTextSearch, setDialogueTextSearch] = useState('')
+  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>('all')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     () => new Set(loadDialogueViewState().expandedNodes ?? [])
   )
@@ -517,6 +528,15 @@ export function DialogueNodesPage(): React.JSX.Element {
     }
   }, [selectedKey, expandedNodes, tree])
 
+  const reviewStatus = (entry: ReturnType<typeof useTranslationSession>['entries'][number]): ReviewStatus =>
+    !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
+
+  const reviewStatusOptions: Array<{ value: ReviewStatus; title: string; icon: typeof CircleX; active: string; idle: string }> = [
+    { value: 'untranslated', title: 'Untranslated', icon: CircleDashed, active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200', idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10' },
+    { value: 'not-verified', title: 'Not verified', icon: CircleX, active: 'border-red-400/60 bg-red-500/15 text-red-300', idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10' },
+    { value: 'needs-review', title: 'Needs review', icon: CircleAlert, active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300', idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10' },
+    { value: 'verified', title: 'Verified', icon: CircleCheck, active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300', idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10' }
+  ]
 
   if (session.phase !== 'loaded')
     return (
@@ -531,8 +551,24 @@ export function DialogueNodesPage(): React.JSX.Element {
 
   const treePanelRows = Math.min(4, Math.max(1, visibleTreeRows(tree, expandedNodes)))
   const treePanelStyle = { '--dialogue-tree-mobile-height': `${treePanelRows * 42 + 24}px` } as React.CSSProperties
+  const selectedSpeaker = selected ? getSpeakerForDialogue(selected.dialogue) : null
 
   return (
+    <>
+    {aiEntry && (
+      <AITranslateModal
+        open
+        source={aiEntry.source}
+        sourceLang={session.sourceLang}
+        targetLang={session.targetLang}
+        onApply={(result) => {
+          session.updateEntry(aiEntry.rowId, result)
+          session.markManual(aiEntry.rowId)
+          session.setReviewStatus(aiEntry.rowId, 'not-verified')
+        }}
+        onClose={() => setAiEntry(null)}
+      />
+    )}
     <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
       <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
         <div className="mb-4 flex items-center gap-3">
@@ -583,6 +619,16 @@ export function DialogueNodesPage(): React.JSX.Element {
                 placeholder="Search source or translation..."
                 className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
               />
+            </label>
+            <label title="Filter by review status" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
+              <ClipboardCheck size={13} className="text-neutral-500" />
+              <select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)} aria-label="Filter by review status" className="max-w-36 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
+                <option value="all">All statuses</option>
+                <option value="untranslated">Untranslated</option>
+                <option value="not-verified">Not verified</option>
+                <option value="needs-review">Needs review</option>
+                <option value="verified">Verified</option>
+              </select>
             </label>
             <button
               type="button"
@@ -645,7 +691,8 @@ export function DialogueNodesPage(): React.JSX.Element {
                 const query = dialogueTextSearch.trim().toLocaleLowerCase()
                 const matches = (dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []).filter(
                   (entry) =>
-                    !query || `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query)
+                    (reviewFilter === 'all' || (!entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')) === reviewFilter) &&
+                    (!query || `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query))
                 )
                 const borderClass = 'border-[#1f2329]'
                 return (
@@ -687,6 +734,11 @@ export function DialogueNodesPage(): React.JSX.Element {
                           <div>
                             <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
                               Source · {session.sourceLang.toUpperCase()}
+                              {selectedSpeaker && (
+                                <span className={cn('ml-1 rounded border px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal', selectedSpeaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${selectedSpeaker.name}`}>
+                                  {selectedSpeaker.name}
+                                </span>
+                              )}
                               <button
                                 type="button"
                                 aria-label="Copy source"
@@ -730,8 +782,13 @@ export function DialogueNodesPage(): React.JSX.Element {
                                 session.markManual(entry.rowId)
                               }}
                             />
-                            <div className="mt-1 flex gap-1">
+                            <div className="mt-1 flex flex-wrap items-center gap-1">
                               {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => { const value = item === 'default' || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}
+                              <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
+                              <button type="button" title="Translate with Gemini" aria-label="Translate with Gemini" onClick={(event) => { event.stopPropagation(); setAiEntry(entry) }} className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"><Sparkles size={13} /></button>
+                              <button type="button" title="Needs review" aria-label="Needs review" onClick={(event) => { event.stopPropagation(); session.toggleNeedsReview(entry.rowId) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', entry.needsReview ? 'border-rose-400/40 bg-rose-500/15 text-rose-300' : 'border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-rose-400/40 hover:text-rose-300')}><Flag size={12} /></button>
+                              <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
+                              {reviewStatusOptions.map((option) => { const Icon = option.icon; return <button key={option.value} type="button" title={option.title} aria-label={`${option.title} translation`} onClick={(event) => { event.stopPropagation(); session.setReviewStatus(entry.rowId, option.value) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', reviewStatus(entry) === option.value ? option.active : option.idle)}><Icon size={13} /></button> })}
                             </div>
                                 </>
                               )
@@ -752,5 +809,6 @@ export function DialogueNodesPage(): React.JSX.Element {
         </section>
       </div>
     </div>
+    </>
   )
 }
