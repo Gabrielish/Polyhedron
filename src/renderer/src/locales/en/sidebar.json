@@ -2,6 +2,7 @@
   "workspace": "Workspace",
   "translate": "Translate",
   "dictionary": "Glossary",
+  "consistency": "Consistency",
   "mods": "Manage Mods",
   "merge": "Merge translations",
   "extract": "Extract mod",

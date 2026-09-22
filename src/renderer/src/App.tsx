@@ -7,6 +7,7 @@ import { DialogueNodesPage } from './pages/DialogueNodesPage'
 import { GameInterfacePage } from './pages/GameInterfacePage'
 import { WorkspacePage } from './pages/WorkspacePage'
 import { DictionaryPage } from './pages/DictionaryPage'
+import { ConsistencyPage } from './pages/ConsistencyPage'
 import { EntryEditPage } from './pages/EntryEditPage'
 import { ReferencePage } from './pages/ReferencePage'
 import { SettingsPage } from './pages/SettingsPage'
@@ -34,6 +35,7 @@ function App(): React.JSX.Element {
             <Route path="/translate/entry/:uid" element={<EntryEditPage />} />
           </Route>
           <Route path="/dictionary" element={<DictionaryPage />} />
+          <Route path="/consistency" element={<ConsistencyPage />} />
           <Route path="/dialogues" element={<DialogueNodesPage />} />
           <Route path="/game-data" element={<ReferencePage />} />
           <Route path="/game-interface" element={<GameInterfacePage />} />

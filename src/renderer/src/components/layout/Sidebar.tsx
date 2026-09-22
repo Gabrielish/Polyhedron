@@ -7,6 +7,7 @@ import {
   Languages,
   MonitorCog,
   LibraryBig,
+  ListChecks,
   Settings,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
@@ -23,7 +24,8 @@ const NAV_GROUPS: NavGroupConfig[] = [
     icon: FolderKanban,
     items: [
       { to: '/translate', icon: Languages, labelKey: 'translate', kbd: 'Ctrl 1' },
-      { to: '/dictionary', icon: BookOpen, labelKey: 'dictionary', kbd: 'Ctrl 2' }
+      { to: '/dictionary', icon: BookOpen, labelKey: 'dictionary', kbd: 'Ctrl 2' },
+      { to: '/consistency', icon: ListChecks, labelKey: 'consistency', kbd: 'Ctrl 3' }
     ]
   },
   {
@@ -84,11 +86,12 @@ export function Sidebar(): React.JSX.Element {
   const { t } = useAppTranslation('sidebar')
   const { config } = useConfig()
   const showGameInterface = config['show_game_interface'] === 'true'
+  const showGlossary = config['show_glossary'] === 'true'
   return (
     <aside className="sidebar-shell group/sidebar fixed top-0 left-0 z-40 flex h-screen w-16 flex-col overflow-hidden border-r border-[#1f2329] bg-[#0f1114] transition-[width] duration-200 hover:w-72">
       <nav className="sidebar-nav flex-1 overflow-y-auto px-2 py-3">
         {NAV_GROUPS.map((group) => {
-          const items = group.items.filter((item) => item.to !== '/game-interface' || showGameInterface)
+          const items = group.items.filter((item) => (item.to !== '/game-interface' || showGameInterface) && (item.to !== '/dictionary' || showGlossary))
           return items.length > 0 ? <NavCapsule key={group.label} group={{ ...group, items }} translate={t} /> : null
         })}
       </nav>

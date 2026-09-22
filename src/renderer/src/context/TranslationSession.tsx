@@ -18,7 +18,7 @@ export type ReviewStatus = 'untranslated' | 'not-verified' | 'needs-review' | 'v
 
 type Phase = 'idle' | 'loading' | 'loaded'
 
-export type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'needs-review'
+export type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'brackets' | 'needs-review'
 export interface FilterSpec {
   mode: FilterMode
   referenceTag: ReferenceTag | 'all'
@@ -78,6 +78,7 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
   if (filter.mode === 'translated' && !entry.target.trim()) return false
   if (filter.mode === 'dictionary' && getCategory(entry) !== 'dictionary') return false
   if (filter.mode === 'tags' && !hasXmlTags(entry)) return false
+  if (filter.mode === 'brackets' && !/\[[^\]\r\n]+\]/.test(entry.source)) return false
   if (filter.mode === 'needs-review' && !entry.needsReview) return false
   if (filter.referenceTag !== 'all' && !getReferenceTags(entry.source).includes(filter.referenceTag)) {
     return false

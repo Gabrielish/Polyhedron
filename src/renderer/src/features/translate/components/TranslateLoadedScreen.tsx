@@ -150,21 +150,22 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
           onEntryChange={session.updateEntry}
           onEntryManualEdit={handleEntryManualEdit}
           viewMode={isCompactViewport ? 'stacked' : viewMode}
+          selectionActions={
+            <BatchActionBar
+              selectedCount={session.selectedCount}
+              batchCompleted={batch.batchCompleted}
+              batchTotal={batch.batchTotal}
+              onTranslateDeepL={() => batch.batchTranslate('deepl')}
+              onTranslateGoogle={() => batch.batchTranslate('google')}
+              onTranslateAI={() => batch.batchTranslate(aiProvider)}
+              aiProviderName={getProviderMeta(aiProvider).name}
+              onCancelTranslation={batch.cancelBatch}
+              onClearSelection={session.clearSelection}
+              isTranslating={batch.isBatchTranslating}
+            />
+          }
         />
       </div>
-
-      <BatchActionBar
-        selectedCount={session.selectedCount}
-        batchCompleted={batch.batchCompleted}
-        batchTotal={batch.batchTotal}
-        onTranslateDeepL={() => batch.batchTranslate('deepl')}
-        onTranslateGoogle={() => batch.batchTranslate('google')}
-        onTranslateAI={() => batch.batchTranslate(aiProvider)}
-        aiProviderName={getProviderMeta(aiProvider).name}
-        onCancelTranslation={batch.cancelBatch}
-        onClearSelection={session.clearSelection}
-        isTranslating={batch.isBatchTranslating}
-      />
 
       <AlreadyTranslatedDialog
         open={batch.pendingDecision}

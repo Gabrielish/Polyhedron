@@ -78,7 +78,9 @@ import { getItemTags } from '@/data/armorReference'
 import { renderSource } from '@/utils/renderSource'
 
 type TranslationCategory = 'dictionary' | 'tool' | 'manual' | 'none'
-type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'needs-review'
+type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'brackets' | 'needs-review'
+type XmlTagFilter = 'all' | 'untranslated' | 'translated'
+type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
 type OnlineNodeMeta = {
   kind: 'Question' | 'Answer' | 'Cinematic' | 'Technical'
@@ -140,6 +142,8 @@ type TranslateViewState = {
   filter?: FilterMode
   sortMode?: SortMode
   currentPage?: number
+  xmlTagFilter?: XmlTagFilter
+  bracketFilter?: BracketFilter
 }
 
 function loadTranslateViewState(): TranslateViewState {
@@ -155,6 +159,7 @@ interface TranslationGridProps {
   onEntryChange: (rowId: string, target: string) => void
   onEntryManualEdit: (rowId: string) => void
   viewMode: 'stacked' | 'side'
+  selectionActions?: React.ReactNode
 }
 
 function getCategory(entry: TranslationSessionEntry): TranslationCategory {
@@ -165,7 +170,12 @@ function getCategory(entry: TranslationSessionEntry): TranslationCategory {
 }
 
 function hasXmlTags(entry: TranslationSessionEntry): boolean {
-  return /(<[^>]+>|\{[^}]+\})/.test(entry.source)
+  const sourceWithoutFormattingTags = entry.source.replace(/<\/?(?:i|br|b)\b[^>]*>/gi, '')
+  return /(<[^>]+>|\{[^}]+\})/.test(sourceWithoutFormattingTags)
+}
+
+function hasSquareBracketPlaceholder(entry: TranslationSessionEntry): boolean {
+  return /\[[^\]\r\n]+\]/.test(entry.source)
 }
 
 // Search is deliberately literal: in particular, em dash (—), en dash (–),
@@ -330,7 +340,8 @@ export function TranslationGrid({
   entries,
   onEntryChange,
   onEntryManualEdit,
-  viewMode
+  viewMode,
+  selectionActions
 }: TranslationGridProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common', 'toasts', 'ai'])
   const session = useTranslationSession()
@@ -358,6 +369,8 @@ export function TranslationGrid({
   const [replaceWith, setReplaceWith] = useState('')
   const [replaceUndo, setReplaceUndo] = useState<ReplaceChange[][]>([])
   const [replaceRedo, setReplaceRedo] = useState<ReplaceChange[][]>([])
+  const [bulkStatusOpen, setBulkStatusOpen] = useState(false)
+  const [openSpecialFilter, setOpenSpecialFilter] = useState<'tags' | 'brackets' | null>(null)
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [exactMatch, setExactMatch] = useState(savedViewState.exactMatch ?? false)
   const [linkNameDescription] = useState(false)
@@ -371,12 +384,14 @@ export function TranslationGrid({
   const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>(savedViewState.reviewFilter ?? 'all')
   const speakerCacheRef = useRef<Map<string, ReturnType<typeof speakerForGroups>>>(new Map())
   const [filter, setFilter] = useState<FilterMode>(savedViewState.filter ?? 'all')
+  const [xmlTagFilter, setXmlTagFilter] = useState<XmlTagFilter>(savedViewState.xmlTagFilter ?? 'all')
+  const [bracketFilter, setBracketFilter] = useState<BracketFilter>(savedViewState.bracketFilter ?? 'all')
   const [sortMode, setSortMode] = useState<SortMode>(savedViewState.sortMode ?? 'default')
   const [currentPage, setCurrentPage] = useState(savedViewState.currentPage ?? 1)
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
   useEffect(() => {
-    window.sessionStorage.setItem(TRANSLATE_VIEW_STATE_KEY, JSON.stringify({ search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, sortMode, currentPage } satisfies TranslateViewState))
-  }, [search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, sortMode, currentPage])
+    window.sessionStorage.setItem(TRANSLATE_VIEW_STATE_KEY, JSON.stringify({ search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, xmlTagFilter, bracketFilter, sortMode, currentPage } satisfies TranslateViewState))
+  }, [search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, xmlTagFilter, bracketFilter, sortMode, currentPage])
   useEffect(() => {
     const handle = window.setTimeout(() => setDebouncedSearch(search), 140)
     return () => window.clearTimeout(handle)
@@ -385,6 +400,12 @@ export function TranslationGrid({
     setStatusTabsTarget(document.getElementById('translation-status-tabs'))
   }, [])
   useEffect(() => {
+    const pendingSearch = window.sessionStorage.getItem('polyhedron:reveal-search')
+    if (pendingSearch) {
+      window.sessionStorage.removeItem('polyhedron:reveal-search')
+      setSearch(pendingSearch)
+      window.setTimeout(() => searchInputRef.current?.focus(), 0)
+    }
     const pendingUid = window.sessionStorage.getItem('polyhedron:reveal-uid')
     if (pendingUid) {
       window.sessionStorage.removeItem('polyhedron:reveal-uid')
@@ -469,6 +490,11 @@ export function TranslationGrid({
       if (deferredFilter === 'translated' && !entry.target.trim()) return false
       if (deferredFilter === 'dictionary' && getCategory(entry) !== 'dictionary') return false
       if (deferredFilter === 'tags' && !hasXmlTags(entry)) return false
+      if (deferredFilter === 'tags' && xmlTagFilter === 'untranslated' && entry.target.trim()) return false
+      if (deferredFilter === 'tags' && xmlTagFilter === 'translated' && !entry.target.trim()) return false
+      if (deferredFilter === 'brackets' && !hasSquareBracketPlaceholder(entry)) return false
+      if (deferredFilter === 'brackets' && bracketFilter === 'untranslated' && entry.target.trim()) return false
+      if (deferredFilter === 'brackets' && bracketFilter === 'translated' && !entry.target.trim()) return false
       if (deferredFilter === 'needs-review' && !entry.needsReview) return false
       if (deferredReferenceTag !== 'all' && !getReferenceTags(entry.source).includes(deferredReferenceTag)) {
         return false
@@ -516,6 +542,8 @@ export function TranslationGrid({
     sourceFrequencies,
     deferredExactMatch,
     deferredFilter,
+    xmlTagFilter,
+    bracketFilter,
     deferredLinkNameDescription,
     deferredReferenceTag,
     deferredDialogueFilters,
@@ -530,7 +558,7 @@ export function TranslationGrid({
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [sortMode, deferredExactMatch, deferredFilter, deferredLinkNameDescription, deferredReferenceTag, deferredDialogueFilters, dialogueScope, speakerFilter, reviewFilter, effectiveSearch])
+  }, [sortMode, deferredExactMatch, deferredFilter, deferredLinkNameDescription, deferredReferenceTag, deferredDialogueFilters, dialogueScope, speakerFilter, reviewFilter, effectiveSearch, xmlTagFilter, bracketFilter])
 
   // clear selection and sticky rows when filter or search changes
   useEffect(() => {
@@ -547,6 +575,8 @@ export function TranslationGrid({
     speakerFilter,
     reviewFilter,
     effectiveSearch,
+    xmlTagFilter,
+    bracketFilter,
     clearSelection
   ])
 
@@ -590,6 +620,12 @@ export function TranslationGrid({
       selectedCharacters: materialized.reduce((sum, e) => sum + e.source.length, 0)
     }
   }, [session.selection, session.entries])
+
+  const applyBulkReviewStatus = (status: ReviewStatus) => {
+    const selectedEntries = materializeSelectedEntries(session)
+    for (const entry of selectedEntries) session.setReviewStatus(entry.rowId, status)
+    setBulkStatusOpen(false)
+  }
 
   const allFiltered =
     selection.kind === 'all-matching' &&
@@ -1365,6 +1401,12 @@ export function TranslationGrid({
       dot: 'bg-purple-400'
     },
     {
+      mode: 'brackets',
+      label: 'Placeholders',
+      count: entries.filter(hasSquareBracketPlaceholder).length,
+      dot: 'bg-cyan-400'
+    },
+    {
       mode: 'needs-review',
       label: t('grid.needsReview', { ns: 'translate' }),
       count: entries.filter((entry) => entry.needsReview).length,
@@ -1406,6 +1448,22 @@ export function TranslationGrid({
         </span>
       </button>
       {filterItems.map((item) => {
+        if (item.mode === 'tags' || item.mode === 'brackets') {
+          const isXmlTagFilter = item.mode === 'tags'
+          const selectedFilter = isXmlTagFilter ? xmlTagFilter : bracketFilter
+          return (
+            <div key={item.mode} onClick={() => startFilterTransition(() => setFilter(item.mode))} className={cn('translation-special-filter relative inline-flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors', openSpecialFilter === item.mode && 'z-[1000]', filter === item.mode ? (isXmlTagFilter ? 'border-purple-400/50 bg-purple-400/10 text-purple-200' : 'border-cyan-400/50 bg-cyan-400/10 text-cyan-200') : 'cursor-pointer text-neutral-400 hover:bg-[#181b1f] hover:text-neutral-200')}>
+              <span>{isXmlTagFilter ? 'XML' : 'PL'}</span>
+              <span className={cn('rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums', isXmlTagFilter ? 'bg-purple-400/20 text-purple-200' : 'bg-cyan-400/20 text-cyan-200')}>{item.count}</span>
+              <button type="button" onClick={(event) => { event.stopPropagation(); const mode = item.mode as 'tags' | 'brackets'; setOpenSpecialFilter((open) => open === mode ? null : mode) }} aria-haspopup="menu" aria-expanded={openSpecialFilter === item.mode} aria-label={`${isXmlTagFilter ? 'XML' : 'PL'} ${selectedFilter}`} title={selectedFilter === 'all' ? 'All' : selectedFilter === 'translated' ? 'Translated' : 'Untranslated'} className={cn('inline-flex cursor-pointer items-center gap-0.5 bg-transparent text-[11px] font-semibold outline-none', isXmlTagFilter ? 'text-purple-200' : 'text-cyan-200')}>
+                {selectedFilter === 'all' ? <CircleDashed size={13} /> : selectedFilter === 'translated' ? <CircleCheck size={13} /> : <CircleX size={13} />}<ChevronDown size={11} />
+              </button>
+              {openSpecialFilter === item.mode && <div role="menu" className="bulk-status-menu absolute top-[calc(100%+6px)] right-0 z-[1001] w-9 min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl">
+                {(['all', 'untranslated', 'translated'] as const).map((value) => { const OptionIcon = value === 'all' ? CircleDashed : value === 'translated' ? CircleCheck : CircleX; const label = value === 'all' ? 'All' : value === 'translated' ? 'Translated' : 'Untranslated'; return <button key={value} type="button" role="menuitem" aria-label={label} title={label} onClick={(event) => { event.stopPropagation(); startFilterTransition(() => { if (isXmlTagFilter) setXmlTagFilter(value); else setBracketFilter(value); setFilter(item.mode) }); setOpenSpecialFilter(null) }} className={cn('flex w-full items-center justify-center rounded px-1 py-1.5 text-left text-xs font-medium transition-colors hover:bg-white/10', value === selectedFilter ? (isXmlTagFilter ? 'text-purple-300' : 'text-cyan-300') : 'text-neutral-300')}><OptionIcon size={14} /></button> })}
+              </div>}
+            </div>
+          )
+        }
         const active = filter === item.mode
         return (
           <button
@@ -1419,23 +1477,19 @@ export function TranslationGrid({
                   ? 'border-emerald-400/50 bg-emerald-400/10 text-emerald-200'
                   : item.mode === 'translated'
                     ? 'border-blue-400/50 bg-blue-400/10 text-blue-200'
-                    : item.mode === 'tags'
-                      ? 'border-purple-400/50 bg-purple-400/10 text-purple-200'
-                      : 'border-orange-400/50 bg-orange-400/10 text-orange-200'
+                    : 'border-orange-400/50 bg-orange-400/10 text-orange-200'
                 : 'border-transparent text-neutral-400 hover:border-[#2a2f37] hover:bg-[#181b1f] hover:text-neutral-200'
             )}
           >
             <span className={cn('inline-block h-1.5 w-1.5 rounded-full', item.dot)} />
-            {item.label}
+            {item.mode === 'needs-review' ? 'Review' : item.label}
             <span className={cn(
               'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
               active && item.mode === 'untranslated'
                 ? 'bg-emerald-400/20 text-emerald-200'
                 : active && item.mode === 'translated'
                   ? 'bg-blue-400/20 text-blue-200'
-                  : active && item.mode === 'tags'
-                    ? 'bg-purple-400/20 text-purple-200'
-                    : active
+                  : active
                       ? 'bg-orange-400/20 text-orange-200'
                       : 'bg-[#181b1f] text-neutral-500'
             )}>
@@ -1566,6 +1620,24 @@ export function TranslationGrid({
         </select>
       </label>
 
+      {selectedStats.selectedStrings > 0 && (
+        <div className="relative inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 text-xs font-semibold text-amber-200">
+          <ClipboardCheck size={13} className="text-amber-300" />
+          <span>Status</span>
+          <button type="button" onClick={() => setBulkStatusOpen((open) => !open)} aria-haspopup="menu" aria-expanded={bulkStatusOpen} className="cursor-pointer bg-transparent text-xs font-semibold text-amber-200 outline-none hover:text-amber-100">
+            Choose…
+            <ChevronDown size={12} className="ml-1 inline-block" />
+          </button>
+          {bulkStatusOpen && <div role="menu" className="bulk-status-menu absolute top-[calc(100%+6px)] left-0 z-50 w-full min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl">
+            {[
+              { value: 'verified' as ReviewStatus, label: 'Verified', icon: CircleCheck, color: 'text-emerald-400 hover:bg-emerald-500/10' },
+              { value: 'not-verified' as ReviewStatus, label: 'Not verified', icon: CircleX, color: 'text-red-400 hover:bg-red-500/10' },
+              { value: 'needs-review' as ReviewStatus, label: 'Needs review', icon: CircleAlert, color: 'text-yellow-400 hover:bg-yellow-500/10' },
+            ].map((option) => { const Icon = option.icon; return <button key={option.value} type="button" role="menuitem" onClick={() => applyBulkReviewStatus(option.value)} className={cn('flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-left text-xs font-medium transition-colors', option.color)}><Icon size={14} />{option.label}</button> })}
+          </div>}
+        </div>
+      )}
+
       </div>
 
       {replaceOpen && (
@@ -1690,11 +1762,11 @@ export function TranslationGrid({
   )
 
   const statusTabsPortal = statusTabsTarget ? createPortal(statusTabs, statusTabsTarget) : null
-
   if (viewMode === 'side') {
     return (
       <div className="flex h-full min-h-0 flex-col">
         {searchBar}
+        {selectionActions}
         {statusTabsPortal}
 
         <div
@@ -1903,9 +1975,10 @@ export function TranslationGrid({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      {searchBar}
-      {statusTabsPortal}
+      <div className="flex h-full min-h-0 flex-col">
+        {searchBar}
+        {selectionActions}
+        {statusTabsPortal}
 
       <div className="flex shrink-0 select-none items-center gap-2 border-b border-[#1f2329] bg-[#0f1114] px-7 py-2">
         <input
