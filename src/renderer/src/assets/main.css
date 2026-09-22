@@ -969,8 +969,40 @@ html[data-theme='liquid-glass'] .bulk-status-menu {
   background: rgb(var(--poly-accent-rgb, 237 28 36) / 7%);
 }
 .translate-idle-step {
+  isolation: isolate;
   background: linear-gradient(145deg, rgb(20 20 22 / 96%), rgb(15 16 18 / 96%));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+}
+.translate-idle-step::before {
+  content: '';
+  position: absolute;
+  inset: 0 18% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--poly-accent-rgb, 237 28 36) / 42%), transparent);
+  opacity: 0.7;
+}
+.translate-idle-step > div {
+  position: relative;
+  z-index: 1;
+}
+.translate-idle-content {
+  scroll-padding-block: 24px;
+}
+.mod-progress-track {
+  border: 1px solid #26343b;
+  background: #0b1114;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 45%), inset 0 -1px 0 rgb(255 255 255 / 4%), 0 1px 0 rgb(255 255 255 / 3%);
+}
+.mod-progress-fill {
+  min-width: 3px;
+  background: var(--color-amber-500, #ed1c24);
+  box-shadow: 0 0 10px rgb(var(--poly-accent-rgb, 237 28 36) / 35%), inset 0 1px 0 rgb(255 255 255 / 28%);
+}
+html[data-theme='liquid-glass'] .mod-progress-track {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(8 12 17 / 55%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 .translate-idle-step [data-step] > div:first-child h3 {
   letter-spacing: -0.01em;

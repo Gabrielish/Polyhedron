@@ -49,9 +49,7 @@ export function ModSelectionCard({
           <h3 className="text-[15px] font-semibold text-neutral-200 tracking-tight m-0">
             {t('setup.modSelection.title')}
           </h3>
-          <p className="text-xs text-neutral-500 mt-1 m-0">
-            {t('setup.modSelection.description')}
-          </p>
+          <p className="text-xs text-neutral-500 mt-1 m-0">{t('setup.modSelection.description')}</p>
         </div>
         <div className="flex items-center bg-[#0f1114] border border-[#1f2329] rounded-md p-0.5 gap-0.5 text-xs shrink-0">
           <button
@@ -204,15 +202,15 @@ function ModOption({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <div className="h-1 bg-neutral-900 rounded overflow-hidden">
+      <div className="mod-progress flex min-w-28 flex-col gap-1.5">
+        <div className="mod-progress-track h-2.5 overflow-hidden rounded-full">
           <div
-            className="h-full bg-amber-400 rounded transition-all duration-300"
+            className="mod-progress-fill h-full rounded-full transition-all duration-300"
             style={{ width: `${pct}%` }}
           />
         </div>
-        <div className="font-mono text-[10px] text-neutral-500 text-right tabular-nums">
-          {pct.toFixed(0)}%
+        <div className="text-right font-mono text-[10px] font-semibold tabular-nums text-neutral-500">
+          {pct.toFixed(2)}%
         </div>
       </div>
     </button>

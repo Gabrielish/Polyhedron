@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { app, ipcMain } from 'electron'
@@ -16,9 +17,10 @@ import {
   prepareTranslationInput,
   upsertMetaForMod
 } from '../services/translation-import.service'
-import { findLocalizationXmls } from '../services/xml-parser.service'
+import { findLocalizationXmls, parseLocalizationXml } from '../services/xml-parser.service'
 import { extract } from '../services/zip.service'
 import { findPakFiles } from '../utils/findPakFiles'
+import { normalizeLangs } from '../utils/languages'
 
 interface ExtractPayload {
   inputPath: string
@@ -46,6 +48,73 @@ function sanitizeModName(name: string): string {
 function languageFolder(repos: RepositoryRegistry, languageCode: string): string {
   const language = repos.language.findByCode(languageCode)
   return (language?.name ?? languageCode).replace(/[^a-zA-Z0-9]/g, '')
+}
+
+function isDeveloperNote(source: string): boolean {
+  const value = source.trim()
+  return value.startsWith('%%%') || (value.startsWith('|') && value.indexOf('|', 1) > 0)
+}
+
+function getSavedSessionProgress(
+  storedPath: string | null,
+  sourceLang: string,
+  targetLang: string
+): { total: number; translated: number } | null {
+  if (!storedPath) return null
+  const key = `${storedPath}|${sourceLang}|${targetLang}`
+  const id = crypto.createHash('sha256').update(key).digest('hex')
+  const filePath = path.join(app.getPath('userData'), 'icosa', 'sessions', `${id}.json`)
+  if (!fs.existsSync(filePath)) return null
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as {
+      entries?: Array<{ source?: string; target?: string }>
+    }
+    if (
+      !Array.isArray(parsed.entries) ||
+      parsed.entries.some((entry) => typeof entry.source !== 'string')
+    )
+      return null
+    const visible = parsed.entries.filter((entry) => !isDeveloperNote(entry.source ?? ''))
+    return {
+      total: visible.length,
+      translated: visible.filter((entry) => (entry.target ?? '').trim() !== '').length
+    }
+  } catch {
+    return null
+  }
+}
+
+function getVisibleProgressFromStoredFile(
+  modName: string,
+  storedPath: string | null,
+  sourceLang: string,
+  targetLang: string,
+  repos: RepositoryRegistry
+): { total: number; translated: number } | null {
+  if (!storedPath || !fs.existsSync(storedPath)) return null
+  try {
+    const visibleTotal = parseLocalizationXml(storedPath).filter(
+      (entry) => !isDeveloperNote(entry.text)
+    ).length
+    if (visibleTotal === 0) return null
+
+    const [language1, language2, swapped] = normalizeLangs(sourceLang, targetLang)
+    const targetField = swapped ? 'textLanguage1' : 'textLanguage2'
+    const translatedNotes = repos.dictionary.getByMod(modName).filter((entry) => {
+      if (entry.language1 !== language1 || entry.language2 !== language2) return false
+      return isDeveloperNote(entry[targetField])
+    }).length
+
+    return {
+      total: visibleTotal,
+      translated: Math.max(
+        0,
+        repos.dictionary.countByMod(modName, sourceLang, targetLang) - translatedNotes
+      )
+    }
+  } catch {
+    return null
+  }
 }
 
 export function registerModHandlers(repos: RepositoryRegistry): void {
@@ -124,28 +193,47 @@ export function registerModHandlers(repos: RepositoryRegistry): void {
 
   ipcMain.handle(
     'mod:exportLocalizationPak',
-    (_event, params: { outputPath: string; entries: { uid: string; version: string; source: string; target: string }[] }) =>
-      exportLocalizationPak(params.entries, params.outputPath)
+    (
+      _event,
+      params: {
+        outputPath: string
+        entries: { uid: string; version: string; source: string; target: string }[]
+      }
+    ) => exportLocalizationPak(params.entries, params.outputPath)
   )
 
   ipcMain.handle(
     'mod:injectLocalizationPak',
-    (_event, params: { platform: 'windows' | 'macos'; entries: { uid: string; version: string; source: string; target: string }[] }) =>
-      injectLocalizationPak(params.entries, params.platform)
+    (
+      _event,
+      params: {
+        platform: 'windows' | 'macos'
+        entries: { uid: string; version: string; source: string; target: string }[]
+      }
+    ) => injectLocalizationPak(params.entries, params.platform)
   )
 
   ipcMain.handle('mod:getAll', (_event, params?: { lang1?: string; lang2?: string }) => {
     const mods = repos.mod.getAll()
     const { lang1, lang2 } = params ?? {}
-    return mods.map(
-      (m): ModInfo => ({
+    return mods.map((m): ModInfo => {
+      const saved =
+        lang1 && lang2 ? getSavedSessionProgress(m.lastFilePath ?? null, lang1, lang2) : null
+      const visible =
+        !saved && lang1 && lang2
+          ? getVisibleProgressFromStoredFile(m.name, m.lastFilePath ?? null, lang1, lang2, repos)
+          : null
+      return {
         name: m.name,
-        totalStrings: m.totalStrings ?? 0,
-        translatedStrings: lang1 && lang2 ? repos.dictionary.countByMod(m.name, lang1, lang2) : 0,
+        totalStrings: saved?.total ?? visible?.total ?? m.totalStrings ?? 0,
+        translatedStrings:
+          saved?.translated ??
+          visible?.translated ??
+          (lang1 && lang2 ? repos.dictionary.countByMod(m.name, lang1, lang2) : 0),
         lastFilePath: m.lastFilePath ?? null,
         updatedAt: m.updatedAt ?? null
-      })
-    )
+      }
+    })
   })
 
   ipcMain.handle(

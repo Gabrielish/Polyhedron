@@ -654,18 +654,54 @@ export interface UpdateApi {
 }
 
 export interface SessionApi {
-  save(params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview: boolean; reviewStatus?: ReviewStatus; history?: TranslationHistoryEntry[] }> }): Promise<{ success: boolean }>
-  load(params: { key: string }): Promise<Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: XmlMatchType; needsReview?: boolean; reviewStatus?: ReviewStatus; history?: TranslationHistoryEntry[] }> | null>
+  save(params: {
+    key: string
+    entries: Array<{
+      uid: string
+      source?: string
+      target: string
+      genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
+      matchType: XmlMatchType
+      needsReview: boolean
+      reviewStatus?: ReviewStatus
+      history?: TranslationHistoryEntry[]
+    }>
+  }): Promise<{ success: boolean }>
+  load(params: {
+    key: string
+  }): Promise<Array<{
+    uid: string
+    target: string
+    genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
+    matchType: XmlMatchType
+    needsReview?: boolean
+    reviewStatus?: ReviewStatus
+    history?: TranslationHistoryEntry[]
+  }> | null>
 }
 
 export interface WorkspaceApi {
   export(params: { outputPath: string }): Promise<{ outputPath: string }>
-  import(params: { inputPath: string }): Promise<{ backupPath: string; stats: { translated: number; total: number } }>
+  import(params: {
+    inputPath: string
+  }): Promise<{ backupPath: string; stats: { translated: number; total: number } }>
 }
 
 export interface CloudApi {
-  upload(params?: { sessionKey?: string }): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }>
-  download(params?: { sessionKey?: string }): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }>
+  upload(params?: {
+    sessionKey?: string
+  }): Promise<{
+    fileName: string
+    modifiedTime?: string
+    stats: { translated: number; total: number; fingerprint: string }
+  }>
+  download(params?: {
+    sessionKey?: string
+  }): Promise<{
+    fileName: string
+    restartRequired: boolean
+    stats: { translated: number; total: number; fingerprint: string }
+  }>
   syncStamp(): Promise<string | null>
 }
 

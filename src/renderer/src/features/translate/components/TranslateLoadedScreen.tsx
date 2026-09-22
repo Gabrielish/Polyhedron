@@ -25,8 +25,8 @@ interface TranslateLoadedScreenProps {
 export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): React.JSX.Element {
   const { t } = useAppTranslation('translate')
   const [viewMode, setViewMode] = useState<'side' | 'stacked'>('side')
-  const [isCompactViewport, setIsCompactViewport] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
+  const [isCompactViewport, setIsCompactViewport] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
   )
   const [languages, setLanguages] = useState<Language[]>([])
   const sessionRef = useRef(session)
@@ -44,7 +44,9 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   const translatedCount = visibleEntries.filter((entry) => entry.target.trim() !== '').length
   const total = visibleEntries.length
   const pct = total > 0 ? (translatedCount / total) * 100 : 0
-  const verifiedCount = visibleEntries.filter((entry) => entry.target.trim() !== '' && entry.reviewStatus === 'verified').length
+  const verifiedCount = visibleEntries.filter(
+    (entry) => entry.target.trim() !== '' && entry.reviewStatus === 'verified'
+  ).length
   const fileName = session.inputPath
     ? (session.inputPath.split(/[\\/]/).pop() ?? session.modName)
     : session.modName || t('loaded.defaultFileName')
@@ -82,15 +84,27 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
-          uid,
-          target,
-          genderTargets,
-          matchType,
-          needsReview,
-          reviewStatus,
-          history
-        }))
+        entries: latest.entries.map(
+          ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          }) => ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
       })
       toast.success(t('translate.sessionSaved', { ns: 'toasts' }))
     } catch (error) {
@@ -105,15 +119,27 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       void window.api.session.save({
         key: sessionKey,
-        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
-          uid,
-          target,
-          genderTargets,
-          matchType,
-          needsReview,
-          reviewStatus,
-          history
-        }))
+        entries: latest.entries.map(
+          ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          }) => ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
       })
     }
     window.addEventListener('beforeunload', autosaveOnClose)

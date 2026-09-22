@@ -167,7 +167,13 @@ const api: AppApi = {
     }): Promise<{ deleted: number }> => ipcRenderer.invoke('dictionary:deleteByFilter', filters),
 
     replaceByFilter: (
-      filters: { text?: string; exactMatch?: boolean; modName?: string; sourceLang?: string; targetLang?: string },
+      filters: {
+        text?: string
+        exactMatch?: boolean
+        modName?: string
+        sourceLang?: string
+        targetLang?: string
+      },
       patch: { findText: string; replaceText: string; column: 'language1' | 'language2' }
     ): Promise<{ updated: number }> =>
       ipcRenderer.invoke('dictionary:replaceByFilter', { filters, patch })
@@ -270,8 +276,7 @@ const api: AppApi = {
     exportLocalizationPak: (params: {
       outputPath: string
       entries: { uid: string; version: string; source: string; target: string }[]
-    }): Promise<{ outputPath: string }> =>
-      ipcRenderer.invoke('mod:exportLocalizationPak', params),
+    }): Promise<{ outputPath: string }> => ipcRenderer.invoke('mod:exportLocalizationPak', params),
 
     injectLocalizationPak: (params: {
       platform: 'windows' | 'macos'
@@ -388,27 +393,53 @@ const api: AppApi = {
   workspace: {
     export: (params: { outputPath: string }): Promise<{ outputPath: string }> =>
       ipcRenderer.invoke('workspace:export', params),
-    import: (params: { inputPath: string }): Promise<{ backupPath: string; stats: { translated: number; total: number } }> =>
+    import: (params: {
+      inputPath: string
+    }): Promise<{ backupPath: string; stats: { translated: number; total: number } }> =>
       ipcRenderer.invoke('workspace:import', params)
   },
 
   session: {
-    save: (params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: import('./api-types').XmlMatchType; needsReview: boolean; reviewStatus?: import('./api-types').ReviewStatus; history?: import('./api-types').TranslationHistoryEntry[] }> }) =>
-      ipcRenderer.invoke('session:save', params),
+    save: (params: {
+      key: string
+      entries: Array<{
+        uid: string
+        source?: string
+        target: string
+        genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
+        matchType: import('./api-types').XmlMatchType
+        needsReview: boolean
+        reviewStatus?: import('./api-types').ReviewStatus
+        history?: import('./api-types').TranslationHistoryEntry[]
+      }>
+    }) => ipcRenderer.invoke('session:save', params),
     load: (params: { key: string }) => ipcRenderer.invoke('session:load', params)
   },
 
   cloud: {
-    upload: (params: { sessionKey?: string } = {}): Promise<{ fileName: string; modifiedTime?: string; stats: { translated: number; total: number; fingerprint: string } }> => ipcRenderer.invoke('cloud:upload', params),
-    download: (params: { sessionKey?: string } = {}): Promise<{ fileName: string; restartRequired: boolean; stats: { translated: number; total: number; fingerprint: string } }> => ipcRenderer.invoke('cloud:download', params)
-    ,syncStamp: (): Promise<string | null> => ipcRenderer.invoke('cloud:syncStamp')
+    upload: (
+      params: { sessionKey?: string } = {}
+    ): Promise<{
+      fileName: string
+      modifiedTime?: string
+      stats: { translated: number; total: number; fingerprint: string }
+    }> => ipcRenderer.invoke('cloud:upload', params),
+    download: (
+      params: { sessionKey?: string } = {}
+    ): Promise<{
+      fileName: string
+      restartRequired: boolean
+      stats: { translated: number; total: number; fingerprint: string }
+    }> => ipcRenderer.invoke('cloud:download', params),
+    syncStamp: (): Promise<string | null> => ipcRenderer.invoke('cloud:syncStamp')
   },
 
   update: {
     check: (): Promise<void> => ipcRenderer.invoke('update:check'),
     download: (): Promise<void> => ipcRenderer.invoke('update:download'),
     install: (): Promise<void> => ipcRenderer.invoke('update:install'),
-    onState: (cb: (state: import('./api-types').UpdateState) => void): UnsubscribeFn => on('update:state', cb)
+    onState: (cb: (state: import('./api-types').UpdateState) => void): UnsubscribeFn =>
+      on('update:state', cb)
   },
 
   fs: {

@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   ArrowRight,
+  BookOpenCheck,
   Columns2,
   Loader2,
   Languages,
@@ -44,7 +45,7 @@ export function EditorHeader({
   verifiedCount,
   onViewModeChange,
   onSave,
-  onSaveToGlossary,
+  onSaveToGlossary
 }: EditorHeaderProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common'])
 
@@ -107,12 +108,21 @@ export function EditorHeader({
 
           <button
             type="button"
-            className={cn(btnBase, isSaving && 'opacity-60 cursor-not-allowed')}
+            className={cn(
+              btnPrimary,
+              'h-[30px] w-auto justify-center',
+              isSaving && 'opacity-60 cursor-not-allowed'
+            )}
             onClick={onSaveToGlossary}
             disabled={isSaving}
             title={t('editor.saveGlossary')}
+            aria-label={t('editor.saveGlossary')}
           >
-            {t('editor.saveGlossary')}
+            {isSaving ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <BookOpenCheck />
+            )}
           </button>
 
           <button
@@ -128,7 +138,6 @@ export function EditorHeader({
               Ctrl S
             </span>
           </button>
-
         </div>
       </div>
 
