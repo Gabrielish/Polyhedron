@@ -35,7 +35,7 @@ export function SessionSaveButton({ session, className, portalSelector }: Sessio
       const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus }))
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }))
       })
       toast.success('Translations saved')
     } catch (error) {

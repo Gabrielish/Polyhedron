@@ -7,11 +7,12 @@ import {
   type DialogueScope
 } from '@/data/dialogReference'
 import { i18n } from '@/i18n'
-import type { XmlEntry, XmlLoadProgress } from '@/types'
+import type { TranslationHistoryEntry, XmlEntry, XmlLoadProgress } from '@/types'
 
 export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
 }
+export type { TranslationHistoryEntry }
 export type GenderVariant = 'default' | 'female' | 'neutral'
 export type ReviewStatus = 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
 
@@ -126,6 +127,11 @@ export function materializeSelectedEntries(
 
 const EMPTY_EXPLICIT: SelectionState = { kind: 'explicit', uids: new Set() }
 
+function appendHistory(entry: TranslationSessionEntry, change: Omit<TranslationHistoryEntry, 'id' | 'changedAt'>): TranslationHistoryEntry[] {
+  const next = [...(entry.history ?? []), { ...change, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, changedAt: Date.now() }]
+  return next.slice(-50)
+}
+
 type Action =
   | { type: 'SET_PHASE'; phase: Phase; loadingLabel?: string }
   | { type: 'SET_LOADING_PROGRESS'; progress: XmlLoadProgress | null }
@@ -135,6 +141,7 @@ type Action =
   | { type: 'MARK_MANUAL'; rowId: string }
   | { type: 'TOGGLE_NEEDS_REVIEW'; rowId: string }
   | { type: 'SET_REVIEW_STATUS'; rowId: string; status: ReviewStatus }
+  | { type: 'DELETE_HISTORY_ENTRY'; rowId: string; historyId: string }
   | { type: 'SELECT_ALL_MATCHING'; filter: FilterSpec }
   | { type: 'SELECT_ROWS'; rowIds: string[] }
   | { type: 'TOGGLE_ENTRY'; rowId: string }
@@ -194,7 +201,9 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
         ...state,
         targetFrequencies,
         entries: state.entries.map((e) =>
-          e.rowId === action.rowId ? { ...e, target: action.target } : e
+          e.rowId === action.rowId
+            ? { ...e, target: action.target, history: action.target.trim() ? appendHistory(e, { kind: 'translation', variant: 'default', value: action.target, previousValue: e.target }) : e.history }
+            : e
         )
       }
     }
@@ -202,7 +211,7 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
       const currentEntry = state.entries.find((entry) => entry.rowId === action.rowId)
       if (!currentEntry) return state
       const genderTargets = { ...(currentEntry.genderTargets ?? {}), [action.variant]: action.target }
-      return { ...state, entries: state.entries.map((entry) => entry.rowId === action.rowId ? { ...entry, genderTargets } : entry) }
+      return { ...state, entries: state.entries.map((entry) => entry.rowId === action.rowId ? { ...entry, genderTargets, history: action.target.trim() ? appendHistory(entry, { kind: 'gender', variant: action.variant, value: action.target, previousValue: entry.genderTargets?.[action.variant] ?? '' }) : entry.history } : entry) }
     }
     case 'MARK_MANUAL':
       return {
@@ -214,17 +223,15 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
     case 'SET_REVIEW_STATUS':
       return {
         ...state,
-        entries: state.entries.map((e) =>
-          e.rowId === action.rowId ? { ...e, reviewStatus: action.status } : e
-        )
+        entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, reviewStatus: action.status, history: appendHistory(e, { kind: 'review', value: action.status, reviewStatus: action.status }) } : e)
       }
     case 'TOGGLE_NEEDS_REVIEW':
       return {
         ...state,
-        entries: state.entries.map((e) =>
-          e.rowId === action.rowId ? { ...e, needsReview: !e.needsReview } : e
-        )
+        entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, needsReview: !e.needsReview, history: appendHistory(e, { kind: 'needs-review', value: String(!e.needsReview) }) } : e)
       }
+    case 'DELETE_HISTORY_ENTRY':
+      return { ...state, entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, history: (e.history ?? []).filter((change) => change.id !== action.historyId) } : e) }
     case 'SELECT_ALL_MATCHING':
       return {
         ...state,
@@ -305,6 +312,7 @@ interface TranslationSessionContext extends TranslationSessionState {
   markManual: (rowId: string) => void
   toggleNeedsReview: (rowId: string) => void
   setReviewStatus: (rowId: string, status: ReviewStatus) => void
+  deleteHistoryEntry: (rowId: string, historyId: string) => void
   setModName: (name: string) => void
   setSourceLang: (lang: string) => void
   setTargetLang: (lang: string) => void
@@ -412,7 +420,8 @@ export function TranslationSessionProvider({
                   matchType: previous.target.trim() || previous.matchType === 'manual' ? previous.matchType : entry.matchType,
                   needsReview: previous.needsReview === true,
                   reviewStatus: previous.reviewStatus ?? (previous.target?.trim() ? 'needs-review' : 'untranslated'),
-                  genderTargets: previous.genderTargets ?? entry.genderTargets
+                  genderTargets: previous.genderTargets ?? entry.genderTargets,
+                  history: previous.history ?? entry.history
                 }
               : entry
           })
@@ -468,6 +477,10 @@ export function TranslationSessionProvider({
 
   const setReviewStatus = useCallback((rowId: string, status: ReviewStatus) => {
     dispatch({ type: 'SET_REVIEW_STATUS', rowId, status })
+  }, [])
+
+  const deleteHistoryEntry = useCallback((rowId: string, historyId: string) => {
+    dispatch({ type: 'DELETE_HISTORY_ENTRY', rowId, historyId })
   }, [])
 
   const selectAllMatching = useCallback((filter: FilterSpec) => {
@@ -575,7 +588,8 @@ export function TranslationSessionProvider({
     updateGenderVariant,
         markManual,
         toggleNeedsReview,
-    setReviewStatus,
+        setReviewStatus,
+        deleteHistoryEntry,
         setModName,
         setSourceLang,
         setTargetLang,

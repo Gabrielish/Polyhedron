@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Flag,
   GitBranch,
+  History,
   Search,
   Sparkles
 } from 'lucide-react'
@@ -19,6 +20,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { type GenderVariant, type ReviewStatus, useTranslationSession } from '@/context/TranslationSession'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
+import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import { type DialogueCategory, getDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
 import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
@@ -211,13 +213,27 @@ function treeCompletionDialogues(node: TreeNode): Set<string> {
     for (const dialogue of treeCompletionDialogues(child)) dialogues.add(dialogue)
   return dialogues
 }
+type DialogueReviewStats = { translated: number; verified: number }
+function treeVerifiedCompletion(node: TreeNode, stats: Map<string, DialogueReviewStats>): number {
+  const dialogues = treeCompletionDialogues(node)
+  let translated = 0
+  let verified = 0
+  for (const dialogue of dialogues) {
+    const value = stats.get(dialogue)
+    if (!value) continue
+    translated += value.translated
+    verified += value.verified
+  }
+  return translated === 0 ? 0 : Math.round((verified / translated) * 100)
+}
 function TreeItems({
   nodes,
   expanded,
   toggle,
   selected,
   select,
-  translated
+  translated,
+  reviewStats
 }: {
   nodes: TreeNode[]
   expanded: Set<string>
@@ -225,6 +241,7 @@ function TreeItems({
   selected: Choice | null
   select: (key: string) => void
   translated: Set<string>
+  reviewStats: Map<string, DialogueReviewStats>
 }): React.JSX.Element {
   return (
     <div className="space-y-0.5">
@@ -249,6 +266,9 @@ function TreeItems({
               <span className="shrink-0 text-[10px] font-semibold text-orange-300">
                 {treeCompletion(node, translated)}%
               </span>
+              <span className="shrink-0 text-[10px] font-semibold text-emerald-300/80">
+                {treeVerifiedCompletion(node, reviewStats)}% Verified
+              </span>
             </button>
             {open && (
               <div className="ml-3 border-l border-[#1f2329] pl-2">
@@ -260,6 +280,7 @@ function TreeItems({
                     selected={selected}
                     select={select}
                     translated={translated}
+                    reviewStats={reviewStats}
                   />
                 )}
                 {node.choices.map((choice) => {
@@ -279,10 +300,18 @@ function TreeItems({
                     >
                       <span className="truncate">{choice.dialogue}</span>
                       {translated.has(choice.dialogue) && (
-                        <span className="ml-2 shrink-0 rounded border border-emerald-400/30 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300">
+                        <span className="ml-2 shrink-0 rounded border border-orange-400/30 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-orange-300">
                           Translated
                         </span>
                       )}
+                      <span className="ml-2 shrink-0 rounded border border-emerald-400/25 bg-emerald-500/5 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300/80">
+                        {(() => {
+                          const stats = reviewStats.get(choice.dialogue)
+                          return stats && stats.translated > 0
+                            ? `${Math.round((stats.verified / stats.translated) * 100)}% Verified`
+                            : '0% Verified'
+                        })()}
+                      </span>
                     </button>
                   )
                 })}
@@ -367,6 +396,7 @@ export function DialogueNodesPage(): React.JSX.Element {
   )
   const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
   const [aiEntry, setAiEntry] = useState<ReturnType<typeof useTranslationSession>['entries'][number] | null>(null)
+  const [historyEntry, setHistoryEntry] = useState<ReturnType<typeof useTranslationSession>['entries'][number] | null>(null)
   const [focusedUid, setFocusedUid] = useState<string | null>(
     () => navigationState.uid ?? null
   )
@@ -435,6 +465,17 @@ export function DialogueNodesPage(): React.JSX.Element {
         translated.add(choice.dialogue)
     }
     return translated
+  }, [choices, dialogueEntryIndex])
+  const reviewStats = useMemo(() => {
+    const stats = new Map<string, DialogueReviewStats>()
+    for (const choice of choices) {
+      const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
+      const uniqueRows = [...new Map(rows.map((entry) => [entry.rowId, entry])).values()]
+      const translatedRows = uniqueRows.filter((entry) => entry.target.trim().length > 0)
+      const verified = translatedRows.filter((entry) => entry.reviewStatus === 'verified').length
+      stats.set(choice.dialogue, { translated: translatedRows.length, verified })
+    }
+    return stats
   }, [choices, dialogueEntryIndex])
   const visibleChoices = useMemo(() => {
     const nameQuery = dialogueSearch.trim().toLocaleLowerCase()
@@ -569,6 +610,14 @@ export function DialogueNodesPage(): React.JSX.Element {
         onClose={() => setAiEntry(null)}
       />
     )}
+    {historyEntry && (
+      <TranslationHistoryDialog
+        source={historyEntry.source}
+        history={historyEntry.history ?? []}
+        onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)}
+        onClose={() => setHistoryEntry(null)}
+      />
+    )}
     <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
       <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
         <div className="mb-4 flex items-center gap-3">
@@ -654,6 +703,7 @@ export function DialogueNodesPage(): React.JSX.Element {
               selected={selected}
               select={setSelectedKey}
               translated={translatedDialogues}
+              reviewStats={reviewStats}
             />
             {visibleChoices.length === 0 && (
               <p className="px-2 py-4 text-xs text-neutral-600">
@@ -786,6 +836,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                               {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => { const value = item === 'default' || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}
                               <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
                               <button type="button" title="Translate with Gemini" aria-label="Translate with Gemini" onClick={(event) => { event.stopPropagation(); setAiEntry(entry) }} className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"><Sparkles size={13} /></button>
+                              <button type="button" title="History of changes" aria-label="History of changes" onClick={(event) => { event.stopPropagation(); setHistoryEntry(entry) }} className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"><History size={13} /></button>
                               <button type="button" title="Needs review" aria-label="Needs review" onClick={(event) => { event.stopPropagation(); session.toggleNeedsReview(entry.rowId) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', entry.needsReview ? 'border-rose-400/40 bg-rose-500/15 text-rose-300' : 'border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-rose-400/40 hover:text-rose-300')}><Flag size={12} /></button>
                               <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
                               {reviewStatusOptions.map((option) => { const Icon = option.icon; return <button key={option.value} type="button" title={option.title} aria-label={`${option.title} translation`} onClick={(event) => { event.stopPropagation(); session.setReviewStatus(entry.rowId, option.value) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', reviewStatus(entry) === option.value ? option.active : option.idle)}><Icon size={13} /></button> })}

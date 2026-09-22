@@ -19,6 +19,7 @@ import {
   CircleX,
   Flag,
   GitBranch,
+  History,
   RefreshCw,
   Replace,
   ReplaceAll,
@@ -42,6 +43,7 @@ import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
+import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
   type FilterSpec,
   type GenderVariant,
@@ -306,6 +308,7 @@ export function TranslationGrid({
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(false)
   const [highlightSearchMatches, setHighlightSearchMatches] = useState(true)
+  const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
@@ -741,6 +744,12 @@ export function TranslationGrid({
     </button>
   )
 
+  const renderHistoryButton = (entry: TranslationSessionEntry) => (
+    <button type="button" title="History of changes" aria-label="History of changes" onClick={(event) => { event.stopPropagation(); setHistoryEntry(entry) }} className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-amber-500/60 hover:text-amber-400">
+      <History size={12} />
+    </button>
+  )
+
   const aiModal = aiEntry && (
     <AITranslateModal
       open
@@ -755,6 +764,7 @@ export function TranslationGrid({
       onClose={() => setAiEntry(null)}
     />
   )
+  const historyModal = historyEntry && <TranslationHistoryDialog source={historyEntry.source} history={historyEntry.history ?? []} onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)} onClose={() => setHistoryEntry(null)} />
 
   const dialogueEntries = useMemo(() => {
     if (!dialogueKey) return []
@@ -1789,7 +1799,6 @@ export function TranslationGrid({
                       value={genderValue(entry)}
                       highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
                       onFocus={() => setEditingRowId(entry.rowId)}
-                      onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                       onKeyDown={(event) => handleEnterKey(event, entry)}
                       rows={1}
@@ -1809,6 +1818,7 @@ export function TranslationGrid({
                       {renderGenderControls(entry)}
                       <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                       {renderAiButton(entry)}
+                      {renderHistoryButton(entry)}
                       {renderReviewButton(entry)}
                       <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                       {renderReviewStatusControls(entry)}
@@ -1829,6 +1839,7 @@ export function TranslationGrid({
 
         {PaginationFooter}
         {aiModal}
+        {historyModal}
       </div>
     )
   }
@@ -2051,6 +2062,7 @@ export function TranslationGrid({
                       {renderGenderControls(entry)}
                         <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                         {renderAiButton(entry)}
+                        {renderHistoryButton(entry)}
                         {renderReviewButton(entry)}
                         <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                         {renderReviewStatusControls(entry)}
@@ -2076,7 +2088,6 @@ export function TranslationGrid({
                       value={genderValue(entry)}
                       highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
                       onFocus={() => setEditingRowId(entry.rowId)}
-                      onChange={(event) => updateGenderValue(entry, event.target.value)}
                       onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
                         onKeyDown={(event) => handleEnterKey(event, entry)}
                         rows={rows}
@@ -2096,6 +2107,7 @@ export function TranslationGrid({
 
       {PaginationFooter}
       {aiModal}
+      {historyModal}
     </div>
   )
 }

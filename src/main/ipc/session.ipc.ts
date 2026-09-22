@@ -10,6 +10,7 @@ interface SessionEntry {
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
   reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
+  history?: Array<Record<string, unknown>>
 }
 
 function sessionPath(key: string): string {

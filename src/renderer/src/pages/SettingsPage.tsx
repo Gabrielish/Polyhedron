@@ -285,24 +285,6 @@ export function SettingsPage(): React.JSX.Element {
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
-                <div className="text-sm font-medium text-neutral-200">Daily progress checkpoint</div>
-                <div className="mt-0.5 text-xs text-neutral-500">Set the number of strings used for the progress tooltip and daily goal.</div>
-              </div>
-              <input
-                type="number"
-                min={1}
-                max={100000}
-                step={1}
-                value={config['daily_progress_checkpoint'] || '250'}
-                onChange={(event) => {
-                  const value = Math.max(1, Math.min(100000, Number(event.target.value) || 250))
-                  void set('daily_progress_checkpoint', String(value))
-                }}
-                className="daily-progress-checkpoint w-28 shrink-0 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2 text-right font-mono text-sm text-neutral-200 focus:border-amber-500 focus:outline-none"
-              />
-            </div>
-            <div className="flex items-center justify-between gap-5 py-3">
-              <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">Show Game Interface tab</div>
                 <div className="mt-0.5 text-xs text-neutral-500">Show the Game Interface reference tab in the navigation bar.</div>
               </div>

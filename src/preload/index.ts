@@ -393,7 +393,7 @@ const api: AppApi = {
   },
 
   session: {
-    save: (params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: import('./api-types').XmlMatchType; needsReview: boolean; reviewStatus?: import('./api-types').ReviewStatus }> }) =>
+    save: (params: { key: string; entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: import('./api-types').XmlMatchType; needsReview: boolean; reviewStatus?: import('./api-types').ReviewStatus; history?: import('./api-types').TranslationHistoryEntry[] }> }) =>
       ipcRenderer.invoke('session:save', params),
     load: (params: { key: string }) => ipcRenderer.invoke('session:load', params)
   },

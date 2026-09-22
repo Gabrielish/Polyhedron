@@ -25,7 +25,7 @@ interface EditorHeaderProps {
   pct: number
   batchCompleted: number
   batchTotal: number
-  dailyCheckpoint?: number
+  verifiedCount: number
   onViewModeChange: (mode: 'side' | 'stacked') => void
   onSave: () => Promise<void>
   onSaveToGlossary: () => Promise<void>
@@ -41,7 +41,7 @@ export function EditorHeader({
   pct,
   batchCompleted,
   batchTotal,
-  dailyCheckpoint = 250,
+  verifiedCount,
   onViewModeChange,
   onSave,
   onSaveToGlossary,
@@ -152,10 +152,9 @@ export function EditorHeader({
           translatedCount={translatedCount}
           total={total}
           pct={pct}
-          todayProgress={session.todayProgress}
+          verifiedCount={verifiedCount}
           batchCompleted={batchCompleted}
           batchTotal={batchTotal}
-          dailyCheckpoint={dailyCheckpoint}
         />
       </div>
     </div>

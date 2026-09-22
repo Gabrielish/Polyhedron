@@ -44,6 +44,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   const translatedCount = visibleEntries.filter((entry) => entry.target.trim() !== '').length
   const total = visibleEntries.length
   const pct = total > 0 ? (translatedCount / total) * 100 : 0
+  const verifiedCount = visibleEntries.filter((entry) => entry.target.trim() !== '' && entry.reviewStatus === 'verified').length
   const fileName = session.inputPath
     ? (session.inputPath.split(/[\\/]/).pop() ?? session.modName)
     : session.modName || t('loaded.defaultFileName')
@@ -81,13 +82,14 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
       await window.api.session.save({
         key: sessionKey,
-        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus }) => ({
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
           uid,
           target,
           genderTargets,
           matchType,
           needsReview,
-          reviewStatus
+          reviewStatus,
+          history
         }))
       })
       toast.success(t('translate.sessionSaved', { ns: 'toasts' }))
@@ -95,6 +97,28 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
       toast.error(String(error))
     }
   }, [t])
+
+  useEffect(() => {
+    const autosaveOnClose = () => {
+      const latest = sessionRef.current
+      if (latest.phase !== 'loaded' || latest.entries.length === 0) return
+      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
+      void window.api.session.save({
+        key: sessionKey,
+        entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+          uid,
+          target,
+          genderTargets,
+          matchType,
+          needsReview,
+          reviewStatus,
+          history
+        }))
+      })
+    }
+    window.addEventListener('beforeunload', autosaveOnClose)
+    return () => window.removeEventListener('beforeunload', autosaveOnClose)
+  }, [])
 
   useLoadedEditorShortcuts({
     onSave: handleSaveSession,
@@ -112,9 +136,9 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
         translatedCount={translatedCount}
         total={total}
         pct={pct}
+        verifiedCount={verifiedCount}
         batchCompleted={batch.batchCompleted}
         batchTotal={batch.batchTotal}
-        dailyCheckpoint={Math.max(1, Number(config['daily_progress_checkpoint']) || 250)}
         onViewModeChange={setViewMode}
         onSave={handleSaveSession}
         onSaveToGlossary={handleSaveToDictionary}

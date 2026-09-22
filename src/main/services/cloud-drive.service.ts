@@ -16,9 +16,9 @@ const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const CLOUD_FILE_NAME = 'icosa-workspace.icws'
 const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
 
-type PwaSyncEntry = { uid: string; source: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean; reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified' }
+type PwaSyncEntry = { uid: string; source: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean; reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'; history?: Array<Record<string, unknown>> }
 
-type SavedSessionEntry = { uid?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean; reviewStatus?: PwaSyncEntry['reviewStatus'] }
+type SavedSessionEntry = { uid?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean; reviewStatus?: PwaSyncEntry['reviewStatus']; history?: PwaSyncEntry['history'] }
 
 function buildPwaSyncDocument() {
   const db = getDb()
@@ -45,7 +45,7 @@ function buildPwaSyncDocument() {
     }
     const entries = xmlEntries.map((xmlEntry) => {
       const saved = savedByUid.get(xmlEntry.contentuid)
-      const entry: PwaSyncEntry = { uid: xmlEntry.contentuid, source: xmlEntry.text, target: saved?.target ?? '', genderTargets: saved?.genderTargets, matchType: saved?.matchType ?? 'none', needsReview: saved?.needsReview === true, reviewStatus: saved?.reviewStatus }
+      const entry: PwaSyncEntry = { uid: xmlEntry.contentuid, source: xmlEntry.text, target: saved?.target ?? '', genderTargets: saved?.genderTargets, matchType: saved?.matchType ?? 'none', needsReview: saved?.needsReview === true, reviewStatus: saved?.reviewStatus, history: saved?.history }
       const value = `${entry.uid}\u0000${entry.target}`
       for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) }
       return entry
@@ -152,7 +152,7 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const fileId = result.data.files?.[0]?.id
   if (!fileId) return
   const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
-  const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean; reviewStatus?: 'not-verified' | 'needs-review' | 'verified' }> }> }
+  const document = response.data as { version?: number; sessions?: Array<{ id?: string; modName?: string; sourceLang?: string; targetLang?: string; entries?: Array<{ uid?: string; source?: string; target?: string; genderTargets?: PwaSyncEntry['genderTargets']; matchType?: PwaSyncEntry['matchType']; needsReview?: boolean; reviewStatus?: 'not-verified' | 'needs-review' | 'verified'; history?: PwaSyncEntry['history'] }> }> }
   if (document.version !== 1 || !Array.isArray(document.sessions)) return
   const sessionsDir = path.join(app.getPath('userData'), 'icosa', 'sessions')
   fs.mkdirSync(sessionsDir, { recursive: true })
@@ -162,7 +162,7 @@ async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const localMods = dbModRows()
   for (const session of document.sessions) {
     if (!session.sourceLang || !session.targetLang || !Array.isArray(session.entries)) continue
-    const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', genderTargets: entry.genderTargets, matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true, reviewStatus: entry.reviewStatus }))
+    const persistedEntries = session.entries.filter((entry) => entry.uid).map((entry) => ({ uid: entry.uid!, target: entry.target ?? '', genderTargets: entry.genderTargets, matchType: entry.matchType ?? 'none', needsReview: entry.needsReview === true, reviewStatus: entry.reviewStatus, history: entry.history }))
     if (session.id && persistedEntries.length > 0) {
       const localMod = localMods.find((modRow) => modRow.name === session.modName)
       const localSessionKey = localMod?.lastFilePath
