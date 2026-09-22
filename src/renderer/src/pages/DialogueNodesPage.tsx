@@ -21,12 +21,20 @@ import { useLocation } from 'react-router-dom'
 import { type GenderVariant, type ReviewStatus, useTranslationSession } from '@/context/TranslationSession'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
-import { type DialogueCategory, getDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
+import { type DialogueCategory, getDialogueGroups as loadDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
 import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
 
 const DIALOGUE_VIEW_STATE_KEY = 'icosa.dialogue-nodes.view'
+const dialogueGroupsCache = new Map<string, ReturnType<typeof loadDialogueGroups>>()
+function getDialogueGroups(source: string): ReturnType<typeof loadDialogueGroups> {
+  const cached = dialogueGroupsCache.get(source)
+  if (cached) return cached
+  const value = loadDialogueGroups(source)
+  dialogueGroupsCache.set(source, value)
+  return value
+}
 type DialogueViewState = {
   activeAct?: string
   selectedKey?: string | null
@@ -36,7 +44,7 @@ type DialogueViewState = {
 function loadDialogueViewState(): DialogueViewState {
   try {
     return JSON.parse(
-      window.localStorage.getItem(DIALOGUE_VIEW_STATE_KEY) ?? '{}'
+      window.sessionStorage.getItem(DIALOGUE_VIEW_STATE_KEY) ?? '{}'
     ) as DialogueViewState
   } catch {
     return {}
@@ -409,13 +417,14 @@ export function DialogueNodesPage(): React.JSX.Element {
     () => new Set(loadDialogueViewState().expandedNodes ?? [])
   )
   useEffect(() => {
-    window.localStorage.setItem(
+    window.sessionStorage.setItem(
       DIALOGUE_VIEW_STATE_KEY,
       JSON.stringify({ activeAct, selectedKey, dialogueSearch, expandedNodes: [...expandedNodes] })
     )
   }, [activeAct, selectedKey, dialogueSearch, expandedNodes])
-  const dialogueEntryIndex = useMemo<DialogueEntryIndex>(() => {
+  const dialogueCatalog = useMemo(() => {
     const index: DialogueEntryIndex = new Map()
+    const choiceMap = new Map<string, Choice>()
     for (const entry of session.entries)
       for (const group of getDialogueGroups(entry.source)) {
         let nodes = index.get(group.dialogue)
@@ -426,37 +435,27 @@ export function DialogueNodesPage(): React.JSX.Element {
         const current = nodes.get(group.node) ?? []
         if (!current.some((item) => item.source === entry.source)) current.push(entry)
         nodes.set(group.node, current)
+        choiceMap.set(`${group.file}:${group.dialogue}`, {
+          category: group.category,
+          subcategory:
+            group.category === 'Act 1'
+              ? /(Act1b|Act 1B|Act1_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 1B' : 'Act 1'
+              : group.category === 'Act 2'
+                ? /(Act2b|Act 2B|Act2_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 2B' : 'Act 2'
+                : group.category === 'Act 3'
+                  ? /(Act3b|Act3i|Act 3B|Act3_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 3B' : 'Act 3'
+                  : group.category,
+          file: group.file,
+          dialogue: group.dialogue
+        })
       }
-    return index
+    return { index, choices: [...choiceMap.values()] }
   }, [session.entries])
+  const dialogueEntryIndex = dialogueCatalog.index
   const choices = useMemo(() => {
     const allowed = new Set(ACTS.find((act) => act.label === activeAct)?.categories ?? [])
-    const result = new Map<string, Choice>()
-    for (const entry of session.entries)
-      for (const group of getDialogueGroups(entry.source)) {
-        if (allowed.has(group.category))
-          result.set(`${group.file}:${group.dialogue}`, {
-            category: group.category,
-            subcategory:
-              group.category === 'Act 1'
-                ? /(Act1b|Act 1B|Act1_B)/i.test(group.file + ' ' + group.dialogue)
-                  ? 'Act 1B'
-                  : 'Act 1'
-                : group.category === 'Act 2'
-                  ? /(Act2b|Act 2B|Act2_B)/i.test(group.file + ' ' + group.dialogue)
-                    ? 'Act 2B'
-                    : 'Act 2'
-                  : group.category === 'Act 3'
-                  ? /(Act3b|Act3i|Act 3B|Act3_B)/i.test(group.file + ' ' + group.dialogue)
-                      ? 'Act 3B'
-                      : 'Act 3'
-                    : group.category,
-            file: group.file,
-            dialogue: group.dialogue
-          })
-      }
-    return [...result.values()].sort((a, b) => a.dialogue.localeCompare(b.dialogue))
-  }, [activeAct, session.entries])
+    return dialogueCatalog.choices.filter((choice) => allowed.has(choice.category)).sort((a, b) => a.dialogue.localeCompare(b.dialogue))
+  }, [activeAct, dialogueCatalog.choices])
   const translatedDialogues = useMemo(() => {
     const translated = new Set<string>()
     for (const choice of choices) {

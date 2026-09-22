@@ -58,14 +58,14 @@ import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import {
   getReferenceDisplayText,
-  getReferenceLinks,
-  getReferenceTags,
+  getReferenceLinks as loadReferenceLinks,
+  getReferenceTags as loadReferenceTags,
   type ReferenceLink,
   type ReferenceTag
 } from '@/data/gameReference'
 import {
   getDialogueFilterTags,
-  getDialogueGroups,
+  getDialogueGroups as loadDialogueGroups,
   getDialogueNodes,
   matchesDialogueFilters,
   matchesDialogueScope,
@@ -91,11 +91,63 @@ function speakerForGroups(groups: Array<{ dialogue: string }>) {
   return unique.length === 1 ? unique[0] : null
 }
 
+// These source-derived values are immutable for the lifetime of a loaded XML.
+// Cache them so review clicks and saves do not re-parse the same source text
+// across the complete translation list.
+const referenceLinksCache = new Map<string, ReferenceLink[]>()
+const referenceTagsCache = new Map<string, ReferenceTag[]>()
+const dialogueGroupsCache = new Map<string, ReturnType<typeof loadDialogueGroups>>()
+
+function getReferenceLinks(source: string): ReferenceLink[] {
+  const cached = referenceLinksCache.get(source)
+  if (cached) return cached
+  const value = loadReferenceLinks(source)
+  referenceLinksCache.set(source, value)
+  return value
+}
+
+function getReferenceTags(source: string): ReferenceTag[] {
+  const cached = referenceTagsCache.get(source)
+  if (cached) return cached
+  const value = loadReferenceTags(source)
+  referenceTagsCache.set(source, value)
+  return value
+}
+
+function getDialogueGroups(source: string): ReturnType<typeof loadDialogueGroups> {
+  const cached = dialogueGroupsCache.get(source)
+  if (cached) return cached
+  const value = loadDialogueGroups(source)
+  dialogueGroupsCache.set(source, value)
+  return value
+}
+
 type ReplaceChange = {
   rowId: string
   variant: GenderVariant
   before: string
   after: string
+}
+
+const TRANSLATE_VIEW_STATE_KEY = 'polyhedron.translate.view'
+type TranslateViewState = {
+  search?: string
+  exactMatch?: boolean
+  showId?: boolean
+  highlightSearchMatches?: boolean
+  speakerFilter?: string
+  reviewFilter?: ReviewStatus | 'all'
+  filter?: FilterMode
+  sortMode?: SortMode
+  currentPage?: number
+}
+
+function loadTranslateViewState(): TranslateViewState {
+  try {
+    return JSON.parse(window.sessionStorage.getItem(TRANSLATE_VIEW_STATE_KEY) ?? '{}') as TranslateViewState
+  } catch {
+    return {}
+  }
 }
 
 interface TranslationGridProps {
@@ -297,27 +349,34 @@ export function TranslationGrid({
     toggleNeedsReview,
     setReviewStatus
   } = session
-  const [search, setSearch] = useState('')
+  const initialViewState = useRef<TranslateViewState | null>(null)
+  if (!initialViewState.current) initialViewState.current = loadTranslateViewState()
+  const savedViewState = initialViewState.current
+  const [search, setSearch] = useState(savedViewState.search ?? '')
   const [replaceOpen, setReplaceOpen] = useState(false)
   const [replaceFind, setReplaceFind] = useState('')
   const [replaceWith, setReplaceWith] = useState('')
   const [replaceUndo, setReplaceUndo] = useState<ReplaceChange[][]>([])
   const [replaceRedo, setReplaceRedo] = useState<ReplaceChange[][]>([])
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [exactMatch, setExactMatch] = useState(false)
+  const [exactMatch, setExactMatch] = useState(savedViewState.exactMatch ?? false)
   const [linkNameDescription] = useState(false)
-  const [showId, setShowId] = useState(false)
-  const [highlightSearchMatches, setHighlightSearchMatches] = useState(true)
+  const [showId, setShowId] = useState(savedViewState.showId ?? false)
+  const [highlightSearchMatches, setHighlightSearchMatches] = useState(savedViewState.highlightSearchMatches ?? true)
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
-  const [speakerFilter, setSpeakerFilter] = useState('all')
-  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>('all')
+  const [speakerFilter, setSpeakerFilter] = useState(savedViewState.speakerFilter ?? 'all')
+  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>(savedViewState.reviewFilter ?? 'all')
   const speakerCacheRef = useRef<Map<string, ReturnType<typeof speakerForGroups>>>(new Map())
-  const [filter, setFilter] = useState<FilterMode>('all')
-  const [sortMode, setSortMode] = useState<SortMode>('default')
+  const [filter, setFilter] = useState<FilterMode>(savedViewState.filter ?? 'all')
+  const [sortMode, setSortMode] = useState<SortMode>(savedViewState.sortMode ?? 'default')
+  const [currentPage, setCurrentPage] = useState(savedViewState.currentPage ?? 1)
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
+  useEffect(() => {
+    window.sessionStorage.setItem(TRANSLATE_VIEW_STATE_KEY, JSON.stringify({ search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, sortMode, currentPage } satisfies TranslateViewState))
+  }, [search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, sortMode, currentPage])
   useEffect(() => {
     const handle = window.setTimeout(() => setDebouncedSearch(search), 140)
     return () => window.clearTimeout(handle)
@@ -355,7 +414,6 @@ export function TranslationGrid({
     }
   }, [config])
   const [mobilePageMenuOpen, setMobilePageMenuOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
   const [stickyRowIds, setStickyRowIds] = useState<Set<string>>(() => new Set())
   const [editingRowId, setEditingRowId] = useState<string | null>(null)
   const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
