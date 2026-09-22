@@ -118,11 +118,7 @@ export function EditorHeader({
             title={t('editor.saveGlossary')}
             aria-label={t('editor.saveGlossary')}
           >
-            {isSaving ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <BookOpenCheck />
-            )}
+            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <BookOpenCheck />}
           </button>
 
           <button

@@ -30,14 +30,7 @@ import {
   UserRound,
   X
 } from 'lucide-react'
-import {
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition
-} from 'react'
+import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
@@ -78,7 +71,14 @@ import { getItemTags } from '@/data/armorReference'
 import { renderSource } from '@/utils/renderSource'
 
 type TranslationCategory = 'dictionary' | 'tool' | 'manual' | 'none'
-type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'brackets' | 'needs-review'
+type FilterMode =
+  | 'all'
+  | 'untranslated'
+  | 'translated'
+  | 'dictionary'
+  | 'tags'
+  | 'brackets'
+  | 'needs-review'
 type XmlTagFilter = 'all' | 'untranslated' | 'translated'
 type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
@@ -88,7 +88,12 @@ type OnlineNodeMeta = {
 }
 
 function speakerForGroups(groups: Array<{ dialogue: string }>) {
-  const speakers = groups.map((group) => getSpeakerForDialogue(group.dialogue)).filter((speaker): speaker is NonNullable<ReturnType<typeof getSpeakerForDialogue>> => speaker !== null)
+  const speakers = groups
+    .map((group) => getSpeakerForDialogue(group.dialogue))
+    .filter(
+      (speaker): speaker is NonNullable<ReturnType<typeof getSpeakerForDialogue>> =>
+        speaker !== null
+    )
   const unique = [...new Map(speakers.map((speaker) => [speaker.name, speaker])).values()]
   return unique.length === 1 ? unique[0] : null
 }
@@ -148,7 +153,9 @@ type TranslateViewState = {
 
 function loadTranslateViewState(): TranslateViewState {
   try {
-    return JSON.parse(window.sessionStorage.getItem(TRANSLATE_VIEW_STATE_KEY) ?? '{}') as TranslateViewState
+    return JSON.parse(
+      window.sessionStorage.getItem(TRANSLATE_VIEW_STATE_KEY) ?? '{}'
+    ) as TranslateViewState
   } catch {
     return {}
   }
@@ -198,7 +205,10 @@ function replaceLiteral(value: string, find: string, replacement: string, all: b
   return count === 0 ? value : result + value.slice(from)
 }
 
-function getDialogueSpeaker(source: string, node: { details: string[]; next: string[] }): string | null {
+function getDialogueSpeaker(
+  source: string,
+  node: { details: string[]; next: string[] }
+): string | null {
   if (source.trim().startsWith('*') && source.trim().endsWith('*')) return 'Narrator'
   if (/\[GEN_PlayerName_[^\]]+\]/i.test(source)) return 'Tav'
   const metadata = node.details.join(' ')
@@ -223,7 +233,10 @@ function getSpeakerBorderClass(speaker: string | null): string {
   ][hash % 7]
 }
 
-function getDialogueKind(source: string, node: { details: string[]; next: string[] }): 'Question' | 'Answer' | 'Cinematic' | 'Technical' {
+function getDialogueKind(
+  source: string,
+  node: { details: string[]; next: string[] }
+): 'Question' | 'Answer' | 'Cinematic' | 'Technical' {
   const metadata = node.details.join(' ').toLowerCase()
   if (/\[GEN_PlayerName_[^\]]+\]/i.test(source)) return 'Question'
   if (!source.trim()) return /cinematic/.test(metadata) ? 'Cinematic' : 'Technical'
@@ -375,23 +388,58 @@ export function TranslationGrid({
   const [exactMatch, setExactMatch] = useState(savedViewState.exactMatch ?? false)
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(savedViewState.showId ?? false)
-  const [highlightSearchMatches, setHighlightSearchMatches] = useState(savedViewState.highlightSearchMatches ?? true)
+  const [highlightSearchMatches, setHighlightSearchMatches] = useState(
+    savedViewState.highlightSearchMatches ?? true
+  )
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
   const [dialogueScope, setDialogueScope] = useState<DialogueScope | null>(null)
   const [speakerFilter, setSpeakerFilter] = useState(savedViewState.speakerFilter ?? 'all')
-  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>(savedViewState.reviewFilter ?? 'all')
+  const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>(
+    savedViewState.reviewFilter ?? 'all'
+  )
   const speakerCacheRef = useRef<Map<string, ReturnType<typeof speakerForGroups>>>(new Map())
   const [filter, setFilter] = useState<FilterMode>(savedViewState.filter ?? 'all')
-  const [xmlTagFilter, setXmlTagFilter] = useState<XmlTagFilter>(savedViewState.xmlTagFilter ?? 'all')
-  const [bracketFilter, setBracketFilter] = useState<BracketFilter>(savedViewState.bracketFilter ?? 'all')
+  const [xmlTagFilter, setXmlTagFilter] = useState<XmlTagFilter>(
+    savedViewState.xmlTagFilter ?? 'all'
+  )
+  const [bracketFilter, setBracketFilter] = useState<BracketFilter>(
+    savedViewState.bracketFilter ?? 'all'
+  )
   const [sortMode, setSortMode] = useState<SortMode>(savedViewState.sortMode ?? 'default')
   const [currentPage, setCurrentPage] = useState(savedViewState.currentPage ?? 1)
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
   useEffect(() => {
-    window.sessionStorage.setItem(TRANSLATE_VIEW_STATE_KEY, JSON.stringify({ search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, xmlTagFilter, bracketFilter, sortMode, currentPage } satisfies TranslateViewState))
-  }, [search, exactMatch, showId, highlightSearchMatches, speakerFilter, reviewFilter, filter, xmlTagFilter, bracketFilter, sortMode, currentPage])
+    window.sessionStorage.setItem(
+      TRANSLATE_VIEW_STATE_KEY,
+      JSON.stringify({
+        search,
+        exactMatch,
+        showId,
+        highlightSearchMatches,
+        speakerFilter,
+        reviewFilter,
+        filter,
+        xmlTagFilter,
+        bracketFilter,
+        sortMode,
+        currentPage
+      } satisfies TranslateViewState)
+    )
+  }, [
+    search,
+    exactMatch,
+    showId,
+    highlightSearchMatches,
+    speakerFilter,
+    reviewFilter,
+    filter,
+    xmlTagFilter,
+    bracketFilter,
+    sortMode,
+    currentPage
+  ])
   useEffect(() => {
     const handle = window.setTimeout(() => setDebouncedSearch(search), 140)
     return () => window.clearTimeout(handle)
@@ -490,13 +538,20 @@ export function TranslationGrid({
       if (deferredFilter === 'translated' && !entry.target.trim()) return false
       if (deferredFilter === 'dictionary' && getCategory(entry) !== 'dictionary') return false
       if (deferredFilter === 'tags' && !hasXmlTags(entry)) return false
-      if (deferredFilter === 'tags' && xmlTagFilter === 'untranslated' && entry.target.trim()) return false
-      if (deferredFilter === 'tags' && xmlTagFilter === 'translated' && !entry.target.trim()) return false
+      if (deferredFilter === 'tags' && xmlTagFilter === 'untranslated' && entry.target.trim())
+        return false
+      if (deferredFilter === 'tags' && xmlTagFilter === 'translated' && !entry.target.trim())
+        return false
       if (deferredFilter === 'brackets' && !hasSquareBracketPlaceholder(entry)) return false
-      if (deferredFilter === 'brackets' && bracketFilter === 'untranslated' && entry.target.trim()) return false
-      if (deferredFilter === 'brackets' && bracketFilter === 'translated' && !entry.target.trim()) return false
+      if (deferredFilter === 'brackets' && bracketFilter === 'untranslated' && entry.target.trim())
+        return false
+      if (deferredFilter === 'brackets' && bracketFilter === 'translated' && !entry.target.trim())
+        return false
       if (deferredFilter === 'needs-review' && !entry.needsReview) return false
-      if (deferredReferenceTag !== 'all' && !getReferenceTags(entry.source).includes(deferredReferenceTag)) {
+      if (
+        deferredReferenceTag !== 'all' &&
+        !getReferenceTags(entry.source).includes(deferredReferenceTag)
+      ) {
         return false
       }
       if (!matchesDialogueFilters(entry.source, deferredDialogueFilters)) return false
@@ -509,7 +564,9 @@ export function TranslationGrid({
         }
         if (!speaker || speaker.name !== speakerFilter) return false
       }
-      const entryReviewStatus: ReviewStatus = !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
+      const entryReviewStatus: ReviewStatus = !entry.target.trim()
+        ? 'untranslated'
+        : (entry.reviewStatus ?? 'needs-review')
       if (reviewFilter !== 'all' && entryReviewStatus !== reviewFilter) return false
       return true
     })
@@ -517,16 +574,20 @@ export function TranslationGrid({
 
     // Group identical source strings first, then sort the groups. Sorting every
     // row individually is needlessly expensive for large localization files.
-    const groups = new Map<string, { source: string; entries: TranslationSessionEntry[]; firstIndex: number; count: number }>()
+    const groups = new Map<
+      string,
+      { source: string; entries: TranslationSessionEntry[]; firstIndex: number; count: number }
+    >()
     matchingEntries.forEach((entry, index) => {
       const existing = groups.get(entry.source)
       if (existing) existing.entries.push(entry)
-      else groups.set(entry.source, {
-        source: entry.source,
-        entries: [entry],
-        firstIndex: index,
-        count: sourceFrequencies.get(entry.source) ?? 1
-      })
+      else
+        groups.set(entry.source, {
+          source: entry.source,
+          entries: [entry],
+          firstIndex: index,
+          count: sourceFrequencies.get(entry.source) ?? 1
+        })
     })
     return Array.from(groups.values())
       .sort((a, b) => {
@@ -558,7 +619,20 @@ export function TranslationGrid({
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [sortMode, deferredExactMatch, deferredFilter, deferredLinkNameDescription, deferredReferenceTag, deferredDialogueFilters, dialogueScope, speakerFilter, reviewFilter, effectiveSearch, xmlTagFilter, bracketFilter])
+  }, [
+    sortMode,
+    deferredExactMatch,
+    deferredFilter,
+    deferredLinkNameDescription,
+    deferredReferenceTag,
+    deferredDialogueFilters,
+    dialogueScope,
+    speakerFilter,
+    reviewFilter,
+    effectiveSearch,
+    xmlTagFilter,
+    bracketFilter
+  ])
 
   // clear selection and sticky rows when filter or search changes
   useEffect(() => {
@@ -671,10 +745,18 @@ export function TranslationGrid({
     for (const entry of replacementEntries) {
       const target = replaceLiteral(entry.target, find, replaceWith, all)
       if (target !== entry.target) {
-        changes.push({ rowId: entry.rowId, variant: 'default', before: entry.target, after: target })
+        changes.push({
+          rowId: entry.rowId,
+          variant: 'default',
+          before: entry.target,
+          after: target
+        })
         updateEntryTarget(entry, target)
         changed += 1
-        if (!all) { done = true; break }
+        if (!all) {
+          done = true
+          break
+        }
       }
       if (entry.genderTargets) {
         for (const variant of ['female', 'neutral'] as const) {
@@ -685,7 +767,10 @@ export function TranslationGrid({
             session.updateGenderVariant(entry.rowId, variant, next)
             onEntryManualEdit(entry.rowId)
             changed += 1
-            if (!all) { done = true; break }
+            if (!all) {
+              done = true
+              break
+            }
           }
         }
       }
@@ -694,9 +779,10 @@ export function TranslationGrid({
     if (changed > 0) {
       setReplaceUndo((history) => [...history, changes])
       setReplaceRedo([])
-      toast.success(`${all ? 'Replaced in' : 'Replaced'} ${changed} ${changed === 1 ? 'translation' : 'translations'}`)
-    }
-    else toast.info('No matching text found in translations')
+      toast.success(
+        `${all ? 'Replaced in' : 'Replaced'} ${changed} ${changed === 1 ? 'translation' : 'translations'}`
+      )
+    } else toast.info('No matching text found in translations')
   }
 
   const applyReplaceChanges = (changes: ReplaceChange[], useAfter: boolean) => {
@@ -769,17 +855,23 @@ export function TranslationGrid({
     })
   }
 
-   const selectedGenderVariant = (entry: TranslationSessionEntry): GenderVariant => genderVariants[entry.rowId] ?? entry.genderVariant ?? "default"
+  const selectedGenderVariant = (entry: TranslationSessionEntry): GenderVariant =>
+    genderVariants[entry.rowId] ?? entry.genderVariant ?? 'default'
 
   const genderValue = (entry: TranslationSessionEntry): string => {
     const variant = selectedGenderVariant(entry)
-    return variant === "default" || entry.genderVariant === variant ? entry.target : (entry.genderTargets?.[variant] ?? "")
+    return variant === 'default' || entry.genderVariant === variant
+      ? entry.target
+      : (entry.genderTargets?.[variant] ?? '')
   }
 
   const updateGenderValue = (entry: TranslationSessionEntry, value: string) => {
     const variant = selectedGenderVariant(entry)
-    if (variant === "default" || entry.genderVariant === variant) updateEntryTarget(entry, value)
-    else if (value !== (entry.genderTargets?.[variant] ?? "")) { session.updateGenderVariant(entry.rowId, variant, value); onEntryManualEdit(entry.rowId) }
+    if (variant === 'default' || entry.genderVariant === variant) updateEntryTarget(entry, value)
+    else if (value !== (entry.genderTargets?.[variant] ?? '')) {
+      session.updateGenderVariant(entry.rowId, variant, value)
+      onEntryManualEdit(entry.rowId)
+    }
   }
 
   const reviewStatus = (entry: TranslationSessionEntry): ReviewStatus =>
@@ -787,18 +879,99 @@ export function TranslationGrid({
 
   const renderReviewStatusControls = (entry: TranslationSessionEntry) => {
     const status = reviewStatus(entry)
-    const options: Array<{ value: ReviewStatus; title: string; icon: typeof CircleX; active: string; idle: string }> = [
-      { value: 'untranslated', title: 'Untranslated', icon: CircleDashed, active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200', idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10' },
-      { value: 'not-verified', title: 'Not verified', icon: CircleX, active: 'border-red-400/60 bg-red-500/15 text-red-300', idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10' },
-      { value: 'needs-review', title: 'Needs review', icon: CircleAlert, active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300', idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10' },
-      { value: 'verified', title: 'Verified', icon: CircleCheck, active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300', idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10' }
+    const options: Array<{
+      value: ReviewStatus
+      title: string
+      icon: typeof CircleX
+      active: string
+      idle: string
+    }> = [
+      {
+        value: 'untranslated',
+        title: 'Untranslated',
+        icon: CircleDashed,
+        active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200',
+        idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10'
+      },
+      {
+        value: 'not-verified',
+        title: 'Not verified',
+        icon: CircleX,
+        active: 'border-red-400/60 bg-red-500/15 text-red-300',
+        idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10'
+      },
+      {
+        value: 'needs-review',
+        title: 'Needs review',
+        icon: CircleAlert,
+        active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300',
+        idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10'
+      },
+      {
+        value: 'verified',
+        title: 'Verified',
+        icon: CircleCheck,
+        active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300',
+        idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10'
+      }
     ]
-    return <div className="contents">{options.map((option) => { const Icon = option.icon; return <button key={option.value} type="button" title={option.title} aria-label={`${option.title} translation`} onClick={(event) => { event.stopPropagation(); setReviewStatus(entry.rowId, option.value) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', status === option.value ? option.active : option.idle)}><Icon size={13} /></button> })}</div>
+    return (
+      <div className="contents">
+        {options.map((option) => {
+          const Icon = option.icon
+          return (
+            <button
+              key={option.value}
+              type="button"
+              title={option.title}
+              aria-label={`${option.title} translation`}
+              onClick={(event) => {
+                event.stopPropagation()
+                setReviewStatus(entry.rowId, option.value)
+              }}
+              className={cn(
+                'inline-flex h-6 w-6 items-center justify-center rounded border transition-colors',
+                status === option.value ? option.active : option.idle
+              )}
+            >
+              <Icon size={13} />
+            </button>
+          )
+        })}
+      </div>
+    )
   }
 
   const renderGenderControls = (entry: TranslationSessionEntry) => {
     const variant = selectedGenderVariant(entry)
-    return <div className="contents">{(["default", "female", "neutral"] as GenderVariant[]).map((item) => { const value = item === "default" || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ""); return <span key={item} className="inline-flex items-center gap-1"><button type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={cn("inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase", variant === item ? "border-amber-500/40 bg-amber-500/10 text-amber-300" : "border-[#1f2329] text-neutral-600 hover:text-neutral-400")}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button></span> })}</div>
+    return (
+      <div className="contents">
+        {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => {
+          const value =
+            item === 'default' || entry.genderVariant === item
+              ? entry.target
+              : (entry.genderTargets?.[item] ?? '')
+          return (
+            <span key={item} className="inline-flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() =>
+                  setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))
+                }
+                className={cn(
+                  'inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase',
+                  variant === item
+                    ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+                    : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'
+                )}
+              >
+                {value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}
+              </button>
+            </span>
+          )
+        })}
+      </div>
+    )
   }
 
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
@@ -839,7 +1012,16 @@ export function TranslationGrid({
   )
 
   const renderHistoryButton = (entry: TranslationSessionEntry) => (
-    <button type="button" title="History of changes" aria-label="History of changes" onClick={(event) => { event.stopPropagation(); setHistoryEntry(entry) }} className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-amber-500/60 hover:text-amber-400">
+    <button
+      type="button"
+      title="History of changes"
+      aria-label="History of changes"
+      onClick={(event) => {
+        event.stopPropagation()
+        setHistoryEntry(entry)
+      }}
+      className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-amber-500/60 hover:text-amber-400"
+    >
       <History size={12} />
     </button>
   )
@@ -858,7 +1040,14 @@ export function TranslationGrid({
       onClose={() => setAiEntry(null)}
     />
   )
-  const historyModal = historyEntry && <TranslationHistoryDialog source={historyEntry.source} history={historyEntry.history ?? []} onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)} onClose={() => setHistoryEntry(null)} />
+  const historyModal = historyEntry && (
+    <TranslationHistoryDialog
+      source={historyEntry.source}
+      history={historyEntry.history ?? []}
+      onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)}
+      onClose={() => setHistoryEntry(null)}
+    />
+  )
 
   const dialogueEntries = useMemo(() => {
     if (!dialogueKey) return []
@@ -948,7 +1137,11 @@ export function TranslationGrid({
     if (!Array.isArray(result)) return
     const next: Record<string, OnlineNodeMeta> = {}
     for (const item of result as Array<{ nodeId?: unknown; kind?: unknown; speaker?: unknown }>) {
-      if (!item.nodeId || !['Question', 'Answer', 'Cinematic', 'Technical'].includes(String(item.kind))) continue
+      if (
+        !item.nodeId ||
+        !['Question', 'Answer', 'Cinematic', 'Technical'].includes(String(item.kind))
+      )
+        continue
       next[String(item.nodeId)] = {
         kind: String(item.kind) as OnlineNodeMeta['kind'],
         speaker: typeof item.speaker === 'string' && item.speaker ? item.speaker : null
@@ -1061,13 +1254,21 @@ export function TranslationGrid({
   }, [dialogueKey, showLiveGraph])
 
   const dialogueModal = dialogueKey && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6" role="dialog" aria-modal="true">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
+      role="dialog"
+      aria-modal="true"
+    >
       <div className="flex h-[88vh] max-h-[920px] w-full max-w-[1500px] flex-col overflow-hidden rounded-xl border border-[#2a2f37] bg-[#0f1114] shadow-2xl">
         <div className="flex shrink-0 items-center gap-3 border-b border-[#1f2329] px-5 py-3">
           <GitBranch size={16} className="text-cyan-300" />
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold text-neutral-100">{dialogueKey.dialogue}</div>
-            <div className="truncate font-mono text-[10px] text-neutral-500">{dialogueKey.file}</div>
+            <div className="truncate text-sm font-semibold text-neutral-100">
+              {dialogueKey.dialogue}
+            </div>
+            <div className="truncate font-mono text-[10px] text-neutral-500">
+              {dialogueKey.file}
+            </div>
           </div>
           <span className="rounded bg-cyan-500/12 px-2 py-1 font-mono text-[10px] text-cyan-300">
             {dialogueEntries.length} strings
@@ -1097,11 +1298,20 @@ export function TranslationGrid({
           >
             Show in strings
           </button>
-          <button type="button" className="inline-flex h-7 cursor-pointer items-center rounded border border-[#1f2329] bg-[#131518] px-2 text-xs font-medium text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200" onClick={() => setDialogueKey(null)}>
+          <button
+            type="button"
+            className="inline-flex h-7 cursor-pointer items-center rounded border border-[#1f2329] bg-[#131518] px-2 text-xs font-medium text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+            onClick={() => setDialogueKey(null)}
+          >
             <X size={13} />
           </button>
         </div>
-        <div className={cn('grid min-h-0 flex-1', showLiveGraph ? 'grid-cols-1 gap-3 p-3 xl:grid-cols-2' : 'grid-cols-1')}>
+        <div
+          className={cn(
+            'grid min-h-0 flex-1',
+            showLiveGraph ? 'grid-cols-1 gap-3 p-3 xl:grid-cols-2' : 'grid-cols-1'
+          )}
+        >
           {showLiveGraph && (
             <div className="min-h-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
               <webview
@@ -1113,160 +1323,201 @@ export function TranslationGrid({
               />
             </div>
           )}
-        <div className="icosa-scroll min-h-0 overflow-y-auto p-3">
-          {dialogueChoices.length > 1 && (
-            <div className="mb-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-[#1f2329] bg-[#131518] p-2">
-              <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">Related dialogues</span>
-              {dialogueChoices.map((choice) => (
-                <button
-                  key={`${choice.file}:${choice.dialogue}`}
-                  type="button"
-                  onClick={() => setDialogueKey(choice)}
-                  className={cn(
-                    'cursor-pointer rounded px-2 py-1 font-mono text-[10px] transition-colors',
-                    choice.dialogue === dialogueKey.dialogue
-                      ? 'bg-cyan-500/15 text-cyan-300'
-                      : 'bg-[#0c0d0f] text-neutral-500 hover:text-neutral-200'
-                  )}
-                >
-                  {choice.dialogue}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="space-y-3">
-            {dialogueNodes.map((node, index) => {
-              const nodeEntries = dialogueEntries.filter((entry) =>
-                getDialogueGroups(entry.source).some(
-                  (group) =>
-                    group.file === dialogueKey.file &&
-                    group.dialogue === dialogueKey.dialogue &&
-                    group.node === node.node
-                )
-              )
-              const uniqueNodeEntries = [...new Map(nodeEntries.map((entry) => [entry.source, entry])).values()]
-              const representativeSource = uniqueNodeEntries[0]?.source ?? ''
-              const nodeKind = uniqueNodeEntries.some((entry) => getDialogueKind(entry.source, node) === 'Question')
-                ? 'Question'
-                : uniqueNodeEntries.some((entry) => getDialogueKind(entry.source, node) === 'Cinematic')
-                  ? 'Cinematic'
-                  : uniqueNodeEntries.some((entry) => getDialogueKind(entry.source, node) === 'Answer')
-                    ? 'Answer'
-                    : getDialogueKind(representativeSource, node)
-              const nodeSpeaker = uniqueNodeEntries
-                .map((entry) => getDialogueSpeaker(entry.source, node))
-                .find(Boolean) ?? null
-              const onlineMeta = onlineNodeMeta[node.node]
-              const representativeHasText = Boolean(representativeSource.trim())
-              const trustedOnlineMeta = onlineMeta && (!representativeHasText || (onlineMeta.kind !== 'Cinematic' && onlineMeta.kind !== 'Technical'))
-                ? onlineMeta
-                : undefined
-              const resolvedNodeKind = trustedOnlineMeta?.kind ?? nodeKind
-              const resolvedNodeSpeaker = trustedOnlineMeta?.speaker ?? nodeSpeaker
-              return (
-                <div id={`dialogue-node-${node.node}`} key={node.node} className={cn(
-                  'rounded-lg border bg-[#131518] p-3',
-                  getSpeakerBorderClass(resolvedNodeSpeaker),
-                  resolvedNodeKind === 'Question'
-                    ? 'shadow-[inset_3px_0_0_rgba(96,165,250,0.7)]'
-                    : resolvedNodeKind === 'Answer'
-                      ? 'shadow-[inset_3px_0_0_rgba(74,222,128,0.7)]'
-                      : resolvedNodeKind === 'Cinematic'
-                        ? 'shadow-[inset_3px_0_0_rgba(192,132,252,0.7)]'
-                        : 'shadow-[inset_3px_0_0_rgba(75,85,99,0.9)]'
-                )}>
-                  <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-neutral-500">
-                    <span className="text-cyan-300">Node {index + 1}</span>
-                    <span>{node.node}</span>
-                    {node.next.length > 0 && (
-                      <span className="flex flex-wrap items-center gap-1 text-neutral-600">
-                        →
-                        {node.next.map((id) => (
-                          <button
-                            key={id}
-                            type="button"
-                            onClick={() => document.getElementById(`dialogue-node-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                            className="cursor-pointer rounded bg-cyan-500/10 px-1.5 py-0.5 text-cyan-300 hover:bg-cyan-500/20"
-                          >
-                            {id.slice(0, 8)}
-                          </button>
-                        ))}
-                      </span>
+          <div className="icosa-scroll min-h-0 overflow-y-auto p-3">
+            {dialogueChoices.length > 1 && (
+              <div className="mb-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-[#1f2329] bg-[#131518] p-2">
+                <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
+                  Related dialogues
+                </span>
+                {dialogueChoices.map((choice) => (
+                  <button
+                    key={`${choice.file}:${choice.dialogue}`}
+                    type="button"
+                    onClick={() => setDialogueKey(choice)}
+                    className={cn(
+                      'cursor-pointer rounded px-2 py-1 font-mono text-[10px] transition-colors',
+                      choice.dialogue === dialogueKey.dialogue
+                        ? 'bg-cyan-500/15 text-cyan-300'
+                        : 'bg-[#0c0d0f] text-neutral-500 hover:text-neutral-200'
                     )}
-                  </div>
-                  {node.details.length > 0 && (
-                    <div className="mb-2 space-y-1 rounded border border-[#1f2329] bg-[#0c0d0f] px-2 py-1.5 font-mono text-[10px] leading-4 text-neutral-500">
-                      {node.details.map((detail, detailIndex) => (
-                        <div key={`${node.node}:detail:${detailIndex}`}>{detail}</div>
-                      ))}
+                  >
+                    {choice.dialogue}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="space-y-3">
+              {dialogueNodes.map((node, index) => {
+                const nodeEntries = dialogueEntries.filter((entry) =>
+                  getDialogueGroups(entry.source).some(
+                    (group) =>
+                      group.file === dialogueKey.file &&
+                      group.dialogue === dialogueKey.dialogue &&
+                      group.node === node.node
+                  )
+                )
+                const uniqueNodeEntries = [
+                  ...new Map(nodeEntries.map((entry) => [entry.source, entry])).values()
+                ]
+                const representativeSource = uniqueNodeEntries[0]?.source ?? ''
+                const nodeKind = uniqueNodeEntries.some(
+                  (entry) => getDialogueKind(entry.source, node) === 'Question'
+                )
+                  ? 'Question'
+                  : uniqueNodeEntries.some(
+                        (entry) => getDialogueKind(entry.source, node) === 'Cinematic'
+                      )
+                    ? 'Cinematic'
+                    : uniqueNodeEntries.some(
+                          (entry) => getDialogueKind(entry.source, node) === 'Answer'
+                        )
+                      ? 'Answer'
+                      : getDialogueKind(representativeSource, node)
+                const nodeSpeaker =
+                  uniqueNodeEntries
+                    .map((entry) => getDialogueSpeaker(entry.source, node))
+                    .find(Boolean) ?? null
+                const onlineMeta = onlineNodeMeta[node.node]
+                const representativeHasText = Boolean(representativeSource.trim())
+                const trustedOnlineMeta =
+                  onlineMeta &&
+                  (!representativeHasText ||
+                    (onlineMeta.kind !== 'Cinematic' && onlineMeta.kind !== 'Technical'))
+                    ? onlineMeta
+                    : undefined
+                const resolvedNodeKind = trustedOnlineMeta?.kind ?? nodeKind
+                const resolvedNodeSpeaker = trustedOnlineMeta?.speaker ?? nodeSpeaker
+                return (
+                  <div
+                    id={`dialogue-node-${node.node}`}
+                    key={node.node}
+                    className={cn(
+                      'rounded-lg border bg-[#131518] p-3',
+                      getSpeakerBorderClass(resolvedNodeSpeaker),
+                      resolvedNodeKind === 'Question'
+                        ? 'shadow-[inset_3px_0_0_rgba(96,165,250,0.7)]'
+                        : resolvedNodeKind === 'Answer'
+                          ? 'shadow-[inset_3px_0_0_rgba(74,222,128,0.7)]'
+                          : resolvedNodeKind === 'Cinematic'
+                            ? 'shadow-[inset_3px_0_0_rgba(192,132,252,0.7)]'
+                            : 'shadow-[inset_3px_0_0_rgba(75,85,99,0.9)]'
+                    )}
+                  >
+                    <div className="mb-2 flex flex-wrap items-center gap-2 font-mono text-[10px] text-neutral-500">
+                      <span className="text-cyan-300">Node {index + 1}</span>
+                      <span>{node.node}</span>
+                      {node.next.length > 0 && (
+                        <span className="flex flex-wrap items-center gap-1 text-neutral-600">
+                          →
+                          {node.next.map((id) => (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() =>
+                                document
+                                  .getElementById(`dialogue-node-${id}`)
+                                  ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                              }
+                              className="cursor-pointer rounded bg-cyan-500/10 px-1.5 py-0.5 text-cyan-300 hover:bg-cyan-500/20"
+                            >
+                              {id.slice(0, 8)}
+                            </button>
+                          ))}
+                        </span>
+                      )}
                     </div>
-                  )}
-                  {nodeEntries.length === 0 ? (
-                    <div className="text-xs italic text-neutral-600">No matching localization string</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {uniqueNodeEntries.map((entry) => (
-                        <div key={entry.rowId} className="grid grid-cols-1 gap-3 p-2 md:grid-cols-2">
-                          <div>
-                            <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                              <span className={cn(
-                                'inline-flex rounded border px-1.5 py-0.5 text-[10px] font-semibold',
-                                (trustedOnlineMeta?.kind ?? getDialogueKind(entry.source, node)) === 'Question'
-                                  ? 'border-blue-400/30 bg-blue-500/15 text-blue-300'
-                                  : (trustedOnlineMeta?.kind ?? getDialogueKind(entry.source, node)) === 'Cinematic'
-                                    ? 'border-purple-400/30 bg-purple-500/15 text-purple-300'
-                                    : (trustedOnlineMeta?.kind ?? getDialogueKind(entry.source, node)) === 'Technical'
-                                      ? 'border-neutral-700 bg-neutral-800 text-neutral-400'
-                                      : 'border-emerald-400/30 bg-emerald-500/15 text-emerald-300'
-                              )}>
-                                {trustedOnlineMeta?.kind ?? getDialogueKind(entry.source, node)}
-                              </span>
-                              {(trustedOnlineMeta?.speaker ?? getDialogueSpeaker(entry.source, node)) && (
-                                <span className="inline-flex rounded border border-cyan-400/25 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300">
-                                  Speaker: {trustedOnlineMeta?.speaker ?? getDialogueSpeaker(entry.source, node)}
+                    {node.details.length > 0 && (
+                      <div className="mb-2 space-y-1 rounded border border-[#1f2329] bg-[#0c0d0f] px-2 py-1.5 font-mono text-[10px] leading-4 text-neutral-500">
+                        {node.details.map((detail, detailIndex) => (
+                          <div key={`${node.node}:detail:${detailIndex}`}>{detail}</div>
+                        ))}
+                      </div>
+                    )}
+                    {nodeEntries.length === 0 ? (
+                      <div className="text-xs italic text-neutral-600">
+                        No matching localization string
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {uniqueNodeEntries.map((entry) => (
+                          <div
+                            key={entry.rowId}
+                            className="grid grid-cols-1 gap-3 p-2 md:grid-cols-2"
+                          >
+                            <div>
+                              <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                                <span
+                                  className={cn(
+                                    'inline-flex rounded border px-1.5 py-0.5 text-[10px] font-semibold',
+                                    (trustedOnlineMeta?.kind ??
+                                      getDialogueKind(entry.source, node)) === 'Question'
+                                      ? 'border-blue-400/30 bg-blue-500/15 text-blue-300'
+                                      : (trustedOnlineMeta?.kind ??
+                                            getDialogueKind(entry.source, node)) === 'Cinematic'
+                                        ? 'border-purple-400/30 bg-purple-500/15 text-purple-300'
+                                        : (trustedOnlineMeta?.kind ??
+                                              getDialogueKind(entry.source, node)) === 'Technical'
+                                          ? 'border-neutral-700 bg-neutral-800 text-neutral-400'
+                                          : 'border-emerald-400/30 bg-emerald-500/15 text-emerald-300'
+                                  )}
+                                >
+                                  {trustedOnlineMeta?.kind ?? getDialogueKind(entry.source, node)}
                                 </span>
-                              )}
-                            </div>
-                            <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
-                              Source
+                                {(trustedOnlineMeta?.speaker ??
+                                  getDialogueSpeaker(entry.source, node)) && (
+                                  <span className="inline-flex rounded border border-cyan-400/25 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300">
+                                    Speaker:{' '}
+                                    {trustedOnlineMeta?.speaker ??
+                                      getDialogueSpeaker(entry.source, node)}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
+                                Source
+                                <button
+                                  type="button"
+                                  aria-label="Copy source"
+                                  title="Copy source"
+                                  onClick={(event) => handleCopySource(event, entry.source)}
+                                  className="inline-flex h-5 cursor-pointer items-center rounded px-1.5 text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-200"
+                                >
+                                  <Copy size={11} />
+                                </button>
+                              </div>
+                              <div className="text-xs leading-5 text-neutral-200">
+                                {entry.source}
+                              </div>
                               <button
                                 type="button"
-                                aria-label="Copy source"
-                                title="Copy source"
-                                onClick={(event) => handleCopySource(event, entry.source)}
-                                className="inline-flex h-5 cursor-pointer items-center rounded px-1.5 text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-200"
+                                onClick={() => focusOnlineNode(node.node, entry.source)}
+                                className="mt-1.5 inline-flex h-6 cursor-pointer items-center rounded border border-cyan-500/20 bg-cyan-500/8 px-2 text-[10px] font-medium text-cyan-300 transition-colors hover:bg-cyan-500/15"
                               >
-                                <Copy size={11} />
+                                Show in graph
                               </button>
                             </div>
-                            <div className="text-xs leading-5 text-neutral-200">{entry.source}</div>
-                            <button
-                              type="button"
-                              onClick={() => focusOnlineNode(node.node, entry.source)}
-                              className="mt-1.5 inline-flex h-6 cursor-pointer items-center rounded border border-cyan-500/20 bg-cyan-500/8 px-2 text-[10px] font-medium text-cyan-300 transition-colors hover:bg-cyan-500/15"
-                            >
-                              Show in graph
-                            </button>
+                            <div>
+                              <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-500/70">
+                                Translation
+                              </div>
+                              <textarea
+                                defaultValue={entry.target}
+                                onBlur={(event) =>
+                                  updateDialogueTarget(entry, event.currentTarget.value)
+                                }
+                                placeholder="Translate here..."
+                                rows={2}
+                                className="min-h-14 w-full resize-y rounded border border-[#2a2f37] bg-[#0c0d0f] px-2 py-1.5 text-xs leading-5 text-amber-200 outline-none transition-colors focus:border-amber-500/60"
+                              />
+                            </div>
                           </div>
-                          <div>
-                            <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-500/70">Translation</div>
-                            <textarea
-                              defaultValue={entry.target}
-                              onBlur={(event) => updateDialogueTarget(entry, event.currentTarget.value)}
-                              placeholder="Translate here..."
-                              rows={2}
-                              className="min-h-14 w-full resize-y rounded border border-[#2a2f37] bg-[#0c0d0f] px-2 py-1.5 text-xs leading-5 text-amber-200 outline-none transition-colors focus:border-amber-500/60"
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -1322,7 +1573,7 @@ export function TranslationGrid({
                 key={size}
                 type="button"
                 role="menuitem"
-                className={cn(size === pageSize && "is-selected")}
+                className={cn(size === pageSize && 'is-selected')}
                 onClick={() => {
                   setPageSize(size)
                   setCurrentPage(1)
@@ -1341,7 +1592,8 @@ export function TranslationGrid({
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(1)}
           >
-            <ChevronsLeft size={16} aria-hidden="true" />{t('grid.pagination.first', { ns: 'translate' })}
+            <ChevronsLeft size={16} aria-hidden="true" />
+            {t('grid.pagination.first', { ns: 'translate' })}
           </button>
           <button
             type="button"
@@ -1349,7 +1601,8 @@ export function TranslationGrid({
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((p) => p - 1)}
           >
-            <ChevronLeft size={18} aria-hidden="true" />{t('grid.pagination.prev', { ns: 'translate' })}
+            <ChevronLeft size={18} aria-hidden="true" />
+            {t('grid.pagination.prev', { ns: 'translate' })}
           </button>
           <button
             type="button"
@@ -1357,7 +1610,8 @@ export function TranslationGrid({
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage((p) => p + 1)}
           >
-            {t('grid.pagination.next', { ns: 'translate' })}<ChevronRight size={18} aria-hidden="true" />
+            {t('grid.pagination.next', { ns: 'translate' })}
+            <ChevronRight size={18} aria-hidden="true" />
           </button>
           <button
             type="button"
@@ -1365,7 +1619,8 @@ export function TranslationGrid({
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(totalPages)}
           >
-            {t('grid.pagination.last', { ns: 'translate' })}<ChevronsRight size={16} aria-hidden="true" />
+            {t('grid.pagination.last', { ns: 'translate' })}
+            <ChevronsRight size={16} aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -1440,27 +1695,132 @@ export function TranslationGrid({
       >
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-neutral-400" />
         All
-        <span className={cn(
-          'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
-          filter === 'all' ? 'bg-neutral-400/20 text-neutral-200' : 'bg-[#181b1f] text-neutral-500'
-        )}>
+        <span
+          className={cn(
+            'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
+            filter === 'all'
+              ? 'bg-neutral-400/20 text-neutral-200'
+              : 'bg-[#181b1f] text-neutral-500'
+          )}
+        >
           {entries.length}
         </span>
       </button>
       {filterItems.map((item) => {
         if (item.mode === 'tags' || item.mode === 'brackets') {
           const isXmlTagFilter = item.mode === 'tags'
+          const active = filter === item.mode
           const selectedFilter = isXmlTagFilter ? xmlTagFilter : bracketFilter
           return (
-            <div key={item.mode} onClick={() => startFilterTransition(() => setFilter(item.mode))} className={cn('translation-special-filter relative inline-flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors', openSpecialFilter === item.mode && 'z-[1000]', filter === item.mode ? (isXmlTagFilter ? 'border-purple-400/50 bg-purple-400/10 text-purple-200' : 'border-cyan-400/50 bg-cyan-400/10 text-cyan-200') : 'cursor-pointer text-neutral-400 hover:bg-[#181b1f] hover:text-neutral-200')}>
+            <div
+              key={item.mode}
+              onClick={() => startFilterTransition(() => setFilter(item.mode))}
+              className={cn(
+                'translation-special-filter relative inline-flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors',
+                openSpecialFilter === item.mode && 'z-[1000]',
+                filter === item.mode
+                  ? isXmlTagFilter
+                    ? 'border-purple-400/50 bg-purple-400/10 text-purple-200'
+                    : 'border-cyan-400/50 bg-cyan-400/10 text-cyan-200'
+                  : 'cursor-pointer text-neutral-400 hover:bg-[#181b1f] hover:text-neutral-200'
+              )}
+            >
               <span>{isXmlTagFilter ? 'XML' : 'PL'}</span>
-              <span className={cn('rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums', isXmlTagFilter ? 'bg-purple-400/20 text-purple-200' : 'bg-cyan-400/20 text-cyan-200')}>{item.count}</span>
-              <button type="button" onClick={(event) => { event.stopPropagation(); const mode = item.mode as 'tags' | 'brackets'; setOpenSpecialFilter((open) => open === mode ? null : mode) }} aria-haspopup="menu" aria-expanded={openSpecialFilter === item.mode} aria-label={`${isXmlTagFilter ? 'XML' : 'PL'} ${selectedFilter}`} title={selectedFilter === 'all' ? 'All' : selectedFilter === 'translated' ? 'Translated' : 'Untranslated'} className={cn('inline-flex cursor-pointer items-center gap-0.5 bg-transparent text-[11px] font-semibold outline-none', isXmlTagFilter ? 'text-purple-200' : 'text-cyan-200')}>
-                {selectedFilter === 'all' ? <CircleDashed size={13} /> : selectedFilter === 'translated' ? <CircleCheck size={13} /> : <CircleX size={13} />}<ChevronDown size={11} />
+              <span
+                className={cn(
+                  'font-mono text-[10px] tabular-nums',
+                  active
+                    ? cn(
+                        'rounded-full px-1.5 py-0.5',
+                        isXmlTagFilter
+                          ? 'bg-purple-400/20 text-purple-200'
+                          : 'bg-cyan-400/20 text-cyan-200'
+                      )
+                    : 'text-neutral-500'
+                )}
+              >
+                {item.count}
+              </span>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  const mode = item.mode as 'tags' | 'brackets'
+                  setOpenSpecialFilter((open) => (open === mode ? null : mode))
+                }}
+                aria-haspopup="menu"
+                aria-expanded={openSpecialFilter === item.mode}
+                aria-label={`${isXmlTagFilter ? 'XML' : 'PL'} ${selectedFilter}`}
+                title={
+                  selectedFilter === 'all'
+                    ? 'All'
+                    : selectedFilter === 'translated'
+                      ? 'Translated'
+                      : 'Untranslated'
+                }
+                className={cn(
+                  'inline-flex cursor-pointer items-center gap-0.5 bg-transparent text-[11px] font-semibold outline-none',
+                  isXmlTagFilter ? 'text-purple-200' : 'text-cyan-200'
+                )}
+              >
+                {selectedFilter === 'all' ? (
+                  <CircleDashed size={13} />
+                ) : selectedFilter === 'translated' ? (
+                  <CircleCheck size={13} />
+                ) : (
+                  <CircleX size={13} />
+                )}
+                <ChevronDown size={11} />
               </button>
-              {openSpecialFilter === item.mode && <div role="menu" className="bulk-status-menu absolute top-[calc(100%+6px)] right-0 z-[1001] w-9 min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl">
-                {(['all', 'untranslated', 'translated'] as const).map((value) => { const OptionIcon = value === 'all' ? CircleDashed : value === 'translated' ? CircleCheck : CircleX; const label = value === 'all' ? 'All' : value === 'translated' ? 'Translated' : 'Untranslated'; return <button key={value} type="button" role="menuitem" aria-label={label} title={label} onClick={(event) => { event.stopPropagation(); startFilterTransition(() => { if (isXmlTagFilter) setXmlTagFilter(value); else setBracketFilter(value); setFilter(item.mode) }); setOpenSpecialFilter(null) }} className={cn('flex w-full items-center justify-center rounded px-1 py-1.5 text-left text-xs font-medium transition-colors hover:bg-white/10', value === selectedFilter ? (isXmlTagFilter ? 'text-purple-300' : 'text-cyan-300') : 'text-neutral-300')}><OptionIcon size={14} /></button> })}
-              </div>}
+              {openSpecialFilter === item.mode && (
+                <div
+                  role="menu"
+                  className="bulk-status-menu absolute top-[calc(100%+6px)] right-0 z-[1001] w-9 min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl"
+                >
+                  {(['all', 'untranslated', 'translated'] as const).map((value) => {
+                    const OptionIcon =
+                      value === 'all'
+                        ? CircleDashed
+                        : value === 'translated'
+                          ? CircleCheck
+                          : CircleX
+                    const label =
+                      value === 'all'
+                        ? 'All'
+                        : value === 'translated'
+                          ? 'Translated'
+                          : 'Untranslated'
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        role="menuitem"
+                        aria-label={label}
+                        title={label}
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          startFilterTransition(() => {
+                            if (isXmlTagFilter) setXmlTagFilter(value)
+                            else setBracketFilter(value)
+                            setFilter(item.mode)
+                          })
+                          setOpenSpecialFilter(null)
+                        }}
+                        className={cn(
+                          'flex w-full items-center justify-center rounded px-1 py-1.5 text-left text-xs font-medium transition-colors hover:bg-white/10',
+                          value === selectedFilter
+                            ? isXmlTagFilter
+                              ? 'text-purple-300'
+                              : 'text-cyan-300'
+                            : 'text-neutral-300'
+                        )}
+                      >
+                        <OptionIcon size={14} />
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           )
         }
@@ -1472,7 +1832,7 @@ export function TranslationGrid({
             onClick={() => startFilterTransition(() => setFilter(item.mode))}
             className={cn(
               'inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors',
-                active
+              active
                 ? item.mode === 'untranslated'
                   ? 'border-emerald-400/50 bg-emerald-400/10 text-emerald-200'
                   : item.mode === 'translated'
@@ -1483,16 +1843,18 @@ export function TranslationGrid({
           >
             <span className={cn('inline-block h-1.5 w-1.5 rounded-full', item.dot)} />
             {item.mode === 'needs-review' ? 'Review' : item.label}
-            <span className={cn(
-              'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
-              active && item.mode === 'untranslated'
-                ? 'bg-emerald-400/20 text-emerald-200'
-                : active && item.mode === 'translated'
-                  ? 'bg-blue-400/20 text-blue-200'
-                  : active
+            <span
+              className={cn(
+                'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
+                active && item.mode === 'untranslated'
+                  ? 'bg-emerald-400/20 text-emerald-200'
+                  : active && item.mode === 'translated'
+                    ? 'bg-blue-400/20 text-blue-200'
+                    : active
                       ? 'bg-orange-400/20 text-orange-200'
                       : 'bg-[#181b1f] text-neutral-500'
-            )}>
+              )}
+            >
               {item.count}
             </span>
           </button>
@@ -1524,120 +1886,182 @@ export function TranslationGrid({
   const searchBar = (
     <div className="translation-search-bar flex min-w-0 shrink-0 flex-col gap-1 overflow-visible border-b border-[#1f2329] bg-[#0c0d0f] px-5 py-1">
       <div className="translation-search-controls flex min-w-0 flex-wrap items-center gap-3 overflow-visible">
-      <div className="flex h-8 w-[clamp(220px,24vw,300px)] min-w-45 max-w-full flex-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 transition-colors focus-within:border-neutral-600">
-        <Search size={13} className="shrink-0 text-neutral-500" />
-        <input
-          ref={searchInputRef}
-          value={search}
-          onChange={(event) => {
-            const value = event.target.value
-            // Keep the controlled input synchronous; only the expensive filtering is delayed below.
-            setSearch(value)
-          }}
-          placeholder={t('grid.searchPlaceholder', { ns: 'translate' })}
-          className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
-        />
-        {search && (
-          <button type="button" onClick={() => setSearch('')} className="shrink-0 cursor-pointer">
-            <X size={13} className="text-neutral-500 transition-colors hover:text-neutral-300" />
-          </button>
-        )}
-        <span className="shortcut-hint inline-flex h-5 min-w-6 items-center justify-center rounded border border-[#2a2f37] bg-[#0f1114] px-1 font-mono text-[10px] text-neutral-500">
-          Ctrl / ⌘ F
-        </span>
-      </div>
-
-      <label className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200">
-        <input
-          type="checkbox"
-          checked={exactMatch}
-          onChange={(event) => {
-            const checked = event.target.checked
-            startFilterTransition(() => setExactMatch(checked))
-          }}
-          className="cursor-pointer accent-amber-500"
-        />
-        <span title={t('grid.exactMatch', { ns: 'translate' })}>Exact</span>
-      </label>
-
-      <label
-        title="Show content ID"
-        className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
-      >
-        <input
-          type="checkbox"
-          checked={showId}
-          onChange={(event) => setShowId(event.target.checked)}
-          className="cursor-pointer accent-amber-500"
-        />
-        ID
-      </label>
-
-      <label
-        title="Highlight search matches"
-        className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
-      >
-        <input
-          type="checkbox"
-          checked={highlightSearchMatches}
-          onChange={(event) => setHighlightSearchMatches(event.target.checked)}
-          className="cursor-pointer accent-amber-500"
-        />
-        Highlight
-      </label>
-
-      <label title="Filter by speaker" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
-        <UserRound size={13} className="text-neutral-500" />
-        <select value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)} aria-label="Filter by speaker" className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
-          <option value="all">All speakers</option>
-          {getKnownSpeakers().map((speaker) => <option key={speaker.name} value={speaker.name}>{speaker.name}</option>)}
-        </select>
-      </label>
-
-      <label title="Filter by review status" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
-        <ClipboardCheck size={13} className="text-neutral-500" />
-        <select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)} aria-label="Filter by review status" className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
-          <option value="all">All statuses</option>
-          <option value="untranslated">Untranslated</option>
-          <option value="not-verified">Not verified</option>
-          <option value="needs-review">Needs review</option>
-          <option value="verified">Verified</option>
-        </select>
-      </label>
-
-      <label className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
-        <ArrowDownUp size={13} className="text-neutral-500" />
-        <span className="sr-only">Sort translations</span>
-        <select
-          value={sortMode}
-          onChange={(event) => setSortMode(event.target.value as SortMode)}
-          aria-label="Sort translations"
-          className="cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
-        >
-          <option value="default">Default order</option>
-          <option value="most-repeated">Most repeated first</option>
-          <option value="least-repeated">Least repeated first</option>
-        </select>
-      </label>
-
-      {selectedStats.selectedStrings > 0 && (
-        <div className="relative inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 text-xs font-semibold text-amber-200">
-          <ClipboardCheck size={13} className="text-amber-300" />
-          <span>Status</span>
-          <button type="button" onClick={() => setBulkStatusOpen((open) => !open)} aria-haspopup="menu" aria-expanded={bulkStatusOpen} className="cursor-pointer bg-transparent text-xs font-semibold text-amber-200 outline-none hover:text-amber-100">
-            Choose…
-            <ChevronDown size={12} className="ml-1 inline-block" />
-          </button>
-          {bulkStatusOpen && <div role="menu" className="bulk-status-menu absolute top-[calc(100%+6px)] left-0 z-50 w-full min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl">
-            {[
-              { value: 'verified' as ReviewStatus, label: 'Verified', icon: CircleCheck, color: 'text-emerald-400 hover:bg-emerald-500/10' },
-              { value: 'not-verified' as ReviewStatus, label: 'Not verified', icon: CircleX, color: 'text-red-400 hover:bg-red-500/10' },
-              { value: 'needs-review' as ReviewStatus, label: 'Needs review', icon: CircleAlert, color: 'text-yellow-400 hover:bg-yellow-500/10' },
-            ].map((option) => { const Icon = option.icon; return <button key={option.value} type="button" role="menuitem" onClick={() => applyBulkReviewStatus(option.value)} className={cn('flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-left text-xs font-medium transition-colors', option.color)}><Icon size={14} />{option.label}</button> })}
-          </div>}
+        <div className="flex h-8 w-[clamp(220px,24vw,300px)] min-w-45 max-w-full flex-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 transition-colors focus-within:border-neutral-600">
+          <Search size={13} className="shrink-0 text-neutral-500" />
+          <input
+            ref={searchInputRef}
+            value={search}
+            onChange={(event) => {
+              const value = event.target.value
+              // Keep the controlled input synchronous; only the expensive filtering is delayed below.
+              setSearch(value)
+            }}
+            placeholder={t('grid.searchPlaceholder', { ns: 'translate' })}
+            className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
+          />
+          {search && (
+            <button type="button" onClick={() => setSearch('')} className="shrink-0 cursor-pointer">
+              <X size={13} className="text-neutral-500 transition-colors hover:text-neutral-300" />
+            </button>
+          )}
+          <span className="shortcut-hint inline-flex h-5 min-w-6 items-center justify-center rounded border border-[#2a2f37] bg-[#0f1114] px-1 font-mono text-[10px] text-neutral-500">
+            Ctrl / ⌘ F
+          </span>
         </div>
-      )}
 
+        <label className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200">
+          <input
+            type="checkbox"
+            checked={exactMatch}
+            onChange={(event) => {
+              const checked = event.target.checked
+              startFilterTransition(() => setExactMatch(checked))
+            }}
+            className="cursor-pointer accent-amber-500"
+          />
+          <span title={t('grid.exactMatch', { ns: 'translate' })}>Exact</span>
+        </label>
+
+        <label
+          title="Show content ID"
+          className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+        >
+          <input
+            type="checkbox"
+            checked={showId}
+            onChange={(event) => setShowId(event.target.checked)}
+            className="cursor-pointer accent-amber-500"
+          />
+          ID
+        </label>
+
+        <label
+          title="Highlight search matches"
+          className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+        >
+          <input
+            type="checkbox"
+            checked={highlightSearchMatches}
+            onChange={(event) => setHighlightSearchMatches(event.target.checked)}
+            className="cursor-pointer accent-amber-500"
+          />
+          Highlight
+        </label>
+
+        <label
+          title="Filter by speaker"
+          className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400"
+        >
+          <UserRound size={13} className="text-neutral-500" />
+          <select
+            value={speakerFilter}
+            onChange={(event) => setSpeakerFilter(event.target.value)}
+            aria-label="Filter by speaker"
+            className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
+          >
+            <option value="all">All speakers</option>
+            {getKnownSpeakers().map((speaker) => (
+              <option key={speaker.name} value={speaker.name}>
+                {speaker.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label
+          title="Filter by review status"
+          className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400"
+        >
+          <ClipboardCheck size={13} className="text-neutral-500" />
+          <select
+            value={reviewFilter}
+            onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)}
+            aria-label="Filter by review status"
+            className="max-w-44 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
+          >
+            <option value="all">All statuses</option>
+            <option value="untranslated">Untranslated</option>
+            <option value="not-verified">Not verified</option>
+            <option value="needs-review">Needs review</option>
+            <option value="verified">Verified</option>
+          </select>
+        </label>
+
+        <label className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
+          <ArrowDownUp size={13} className="text-neutral-500" />
+          <span className="sr-only">Sort translations</span>
+          <select
+            value={sortMode}
+            onChange={(event) => setSortMode(event.target.value as SortMode)}
+            aria-label="Sort translations"
+            className="cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
+          >
+            <option value="default">Default order</option>
+            <option value="most-repeated">Most repeated first</option>
+            <option value="least-repeated">Least repeated first</option>
+          </select>
+        </label>
+
+        {selectedStats.selectedStrings > 0 && (
+          <div className="relative inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 text-xs font-semibold text-amber-200">
+            <ClipboardCheck size={13} className="text-amber-300" />
+            <span>Status</span>
+            <button
+              type="button"
+              onClick={() => setBulkStatusOpen((open) => !open)}
+              aria-haspopup="menu"
+              aria-expanded={bulkStatusOpen}
+              className="cursor-pointer bg-transparent text-xs font-semibold text-amber-200 outline-none hover:text-amber-100"
+            >
+              Choose…
+              <ChevronDown size={12} className="ml-1 inline-block" />
+            </button>
+            {bulkStatusOpen && (
+              <div
+                role="menu"
+                className="bulk-status-menu absolute top-[calc(100%+6px)] left-0 z-50 w-full min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl"
+              >
+                {[
+                  {
+                    value: 'verified' as ReviewStatus,
+                    label: 'Verified',
+                    icon: CircleCheck,
+                    color: 'text-emerald-400 hover:bg-emerald-500/10'
+                  },
+                  {
+                    value: 'not-verified' as ReviewStatus,
+                    label: 'Not verified',
+                    icon: CircleX,
+                    color: 'text-red-400 hover:bg-red-500/10'
+                  },
+                  {
+                    value: 'needs-review' as ReviewStatus,
+                    label: 'Needs review',
+                    icon: CircleAlert,
+                    color: 'text-yellow-400 hover:bg-yellow-500/10'
+                  }
+                ].map((option) => {
+                  const Icon = option.icon
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => applyBulkReviewStatus(option.value)}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-left text-xs font-medium transition-colors',
+                        option.color
+                      )}
+                    >
+                      <Icon size={14} />
+                      {option.label}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {replaceOpen && (
@@ -1647,7 +2071,10 @@ export function TranslationGrid({
             <input
               value={replaceFind}
               onChange={(event) => setReplaceFind(event.target.value)}
-              onKeyDown={(event) => { if (event.key === 'Enter') replaceMatches(false); if (event.key === 'Escape') setReplaceOpen(false) }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') replaceMatches(false)
+                if (event.key === 'Escape') setReplaceOpen(false)
+              }}
               placeholder="Find"
               aria-label="Find text to replace"
               className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
@@ -1658,18 +2085,65 @@ export function TranslationGrid({
             <input
               value={replaceWith}
               onChange={(event) => setReplaceWith(event.target.value)}
-              onKeyDown={(event) => { if (event.key === 'Enter') replaceMatches(false); if (event.key === 'Escape') setReplaceOpen(false) }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') replaceMatches(false)
+                if (event.key === 'Escape') setReplaceOpen(false)
+              }}
               placeholder="Replace"
               aria-label="Replace text"
               className="min-w-0 flex-1 bg-transparent text-xs font-medium text-neutral-300 placeholder:text-neutral-600 focus:outline-none"
             />
           </div>
-          <button type="button" disabled={!replaceFind} onClick={() => replaceMatches(false)} aria-label="Replace first match" title="Replace" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Replace size={14} /></button>
-          <button type="button" disabled={!replaceFind} onClick={() => replaceMatches(true)} aria-label="Replace all matches" title="Replace All" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><ReplaceAll size={14} /></button>
+          <button
+            type="button"
+            disabled={!replaceFind}
+            onClick={() => replaceMatches(false)}
+            aria-label="Replace first match"
+            title="Replace"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Replace size={14} />
+          </button>
+          <button
+            type="button"
+            disabled={!replaceFind}
+            onClick={() => replaceMatches(true)}
+            aria-label="Replace all matches"
+            title="Replace All"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ReplaceAll size={14} />
+          </button>
           <span className="mx-1 h-5 w-px bg-[#2a2f37]" />
-          <button type="button" disabled={replaceUndo.length === 0} onClick={undoReplace} aria-label="Undo replace" title="Undo" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Undo2 size={14} /></button>
-          <button type="button" disabled={replaceRedo.length === 0} onClick={redoReplace} aria-label="Redo replace" title="Redo" className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"><Redo2 size={14} /></button>
-          <button type="button" aria-label="Close find and replace" title="Close (Ctrl/⌘+F)" onClick={() => setReplaceOpen(false)} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-500 hover:text-neutral-200"><X size={14} /></button>
+          <button
+            type="button"
+            disabled={replaceUndo.length === 0}
+            onClick={undoReplace}
+            aria-label="Undo replace"
+            title="Undo"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Undo2 size={14} />
+          </button>
+          <button
+            type="button"
+            disabled={replaceRedo.length === 0}
+            onClick={redoReplace}
+            aria-label="Redo replace"
+            title="Redo"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-400 hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Redo2 size={14} />
+          </button>
+          <button
+            type="button"
+            aria-label="Close find and replace"
+            title="Close (Ctrl/⌘+F)"
+            onClick={() => setReplaceOpen(false)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-[#1f2329] bg-[#131518] text-neutral-500 hover:text-neutral-200"
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
 
@@ -1799,7 +2273,12 @@ export function TranslationGrid({
           ref={sideParentRef}
           className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]"
         >
-          <div style={{ height: sideVirtualizer.getTotalSize() + paginationBottomSpacer, position: 'relative' }}>
+          <div
+            style={{
+              height: sideVirtualizer.getTotalSize() + paginationBottomSpacer,
+              position: 'relative'
+            }}
+          >
             {sideVirtualizer.getVirtualItems().map((virtualItem) => {
               const entry = pageEntries[virtualItem.index]
               const isDone = entry.target.trim() !== ''
@@ -1857,7 +2336,9 @@ export function TranslationGrid({
                   <div className="translate-source-cell flex min-w-0 cursor-text flex-col gap-2 px-4 py-3">
                     <div className="translation-source-text wrap-break-word text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
                       {entry.source ? (
-                        renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
+                        renderSource(entry.source, {
+                          highlightQuery: highlightSearchMatches ? effectiveSearch : ''
+                        })
                       ) : (
                         <span className="italic text-neutral-600">
                           {t('grid.emptySource', { ns: 'translate' })}
@@ -1866,9 +2347,7 @@ export function TranslationGrid({
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {showId && (
-                        <span className="font-mono text-[10px] text-neutral-500">
-                          {entry.uid}
-                        </span>
+                        <span className="font-mono text-[10px] text-neutral-500">{entry.uid}</span>
                       )}
                       <ItemTags tags={itemTags} />
                       <DialogueTags tags={getDialogueFilterTags(entry.source)} />
@@ -1901,7 +2380,15 @@ export function TranslationGrid({
                           </button>
                         )}
                         {speaker && (
-                          <span className={cn('mr-1 inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium', speaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${speaker.name}`}>
+                          <span
+                            className={cn(
+                              'mr-1 inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium',
+                              speaker.gender === 'female'
+                                ? 'border-pink-400/35 bg-pink-500/10 text-pink-300'
+                                : 'border-blue-400/35 bg-blue-500/10 text-blue-300'
+                            )}
+                            title={`Speaker: ${speaker.name}`}
+                          >
                             {speaker.name}
                           </span>
                         )}
@@ -1921,7 +2408,9 @@ export function TranslationGrid({
                   <div
                     className="translate-target-cell flex min-w-0 flex-col gap-2 border-l border-[#1f2329] px-4 py-3"
                     onClick={(event) => event.stopPropagation()}
-                  >                    <HighlightedTextarea
+                  >
+                    {' '}
+                    <HighlightedTextarea
                       ref={(element) => {
                         if (element) textareaRefs.current.set(entry.rowId, element)
                         else textareaRefs.current.delete(entry.rowId)
@@ -1929,7 +2418,11 @@ export function TranslationGrid({
                       value={genderValue(entry)}
                       highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
                       onFocus={() => setEditingRowId(entry.rowId)}
-                      onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
+                      onBlur={(event) => {
+                        updateGenderValue(entry, event.target.value)
+                        markSticky(entry.rowId)
+                        setEditingRowId(null)
+                      }}
                       onKeyDown={(event) => handleEnterKey(event, entry)}
                       rows={1}
                       placeholder={t('grid.translationPlaceholder', { ns: 'translate' })}
@@ -1975,10 +2468,10 @@ export function TranslationGrid({
   }
 
   return (
-      <div className="flex h-full min-h-0 flex-col">
-        {searchBar}
-        {selectionActions}
-        {statusTabsPortal}
+    <div className="flex h-full min-h-0 flex-col">
+      {searchBar}
+      {selectionActions}
+      {statusTabsPortal}
 
       <div className="flex shrink-0 select-none items-center gap-2 border-b border-[#1f2329] bg-[#0f1114] px-7 py-2">
         <input
@@ -1992,8 +2485,16 @@ export function TranslationGrid({
         </span>
       </div>
 
-      <div ref={stackedParentRef} className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto">
-        <div style={{ height: stackedVirtualizer.getTotalSize() + paginationBottomSpacer, position: 'relative' }}>
+      <div
+        ref={stackedParentRef}
+        className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto"
+      >
+        <div
+          style={{
+            height: stackedVirtualizer.getTotalSize() + paginationBottomSpacer,
+            position: 'relative'
+          }}
+        >
           {stackedVirtualizer.getVirtualItems().map((virtualItem) => {
             const entry = pageEntries[virtualItem.index]
             const category = getCategory(entry)
@@ -2050,7 +2551,6 @@ export function TranslationGrid({
                         onClick={(event) => event.stopPropagation()}
                         className="cursor-pointer accent-amber-500"
                       />
-
 
                       <span
                         className="mt-auto font-mono text-[11px] tracking-widest text-neutral-600"
@@ -2131,7 +2631,15 @@ export function TranslationGrid({
                           </button>
                         )}
                         {speaker && (
-                          <span className={cn('inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium', speaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${speaker.name}`}>
+                          <span
+                            className={cn(
+                              'inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-medium',
+                              speaker.gender === 'female'
+                                ? 'border-pink-400/35 bg-pink-500/10 text-pink-300'
+                                : 'border-blue-400/35 bg-blue-500/10 text-blue-300'
+                            )}
+                            title={`Speaker: ${speaker.name}`}
+                          >
                             {speaker.name}
                           </span>
                         )}
@@ -2145,17 +2653,17 @@ export function TranslationGrid({
                           <Copy size={11} />
                         </button>
                       </div>
-
                       <div className="translation-source-text wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
                         {entry.source ? (
-                          renderSource(entry.source, { highlightQuery: highlightSearchMatches ? effectiveSearch : '' })
+                          renderSource(entry.source, {
+                            highlightQuery: highlightSearchMatches ? effectiveSearch : ''
+                          })
                         ) : (
                           <span className="italic text-neutral-600">
                             {t('grid.emptySource', { ns: 'translate' })}
                           </span>
                         )}
                       </div>
-
                       {isDictionary && (
                         <div className="hidden flex-wrap items-center gap-2 rounded-lg border border-dashed border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 group-focus-within:flex">
                           <span className="text-[11px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
@@ -2179,7 +2687,6 @@ export function TranslationGrid({
                           </button>
                         </div>
                       )}
-
                       <div className="order-3 mt-1 flex items-center gap-2.5 border-t border-dashed border-[#1f2329] pt-1">
                         <LangTag accent>{targetLang.toUpperCase()}</LangTag>
                         {entry.target && targetOccurrenceCount > 1 && (
@@ -2190,7 +2697,7 @@ export function TranslationGrid({
                             })}
                           </span>
                         )}
-                      {renderGenderControls(entry)}
+                        {renderGenderControls(entry)}
                         <span className="mx-1 h-4 w-px bg-[#2a2f37]" aria-hidden="true" />
                         {renderAiButton(entry)}
                         {renderHistoryButton(entry)}
@@ -2211,15 +2718,20 @@ export function TranslationGrid({
                             <KbdHint>Shift Enter</KbdHint> {t('grid.newLine', { ns: 'translate' })}
                           </span>
                         </div>
-                      </div>                    <HighlightedTextarea
+                      </div>{' '}
+                      <HighlightedTextarea
                         ref={(element) => {
                           if (element) textareaRefs.current.set(entry.rowId, element)
                           else textareaRefs.current.delete(entry.rowId)
                         }}
-                      value={genderValue(entry)}
-                      highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
-                      onFocus={() => setEditingRowId(entry.rowId)}
-                      onBlur={(event) => { updateGenderValue(entry, event.target.value); markSticky(entry.rowId); setEditingRowId(null) }}
+                        value={genderValue(entry)}
+                        highlightQuery={highlightSearchMatches ? effectiveSearch : ''}
+                        onFocus={() => setEditingRowId(entry.rowId)}
+                        onBlur={(event) => {
+                          updateGenderValue(entry, event.target.value)
+                          markSticky(entry.rowId)
+                          setEditingRowId(null)
+                        }}
                         onKeyDown={(event) => handleEnterKey(event, entry)}
                         rows={rows}
                         placeholder={isDone ? '' : t('grid.startTyping', { ns: 'translate' })}
@@ -2227,7 +2739,7 @@ export function TranslationGrid({
                         overlayClassName="px-3.5 py-3 text-[13px] leading-[1.6]"
                         className="min-h-11 px-3.5 py-3 text-[13px] leading-[1.6]"
                       />
-                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 
+
 export function registerWindowHandlers(getWindow: () => BrowserWindow | null): void {
   ipcMain.handle('window:minimize', () => {
     getWindow()?.minimize()
@@ -24,6 +25,7 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null): v
   ipcMain.handle('window:isMaximized', () => {
     return getWindow()?.isMaximized() ?? false
   })
+
 }
 
 export function setupWindowEvents(win: BrowserWindow): void {

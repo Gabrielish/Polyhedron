@@ -155,41 +155,41 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   return (
     <div className="flex flex-col h-full min-h-0">
       <EditorHeader
-        session={session}
-        fileName={fileName}
-        viewMode={isCompactViewport ? 'stacked' : viewMode}
-        isSaving={dictionarySave.isSaving}
-        translatedCount={translatedCount}
-        total={total}
-        pct={pct}
-        verifiedCount={verifiedCount}
-        batchCompleted={batch.batchCompleted}
-        batchTotal={batch.batchTotal}
-        onViewModeChange={setViewMode}
-        onSave={handleSaveSession}
-        onSaveToGlossary={handleSaveToDictionary}
-      />
+          session={session}
+          fileName={fileName}
+          viewMode={isCompactViewport ? 'stacked' : viewMode}
+          isSaving={dictionarySave.isSaving}
+          translatedCount={translatedCount}
+          total={total}
+          pct={pct}
+          verifiedCount={verifiedCount}
+          batchCompleted={batch.batchCompleted}
+          batchTotal={batch.batchTotal}
+          onViewModeChange={setViewMode}
+          onSave={handleSaveSession}
+          onSaveToGlossary={handleSaveToDictionary}
+        />
 
       <div className="flex-1 min-h-0">
         <TranslationGrid
-          entries={visibleEntries}
-          onEntryChange={session.updateEntry}
-          onEntryManualEdit={handleEntryManualEdit}
-          viewMode={isCompactViewport ? 'stacked' : viewMode}
-          selectionActions={
-            <BatchActionBar
-              selectedCount={session.selectedCount}
-              batchCompleted={batch.batchCompleted}
-              batchTotal={batch.batchTotal}
-              onTranslateDeepL={() => batch.batchTranslate('deepl')}
-              onTranslateGoogle={() => batch.batchTranslate('google')}
-              onTranslateAI={() => batch.batchTranslate(aiProvider)}
-              aiProviderName={getProviderMeta(aiProvider).name}
-              onCancelTranslation={batch.cancelBatch}
-              onClearSelection={session.clearSelection}
-              isTranslating={batch.isBatchTranslating}
-            />
-          }
+            entries={visibleEntries}
+            onEntryChange={session.updateEntry}
+            onEntryManualEdit={handleEntryManualEdit}
+            viewMode={isCompactViewport ? 'stacked' : viewMode}
+            selectionActions={
+              <BatchActionBar
+                selectedCount={session.selectedCount}
+                batchCompleted={batch.batchCompleted}
+                batchTotal={batch.batchTotal}
+                onTranslateDeepL={() => batch.batchTranslate('deepl')}
+                onTranslateGoogle={() => batch.batchTranslate('google')}
+                onTranslateAI={() => batch.batchTranslate(aiProvider)}
+                aiProviderName={getProviderMeta(aiProvider).name}
+                onCancelTranslation={batch.cancelBatch}
+                onClearSelection={session.clearSelection}
+                isTranslating={batch.isBatchTranslating}
+              />
+            }
         />
       </div>
 
