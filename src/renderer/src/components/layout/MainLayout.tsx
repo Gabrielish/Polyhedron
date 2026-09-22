@@ -18,7 +18,7 @@ export function MainLayout(): React.JSX.Element {
       <Sidebar />
       <div className="app-content-shell relative ml-14 flex min-w-0 flex-1 flex-col">
         <TitleBar />
-        <div className={`pointer-events-none absolute top-1 z-[200] ${isMacOS ? 'right-2' : 'right-[150px]'}`}>
+        <div className={`pointer-events-none absolute top-1 z-[2000] ${isMacOS ? 'right-2' : 'right-[150px]'}`}>
           <div className="pointer-events-auto">
             <CloudSyncMenu />
           </div>
