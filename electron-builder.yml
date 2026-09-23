@@ -14,6 +14,7 @@ files:
   - drizzle/**
   - tools/**
   - work/pak/**
+  - reference/imported-translations/**
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
