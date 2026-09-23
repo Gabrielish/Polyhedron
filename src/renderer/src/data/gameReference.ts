@@ -1,7 +1,20 @@
 import catalog from './gameReference.generated.json'
 
 export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Spell' | 'Status' | 'Interrupt'
-export type ReferenceCatalogEntry = { name: string; description: string; category: ReferenceCategory }
+export type ReferenceCatalogEntry = {
+  name: string
+  description: string
+  category: ReferenceCategory
+  id?: string
+  icon?: string
+  flags?: string
+  useCosts?: string
+  spellType?: string
+  actionType?: string
+  level?: string
+  conditions?: string[]
+  hasUnresolvedFields?: boolean
+}
 export type ReferenceTag = 'Name' | 'Description' | 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt'
 export type ReferenceLink = { kind: 'Name' | 'Description'; text: string }
 

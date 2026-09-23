@@ -162,6 +162,7 @@ export function AITranslateModal({
       title={t('modal.title')}
       icon={<Sparkles size={16} />}
       sizeClassName="max-w-2xl"
+      panelClassName="border-amber-500/20 bg-[#0a0b0d]/90 shadow-[0_16px_45px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl"
       onClose={onClose}
       footer={
         <>
@@ -196,7 +197,7 @@ export function AITranslateModal({
           <div className="mb-1.5 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
             {t('modal.source', { language: sourceLang })}
           </div>
-          <div className="rounded-md border border-neutral-800 bg-[#0a0a0c] p-3 text-sm leading-relaxed whitespace-pre-wrap text-neutral-300">
+          <div className="rounded-lg border border-white/10 bg-white/[0.035] p-3 text-sm leading-relaxed whitespace-pre-wrap text-neutral-200 shadow-inner shadow-white/[0.025]">
             {renderSource(source)}
           </div>
         </div>
@@ -212,7 +213,7 @@ export function AITranslateModal({
             </div>
             <div className="flex max-h-56 flex-col gap-1.5 overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-700 [&::-webkit-scrollbar-track]:bg-neutral-900">
               {sims.length === 0 && (
-                <div className="rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-4 text-center text-xs text-neutral-600">
+                <div className="rounded-lg border border-white/10 bg-white/[0.025] px-3 py-4 text-center text-xs text-neutral-600">
                   {t('modal.noExamples')}
                 </div>
               )}
@@ -226,7 +227,7 @@ export function AITranslateModal({
                     className={`flex cursor-pointer items-start gap-2.5 rounded-md border p-2.5 transition-colors ${
                       checked[index]
                         ? 'border-amber-500/50 bg-amber-500/5'
-                        : 'border-neutral-800 bg-[#0a0a0c]'
+                        : 'border-white/10 bg-white/[0.025] hover:border-amber-500/25 hover:bg-white/[0.05]'
                     } ${low ? 'opacity-60' : ''}`}
                   >
                     <input

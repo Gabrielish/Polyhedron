@@ -13,15 +13,25 @@ import {
   Flag,
   GitBranch,
   History,
+  BookOpen,
   Search,
   Sparkles
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { type GenderVariant, type ReviewStatus, useTranslationSession } from '@/context/TranslationSession'
+import {
+  type GenderVariant,
+  type ReviewStatus,
+  useTranslationSession
+} from '@/context/TranslationSession'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
+import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
-import { type DialogueCategory, getDialogueGroups as loadDialogueGroups, getDialogueNodes } from '@/data/dialogReference'
+import {
+  type DialogueCategory,
+  getDialogueGroups as loadDialogueGroups,
+  getDialogueNodes
+} from '@/data/dialogReference'
 import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
@@ -390,26 +400,28 @@ export function DialogueNodesPage(): React.JSX.Element {
       ? actForCategory(navigationState.category)
       : (loadDialogueViewState().activeAct ?? 'Act 1')
   )
-  const [selectedKey, setSelectedKey] = useState<string | null>(
-    () =>
-      navigationState.file && navigationState.dialogue
-        ? `${navigationState.file}:${navigationState.dialogue}`
-        : (loadDialogueViewState().selectedKey ?? null)
+  const [selectedKey, setSelectedKey] = useState<string | null>(() =>
+    navigationState.file && navigationState.dialogue
+      ? `${navigationState.file}:${navigationState.dialogue}`
+      : (loadDialogueViewState().selectedKey ?? null)
   )
-  const [focusedNode, setFocusedNode] = useState<string | null>(
-    () => navigationState.node ?? null
-  )
+  const [focusedNode, setFocusedNode] = useState<string | null>(() => navigationState.node ?? null)
   const [focusedSource, setFocusedSource] = useState<string | null>(
     () => navigationState.source ?? null
   )
   const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
-  const [aiEntry, setAiEntry] = useState<ReturnType<typeof useTranslationSession>['entries'][number] | null>(null)
-  const [historyEntry, setHistoryEntry] = useState<ReturnType<typeof useTranslationSession>['entries'][number] | null>(null)
-  const [focusedUid, setFocusedUid] = useState<string | null>(
-    () => navigationState.uid ?? null
-  )
-  const [dialogueSearch, setDialogueSearch] = useState(
-    () => (navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? ''))
+  const [aiEntry, setAiEntry] = useState<
+    ReturnType<typeof useTranslationSession>['entries'][number] | null
+  >(null)
+  const [similarityEntry, setSimilarityEntry] = useState<
+    ReturnType<typeof useTranslationSession>['entries'][number] | null
+  >(null)
+  const [historyEntry, setHistoryEntry] = useState<
+    ReturnType<typeof useTranslationSession>['entries'][number] | null
+  >(null)
+  const [focusedUid, setFocusedUid] = useState<string | null>(() => navigationState.uid ?? null)
+  const [dialogueSearch, setDialogueSearch] = useState(() =>
+    navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? '')
   )
   const [dialogueTextSearch, setDialogueTextSearch] = useState('')
   const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>('all')
@@ -439,11 +451,17 @@ export function DialogueNodesPage(): React.JSX.Element {
           category: group.category,
           subcategory:
             group.category === 'Act 1'
-              ? /(Act1b|Act 1B|Act1_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 1B' : 'Act 1'
+              ? /(Act1b|Act 1B|Act1_B)/i.test(group.file + ' ' + group.dialogue)
+                ? 'Act 1B'
+                : 'Act 1'
               : group.category === 'Act 2'
-                ? /(Act2b|Act 2B|Act2_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 2B' : 'Act 2'
+                ? /(Act2b|Act 2B|Act2_B)/i.test(group.file + ' ' + group.dialogue)
+                  ? 'Act 2B'
+                  : 'Act 2'
                 : group.category === 'Act 3'
-                  ? /(Act3b|Act3i|Act 3B|Act3_B)/i.test(group.file + ' ' + group.dialogue) ? 'Act 3B' : 'Act 3'
+                  ? /(Act3b|Act3i|Act 3B|Act3_B)/i.test(group.file + ' ' + group.dialogue)
+                    ? 'Act 3B'
+                    : 'Act 3'
                   : group.category,
           file: group.file,
           dialogue: group.dialogue
@@ -454,7 +472,9 @@ export function DialogueNodesPage(): React.JSX.Element {
   const dialogueEntryIndex = dialogueCatalog.index
   const choices = useMemo(() => {
     const allowed = new Set(ACTS.find((act) => act.label === activeAct)?.categories ?? [])
-    return dialogueCatalog.choices.filter((choice) => allowed.has(choice.category)).sort((a, b) => a.dialogue.localeCompare(b.dialogue))
+    return dialogueCatalog.choices
+      .filter((choice) => allowed.has(choice.category))
+      .sort((a, b) => a.dialogue.localeCompare(b.dialogue))
   }, [activeAct, dialogueCatalog.choices])
   const translatedDialogues = useMemo(() => {
     const translated = new Set<string>()
@@ -483,7 +503,9 @@ export function DialogueNodesPage(): React.JSX.Element {
       if (nameQuery && !choice.dialogue.toLocaleLowerCase().includes(nameQuery)) return false
       if (!textQuery) return true
       const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
-      return rows.some((entry) => `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(textQuery))
+      return rows.some((entry) =>
+        `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(textQuery)
+      )
     })
   }, [choices, dialogueEntryIndex, dialogueSearch, dialogueTextSearch])
   const tree = useMemo(() => makeTree(visibleChoices), [visibleChoices])
@@ -531,11 +553,13 @@ export function DialogueNodesPage(): React.JSX.Element {
         if (attempts++ < 12) retryTimer = window.setTimeout(focusTargets, 100)
         return
       }
-      const stringTarget = [...nodeTarget.querySelectorAll<HTMLElement>('[data-dialogue-source], [data-dialogue-uid]')]
-        .find((element) =>
+      const stringTarget = [
+        ...nodeTarget.querySelectorAll<HTMLElement>('[data-dialogue-source], [data-dialogue-uid]')
+      ].find(
+        (element) =>
           (focusedUid && element.dataset.dialogueUid === focusedUid) ||
           (focusedSource && element.dataset.dialogueSource === focusedSource)
-        )
+      )
       ;(stringTarget ?? nodeTarget).scrollIntoView({ behavior: 'smooth', block: 'center' })
       retryTimer = window.setTimeout(() => {
         setFocusedNode(null)
@@ -554,8 +578,9 @@ export function DialogueNodesPage(): React.JSX.Element {
     let attempts = 0
     let retryTimer: number | undefined
     const focusTreeChoice = () => {
-      const target = [...document.querySelectorAll<HTMLElement>('[data-dialogue-choice]')]
-        .find((element) => element.dataset.dialogueChoice === selectedKey)
+      const target = [...document.querySelectorAll<HTMLElement>('[data-dialogue-choice]')].find(
+        (element) => element.dataset.dialogueChoice === selectedKey
+      )
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' })
         return
@@ -568,14 +593,46 @@ export function DialogueNodesPage(): React.JSX.Element {
     }
   }, [selectedKey, expandedNodes, tree])
 
-  const reviewStatus = (entry: ReturnType<typeof useTranslationSession>['entries'][number]): ReviewStatus =>
+  const reviewStatus = (
+    entry: ReturnType<typeof useTranslationSession>['entries'][number]
+  ): ReviewStatus =>
     !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
 
-  const reviewStatusOptions: Array<{ value: ReviewStatus; title: string; icon: typeof CircleX; active: string; idle: string }> = [
-    { value: 'untranslated', title: 'Untranslated', icon: CircleDashed, active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200', idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10' },
-    { value: 'not-verified', title: 'Not verified', icon: CircleX, active: 'border-red-400/60 bg-red-500/15 text-red-300', idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10' },
-    { value: 'needs-review', title: 'Needs review', icon: CircleAlert, active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300', idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10' },
-    { value: 'verified', title: 'Verified', icon: CircleCheck, active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300', idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10' }
+  const reviewStatusOptions: Array<{
+    value: ReviewStatus
+    title: string
+    icon: typeof CircleX
+    active: string
+    idle: string
+  }> = [
+    {
+      value: 'untranslated',
+      title: 'Untranslated',
+      icon: CircleDashed,
+      active: 'border-neutral-400/60 bg-neutral-500/15 text-neutral-200',
+      idle: 'border-neutral-500/30 text-neutral-400/70 hover:bg-neutral-500/10'
+    },
+    {
+      value: 'not-verified',
+      title: 'Not verified',
+      icon: CircleX,
+      active: 'border-red-400/60 bg-red-500/15 text-red-300',
+      idle: 'border-red-500/25 text-red-400/70 hover:bg-red-500/10'
+    },
+    {
+      value: 'needs-review',
+      title: 'Needs review',
+      icon: CircleAlert,
+      active: 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300',
+      idle: 'border-yellow-500/25 text-yellow-400/70 hover:bg-yellow-500/10'
+    },
+    {
+      value: 'verified',
+      title: 'Verified',
+      icon: CircleCheck,
+      active: 'border-emerald-400/60 bg-emerald-500/15 text-emerald-300',
+      idle: 'border-emerald-500/25 text-emerald-400/70 hover:bg-emerald-500/10'
+    }
   ]
 
   if (session.phase !== 'loaded')
@@ -590,275 +647,427 @@ export function DialogueNodesPage(): React.JSX.Element {
     )
 
   const treePanelRows = Math.min(4, Math.max(1, visibleTreeRows(tree, expandedNodes)))
-  const treePanelStyle = { '--dialogue-tree-mobile-height': `${treePanelRows * 42 + 24}px` } as React.CSSProperties
+  const treePanelStyle = {
+    '--dialogue-tree-mobile-height': `${treePanelRows * 42 + 24}px`
+  } as React.CSSProperties
   const selectedSpeaker = selected ? getSpeakerForDialogue(selected.dialogue) : null
 
   return (
     <>
-    {aiEntry && (
-      <AITranslateModal
-        open
-        source={aiEntry.source}
-        sourceLang={session.sourceLang}
-        targetLang={session.targetLang}
-        onApply={(result) => {
-          session.updateEntry(aiEntry.rowId, result)
-          session.markManual(aiEntry.rowId)
-          session.setReviewStatus(aiEntry.rowId, 'not-verified')
-        }}
-        onClose={() => setAiEntry(null)}
-      />
-    )}
-    {historyEntry && (
-      <TranslationHistoryDialog
-        source={historyEntry.source}
-        history={historyEntry.history ?? []}
-        onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)}
-        onClose={() => setHistoryEntry(null)}
-      />
-    )}
-    <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
-      <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
-        <div className="mb-4 flex items-center gap-3">
-          <GitBranch className="text-amber-500" size={20} />
-          <div>
-            <h1 className="text-xl font-bold text-neutral-100">Dialogue Nodes</h1>
-            <p className="text-xs text-neutral-500">
-              Translate {session.sourceLang.toUpperCase()} → {session.targetLang.toUpperCase()}
-            </p>
-          </div>
-          <SessionSaveButton session={session} className="ml-auto" />
-        </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {ACTS.map((act) => (
-            <button
-              key={act.label}
-              type="button"
-              onClick={() => {
-                setActiveAct(act.label)
-                setSelectedKey(null)
-                setExpandedNodes(new Set())
-              }}
-              className={cn(
-                'rounded-md border px-4 py-2 text-xs font-semibold',
-                activeAct === act.label
-                  ? 'border-amber-400/40 bg-amber-500/15 text-amber-200'
-                  : 'border-transparent text-neutral-500 hover:border-[#2a2f37] hover:text-neutral-200'
-              )}
-            >
-              {act.label}
-            </button>
-          ))}
-          <div className="ml-0 flex min-w-0 flex-1 justify-end gap-2 sm:ml-auto sm:min-w-[280px] lg:min-w-[360px]">
-            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
-              <Search size={14} />
-              <input
-                value={dialogueSearch}
-                onChange={(event) => setDialogueSearch(event.target.value)}
-                placeholder="Search dialogue node name..."
-                className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
-              />
-            </label>
-            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
-              <Search size={14} />
-              <input
-                value={dialogueTextSearch}
-                onChange={(event) => setDialogueTextSearch(event.target.value)}
-                placeholder="Search source or translation..."
-                className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
-              />
-            </label>
-            <label title="Filter by review status" className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs font-semibold text-neutral-400">
-              <ClipboardCheck size={13} className="text-neutral-500" />
-              <select value={reviewFilter} onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)} aria-label="Filter by review status" className="max-w-36 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none">
-                <option value="all">All statuses</option>
-                <option value="untranslated">Untranslated</option>
-                <option value="not-verified">Not verified</option>
-                <option value="needs-review">Needs review</option>
-                <option value="verified">Verified</option>
-              </select>
-            </label>
-            <button
-              type="button"
-              disabled={!selected}
-              onClick={() => selected && window.api.dialogue.open(selected.dialogue)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-amber-400/40 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ExternalLink size={12} /> Open online
-            </button>
-          </div>
-        </div>
-      </header>
-      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)]">
-        <aside style={treePanelStyle} className="contents lg:grid lg:min-h-0 lg:max-h-none lg:grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] lg:border-r lg:border-[#1f2329]">
-          <div className="order-1 min-h-[var(--dialogue-tree-mobile-height)] overflow-y-auto border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0">
-            <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
-              Dialogue tree · {visibleChoices.length}
-            </div>
-            <TreeItems
-              nodes={tree}
-              expanded={expandedNodes}
-              toggle={toggleTree}
-              selected={selected}
-              select={setSelectedKey}
-              translated={translatedDialogues}
-              reviewStats={reviewStats}
-            />
-            {visibleChoices.length === 0 && (
-              <p className="px-2 py-4 text-xs text-neutral-600">
-                No dialogue nodes found for this act.
+      {aiEntry && (
+        <AITranslateModal
+          open
+          source={aiEntry.source}
+          sourceLang={session.sourceLang}
+          targetLang={session.targetLang}
+          onApply={(result) => {
+            session.updateEntry(aiEntry.rowId, result)
+            session.markManual(aiEntry.rowId)
+            session.setReviewStatus(aiEntry.rowId, 'not-verified')
+          }}
+          onClose={() => setAiEntry(null)}
+        />
+      )}
+      {similarityEntry && (
+        <SimilarityExamplesModal
+          open
+          source={similarityEntry.source}
+          sourceLang={session.sourceLang}
+          targetLang={session.targetLang}
+          onClose={() => setSimilarityEntry(null)}
+        />
+      )}
+      {historyEntry && (
+        <TranslationHistoryDialog
+          source={historyEntry.source}
+          history={historyEntry.history ?? []}
+          onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)}
+          onClose={() => setHistoryEntry(null)}
+        />
+      )}
+      <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
+        <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
+          <div className="mb-4 flex items-center gap-3">
+            <GitBranch className="text-amber-500" size={20} />
+            <div>
+              <h1 className="text-xl font-bold text-neutral-100">Dialogue Nodes</h1>
+              <p className="text-xs text-neutral-500">
+                Translate {session.sourceLang.toUpperCase()} → {session.targetLang.toUpperCase()}
               </p>
-            )}
+            </div>
+            <SessionSaveButton session={session} className="ml-auto" />
           </div>
-          <div className="order-3 min-h-[420px] overflow-hidden border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0 lg:border-b-0">
-            {selected ? (
-              <div className="flex h-full min-h-0 w-full flex-col rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
-                <div className="relative flex min-h-0 flex-1 w-full min-w-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
-                  <webview
-                    ref={graphWebviewRef}
-                    title="BG3 dialogue graph"
-                    src={
-                      'https://bg3.game-script.com/files/' + encodeURIComponent(selected.dialogue)
-                    }
-                    allowpopups
-                    className="block h-full min-h-0 w-full min-w-0 border-0"
-                    style={{ height: '100%', width: '100%', display: 'flex' }}
-                  />
+          <div className="flex flex-wrap items-center gap-1.5">
+            {ACTS.map((act) => (
+              <button
+                key={act.label}
+                type="button"
+                onClick={() => {
+                  setActiveAct(act.label)
+                  setSelectedKey(null)
+                  setExpandedNodes(new Set())
+                }}
+                className={cn(
+                  'rounded-md border px-4 py-2 text-xs font-semibold',
+                  activeAct === act.label
+                    ? 'border-amber-400/40 bg-amber-500/15 text-amber-200'
+                    : 'border-transparent text-neutral-500 hover:border-[#2a2f37] hover:text-neutral-200'
+                )}
+              >
+                {act.label}
+              </button>
+            ))}
+            <div className="ml-0 flex min-w-0 flex-1 justify-end gap-2 sm:ml-auto sm:min-w-[280px] lg:min-w-[360px]">
+              <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
+                <Search size={14} />
+                <input
+                  value={dialogueSearch}
+                  onChange={(event) => setDialogueSearch(event.target.value)}
+                  placeholder="Search dialogue node name..."
+                  className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
+                />
+              </label>
+              <label className="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
+                <Search size={14} />
+                <input
+                  value={dialogueTextSearch}
+                  onChange={(event) => setDialogueTextSearch(event.target.value)}
+                  placeholder="Search source or translation..."
+                  className="min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
+                />
+              </label>
+              <label
+                title="Filter by review status"
+                className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs font-semibold text-neutral-400"
+              >
+                <ClipboardCheck size={13} className="text-neutral-500" />
+                <select
+                  value={reviewFilter}
+                  onChange={(event) => setReviewFilter(event.target.value as 'all' | ReviewStatus)}
+                  aria-label="Filter by review status"
+                  className="max-w-36 cursor-pointer bg-transparent text-xs text-neutral-300 outline-none"
+                >
+                  <option value="all">All statuses</option>
+                  <option value="untranslated">Untranslated</option>
+                  <option value="not-verified">Not verified</option>
+                  <option value="needs-review">Needs review</option>
+                  <option value="verified">Verified</option>
+                </select>
+              </label>
+              <button
+                type="button"
+                disabled={!selected}
+                onClick={() => selected && window.api.dialogue.open(selected.dialogue)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-amber-400/40 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ExternalLink size={12} /> Open online
+              </button>
+            </div>
+          </div>
+        </header>
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)]">
+          <aside
+            style={treePanelStyle}
+            className="contents lg:grid lg:min-h-0 lg:max-h-none lg:grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] lg:border-r lg:border-[#1f2329]"
+          >
+            <div className="order-1 min-h-[var(--dialogue-tree-mobile-height)] overflow-y-auto border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0">
+              <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
+                Dialogue tree · {visibleChoices.length}
+              </div>
+              <TreeItems
+                nodes={tree}
+                expanded={expandedNodes}
+                toggle={toggleTree}
+                selected={selected}
+                select={setSelectedKey}
+                translated={translatedDialogues}
+                reviewStats={reviewStats}
+              />
+              {visibleChoices.length === 0 && (
+                <p className="px-2 py-4 text-xs text-neutral-600">
+                  No dialogue nodes found for this act.
+                </p>
+              )}
+            </div>
+            <div className="order-3 min-h-[420px] overflow-hidden border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0 lg:border-b-0">
+              {selected ? (
+                <div className="flex h-full min-h-0 w-full flex-col rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                  <div className="relative flex min-h-0 flex-1 w-full min-w-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
+                    <webview
+                      ref={graphWebviewRef}
+                      title="BG3 dialogue graph"
+                      src={
+                        'https://bg3.game-script.com/files/' + encodeURIComponent(selected.dialogue)
+                      }
+                      allowpopups
+                      className="block h-full min-h-0 w-full min-w-0 border-0"
+                      style={{ height: '100%', width: '100%', display: 'flex' }}
+                    />
+                  </div>
                 </div>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-neutral-600">
+                  Select a dialogue to view its graph.
+                </div>
+              )}
+            </div>
+          </aside>
+          <section className="order-2 icosa-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
+            {selected ? (
+              <div className="w-full space-y-3">
+                {nodes.map((node, index) => {
+                  const query = dialogueTextSearch.trim().toLocaleLowerCase()
+                  const matches = (
+                    dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []
+                  ).filter(
+                    (entry) =>
+                      (reviewFilter === 'all' ||
+                        (!entry.target.trim()
+                          ? 'untranslated'
+                          : (entry.reviewStatus ?? 'needs-review')) === reviewFilter) &&
+                      (!query ||
+                        `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query))
+                  )
+                  const borderClass = 'border-[#1f2329]'
+                  return (
+                    <div
+                      key={node.node}
+                      id={`dialogue-node-${node.node}`}
+                      className={cn(
+                        'rounded-lg border bg-[#131518] p-4 transition-shadow',
+                        borderClass,
+                        focusedNode === node.node &&
+                          'ring-2 ring-amber-400/60 shadow-[0_0_24px_rgba(34,211,238,0.18)]'
+                      )}
+                    >
+                      <div className="mb-3 flex gap-2 font-mono text-[10px] text-neutral-500">
+                        <span className="text-amber-300">Node {index + 1}</span>
+                        <span>{node.node}</span>
+                      </div>
+                      {node.details.length > 0 && (
+                        <div className="mb-3 rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-[10px] leading-4 text-neutral-500">
+                          {node.details.join(' · ')}
+                        </div>
+                      )}
+                      {matches.length === 0 ? (
+                        <div className="text-xs italic text-neutral-600">
+                          No matching localization string
+                        </div>
+                      ) : (
+                        matches.map((entry) => (
+                          <div
+                            key={entry.rowId}
+                            data-dialogue-source={entry.source}
+                            data-dialogue-uid={entry.uid}
+                            className="mb-3 grid grid-cols-1 gap-3 last:mb-0 lg:grid-cols-2"
+                          >
+                            {entry.genderVariant && entry.genderVariant !== 'default' && (
+                              <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-400">
+                                <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5">
+                                  {entry.genderVariant}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
+                                Source · {session.sourceLang.toUpperCase()}
+                                {selectedSpeaker && (
+                                  <span
+                                    className={cn(
+                                      'ml-1 rounded border px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal',
+                                      selectedSpeaker.gender === 'female'
+                                        ? 'border-pink-400/35 bg-pink-500/10 text-pink-300'
+                                        : 'border-blue-400/35 bg-blue-500/10 text-blue-300'
+                                    )}
+                                    title={`Speaker: ${selectedSpeaker.name}`}
+                                  >
+                                    {selectedSpeaker.name}
+                                  </span>
+                                )}
+                                <button
+                                  type="button"
+                                  aria-label="Copy source"
+                                  title="Copy source"
+                                  onClick={(event) => copySource(event, entry.source)}
+                                  className="inline-flex h-5 items-center rounded px-1.5 text-neutral-400 hover:bg-[#1c1f24] hover:text-neutral-200"
+                                >
+                                  <Copy size={11} />
+                                </button>
+                              </div>
+                              <div className="translation-source-text rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
+                                {entry.source}
+                              </div>
+                            </div>
+                            <div>
+                              {(() => {
+                                const variant =
+                                  genderVariants[entry.rowId] ?? entry.genderVariant ?? 'default'
+                                const value =
+                                  variant === 'default'
+                                    ? entry.target
+                                    : (entry.genderTargets?.[variant] ?? '')
+                                return (
+                                  <>
+                                    <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-500/70">
+                                      Translation · {session.targetLang.toUpperCase()}
+                                      <button
+                                        type="button"
+                                        aria-label="Paste translation"
+                                        title="Paste translation"
+                                        onClick={(event) => pasteTranslation(event, entry.rowId)}
+                                        className="inline-flex h-5 items-center rounded px-1.5 text-amber-300/80 hover:bg-amber-500/10 hover:text-amber-200"
+                                      >
+                                        <ClipboardPaste size={11} />
+                                      </button>
+                                    </div>
+                                    <TranslationInput
+                                      value={value}
+                                      onCommit={(value) => {
+                                        if (variant === 'default') {
+                                          if (value !== entry.target)
+                                            session.updateEntry(entry.rowId, value)
+                                        } else if (
+                                          value !== (entry.genderTargets?.[variant] ?? '')
+                                        ) {
+                                          session.updateGenderVariant(entry.rowId, variant, value)
+                                        }
+                                        session.markManual(entry.rowId)
+                                      }}
+                                    />
+                                    <div className="mt-1 flex flex-wrap items-center gap-1">
+                                      {(['default', 'female', 'neutral'] as GenderVariant[]).map(
+                                        (item) => {
+                                          const value =
+                                            item === 'default' || entry.genderVariant === item
+                                              ? entry.target
+                                              : (entry.genderTargets?.[item] ?? '')
+                                          return (
+                                            <button
+                                              key={item}
+                                              type="button"
+                                              onClick={() =>
+                                                setGenderVariants((previous) => ({
+                                                  ...previous,
+                                                  [entry.rowId]: item
+                                                }))
+                                              }
+                                              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}
+                                            >
+                                              {value.trim() && (
+                                                <Check
+                                                  size={9}
+                                                  className="mr-0.5 text-emerald-400"
+                                                />
+                                              )}{' '}
+                                              {item}
+                                            </button>
+                                          )
+                                        }
+                                      )}
+                                      <span
+                                        className="mx-1 h-4 border-l border-[#2a2f37]"
+                                        aria-hidden="true"
+                                      />
+                                      <button
+                                        type="button"
+                                        title="Translate with Gemini"
+                                        aria-label="Translate with Gemini"
+                                        onClick={(event) => {
+                                          event.stopPropagation()
+                                          setAiEntry(entry)
+                                        }}
+                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"
+                                      >
+                                        <Sparkles size={13} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        title="Show similarity examples"
+                                        aria-label="Show similarity examples"
+                                        onClick={(event) => {
+                                          event.stopPropagation()
+                                          setSimilarityEntry(entry)
+                                        }}
+                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-300"
+                                      >
+                                        <BookOpen size={13} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        title="History of changes"
+                                        aria-label="History of changes"
+                                        onClick={(event) => {
+                                          event.stopPropagation()
+                                          setHistoryEntry(entry)
+                                        }}
+                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"
+                                      >
+                                        <History size={13} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        title="Needs review"
+                                        aria-label="Needs review"
+                                        onClick={(event) => {
+                                          event.stopPropagation()
+                                          session.toggleNeedsReview(entry.rowId)
+                                        }}
+                                        className={cn(
+                                          'inline-flex h-6 w-6 items-center justify-center rounded border transition-colors',
+                                          entry.needsReview
+                                            ? 'border-rose-400/40 bg-rose-500/15 text-rose-300'
+                                            : 'border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-rose-400/40 hover:text-rose-300'
+                                        )}
+                                      >
+                                        <Flag size={12} />
+                                      </button>
+                                      <span
+                                        className="mx-1 h-4 border-l border-[#2a2f37]"
+                                        aria-hidden="true"
+                                      />
+                                      {reviewStatusOptions.map((option) => {
+                                        const Icon = option.icon
+                                        return (
+                                          <button
+                                            key={option.value}
+                                            type="button"
+                                            title={option.title}
+                                            aria-label={`${option.title} translation`}
+                                            onClick={(event) => {
+                                              event.stopPropagation()
+                                              session.setReviewStatus(entry.rowId, option.value)
+                                            }}
+                                            className={cn(
+                                              'inline-flex h-6 w-6 items-center justify-center rounded border transition-colors',
+                                              reviewStatus(entry) === option.value
+                                                ? option.active
+                                                : option.idle
+                                            )}
+                                          >
+                                            <Icon size={13} />
+                                          </button>
+                                        )
+                                      })}
+                                    </div>
+                                  </>
+                                )
+                              })()}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-neutral-600">
-                Select a dialogue to view its graph.
+                Select a dialogue from the list.
               </div>
             )}
-          </div>
-        </aside>
-        <section className="order-2 icosa-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
-          {selected ? (
-            <div className="w-full space-y-3">
-              {nodes.map((node, index) => {
-                const query = dialogueTextSearch.trim().toLocaleLowerCase()
-                const matches = (dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []).filter(
-                  (entry) =>
-                    (reviewFilter === 'all' || (!entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')) === reviewFilter) &&
-                    (!query || `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query))
-                )
-                const borderClass = 'border-[#1f2329]'
-                return (
-                  <div
-                    key={node.node}
-                    id={`dialogue-node-${node.node}`}
-                    className={cn(
-                      'rounded-lg border bg-[#131518] p-4 transition-shadow',
-                      borderClass,
-                      focusedNode === node.node && 'ring-2 ring-amber-400/60 shadow-[0_0_24px_rgba(34,211,238,0.18)]'
-                    )}
-                  >
-                    <div className="mb-3 flex gap-2 font-mono text-[10px] text-neutral-500">
-                      <span className="text-amber-300">Node {index + 1}</span>
-                      <span>{node.node}</span>
-                    </div>
-                    {node.details.length > 0 && (
-                      <div className="mb-3 rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-[10px] leading-4 text-neutral-500">
-                        {node.details.join(' · ')}
-                      </div>
-                    )}
-                    {matches.length === 0 ? (
-                      <div className="text-xs italic text-neutral-600">
-                        No matching localization string
-                      </div>
-                    ) : (
-                      matches.map((entry) => (
-                        <div
-                          key={entry.rowId}
-                          data-dialogue-source={entry.source}
-                          data-dialogue-uid={entry.uid}
-                          className="mb-3 grid grid-cols-1 gap-3 last:mb-0 lg:grid-cols-2"
-                        >
-                          {entry.genderVariant && entry.genderVariant !== 'default' && (
-                            <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-400">
-                              <span className="rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5">{entry.genderVariant}</span>
-                            </div>
-                          )}
-                          <div>
-                            <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
-                              Source · {session.sourceLang.toUpperCase()}
-                              {selectedSpeaker && (
-                                <span className={cn('ml-1 rounded border px-1.5 py-0.5 text-[9px] font-medium normal-case tracking-normal', selectedSpeaker.gender === 'female' ? 'border-pink-400/35 bg-pink-500/10 text-pink-300' : 'border-blue-400/35 bg-blue-500/10 text-blue-300')} title={`Speaker: ${selectedSpeaker.name}`}>
-                                  {selectedSpeaker.name}
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                aria-label="Copy source"
-                                title="Copy source"
-                                onClick={(event) => copySource(event, entry.source)}
-                                className="inline-flex h-5 items-center rounded px-1.5 text-neutral-400 hover:bg-[#1c1f24] hover:text-neutral-200"
-                              >
-                                <Copy size={11} />
-                              </button>
-                            </div>
-                            <div className="translation-source-text rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
-                              {entry.source}
-                            </div>
-                          </div>
-                          <div>
-                            {(() => {
-                              const variant = genderVariants[entry.rowId] ?? entry.genderVariant ?? 'default'
-                              const value = variant === 'default' ? entry.target : (entry.genderTargets?.[variant] ?? '')
-                              return (
-                                <>
-                            <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-500/70">
-                              Translation · {session.targetLang.toUpperCase()}
-                              <button
-                                type="button"
-                                aria-label="Paste translation"
-                                title="Paste translation"
-                                onClick={(event) => pasteTranslation(event, entry.rowId)}
-                                className="inline-flex h-5 items-center rounded px-1.5 text-amber-300/80 hover:bg-amber-500/10 hover:text-amber-200"
-                              >
-                                <ClipboardPaste size={11} />
-                              </button>
-                            </div>
-                            <TranslationInput
-                              value={value}
-                              onCommit={(value) => {
-                                if (variant === 'default') {
-                                  if (value !== entry.target) session.updateEntry(entry.rowId, value)
-                                } else if (value !== (entry.genderTargets?.[variant] ?? '')) {
-                                  session.updateGenderVariant(entry.rowId, variant, value)
-                                }
-                                session.markManual(entry.rowId)
-                              }}
-                            />
-                            <div className="mt-1 flex flex-wrap items-center gap-1">
-                              {(['default', 'female', 'neutral'] as GenderVariant[]).map((item) => { const value = item === 'default' || entry.genderVariant === item ? entry.target : (entry.genderTargets?.[item] ?? ''); return <button key={item} type="button" onClick={() => setGenderVariants((previous) => ({ ...previous, [entry.rowId]: item }))} className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] uppercase ${variant === item ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-[#1f2329] text-neutral-600 hover:text-neutral-400'}`}>{value.trim() && <Check size={9} className="mr-0.5 text-emerald-400" />} {item}</button> })}
-                              <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
-                              <button type="button" title="Translate with Gemini" aria-label="Translate with Gemini" onClick={(event) => { event.stopPropagation(); setAiEntry(entry) }} className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"><Sparkles size={13} /></button>
-                              <button type="button" title="History of changes" aria-label="History of changes" onClick={(event) => { event.stopPropagation(); setHistoryEntry(entry) }} className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 hover:border-amber-500/60 hover:text-amber-400"><History size={13} /></button>
-                              <button type="button" title="Needs review" aria-label="Needs review" onClick={(event) => { event.stopPropagation(); session.toggleNeedsReview(entry.rowId) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', entry.needsReview ? 'border-rose-400/40 bg-rose-500/15 text-rose-300' : 'border-[#1f2329] bg-[#131518] text-neutral-500 hover:border-rose-400/40 hover:text-rose-300')}><Flag size={12} /></button>
-                              <span className="mx-1 h-4 border-l border-[#2a2f37]" aria-hidden="true" />
-                              {reviewStatusOptions.map((option) => { const Icon = option.icon; return <button key={option.value} type="button" title={option.title} aria-label={`${option.title} translation`} onClick={(event) => { event.stopPropagation(); session.setReviewStatus(entry.rowId, option.value) }} className={cn('inline-flex h-6 w-6 items-center justify-center rounded border transition-colors', reviewStatus(entry) === option.value ? option.active : option.idle)}><Icon size={13} /></button> })}
-                            </div>
-                                </>
-                              )
-                            })()}
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm text-neutral-600">
-              Select a dialogue from the list.
-            </div>
-          )}
-        </section>
+          </section>
+        </div>
       </div>
-    </div>
     </>
   )
 }

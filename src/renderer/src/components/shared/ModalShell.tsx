@@ -9,6 +9,7 @@ interface ModalShellProps {
   description?: string
   icon?: ReactNode
   sizeClassName?: string
+  panelClassName?: string
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
@@ -20,6 +21,7 @@ export function ModalShell({
   description,
   icon,
   sizeClassName = 'max-w-3xl',
+  panelClassName,
   onClose,
   children,
   footer
@@ -42,7 +44,7 @@ export function ModalShell({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
@@ -52,7 +54,8 @@ export function ModalShell({
         aria-modal="true"
         className={cn(
           'w-full overflow-hidden rounded-xl border border-[#1f2329] bg-[#131518] shadow-[0_24px_80px_rgba(0,0,0,0.45)]',
-          sizeClassName
+          sizeClassName,
+          panelClassName
         )}
       >
         <div className="flex items-start gap-3 border-b border-[#1f2329] px-5 py-4">

@@ -36,6 +36,7 @@ import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
+import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
   type FilterSpec,
@@ -488,6 +489,7 @@ export function TranslationGrid({
   const [genderVariants, setGenderVariants] = useState<Record<string, GenderVariant>>({})
   // Row the per-line "Translate with AI" modal is open for (null = closed).
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
+  const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
   const [dialogueKey, setDialogueKey] = useState<{ file: string; dialogue: string } | null>(null)
   const [dialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
   const [showLiveGraph, setShowLiveGraph] = useState(true)
@@ -977,18 +979,32 @@ export function TranslationGrid({
   // Per-row "Translate with AI" chip - opens the modal with similarity examples and the
   // per-line prompt for that entry. Uses whichever provider is active in Settings.
   const renderAiButton = (entry: TranslationSessionEntry) => (
-    <button
-      type="button"
-      onClick={(event) => {
-        event.stopPropagation()
-        setAiEntry(entry)
-      }}
-      className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-400"
-      aria-label="Translate with Gemini"
-      title="Translate with Gemini"
-    >
-      <Sparkles size={13} />
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation()
+          setAiEntry(entry)
+        }}
+        className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-400"
+        aria-label="Translate with Gemini"
+        title="Translate with Gemini"
+      >
+        <Sparkles size={13} />
+      </button>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation()
+          setSimilarityEntry(entry)
+        }}
+        className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border border-[#1f2329] bg-[#131518] text-neutral-300 transition-colors hover:border-amber-500/60 hover:text-amber-300"
+        aria-label="Show similarity examples"
+        title="Show similarity examples"
+      >
+        <BookOpen size={13} />
+      </button>
+    </>
   )
 
   const renderReviewButton = (entry: TranslationSessionEntry) => (
@@ -1038,6 +1054,15 @@ export function TranslationGrid({
         markSticky(aiEntry.rowId)
       }}
       onClose={() => setAiEntry(null)}
+    />
+  )
+  const similarityModal = similarityEntry && (
+    <SimilarityExamplesModal
+      open
+      source={similarityEntry.source}
+      sourceLang={sourceLang}
+      targetLang={targetLang}
+      onClose={() => setSimilarityEntry(null)}
     />
   )
   const historyModal = historyEntry && (
@@ -1725,6 +1750,12 @@ export function TranslationGrid({
                   : 'cursor-pointer text-neutral-400 hover:bg-[#181b1f] hover:text-neutral-200'
               )}
             >
+              <span
+                className={cn(
+                  'inline-block h-1.5 w-1.5 rounded-full',
+                  isXmlTagFilter ? 'bg-purple-400' : 'bg-cyan-400'
+                )}
+              />
               <span>{isXmlTagFilter ? 'XML' : 'PL'}</span>
               <span
                 className={cn(
@@ -2462,6 +2493,7 @@ export function TranslationGrid({
 
         {PaginationFooter}
         {aiModal}
+        {similarityModal}
         {historyModal}
       </div>
     )
@@ -2750,6 +2782,7 @@ export function TranslationGrid({
 
       {PaginationFooter}
       {aiModal}
+      {similarityModal}
       {historyModal}
     </div>
   )

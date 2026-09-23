@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { renderSource } from '@/utils/renderSource'
 
@@ -8,6 +8,7 @@ interface HighlightedTextareaProps
   containerClassName?: string
   overlayClassName?: string
   highlightQuery?: string
+  autoGrow?: boolean
 }
 
 export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTextareaProps>(
@@ -21,6 +22,7 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
       containerClassName,
       overlayClassName,
       highlightQuery,
+      autoGrow = false,
       placeholder,
       ...props
     },
@@ -28,10 +30,20 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
   ) {
     const [draft, setDraft] = useState(value)
     const [focused, setFocused] = useState(false)
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     useEffect(() => {
       if (!focused) setDraft(value)
     }, [value, focused])
+
+    useEffect(() => {
+      if (!autoGrow) return
+      const textarea = textareaRef.current
+      if (textarea) {
+        textarea.style.height = 'auto'
+        textarea.style.height = `${textarea.scrollHeight}px`
+      }
+    }, [autoGrow, draft, value])
 
     return (
       <div
@@ -57,7 +69,11 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
 
         <textarea
           {...props}
-          ref={ref}
+          ref={(node) => {
+            textareaRef.current = node
+            if (typeof ref === 'function') ref(node)
+            else if (ref) ref.current = node
+          }}
           value={draft}
           spellCheck={false}
           onFocus={(event) => {
@@ -75,6 +91,7 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
           placeholder={placeholder}
           style={{
             ...props.style,
+            ...(autoGrow ? { height: 'auto', overflow: 'hidden' } : {}),
             color: 'transparent',
             WebkitTextFillColor: 'transparent',
             caretColor: 'var(--color-neutral-200, #e5e5e5)'
