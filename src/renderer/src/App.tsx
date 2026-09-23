@@ -13,6 +13,7 @@ import { ReferencePage } from './pages/ReferencePage'
 import { SettingsPage } from './pages/SettingsPage'
 import { TranslatePage } from './pages/TranslatePage'
 import { UpdateNotifier } from './components/layout/UpdateNotifier'
+import { SpellsPage } from './pages/SpellsPage'
 
 function App(): React.JSX.Element {
   return (
@@ -38,6 +39,7 @@ function App(): React.JSX.Element {
           <Route path="/consistency" element={<ConsistencyPage />} />
           <Route path="/dialogues" element={<DialogueNodesPage />} />
           <Route path="/game-data" element={<ReferencePage />} />
+          <Route path="/spells" element={<SpellsPage />} />
           <Route path="/game-interface" element={<GameInterfacePage />} />
           <Route path="/workspace" element={<WorkspacePage />} />
           <Route path="/workspace/import" element={<Navigate to="/workspace" replace />} />

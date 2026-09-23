@@ -1,6 +1,7 @@
 import {
   BookOpen,
   Swords,
+  WandSparkles,
   FolderKanban,
   FolderSync,
   GitBranch,
@@ -34,6 +35,7 @@ const NAV_GROUPS: NavGroupConfig[] = [
     items: [
       { to: '/dialogues', icon: GitBranch, labelKey: 'dialogues', kbd: 'Ctrl 3' },
       { to: '/game-data', icon: Swords, labelKey: 'gameData', kbd: 'Ctrl 4' },
+      { to: '/spells', icon: WandSparkles, labelKey: 'spells', kbd: 'Ctrl 5' },
       { to: '/game-interface', icon: MonitorCog, labelKey: 'gameInterface', kbd: 'Ctrl 5' }
     ]
   },
