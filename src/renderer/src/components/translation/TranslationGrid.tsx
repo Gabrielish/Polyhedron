@@ -494,12 +494,58 @@ export function TranslationGrid({
   const [dialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
   const [showLiveGraph, setShowLiveGraph] = useState(true)
   const [onlineNodeMeta, setOnlineNodeMeta] = useState<Record<string, OnlineNodeMeta>>({})
+  const [showTranslationSuggestions, setShowTranslationSuggestions] = useState(false)
+  const [translationSuggestions, setTranslationSuggestions] = useState<
+    Record<string, { one: string; two: string }>
+  >({})
+  const [translationSuggestionsLoading, setTranslationSuggestionsLoading] = useState(false)
+  const [translationSuggestionsLoaded, setTranslationSuggestionsLoaded] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const savedByEnterRef = useRef<Set<string>>(new Set())
   const sideParentRef = useRef<HTMLDivElement>(null)
   const stackedParentRef = useRef<HTMLDivElement>(null)
   const liveGraphWebviewRef = useRef<HTMLElement | null>(null)
+
+  const handleSuggestionsToggle = (checked: boolean): void => {
+    setShowTranslationSuggestions(checked)
+    if (!checked || translationSuggestionsLoaded || translationSuggestionsLoading) return
+
+    setTranslationSuggestionsLoading(true)
+    void window.api.translationSuggestions
+      .load()
+      .then((suggestions) => {
+        setTranslationSuggestions(suggestions)
+        setTranslationSuggestionsLoaded(true)
+      })
+      .catch(() => {
+        toast.error('Nu s-au putut încărca sugestiile din traducere1.xml și traducere2.xml.')
+      })
+      .finally(() => setTranslationSuggestionsLoading(false))
+  }
+
+  const renderTranslationSuggestions = (
+    entry: TranslationSessionEntry
+  ): React.JSX.Element | null => {
+    if (!showTranslationSuggestions) return null
+    const pair = translationSuggestions[entry.uid]
+    if (!pair || (!pair.one && !pair.two)) return null
+
+    return (
+      <div className="mt-1 space-y-0.5 text-[12px] leading-[1.5] text-neutral-600">
+        {[pair.one, pair.two].map((text, index) =>
+          text ? (
+            <div
+              key={`${entry.uid}-suggestion-${index}`}
+              className="min-w-0 wrap-break-word whitespace-pre-wrap"
+            >
+              {renderSource(text, { highlightQuery: '' })}
+            </div>
+          ) : null
+        )}
+      </div>
+    )
+  }
 
   const counts = useMemo(() => {
     let translated = 0
@@ -1980,6 +2026,19 @@ export function TranslationGrid({
         </label>
 
         <label
+          title="Afișează sugestiile din traducere1.xml și traducere2.xml sub sursă"
+          className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-2 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+        >
+          <input
+            type="checkbox"
+            checked={showTranslationSuggestions}
+            onChange={(event) => handleSuggestionsToggle(event.target.checked)}
+            className="cursor-pointer accent-amber-500"
+          />
+          {translationSuggestionsLoading ? 'Suggestions…' : 'Suggestions'}
+        </label>
+
+        <label
           title="Filter by speaker"
           className="inline-flex h-8 shrink-0 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400"
         >
@@ -2376,6 +2435,7 @@ export function TranslationGrid({
                         </span>
                       )}
                     </div>
+                    {renderTranslationSuggestions(entry)}
                     <div className="flex flex-wrap items-center gap-1.5">
                       {showId && (
                         <span className="font-mono text-[10px] text-neutral-500">{entry.uid}</span>
@@ -2696,6 +2756,7 @@ export function TranslationGrid({
                           </span>
                         )}
                       </div>
+                      {renderTranslationSuggestions(entry)}
                       {isDictionary && (
                         <div className="hidden flex-wrap items-center gap-2 rounded-lg border border-dashed border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 group-focus-within:flex">
                           <span className="text-[11px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">

@@ -324,6 +324,11 @@ const api: AppApi = {
       on('xml:load:progress', cb)
   },
 
+  translationSuggestions: {
+    load: (): Promise<Record<string, { one: string; two: string }>> =>
+      ipcRenderer.invoke('translation-suggestions:load')
+  },
+
   merge: {
     prepareInput: (params: { inputPath: string }) =>
       ipcRenderer.invoke('merge:prepareInput', params),

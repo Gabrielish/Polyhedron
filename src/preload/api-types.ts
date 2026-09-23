@@ -628,6 +628,7 @@ export interface AppApi {
   fs: FsApi
   log: LogApi
   xml: XmlApi
+  translationSuggestions: TranslationSuggestionsApi
   merge: MergeApi
   window: WindowApi
   metrics: MetricsApi
@@ -636,6 +637,10 @@ export interface AppApi {
   session: SessionApi
   cloud: CloudApi
   update: UpdateApi
+}
+
+export interface TranslationSuggestionsApi {
+  load(): Promise<Record<string, { one: string; two: string }>>
 }
 
 export type UpdateState =
@@ -667,9 +672,7 @@ export interface SessionApi {
       history?: TranslationHistoryEntry[]
     }>
   }): Promise<{ success: boolean }>
-  load(params: {
-    key: string
-  }): Promise<Array<{
+  load(params: { key: string }): Promise<Array<{
     uid: string
     target: string
     genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
@@ -688,16 +691,12 @@ export interface WorkspaceApi {
 }
 
 export interface CloudApi {
-  upload(params?: {
-    sessionKey?: string
-  }): Promise<{
+  upload(params?: { sessionKey?: string }): Promise<{
     fileName: string
     modifiedTime?: string
     stats: { translated: number; total: number; fingerprint: string }
   }>
-  download(params?: {
-    sessionKey?: string
-  }): Promise<{
+  download(params?: { sessionKey?: string }): Promise<{
     fileName: string
     restartRequired: boolean
     stats: { translated: number; total: number; fingerprint: string }

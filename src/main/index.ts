@@ -16,6 +16,7 @@ import { registerMetricsHandlers } from './ipc/metrics.ipc'
 import { registerModHandlers } from './ipc/mod.ipc'
 import { registerPromptSlotHandlers } from './ipc/prompt-slot.ipc'
 import { registerTranslationHandlers } from './ipc/translation.ipc'
+import { registerTranslationSuggestionHandlers } from './ipc/translation-suggestions.ipc'
 import { registerSessionHandlers } from './ipc/session.ipc'
 import { registerCloudHandlers } from './ipc/cloud.ipc'
 import { registerWindowHandlers, setupWindowEvents } from './ipc/window.ipc'
@@ -108,6 +109,7 @@ app.whenReady().then(() => {
 
   registerWindowHandlers(getWindow)
   registerTranslationHandlers(getWindow, repos, usageService)
+  registerTranslationSuggestionHandlers()
   registerSessionHandlers()
   registerCloudHandlers()
   registerDictionaryHandlers(repos)
