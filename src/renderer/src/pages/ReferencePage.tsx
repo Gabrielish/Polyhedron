@@ -439,17 +439,20 @@ export function ReferencePage(): React.JSX.Element {
   const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
   useEffect(() => {
-    const spellName = searchParams.get('spell')
+    if (session.phase !== 'loaded') return
+    const spellName = searchParams.get('spell')?.trim()
     if (!spellName) return
-    const spell = getReferenceCatalog('Spell').find(
-      (entry) => normalize(entry.name) === normalize(spellName)
-    )
+    const spellCatalog = getReferenceCatalog('Spell')
+    const normalizedSpellName = normalize(spellName)
+    const spell =
+      spellCatalog.find((entry) => normalize(entry.name) === normalizedSpellName) ??
+      spellCatalog.find((entry) => normalize(entry.name).includes(normalizedSpellName))
     if (spell) {
       setCategory('Spell')
       setSelected(spell)
       setQuery('')
     }
-  }, [searchParams])
+  }, [searchParams, session.phase])
   if (session.phase !== 'loaded')
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
@@ -489,8 +492,15 @@ export function ReferencePage(): React.JSX.Element {
         )
       : allEntries
   }, [allEntries, query, uidBySource])
+  const requestedSpell = searchParams.get('spell')?.trim()
+  const requestedEntry = requestedSpell
+    ? getReferenceCatalog('Spell').find(
+        (entry) => normalize(entry.name) === normalize(requestedSpell)
+      ) ?? null
+    : null
   const current =
-    selected && (!category || selected.category === category) ? selected : (filtered[0] ?? null)
+    requestedEntry ??
+    (selected && (!category || selected.category === category) ? selected : (filtered[0] ?? null))
   const linkedTitle = current
     ? session.entries.filter((entry) => normalize(entry.source) === normalize(current.name))
     : []

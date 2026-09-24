@@ -2543,3 +2543,153 @@ html[data-theme='liquid-glass'] .accent-solid-button:hover {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+
+/* Spells is a dense catalog: let the browser skip layout/paint work for cards
+   that are outside the scroll viewport while keeping the existing grid. */
+.spells-page .spell-card,
+.spells-edit-dialog {
+  isolation: isolate;
+  background: linear-gradient(145deg, rgb(20 20 22 / 96%), rgb(15 16 18 / 96%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+}
+
+.spells-page .spell-card::before,
+.spells-edit-dialog::before {
+  content: '';
+  position: absolute;
+  inset: 0 18% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(var(--poly-accent-rgb, 237 28 36) / 42%), transparent);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.spells-page .spell-card > *,
+.spells-edit-dialog > * {
+  position: relative;
+  z-index: 1;
+}
+
+.spells-page .spell-card {
+  content-visibility: auto;
+  contain: layout paint style;
+  contain-intrinsic-size: 260px;
+}
+
+html[data-theme='liquid-glass'] .spells-page .spell-card {
+  border-color: rgb(255 255 255 / 12%);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 7%), transparent 46%),
+    rgb(18 22 29 / 52%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 12px 28px rgb(0 0 0 / 16%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+html[data-theme='liquid-glass'] .spells-page .spell-card:hover {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 42%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    0 16px 34px rgb(0 0 0 / 22%),
+    0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
+}
+
+.spells-page .spell-card.spell-card-complete {
+  border-color: rgb(52 211 153 / 62%) !important;
+  background-color: rgb(18 22 29 / 52%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 12px 28px rgb(0 0 0 / 16%),
+    0 0 18px rgb(52 211 153 / 8%);
+}
+.spells-page .spell-card.spell-card-complete::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 12px;
+  width: 56px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: rgb(52 211 153 / 88%);
+  box-shadow: 0 0 12px rgb(52 211 153 / 35%);
+  pointer-events: none;
+}
+.spells-page .spell-card.spell-card-complete:hover {
+  border-color: rgb(52 211 153 / 86%) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    0 16px 34px rgb(0 0 0 / 22%),
+    0 0 24px rgb(52 211 153 / 14%);
+}
+
+html[data-theme='liquid-glass'] .spells-edit-dialog {
+  border-color: rgb(255 255 255 / 12%);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 7%), transparent 46%),
+    rgb(18 22 29 / 68%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 12px 28px rgb(0 0 0 / 24%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+html[data-theme='liquid-glass'] .spells-edit-dialog input,
+html[data-theme='liquid-glass'] .spells-edit-dialog textarea {
+  border-color: rgb(255 255 255 / 13%) !important;
+  background: rgb(255 255 255 / 4%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+}
+
+html[data-theme='liquid-glass'] .spells-edit-dialog input:focus,
+html[data-theme='liquid-glass'] .spells-edit-dialog textarea:focus {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 48%) !important;
+  background: rgb(255 255 255 / 6%) !important;
+}
+
+html[data-theme='liquid-glass'] .spells-edit-dialog .spells-edit-source {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none;
+  padding: 0;
+}
+
+.spells-edit-dialog .spells-edit-source {
+  font-family: 'Cascadia Code', monospace;
+}
+
+.spells-edit-dialog .spells-edit-translation,
+.spells-edit-dialog .spells-edit-translation textarea {
+  min-height: 0 !important;
+}
+
+.spells-edit-dialog .spells-edit-translation textarea {
+  height: auto;
+  max-height: 18rem;
+  overflow-y: auto !important;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+html[data-theme='liquid-glass'] .spells-edit-dialog [class~='bg-[#0c0d0f]'],
+html[data-theme='liquid-glass'] .spells-edit-dialog [class~='bg-[#11151b]'] {
+  background: rgb(255 255 255 / 3%) !important;
+}
+
+/* Spells uses the Polyhedron neutral/red palette; keep the old amber utility
+   classes from leaking the yellow accent into this page. */
+.spells-page [class*='text-amber-'] {
+  color: rgb(203 213 225) !important;
+}
+.spells-page [class*='border-amber-'] {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 28%) !important;
+}
+.spells-page [class*='bg-amber-'] {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 9%) !important;
+}
+.spells-page [class*='hover\\:text-amber-']:hover {
+  color: rgb(241 245 249) !important;
+}
+.spells-page [class*='hover\\:border-amber-']:hover {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 48%) !important;
+}
