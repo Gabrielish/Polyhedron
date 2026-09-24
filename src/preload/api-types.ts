@@ -691,15 +691,16 @@ export interface WorkspaceApi {
 }
 
 export interface CloudApi {
-  upload(params?: { sessionKey?: string }): Promise<{
+  upload(params?: { sessionKey?: string; termGlossary?: { key: string; entries: Array<{ id: string; source: string; translation: string }> } }): Promise<{
     fileName: string
     modifiedTime?: string
     stats: { translated: number; total: number; fingerprint: string }
   }>
-  download(params?: { sessionKey?: string }): Promise<{
+  download(params?: { sessionKey?: string; termGlossaryKey?: string }): Promise<{
     fileName: string
     restartRequired: boolean
     stats: { translated: number; total: number; fingerprint: string }
+    termGlossary?: Array<{ id: string; source: string; translation: string }>
   }>
   syncStamp(): Promise<string | null>
 }

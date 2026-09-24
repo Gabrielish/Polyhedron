@@ -17,6 +17,8 @@ import type { TranslationSession } from '../types'
 import { isDeveloperNote } from '@/context/TranslationSession'
 import { EditorHeader } from './EditorHeader'
 import { PackageExportModal } from './PackageExportModal'
+import { TermGlossaryModal } from './TermGlossaryModal'
+import { getTermGlossaryStorageKey, loadTermGlossary, type TermGlossaryEntry } from '@/utils/termGlossary'
 
 interface TranslateLoadedScreenProps {
   session: TranslationSession
@@ -29,6 +31,16 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     () => typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
   )
   const [languages, setLanguages] = useState<Language[]>([])
+  const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const termGlossaryProjectKey = session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    termGlossaryProjectKey,
+    session.sourceLang,
+    session.targetLang
+  )
+  const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
+    loadTermGlossary(termGlossaryKey)
+  )
   const sessionRef = useRef(session)
   sessionRef.current = session
   const dictionarySave = useDictionarySave(session)
@@ -54,6 +66,17 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   useEffect(() => {
     window.api.language.getAll().then(setLanguages)
   }, [])
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        termGlossaryKey,
+        JSON.stringify(termGlossary)
+      )
+    } catch {
+      // Glossary remains available for the current session if storage is unavailable.
+    }
+  }, [termGlossary, termGlossaryKey])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 899px)')
@@ -168,6 +191,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
           onViewModeChange={setViewMode}
           onSave={handleSaveSession}
           onSaveToGlossary={handleSaveToDictionary}
+          onOpenTermGlossary={() => setTermGlossaryOpen(true)}
         />
 
       <div className="flex-1 min-h-0">
@@ -175,6 +199,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
             entries={visibleEntries}
             onEntryChange={session.updateEntry}
             onEntryManualEdit={handleEntryManualEdit}
+            termGlossary={termGlossary}
             viewMode={isCompactViewport ? 'stacked' : viewMode}
             selectionActions={
               <BatchActionBar
@@ -227,6 +252,13 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
             : undefined
         }
         onClose={batch.dismissQuotaExceeded}
+      />
+
+      <TermGlossaryModal
+        open={termGlossaryOpen}
+        entries={termGlossary}
+        onChange={setTermGlossary}
+        onClose={() => setTermGlossaryOpen(false)}
       />
     </div>
   )

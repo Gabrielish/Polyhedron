@@ -26,6 +26,7 @@ export interface FilterSpec {
   dialogueScope: DialogueScope | null
   search: string
   exactMatch: boolean
+  startsWith: boolean
   linkNameDescription: boolean
 }
 export type SelectionState =
@@ -56,14 +57,16 @@ const searchCache = new WeakMap<TranslationSessionEntry, { source: string; uid: 
 export function entryMatchesSearch(
   entry: TranslationSessionEntry,
   query: string,
-  exactMatch: boolean
+  exactMatch: boolean,
+  startsWith = false
 ): boolean {
   const normalizedQuery = query.toLowerCase()
   const cached = searchCache.get(entry)
   const source = cached?.source ?? entry.source.toLowerCase()
   const uid = cached?.uid ?? entry.uid.toLowerCase()
   if (!cached) searchCache.set(entry, { source, uid, uidShort: uid.slice(-9) })
-  const matchesText = (text: string): boolean => exactMatch ? text === normalizedQuery : text.includes(normalizedQuery)
+  const matchesText = (text: string): boolean =>
+    startsWith ? source.startsWith(normalizedQuery) : exactMatch ? text === normalizedQuery : text.includes(normalizedQuery)
 
   return (
     matchesText(source) ||
@@ -86,7 +89,7 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
   if (!matchesDialogueFilters(entry.source, filter.dialogueFilters)) return false
   if (!matchesDialogueScope(entry.source, filter.dialogueScope)) return false
   if (filter.search) {
-    const directMatch = entryMatchesSearch(entry, filter.search, filter.exactMatch)
+    const directMatch = entryMatchesSearch(entry, filter.search, filter.exactMatch, filter.startsWith)
     if (directMatch) return true
     if (filter.linkNameDescription) {
       const query = filter.search.toLowerCase()

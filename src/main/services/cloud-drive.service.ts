@@ -15,6 +15,13 @@ import { parseLocalizationXml } from './xml-parser.service'
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
 const CLOUD_FILE_NAME = 'icosa-workspace.icws'
 const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
+const TERM_GLOSSARY_FILE_NAME = 'polyhedron-term-glossary.json'
+
+export type CloudTermGlossaryEntry = { id: string; source: string; translation: string }
+type CloudTermGlossaryDocument = {
+  version: 1
+  glossaries: Record<string, CloudTermGlossaryEntry[]>
+}
 
 type PwaSyncEntry = { uid: string; source: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: 'none' | 'mod-text' | 'text' | 'manual'; needsReview: boolean; reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'; history?: Array<Record<string, unknown>> }
 
@@ -147,6 +154,47 @@ async function uploadPwaSyncFile(drive: drive_v3.Drive, document: ReturnType<typ
   else await drive.files.create({ requestBody: { name: PWA_SYNC_FILE_NAME, mimeType: 'application/json' }, media })
 }
 
+async function readTermGlossaryDocument(drive: drive_v3.Drive): Promise<{ fileId?: string; document: CloudTermGlossaryDocument }> {
+  const result = await drive.files.list({
+    q: `name = '${TERM_GLOSSARY_FILE_NAME}' and trashed = false`,
+    fields: 'files(id)',
+    spaces: 'drive',
+    pageSize: 1
+  })
+  const fileId = result.data.files?.[0]?.id ?? undefined
+  if (!fileId) return { document: { version: 1, glossaries: {} } }
+  try {
+    const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
+    const value = response.data as Partial<CloudTermGlossaryDocument>
+    if (value.version === 1 && value.glossaries && typeof value.glossaries === 'object') {
+      return { fileId, document: { version: 1, glossaries: value.glossaries as Record<string, CloudTermGlossaryEntry[]> } }
+    }
+  } catch {
+    // Rebuild the document if the existing file is empty or malformed.
+  }
+  return { fileId, document: { version: 1, glossaries: {} } }
+}
+
+async function uploadTermGlossaryFile(
+  drive: drive_v3.Drive,
+  glossary: { key: string; entries: CloudTermGlossaryEntry[] }
+): Promise<void> {
+  const { fileId, document } = await readTermGlossaryDocument(drive)
+  document.glossaries[glossary.key] = glossary.entries
+  const media = { mimeType: 'application/json', body: JSON.stringify(document) }
+  if (fileId) await drive.files.update({ fileId, media })
+  else await drive.files.create({ requestBody: { name: TERM_GLOSSARY_FILE_NAME, mimeType: 'application/json' }, media })
+}
+
+async function downloadTermGlossaryFile(
+  drive: drive_v3.Drive,
+  glossaryKey?: string
+): Promise<CloudTermGlossaryEntry[] | undefined> {
+  if (!glossaryKey) return undefined
+  const { document } = await readTermGlossaryDocument(drive)
+  return document.glossaries[glossaryKey]
+}
+
 async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
   const result = await drive.files.list({ q: `name = '${PWA_SYNC_FILE_NAME}' and trashed = false`, fields: 'files(id)', spaces: 'drive', pageSize: 1 })
   const fileId = result.data.files?.[0]?.id
@@ -184,7 +232,10 @@ function dbModRows(): Array<{ name: string; lastFilePath: string | null }> {
   return getDb().select().from(mod).all() as Array<{ name: string; lastFilePath: string | null }>
 }
 
-export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
+export async function uploadWorkspaceToDrive(
+  sessionKey?: string,
+  termGlossary?: { key: string; entries: CloudTermGlossaryEntry[] }
+): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
   const existing = await findWorkspaceFile(drive)
@@ -201,15 +252,19 @@ export async function uploadWorkspaceToDrive(sessionKey?: string): Promise<{ fil
           requestBody: { name: CLOUD_FILE_NAME, mimeType: 'application/octet-stream' },
           media,
           fields: 'id,name,modifiedTime'
-        })
+    })
     await uploadPwaSyncFile(drive, buildPwaSyncDocument())
+    if (termGlossary) await uploadTermGlossaryFile(drive, termGlossary)
     return { fileName: response.data.name ?? CLOUD_FILE_NAME, modifiedTime: response.data.modifiedTime ?? undefined, stats }
   } finally {
     cleanupTempDir(tempDir)
   }
 }
 
-export async function downloadWorkspaceFromDrive(sessionKey?: string): Promise<{ fileName: string; restartRequired: boolean; stats: WorkspaceTranslationStats }> {
+export async function downloadWorkspaceFromDrive(
+  sessionKey?: string,
+  termGlossaryKey?: string
+): Promise<{ fileName: string; restartRequired: boolean; stats: WorkspaceTranslationStats; termGlossary?: CloudTermGlossaryEntry[] }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
   const cloudFile = await findWorkspaceFile(drive)
@@ -232,7 +287,8 @@ export async function downloadWorkspaceFromDrive(sessionKey?: string): Promise<{
     const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'), sessionKey)
     await importWorkspace(workspacePath)
     await applyPwaSyncFromDrive(drive)
-    return { fileName: CLOUD_FILE_NAME, restartRequired: true, stats }
+    const termGlossary = await downloadTermGlossaryFile(drive, termGlossaryKey)
+    return { fileName: CLOUD_FILE_NAME, restartRequired: true, stats, termGlossary }
   } finally {
     cleanupTempDir(tempDir)
   }

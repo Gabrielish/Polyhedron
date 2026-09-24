@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpenCheck,
+  BookText,
   Columns2,
   Loader2,
   Languages,
@@ -10,11 +11,13 @@ import {
   Save,
   Undo2
 } from 'lucide-react'
+import { useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { TranslationSession } from '../types'
 import { btnBase, btnGhostIcon, btnPrimary } from './styles'
 import { TranslationStats } from './TranslationStats'
+import { RomanianDiacritics } from './RomanianDiacritics'
 
 interface EditorHeaderProps {
   session: TranslationSession
@@ -30,6 +33,7 @@ interface EditorHeaderProps {
   onViewModeChange: (mode: 'side' | 'stacked') => void
   onSave: () => Promise<void>
   onSaveToGlossary: () => Promise<void>
+  onOpenTermGlossary: () => void
 }
 
 export function EditorHeader({
@@ -45,9 +49,11 @@ export function EditorHeader({
   verifiedCount,
   onViewModeChange,
   onSave,
-  onSaveToGlossary
+  onSaveToGlossary,
+  onOpenTermGlossary
 }: EditorHeaderProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common'])
+  const [showRomanianDiacritics, setShowRomanianDiacritics] = useState(false)
 
   return (
     <div className="app-page-header editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
@@ -108,6 +114,18 @@ export function EditorHeader({
 
           <button
             type="button"
+            className={btnGhostIcon}
+            onClick={onOpenTermGlossary}
+            title="Term Glossary"
+            aria-label="Term Glossary"
+          >
+            <BookText />
+          </button>
+
+          <div className="w-px h-4.5 bg-[#1f2329] mx-1 shrink-0" />
+
+          <button
+            type="button"
             className={cn(
               btnPrimary,
               'h-[30px] w-auto justify-center',
@@ -146,8 +164,17 @@ export function EditorHeader({
             <span className="text-neutral-500 inline-flex">
               <ArrowRight />
             </span>
-            <span className="font-mono text-amber-400 font-bold">
-              {session.targetLang.toUpperCase()}
+            <span className="inline-flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowRomanianDiacritics((visible) => !visible)}
+                aria-expanded={showRomanianDiacritics}
+                title="Romanian diacritics"
+                className="romanian-language-toggle cursor-pointer bg-transparent font-mono font-bold text-amber-400 outline-none transition-all"
+              >
+                {session.targetLang.toUpperCase()}
+              </button>
+              {showRomanianDiacritics && <RomanianDiacritics />}
             </span>
           </h1>
           <div id="translation-status-tabs" className="min-h-7" />

@@ -30,7 +30,7 @@ import {
   UserRound,
   X
 } from 'lucide-react'
-import { useDeferredValue, useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
@@ -70,6 +70,7 @@ import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata
 import { cn } from '@/lib/utils'
 import { getItemTags } from '@/data/armorReference'
 import { renderSource } from '@/utils/renderSource'
+import type { TermGlossaryEntry } from '@/utils/termGlossary'
 
 type TranslationCategory = 'dictionary' | 'tool' | 'manual' | 'none'
 type FilterMode =
@@ -168,6 +169,7 @@ interface TranslationGridProps {
   onEntryManualEdit: (rowId: string) => void
   viewMode: 'stacked' | 'side'
   selectionActions?: React.ReactNode
+  termGlossary?: TermGlossaryEntry[]
 }
 
 function getCategory(entry: TranslationSessionEntry): TranslationCategory {
@@ -355,7 +357,8 @@ export function TranslationGrid({
   onEntryChange,
   onEntryManualEdit,
   viewMode,
-  selectionActions
+  selectionActions,
+  termGlossary = []
 }: TranslationGridProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common', 'toasts', 'ai'])
   const session = useTranslationSession()
@@ -387,6 +390,7 @@ export function TranslationGrid({
   const [openSpecialFilter, setOpenSpecialFilter] = useState<'tags' | 'brackets' | null>(null)
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [exactMatch, setExactMatch] = useState(savedViewState.exactMatch ?? false)
+  const [startsWith, setStartsWith] = useState(false)
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(savedViewState.showId ?? false)
   const [highlightSearchMatches, setHighlightSearchMatches] = useState(
@@ -445,8 +449,13 @@ export function TranslationGrid({
     const handle = window.setTimeout(() => setDebouncedSearch(search), 140)
     return () => window.clearTimeout(handle)
   }, [search])
-  useEffect(() => {
-    setStatusTabsTarget(document.getElementById('translation-status-tabs'))
+  useLayoutEffect(() => {
+    const findStatusTabsTarget = () => {
+      setStatusTabsTarget(document.getElementById('translation-status-tabs'))
+    }
+    findStatusTabsTarget()
+    const frame = window.requestAnimationFrame(findStatusTabsTarget)
+    return () => window.cancelAnimationFrame(frame)
   }, [])
   useEffect(() => {
     const pendingSearch = window.sessionStorage.getItem('polyhedron:reveal-search')
@@ -471,6 +480,7 @@ export function TranslationGrid({
   }, [])
   const effectiveSearch = useDeferredValue(debouncedSearch)
   const deferredExactMatch = useDeferredValue(exactMatch)
+  const deferredStartsWith = useDeferredValue(startsWith)
   const deferredLinkNameDescription = useDeferredValue(linkNameDescription)
   const deferredReferenceTag = useDeferredValue(referenceTag)
   const deferredDialogueFilters = useDeferredValue(dialogueFilters)
@@ -570,7 +580,12 @@ export function TranslationGrid({
       if (editingRowId === entry.rowId) return true
       if (stickyRowIds.has(entry.rowId)) return true
       if (effectiveSearch) {
-        const directMatch = entryMatchesSearch(entry, effectiveSearch, deferredExactMatch)
+        const directMatch = entryMatchesSearch(
+          entry,
+          effectiveSearch,
+          deferredExactMatch,
+          deferredStartsWith
+        )
         if (!directMatch && !deferredLinkNameDescription) return false
         if (!directMatch && deferredLinkNameDescription) {
           const query = effectiveSearch.toLowerCase()
@@ -650,6 +665,7 @@ export function TranslationGrid({
     sortMode,
     sourceFrequencies,
     deferredExactMatch,
+    deferredStartsWith,
     deferredFilter,
     xmlTagFilter,
     bracketFilter,
@@ -670,6 +686,7 @@ export function TranslationGrid({
   }, [
     sortMode,
     deferredExactMatch,
+    deferredStartsWith,
     deferredFilter,
     deferredLinkNameDescription,
     deferredReferenceTag,
@@ -689,6 +706,7 @@ export function TranslationGrid({
   }, [
     sortMode,
     deferredExactMatch,
+    deferredStartsWith,
     deferredFilter,
     deferredLinkNameDescription,
     deferredReferenceTag,
@@ -707,6 +725,7 @@ export function TranslationGrid({
     mode: deferredFilter,
     search: effectiveSearch,
     exactMatch: deferredExactMatch,
+    startsWith: deferredStartsWith,
     linkNameDescription: deferredLinkNameDescription,
     referenceTag: deferredReferenceTag,
     dialogueFilters: deferredDialogueFilters,
@@ -755,6 +774,7 @@ export function TranslationGrid({
     selection.filter.mode === deferredFilter &&
     selection.filter.search === effectiveSearch &&
     selection.filter.exactMatch === deferredExactMatch &&
+    selection.filter.startsWith === deferredStartsWith &&
     selection.filter.linkNameDescription === deferredLinkNameDescription &&
     selection.filter.referenceTag === deferredReferenceTag &&
     JSON.stringify(selection.filter.dialogueFilters) === JSON.stringify(deferredDialogueFilters) &&
@@ -2000,6 +2020,22 @@ export function TranslationGrid({
         </label>
 
         <label
+          title="Show only strings that start with the search text"
+          className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+        >
+          <input
+            type="checkbox"
+            checked={startsWith}
+            onChange={(event) => {
+              const checked = event.target.checked
+              startFilterTransition(() => setStartsWith(checked))
+            }}
+            className="cursor-pointer accent-amber-500"
+          />
+          <span>Starts with</span>
+        </label>
+
+        <label
           title="Show content ID"
           className="inline-flex h-8 shrink-0 cursor-pointer select-none items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs font-semibold text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
         >
@@ -2427,7 +2463,8 @@ export function TranslationGrid({
                     <div className="translation-source-text wrap-break-word text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
                       {entry.source ? (
                         renderSource(entry.source, {
-                          highlightQuery: highlightSearchMatches ? effectiveSearch : ''
+                          highlightQuery: highlightSearchMatches ? effectiveSearch : '',
+                          termGlossary
                         })
                       ) : (
                         <span className="italic text-neutral-600">
@@ -2748,7 +2785,8 @@ export function TranslationGrid({
                       <div className="translation-source-text wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
                         {entry.source ? (
                           renderSource(entry.source, {
-                            highlightQuery: highlightSearchMatches ? effectiveSearch : ''
+                            highlightQuery: highlightSearchMatches ? effectiveSearch : '',
+                            termGlossary
                           })
                         ) : (
                           <span className="italic text-neutral-600">

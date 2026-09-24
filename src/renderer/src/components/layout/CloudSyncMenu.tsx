@@ -2,6 +2,7 @@ import { CheckCircle2, CloudOff, Download, LoaderCircle, Upload } from 'lucide-r
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
+import { getTermGlossaryStorageKey, loadTermGlossary } from '@/utils/termGlossary'
 
 type SyncResult = {
   direction: 'upload' | 'download'
@@ -32,6 +33,11 @@ export function CloudSyncMenu(): React.JSX.Element {
   const sessionRef = useRef(session)
   sessionRef.current = session
   const sessionKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    session.storedPath ?? session.inputPath ?? session.modName ?? 'current',
+    session.sourceLang,
+    session.targetLang
+  )
   // The workspace importer can rewrite stored/input paths. Keep the UI's saved
   // fingerprint keyed by the stable session identity so Download remains
   // "Synced" after the imported workspace is loaded or the app is restarted.
@@ -98,7 +104,13 @@ export function CloudSyncMenu(): React.JSX.Element {
     setBusy(true)
     try {
       await saveCurrentSession()
-      const result = await window.api.cloud.upload({ sessionKey })
+      const result = await window.api.cloud.upload({
+        sessionKey,
+        termGlossary: {
+          key: termGlossaryKey,
+          entries: loadTermGlossary(termGlossaryKey)
+        }
+      })
       localStorage.setItem(syncKey, result.stats.fingerprint || currentFingerprint)
       setSavedFingerprint(result.stats.fingerprint || currentFingerprint)
       const stamp = await window.api.cloud.syncStamp()
@@ -116,7 +128,10 @@ export function CloudSyncMenu(): React.JSX.Element {
   async function download(): Promise<void> {
     setBusy(true)
     try {
-      const result = await window.api.cloud.download({ sessionKey })
+      const result = await window.api.cloud.download({ sessionKey, termGlossaryKey })
+      if (result.termGlossary) {
+        localStorage.setItem(termGlossaryKey, JSON.stringify(result.termGlossary))
+      }
       localStorage.setItem(syncKey, 'download-pending')
       setSavedFingerprint('download-pending')
       const stamp = await window.api.cloud.syncStamp()
