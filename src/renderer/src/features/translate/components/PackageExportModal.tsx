@@ -1,5 +1,5 @@
 import { Download, Loader2, Package, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
@@ -7,7 +7,7 @@ import type { Language, ModMeta } from '@/types'
 import { languageToBg3Folder } from '../utils/exportNames'
 import { applyVersion, formatVersion, version64FromText } from '../utils/metaVersion'
 import { MetaField } from './MetaField'
-import { btnBase, btnGhostIcon, btnPrimary } from './styles'
+import { btnBase, btnPrimary } from './styles'
 
 interface PackageExportModalProps {
   meta: ModMeta
@@ -31,6 +31,14 @@ export function PackageExportModal({
   const [version, setVersion] = useState(formatVersion(meta))
   const [languageFolder, setLanguageFolder] = useState(selectedLanguageFolder)
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCancel()
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [onCancel])
+
   const version64 = version64FromText(version)
   const folderValid = /^[a-zA-Z0-9_-]+$/.test(draft.folder)
   const languageFolderValid = /^[a-zA-Z0-9]+$/.test(languageFolder)
@@ -53,23 +61,30 @@ export function PackageExportModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-6">
-      <div className="w-full max-w-180 rounded-xl border border-neutral-700 bg-[#0f1114] shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-3 px-5 h-12 border-b border-[#1f2329] bg-[#131518]">
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-180 overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+        <div className="flex h-12 items-center gap-3 border-b border-[#2a2c34] px-5">
           <Package size={15} className="text-amber-400" />
           <div className="flex-1 min-w-0">
             <h2 className="m-0 text-sm font-semibold text-neutral-200">{t('exportModal.title')}</h2>
-            <p className="m-0 text-[11px] text-neutral-500">
-              {t('exportModal.description')}
-            </p>
+            <p className="m-0 text-[11px] text-neutral-500">{t('exportModal.description')}</p>
           </div>
-          <button type="button" className={btnGhostIcon} onClick={onCancel}>
-            <X size={14} />
+          <button
+            type="button"
+            onClick={onCancel}
+            className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+            aria-label="Close"
+          >
+            <X size={18} />
           </button>
         </div>
 
         <div className="p-5 grid grid-cols-2 gap-3.5">
-          <MetaField label={t('fields.name', { ns: 'common' })} value={draft.name} onChange={(value) => updateDraft('name', value)} />
+          <MetaField
+            label={t('fields.name', { ns: 'common' })}
+            value={draft.name}
+            onChange={(value) => updateDraft('name', value)}
+          />
           <MetaField
             label={t('fields.folder', { ns: 'common' })}
             value={draft.folder}

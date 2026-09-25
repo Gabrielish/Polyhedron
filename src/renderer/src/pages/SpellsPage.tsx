@@ -235,7 +235,10 @@ async function fetchWikiIcon(name: string): Promise<string | null> {
 
   const request = (async () => {
     try {
-      const baseName = name.trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ')
+      const baseName = name
+        .trim()
+        .replace(/[\\/:*?"<>|]+/g, '')
+        .replace(/\s+/g, ' ')
       const titles = [
         `File:${baseName}.webp`,
         `File:${baseName} Icon.webp`,
@@ -254,7 +257,9 @@ async function fetchWikiIcon(name: string): Promise<string | null> {
       let image: string | undefined
       if (response.ok) {
         const payload = (await response.json()) as {
-          query?: { pages?: Record<string, { imageinfo?: Array<{ thumburl?: string; url?: string }> }> }
+          query?: {
+            pages?: Record<string, { imageinfo?: Array<{ thumburl?: string; url?: string }> }>
+          }
         }
         const pages = Object.values(payload.query?.pages ?? {})
         image = pages
@@ -268,7 +273,9 @@ async function fetchWikiIcon(name: string): Promise<string | null> {
           const document = new DOMParser().parseFromString(await pageResponse.text(), 'text/html')
           const pageImages = [...document.querySelectorAll<HTMLImageElement>('img')]
             .map((element) => element.getAttribute('data-src') || element.getAttribute('src') || '')
-            .filter((url) => url.includes('/w/images/') && !/Action_Icon|Prerequisite_Icon/i.test(url))
+            .filter(
+              (url) => url.includes('/w/images/') && !/Action_Icon|Prerequisite_Icon/i.test(url)
+            )
           const pageImage =
             pageImages[0] ||
             document.querySelector<HTMLMetaElement>('meta[property="og:image"]')?.content ||
@@ -500,7 +507,9 @@ function LoadedSpellsPage({
     setLoadingWikiVariants((current) => new Set(current).add(name))
     try {
       const raw = await (
-        await fetch(`https://bg3.wiki/wiki/${encodeURIComponent(name.replace(/\s+/g, '_'))}?action=raw`)
+        await fetch(
+          `https://bg3.wiki/wiki/${encodeURIComponent(name.replace(/\s+/g, '_'))}?action=raw`
+        )
       ).text()
       const variantsLine = raw.match(/^\|\s*variants\s*=\s*(.*?)\s*$/im)?.[1] ?? ''
       const wikiDescription = (
@@ -730,7 +739,8 @@ function LoadedSpellsPage({
   useEffect(() => {
     const candidates = filtered
       .filter((entry) => {
-        const source = matchingEntries.get(normalize(entry.description))?.[0]?.source ?? entry.description
+        const source =
+          matchingEntries.get(normalize(entry.description))?.[0]?.source ?? entry.description
         return isMarkupOnlyDescription(source) && !wikiSpellDescriptions[entry.name]
       })
       .slice(0, 24)
@@ -817,9 +827,7 @@ function LoadedSpellsPage({
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <select
             value={sort}
-            onChange={(event) =>
-              setSort(event.target.value as 'alpha' | 'complete' | 'incomplete')
-            }
+            onChange={(event) => setSort(event.target.value as 'alpha' | 'complete' | 'incomplete')}
             aria-label="Sort entries"
             className="h-8 rounded-md border border-[#2a2f37] bg-[#131518] px-2.5 text-xs text-neutral-300 outline-none focus:border-amber-500/60"
           >
@@ -944,22 +952,21 @@ function LoadedSpellsPage({
                     const wikiVariants = wikiSpellVariants[spell.name]
                     const normalizedSpellName = normalize(spell.name)
                     const fallbackVariants = variantsBySpellName.get(normalizedSpellName) ?? []
-                    const variantSources = (fallbackVariants.length > 0
-                      ? fallbackVariants
-                      : wikiVariants ?? []) as Array<GameEntry | WikiVariant>
-                    const variants = variantSources.map(
-                      (entry) => ({
-                        ...entry,
-                        cleanName: entry.name.replace(/\*+$/, ''),
-                        translated:
-                          matchingEntries
-                            .get(normalize(entry.name))
-                            ?.find((item) => item.target.trim())?.target ?? '',
-                        translatedDescription:
-                          matchingEntries
-                            .get(normalize(entry.description))
-                            ?.find((item) => item.target.trim())?.target ?? ''
-                      }))
+                    const variantSources = (
+                      fallbackVariants.length > 0 ? fallbackVariants : (wikiVariants ?? [])
+                    ) as Array<GameEntry | WikiVariant>
+                    const variants = variantSources.map((entry) => ({
+                      ...entry,
+                      cleanName: entry.name.replace(/\*+$/, ''),
+                      translated:
+                        matchingEntries
+                          .get(normalize(entry.name))
+                          ?.find((item) => item.target.trim())?.target ?? '',
+                      translatedDescription:
+                        matchingEntries
+                          .get(normalize(entry.description))
+                          ?.find((item) => item.target.trim())?.target ?? ''
+                    }))
                     const conditionTokens = [
                       ...[
                         ...description.matchAll(
@@ -992,8 +999,7 @@ function LoadedSpellsPage({
                           statusIndex.byName.get(normalize(label)) ??
                           statusIndex.byName.get(normalize(token)) ??
                           statusIndex.byToken.get(normalize(token))
-                        if (status && /%%%/.test(status.name + status.description))
-                          return null
+                        if (status && /%%%/.test(status.name + status.description)) return null
                         const resolvedStatus =
                           status ??
                           ({
@@ -1028,8 +1034,7 @@ function LoadedSpellsPage({
                       statusIndex.byToken.has(normalize(token))
                     )
                     const hasPotentialConditions =
-                      conditions.length > 0 ||
-                      (!wikiConditionsLoaded && hasResolvableGameCondition)
+                      conditions.length > 0 || (!wikiConditionsLoaded && hasResolvableGameCondition)
                     const nameMatches = matchingEntries.get(normalize(spell.name)) ?? []
                     const descriptionMatches = matchingEntries.get(normalize(description)) ?? []
                     const resolveEntry = (source: string, matches: typeof session.entries) =>
@@ -1226,7 +1231,7 @@ function LoadedSpellsPage({
                                       className="mt-0.5 shrink-0 opacity-70"
                                     />
                                     <span className="break-words [overflow-wrap:anywhere]">
-                                    {renderSource(translatedDescription)}
+                                      {renderSource(translatedDescription)}
                                     </span>
                                   </div>
                                 ) : null}
@@ -1362,10 +1367,12 @@ function LoadedSpellsPage({
                                   />
                                   Conditions (
                                   {loadingWikiConditions.has(spell.name) ||
-                                  (!wikiConditionsLoaded && conditions.length === 0 &&
+                                  (!wikiConditionsLoaded &&
+                                    conditions.length === 0 &&
                                     (spell.conditions?.length ?? 0) > 0)
                                     ? '…'
-                                    : conditions.length})
+                                    : conditions.length}
+                                  )
                                 </button>
                                 {conditionsOpen && (
                                   <div className="space-y-1.5">
@@ -1397,7 +1404,7 @@ function LoadedSpellsPage({
                                                 className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-1.5 py-1 text-[10px] font-normal text-amber-200 outline-none focus:border-amber-500/60"
                                               />
                                             ) : condition.translatedName ? (
-                                                <span className="ml-1 font-normal text-neutral-300/85">
+                                              <span className="ml-1 font-normal text-neutral-300/85">
                                                 — {condition.translatedName}
                                               </span>
                                             ) : null}
@@ -1434,23 +1441,19 @@ function LoadedSpellsPage({
                               </div>
                             )}
                             <div className="mt-auto flex flex-wrap items-center gap-1 border-t border-[#1f2329] pt-3">
-                              {(
-                                [
-                                  ...reviewStatusOptions
-                                ]
-                              ).map((option) => {
+                              {[...reviewStatusOptions].map((option) => {
                                 const Icon = option.icon
                                 return (
-                                <button
-                                  key={option.value}
-                                  type="button"
-                                  title={option.title}
-                                  aria-label={`${option.title} translation`}
-                                  onClick={() => setStatus(option.value)}
-                                  className={`inline-flex h-6 w-6 items-center justify-center rounded border transition-colors ${currentStatus === option.value ? option.active : option.idle}`}
-                                >
-                                  <Icon size={13} />
-                                </button>
+                                  <button
+                                    key={option.value}
+                                    type="button"
+                                    title={option.title}
+                                    aria-label={`${option.title} translation`}
+                                    onClick={() => setStatus(option.value)}
+                                    className={`inline-flex h-6 w-6 items-center justify-center rounded border transition-colors ${currentStatus === option.value ? option.active : option.idle}`}
+                                  >
+                                    <Icon size={13} />
+                                  </button>
                                 )
                               })}
                               <span
@@ -1463,408 +1466,476 @@ function LoadedSpellsPage({
                             </div>
                             {editDialogSpell === spellKey &&
                               createPortal(
-                              <div
-                                className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-4"
-                                onMouseDown={(event) => {
-                                  if (event.target === event.currentTarget) setEditDialogSpell(null)
-                                }}
-                              >
                                 <div
-                                  role="dialog"
-                                  aria-modal="true"
-                                  aria-label={`${spell.name} translation editor`}
-                                  className="spells-edit-dialog relative flex min-h-[60vh] max-h-[90vh] w-[80vw] max-w-[80vw] flex-col overflow-hidden rounded-2xl border border-white/15 bg-[#11151b] shadow-2xl"
+                                  className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+                                  onMouseDown={(event) => {
+                                    if (event.target === event.currentTarget)
+                                      setEditDialogSpell(null)
+                                  }}
                                 >
-                                  <div className="flex items-center gap-3 border-b border-[#2a2f37] px-4 py-3">
-                                    <div className="flex min-w-0 items-center gap-2.5">
-                                      <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/25">
-                                        <WikiIcon
-                                          name={spell.name}
-                                          localIcon={icon}
-                                          className="h-full w-full object-contain"
+                                  <div
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-label={`${spell.name} translation editor`}
+                                    className="spells-edit-dialog relative flex min-h-[60vh] max-h-[90vh] w-[80vw] max-w-[80vw] flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]"
+                                  >
+                                    <div className="flex items-center gap-3 border-b border-[#2a2f37] px-4 py-3">
+                                      <div className="flex min-w-0 items-center gap-2.5">
+                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/25">
+                                          <WikiIcon
+                                            name={spell.name}
+                                            localIcon={icon}
+                                            className="h-full w-full object-contain"
+                                          />
+                                        </div>
+                                        <h2 className="truncate text-base font-semibold text-neutral-100">
+                                          {spell.name}
+                                        </h2>
+                                      </div>
+                                      <div className="ml-auto flex shrink-0 items-center gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={() => setShowSpellUid((current) => !current)}
+                                          className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellUid ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
+                                        >
+                                          <Hash size={13} /> UID
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setShowSpellSuggestions((current) => !current)
+                                            loadSpellSuggestions()
+                                          }}
+                                          className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellSuggestions ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
+                                        >
+                                          <Lightbulb size={13} />
+                                          {spellSuggestionsLoading ? 'Loading…' : 'Suggestions'}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => setEditDialogSpell(null)}
+                                          className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200 hover:bg-red-500/20"
+                                        >
+                                          Done
+                                        </button>
+                                        <button
+                                          type="button"
+                                          title="Close (Esc)"
+                                          aria-label="Close edit dialog"
+                                          onClick={() => setEditDialogSpell(null)}
+                                          className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+                                        >
+                                          <X size={18} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,35fr)]">
+                                      <div className="min-h-[240px] border-b border-[#2a2f37] bg-black/20 lg:min-h-0 lg:border-b-0 lg:border-r">
+                                        <webview
+                                          title={`${spell.name} on BG3 Wiki`}
+                                          src={`https://bg3.wiki/wiki/${encodeURIComponent(spell.name.replace(/\s+/g, '_'))}`}
+                                          allowpopups
+                                          className="h-full min-h-[240px] w-full border-0 lg:min-h-0"
+                                          style={{ height: '100%', width: '100%', display: 'flex' }}
                                         />
                                       </div>
-                                      <h2 className="truncate text-base font-semibold text-neutral-100">
-                                        {spell.name}
-                                      </h2>
-                                    </div>
-                                    <div className="ml-auto flex shrink-0 items-center gap-2">
-                                      <button
-                                        type="button"
-                                        onClick={() => setShowSpellUid((current) => !current)}
-                                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellUid ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
-                                      >
-                                        <Hash size={13} /> UID
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          setShowSpellSuggestions((current) => !current)
-                                          loadSpellSuggestions()
-                                        }}
-                                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellSuggestions ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
-                                      >
-                                        <Lightbulb size={13} />
-                                        {spellSuggestionsLoading ? 'Loading…' : 'Suggestions'}
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => setEditDialogSpell(null)}
-                                        className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200 hover:bg-red-500/20"
-                                      >
-                                        Done
-                                      </button>
-                                      <button
-                                        type="button"
-                                        title="Close (Esc)"
-                                        aria-label="Close edit dialog"
-                                        onClick={() => setEditDialogSpell(null)}
-                                        className="inline-flex h-8 w-8 items-center justify-center rounded border border-[#2a2f37] text-neutral-400 hover:border-red-400/50 hover:text-neutral-100"
-                                      >
-                                        <X size={15} />
-                                      </button>
+                                      <div className="min-h-0 space-y-3 overflow-y-auto p-5">
+                                        <section className="space-y-2">
+                                          <div className="space-y-1.5">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                              Title · Source · EN
+                                            </span>
+                                            <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-200">
+                                              {nameEntry?.source ?? spell.name}
+                                              {showSpellUid && nameEntry?.uid && (
+                                                <span className="ml-2 text-[10px] text-neutral-500">
+                                                  {nameEntry.uid}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <label className="block space-y-2">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                              Title · Translation · RO
+                                            </span>
+                                            <input
+                                              defaultValue={translatedName}
+                                              placeholder="Romanian name..."
+                                              disabled={!nameEntry}
+                                              onBlur={(event) =>
+                                                nameEntry &&
+                                                session.updateEntry(
+                                                  nameEntry.rowId,
+                                                  event.target.value
+                                                )
+                                              }
+                                              className="block w-full rounded-lg border border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 text-sm text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                                            />
+                                            {showSpellSuggestions &&
+                                              nameEntry?.uid &&
+                                              spellSuggestions[nameEntry.uid] && (
+                                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                  {[
+                                                    spellSuggestions[nameEntry.uid].one,
+                                                    spellSuggestions[nameEntry.uid].two
+                                                  ]
+                                                    .filter(Boolean)
+                                                    .map((suggestion, index) => (
+                                                      <div
+                                                        key={`${nameEntry.uid}-title-suggestion-${index}`}
+                                                      >
+                                                        {renderSource(suggestion)}
+                                                      </div>
+                                                    ))}
+                                                </div>
+                                              )}
+                                          </label>
+                                        </section>
+                                        <section className="space-y-2 border-t border-[#2a2f37] pt-3">
+                                          <div className="space-y-1.5">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                              {descriptionSourceLabel}
+                                            </span>
+                                            <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-300">
+                                              {renderSource(
+                                                displayDescription ||
+                                                  'No English description available.'
+                                              )}
+                                              {showSpellUid && descriptionEntry?.uid && (
+                                                <span className="ml-2 text-[10px] text-neutral-500">
+                                                  {descriptionEntry.uid}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                          <label className="block space-y-2">
+                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                              Description · Translation · RO
+                                            </span>
+                                            <HighlightedTextarea
+                                              value={translatedDescription}
+                                              placeholder="Romanian description..."
+                                              onBlur={(event) =>
+                                                descriptionEntry &&
+                                                session.updateEntry(
+                                                  descriptionEntry.rowId,
+                                                  event.target.value
+                                                )
+                                              }
+                                              rows={1}
+                                              autoGrow
+                                              containerClassName="spells-edit-translation border-[#2a2f37] bg-[#0c0d0f]"
+                                              className="text-sm leading-5 !text-neutral-200"
+                                            />
+                                            {showSpellSuggestions &&
+                                              descriptionEntry?.uid &&
+                                              spellSuggestions[descriptionEntry.uid] && (
+                                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                  {[
+                                                    spellSuggestions[descriptionEntry.uid].one,
+                                                    spellSuggestions[descriptionEntry.uid].two
+                                                  ]
+                                                    .filter(Boolean)
+                                                    .map((suggestion, index) => (
+                                                      <div
+                                                        key={`${descriptionEntry.uid}-description-suggestion-${index}`}
+                                                      >
+                                                        {renderSource(suggestion)}
+                                                      </div>
+                                                    ))}
+                                                </div>
+                                              )}
+                                          </label>
+                                        </section>
+                                        {variants.length > 0 && (
+                                          <div className="space-y-2 border-t border-[#2a2f37] pt-3">
+                                            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                                              Variations
+                                            </h3>
+                                            {variants.map((variant) => {
+                                              const variantNameEntry = resolveEntry(
+                                                variant.name,
+                                                matchingEntries.get(normalize(variant.name)) ?? []
+                                              )
+                                              const variantDescriptionEntry = resolveEntry(
+                                                variant.description,
+                                                matchingEntries.get(
+                                                  normalize(variant.description)
+                                                ) ?? []
+                                              )
+                                              return (
+                                                <div
+                                                  key={variant.name}
+                                                  className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
+                                                >
+                                                  <div className="space-y-1">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Title · Source · EN
+                                                    </span>
+                                                    <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
+                                                      {renderSource(
+                                                        variantNameEntry?.source ??
+                                                          variant.cleanName
+                                                      )}
+                                                      {showSpellUid && variantNameEntry?.uid && (
+                                                        <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                                          {variantNameEntry.uid}
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                  <label className="block space-y-2">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Title · Translation · RO
+                                                    </span>
+                                                    <input
+                                                      defaultValue={variant.translated}
+                                                      placeholder="Romanian name..."
+                                                      disabled={!variantNameEntry}
+                                                      onBlur={(event) =>
+                                                        variantNameEntry &&
+                                                        session.updateEntry(
+                                                          variantNameEntry.rowId,
+                                                          event.target.value
+                                                        )
+                                                      }
+                                                      className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    />
+                                                    {showSpellSuggestions &&
+                                                      variantNameEntry?.uid &&
+                                                      spellSuggestions[variantNameEntry.uid] && (
+                                                        <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                          {[
+                                                            spellSuggestions[variantNameEntry.uid]
+                                                              .one,
+                                                            spellSuggestions[variantNameEntry.uid]
+                                                              .two
+                                                          ]
+                                                            .filter(Boolean)
+                                                            .map((suggestion, index) => (
+                                                              <div
+                                                                key={`${variantNameEntry.uid}-title-suggestion-${index}`}
+                                                              >
+                                                                {renderSource(suggestion)}
+                                                              </div>
+                                                            ))}
+                                                        </div>
+                                                      )}
+                                                  </label>
+                                                  <div className="space-y-1">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Description · Source · EN
+                                                    </span>
+                                                    <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
+                                                      {renderSource(
+                                                        variantDescriptionEntry?.source ??
+                                                          (variant.description ||
+                                                            'No English description available.')
+                                                      )}
+                                                      {showSpellUid &&
+                                                        variantDescriptionEntry?.uid && (
+                                                          <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                                            {variantDescriptionEntry.uid}
+                                                          </span>
+                                                        )}
+                                                    </div>
+                                                  </div>
+                                                  <label className="block space-y-2">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Description · Translation · RO
+                                                    </span>
+                                                    <HighlightedTextarea
+                                                      value={variant.translatedDescription}
+                                                      placeholder="Romanian description..."
+                                                      onBlur={(event) =>
+                                                        variantDescriptionEntry &&
+                                                        session.updateEntry(
+                                                          variantDescriptionEntry.rowId,
+                                                          event.target.value
+                                                        )
+                                                      }
+                                                      rows={1}
+                                                      autoGrow
+                                                      containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
+                                                      className="text-xs leading-4 !text-neutral-200"
+                                                    />
+                                                    {showSpellSuggestions &&
+                                                      variantDescriptionEntry?.uid &&
+                                                      spellSuggestions[
+                                                        variantDescriptionEntry.uid
+                                                      ] && (
+                                                        <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                          {[
+                                                            spellSuggestions[
+                                                              variantDescriptionEntry.uid
+                                                            ].one,
+                                                            spellSuggestions[
+                                                              variantDescriptionEntry.uid
+                                                            ].two
+                                                          ]
+                                                            .filter(Boolean)
+                                                            .map((suggestion, index) => (
+                                                              <div
+                                                                key={`${variantDescriptionEntry.uid}-description-suggestion-${index}`}
+                                                              >
+                                                                {renderSource(suggestion)}
+                                                              </div>
+                                                            ))}
+                                                        </div>
+                                                      )}
+                                                  </label>
+                                                </div>
+                                              )
+                                            })}
+                                          </div>
+                                        )}
+                                        {conditions.length > 0 && (
+                                          <div className="space-y-2 border-t border-[#2a2f37] pt-3">
+                                            <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                                              Conditions
+                                            </h3>
+                                            {conditions.map((condition) => {
+                                              const conditionNameEntry = resolveEntry(
+                                                condition.name,
+                                                matchingEntries.get(normalize(condition.name)) ?? []
+                                              )
+                                              const conditionDescriptionEntry = resolveEntry(
+                                                condition.description,
+                                                matchingEntries.get(
+                                                  normalize(condition.description)
+                                                ) ?? []
+                                              )
+                                              return (
+                                                <div
+                                                  key={condition.name}
+                                                  className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
+                                                >
+                                                  <div className="space-y-1">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Title · Source · EN
+                                                    </span>
+                                                    <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
+                                                      {renderSource(
+                                                        conditionNameEntry?.source ?? condition.name
+                                                      )}
+                                                      {showSpellUid && conditionNameEntry?.uid && (
+                                                        <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                                          {conditionNameEntry.uid}
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                  <label className="block space-y-2">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Title · Translation · RO
+                                                    </span>
+                                                    <input
+                                                      defaultValue={condition.translatedName}
+                                                      placeholder="Romanian name..."
+                                                      disabled={!conditionNameEntry}
+                                                      onBlur={(event) =>
+                                                        conditionNameEntry &&
+                                                        session.updateEntry(
+                                                          conditionNameEntry.rowId,
+                                                          event.target.value
+                                                        )
+                                                      }
+                                                      className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    />
+                                                    {showSpellSuggestions &&
+                                                      conditionNameEntry?.uid &&
+                                                      spellSuggestions[conditionNameEntry.uid] && (
+                                                        <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                          {[
+                                                            spellSuggestions[conditionNameEntry.uid]
+                                                              .one,
+                                                            spellSuggestions[conditionNameEntry.uid]
+                                                              .two
+                                                          ]
+                                                            .filter(Boolean)
+                                                            .map((suggestion, index) => (
+                                                              <div
+                                                                key={`${conditionNameEntry.uid}-title-suggestion-${index}`}
+                                                              >
+                                                                {renderSource(suggestion)}
+                                                              </div>
+                                                            ))}
+                                                        </div>
+                                                      )}
+                                                  </label>
+                                                  <div className="space-y-1">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Description · Source · EN
+                                                    </span>
+                                                    <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
+                                                      {renderSource(
+                                                        conditionDescriptionEntry?.source ??
+                                                          (condition.description ||
+                                                            'No English description available.')
+                                                      )}
+                                                      {showSpellUid &&
+                                                        conditionDescriptionEntry?.uid && (
+                                                          <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                                            {conditionDescriptionEntry.uid}
+                                                          </span>
+                                                        )}
+                                                    </div>
+                                                  </div>
+                                                  <label className="block space-y-2">
+                                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                                                      Description · Translation · RO
+                                                    </span>
+                                                    <HighlightedTextarea
+                                                      value={condition.translatedDescription}
+                                                      placeholder="Romanian description..."
+                                                      onBlur={(event) =>
+                                                        conditionDescriptionEntry &&
+                                                        session.updateEntry(
+                                                          conditionDescriptionEntry.rowId,
+                                                          event.target.value
+                                                        )
+                                                      }
+                                                      rows={1}
+                                                      autoGrow
+                                                      containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
+                                                      className="text-xs leading-4 !text-neutral-200"
+                                                    />
+                                                    {showSpellSuggestions &&
+                                                      conditionDescriptionEntry?.uid &&
+                                                      spellSuggestions[
+                                                        conditionDescriptionEntry.uid
+                                                      ] && (
+                                                        <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                                          {[
+                                                            spellSuggestions[
+                                                              conditionDescriptionEntry.uid
+                                                            ].one,
+                                                            spellSuggestions[
+                                                              conditionDescriptionEntry.uid
+                                                            ].two
+                                                          ]
+                                                            .filter(Boolean)
+                                                            .map((suggestion, index) => (
+                                                              <div
+                                                                key={`${conditionDescriptionEntry.uid}-description-suggestion-${index}`}
+                                                              >
+                                                                {renderSource(suggestion)}
+                                                              </div>
+                                                            ))}
+                                                        </div>
+                                                      )}
+                                                  </label>
+                                                </div>
+                                              )
+                                            })}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,35fr)]">
-                                    <div className="min-h-[240px] border-b border-[#2a2f37] bg-black/20 lg:min-h-0 lg:border-b-0 lg:border-r">
-                                      <webview
-                                        title={`${spell.name} on BG3 Wiki`}
-                                        src={`https://bg3.wiki/wiki/${encodeURIComponent(spell.name.replace(/\s+/g, '_'))}`}
-                                        allowpopups
-                                        className="h-full min-h-[240px] w-full border-0 lg:min-h-0"
-                                        style={{ height: '100%', width: '100%', display: 'flex' }}
-                                      />
-                                    </div>
-                                    <div className="min-h-0 space-y-3 overflow-y-auto p-5">
-                                    <section className="space-y-2">
-                                      <div className="space-y-1.5">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                          Title · Source · EN
-                                        </span>
-                                        <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-200">
-                                          {nameEntry?.source ?? spell.name}
-                                          {showSpellUid && nameEntry?.uid && (
-                                            <span className="ml-2 text-[10px] text-neutral-500">
-                                              {nameEntry.uid}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                      <label className="block space-y-2">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                          Title · Translation · RO
-                                        </span>
-                                          <input
-                                          defaultValue={translatedName}
-                                          placeholder="Romanian name..."
-                                          disabled={!nameEntry}
-                                          onBlur={(event) =>
-                                            nameEntry &&
-                                            session.updateEntry(nameEntry.rowId, event.target.value)
-                                          }
-                                          className="block w-full rounded-lg border border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 text-sm text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                          />
-                                        {showSpellSuggestions && nameEntry?.uid &&
-                                          spellSuggestions[nameEntry.uid] && (
-                                            <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                              {[spellSuggestions[nameEntry.uid].one, spellSuggestions[nameEntry.uid].two]
-                                                .filter(Boolean)
-                                                .map((suggestion, index) => (
-                                                  <div key={`${nameEntry.uid}-title-suggestion-${index}`}>
-                                                    {renderSource(suggestion)}
-                                                  </div>
-                                                ))}
-                                            </div>
-                                          )}
-                                      </label>
-                                    </section>
-                                    <section className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                      <div className="space-y-1.5">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                          {descriptionSourceLabel}
-                                        </span>
-                                        <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-300">
-                                          {renderSource(
-                                            displayDescription || 'No English description available.'
-                                          )}
-                                          {showSpellUid && descriptionEntry?.uid && (
-                                            <span className="ml-2 text-[10px] text-neutral-500">
-                                              {descriptionEntry.uid}
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                      <label className="block space-y-2">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                          Description · Translation · RO
-                                        </span>
-                                          <HighlightedTextarea
-                                          value={translatedDescription}
-                                          placeholder="Romanian description..."
-                                          onBlur={(event) =>
-                                            descriptionEntry &&
-                                            session.updateEntry(
-                                              descriptionEntry.rowId,
-                                              event.target.value
-                                            )
-                                          }
-                                          rows={1}
-                                          autoGrow
-                                          containerClassName="spells-edit-translation border-[#2a2f37] bg-[#0c0d0f]"
-                                          className="text-sm leading-5 !text-neutral-200"
-                                          />
-                                        {showSpellSuggestions && descriptionEntry?.uid &&
-                                          spellSuggestions[descriptionEntry.uid] && (
-                                            <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                              {[spellSuggestions[descriptionEntry.uid].one, spellSuggestions[descriptionEntry.uid].two]
-                                                .filter(Boolean)
-                                                .map((suggestion, index) => (
-                                                  <div key={`${descriptionEntry.uid}-description-suggestion-${index}`}>
-                                                    {renderSource(suggestion)}
-                                                  </div>
-                                                ))}
-                                            </div>
-                                          )}
-                                      </label>
-                                    </section>
-                                    {variants.length > 0 && (
-                                      <div className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                          Variations
-                                        </h3>
-                                        {variants.map((variant) => {
-                                          const variantNameEntry = resolveEntry(
-                                            variant.name,
-                                            matchingEntries.get(normalize(variant.name)) ?? []
-                                          )
-                                          const variantDescriptionEntry = resolveEntry(
-                                            variant.description,
-                                            matchingEntries.get(normalize(variant.description)) ?? []
-                                          )
-                                          return (
-                                            <div
-                                              key={variant.name}
-                                              className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
-                                            >
-                                              <div className="space-y-1">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Title · Source · EN
-                                                </span>
-                                                <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
-                                                  {renderSource(variantNameEntry?.source ?? variant.cleanName)}
-                                                  {showSpellUid && variantNameEntry?.uid && (
-                                                    <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                      {variantNameEntry.uid}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                              </div>
-                                              <label className="block space-y-2">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Title · Translation · RO
-                                                </span>
-                                                <input
-                                                  defaultValue={variant.translated}
-                                                  placeholder="Romanian name..."
-                                                  disabled={!variantNameEntry}
-                                                  onBlur={(event) =>
-                                                    variantNameEntry &&
-                                                    session.updateEntry(
-                                                      variantNameEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                                />
-                                                {showSpellSuggestions && variantNameEntry?.uid &&
-                                                  spellSuggestions[variantNameEntry.uid] && (
-                                                    <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                      {[spellSuggestions[variantNameEntry.uid].one, spellSuggestions[variantNameEntry.uid].two]
-                                                        .filter(Boolean)
-                                                        .map((suggestion, index) => (
-                                                          <div key={`${variantNameEntry.uid}-title-suggestion-${index}`}>
-                                                            {renderSource(suggestion)}
-                                                          </div>
-                                                        ))}
-                                                    </div>
-                                                  )}
-                                              </label>
-                                              <div className="space-y-1">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Description · Source · EN
-                                                </span>
-                                                <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
-                                                  {renderSource(
-                                                    variantDescriptionEntry?.source ??
-                                                      (variant.description ||
-                                                        'No English description available.')
-                                                  )}
-                                                  {showSpellUid && variantDescriptionEntry?.uid && (
-                                                    <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                      {variantDescriptionEntry.uid}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                              </div>
-                                              <label className="block space-y-2">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Description · Translation · RO
-                                                </span>
-                                                <HighlightedTextarea
-                                                  value={variant.translatedDescription}
-                                                  placeholder="Romanian description..."
-                                                  onBlur={(event) =>
-                                                    variantDescriptionEntry &&
-                                                    session.updateEntry(
-                                                      variantDescriptionEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  rows={1}
-                                                  autoGrow
-                                                  containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
-                                                  className="text-xs leading-4 !text-neutral-200"
-                                                />
-                                                {showSpellSuggestions && variantDescriptionEntry?.uid &&
-                                                  spellSuggestions[variantDescriptionEntry.uid] && (
-                                                    <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                      {[spellSuggestions[variantDescriptionEntry.uid].one, spellSuggestions[variantDescriptionEntry.uid].two]
-                                                        .filter(Boolean)
-                                                        .map((suggestion, index) => (
-                                                          <div key={`${variantDescriptionEntry.uid}-description-suggestion-${index}`}>
-                                                            {renderSource(suggestion)}
-                                                          </div>
-                                                        ))}
-                                                    </div>
-                                                  )}
-                                              </label>
-                                            </div>
-                                          )
-                                        })}
-                                      </div>
-                                    )}
-                                    {conditions.length > 0 && (
-                                      <div className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                          Conditions
-                                        </h3>
-                                        {conditions.map((condition) => {
-                                          const conditionNameEntry = resolveEntry(
-                                            condition.name,
-                                            matchingEntries.get(normalize(condition.name)) ?? []
-                                          )
-                                          const conditionDescriptionEntry = resolveEntry(
-                                            condition.description,
-                                            matchingEntries.get(normalize(condition.description)) ?? []
-                                          )
-                                          return (
-                                            <div
-                                              key={condition.name}
-                                              className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
-                                            >
-                                              <div className="space-y-1">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Title · Source · EN
-                                                </span>
-                                                <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
-                                                  {renderSource(conditionNameEntry?.source ?? condition.name)}
-                                                  {showSpellUid && conditionNameEntry?.uid && (
-                                                    <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                      {conditionNameEntry.uid}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                              </div>
-                                              <label className="block space-y-2">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Title · Translation · RO
-                                                </span>
-                                                <input
-                                                  defaultValue={condition.translatedName}
-                                                  placeholder="Romanian name..."
-                                                  disabled={!conditionNameEntry}
-                                                  onBlur={(event) =>
-                                                    conditionNameEntry &&
-                                                    session.updateEntry(
-                                                      conditionNameEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                                />
-                                                {showSpellSuggestions && conditionNameEntry?.uid &&
-                                                  spellSuggestions[conditionNameEntry.uid] && (
-                                                    <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                      {[spellSuggestions[conditionNameEntry.uid].one, spellSuggestions[conditionNameEntry.uid].two]
-                                                        .filter(Boolean)
-                                                        .map((suggestion, index) => (
-                                                          <div key={`${conditionNameEntry.uid}-title-suggestion-${index}`}>
-                                                            {renderSource(suggestion)}
-                                                          </div>
-                                                        ))}
-                                                    </div>
-                                                  )}
-                                              </label>
-                                              <div className="space-y-1">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Description · Source · EN
-                                                </span>
-                                                <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
-                                                  {renderSource(
-                                                    conditionDescriptionEntry?.source ??
-                                                      (condition.description ||
-                                                        'No English description available.')
-                                                  )}
-                                                  {showSpellUid && conditionDescriptionEntry?.uid && (
-                                                    <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                      {conditionDescriptionEntry.uid}
-                                                    </span>
-                                                  )}
-                                                </div>
-                                              </div>
-                                              <label className="block space-y-2">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                  Description · Translation · RO
-                                                </span>
-                                                <HighlightedTextarea
-                                                  value={condition.translatedDescription}
-                                                  placeholder="Romanian description..."
-                                                  onBlur={(event) =>
-                                                    conditionDescriptionEntry &&
-                                                    session.updateEntry(
-                                                      conditionDescriptionEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  rows={1}
-                                                  autoGrow
-                                                  containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
-                                                  className="text-xs leading-4 !text-neutral-200"
-                                                />
-                                                {showSpellSuggestions && conditionDescriptionEntry?.uid &&
-                                                  spellSuggestions[conditionDescriptionEntry.uid] && (
-                                                    <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                      {[spellSuggestions[conditionDescriptionEntry.uid].one, spellSuggestions[conditionDescriptionEntry.uid].two]
-                                                        .filter(Boolean)
-                                                        .map((suggestion, index) => (
-                                                          <div key={`${conditionDescriptionEntry.uid}-description-suggestion-${index}`}>
-                                                            {renderSource(suggestion)}
-                                                          </div>
-                                                        ))}
-                                                    </div>
-                                                  )}
-                                              </label>
-                                            </div>
-                                          )
-                                        })}
-                                      </div>
-                                    )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>,
-                              document.body
-                            )}
+                                </div>,
+                                document.body
+                              )}
                           </article>
                         )}
                       </Fragment>

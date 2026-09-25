@@ -53,12 +53,12 @@ export function ModalShell({
         role="dialog"
         aria-modal="true"
         className={cn(
-          'w-full overflow-hidden rounded-xl border border-[#1f2329] bg-[#131518] shadow-[0_24px_80px_rgba(0,0,0,0.45)]',
+          'w-full overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]',
           sizeClassName,
           panelClassName
         )}
       >
-        <div className="flex items-start gap-3 border-b border-[#1f2329] px-5 py-4">
+        <div className="flex items-start gap-3 border-b border-[#2a2c34] px-5 py-4">
           {icon && (
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/12 text-amber-400">
               {icon}
@@ -71,16 +71,17 @@ export function ModalShell({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-[#181b1f] hover:text-neutral-200"
+            aria-label="Close"
+            className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
           >
-            <X size={14} />
+            <X size={18} />
           </button>
         </div>
 
         <div className="px-5 py-5">{children}</div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-[#1f2329] bg-[#0f1114] px-5 py-4">
+          <div className="flex items-center justify-end gap-2 border-t border-[#2a2c34] bg-[#101115] px-5 py-4">
             {footer}
           </div>
         )}

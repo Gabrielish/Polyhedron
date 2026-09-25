@@ -11,7 +11,17 @@ type SyncResult = {
   fingerprint: string
 }
 
-function fingerprint(entries: Array<{ uid: string; target: string; genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>; matchType: string; needsReview: boolean; reviewStatus?: string; history?: unknown }>): string {
+function fingerprint(
+  entries: Array<{
+    uid: string
+    target: string
+    genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
+    matchType: string
+    needsReview: boolean
+    reviewStatus?: string
+    history?: unknown
+  }>
+): string {
   let hash = 2166136261
   for (const entry of entries) {
     const value = `${entry.uid}\u0000${entry.target}\u0000${JSON.stringify(entry.genderTargets ?? {})}\u0000${entry.matchType}\u0000${entry.needsReview}\u0000${entry.reviewStatus ?? ''}\u0000${JSON.stringify(entry.history ?? [])}`
@@ -27,6 +37,14 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
+  useEffect(() => {
+    if (!syncResult) return
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSyncResult(null)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [syncResult])
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const [remoteChanged, setRemoteChanged] = useState(false)
   const session = useTranslationSession()
@@ -43,7 +61,20 @@ export function CloudSyncMenu(): React.JSX.Element {
   // "Synced" after the imported workspace is loaded or the app is restarted.
   const syncKey = `icosa.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const currentFingerprint = useMemo(
-    () => fingerprint(session.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }))),
+    () =>
+      fingerprint(
+        session.entries.map(
+          ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+            uid,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
+      ),
     [session.entries]
   )
 
@@ -67,7 +98,11 @@ export function CloudSyncMenu(): React.JSX.Element {
   }, [currentFingerprint, session.phase, syncKey])
 
   const remoteStampKey = `icosa.cloud-sync-remote.${syncKey}`
-  const isSynced = session.phase === 'loaded' && !remoteChanged && savedFingerprint !== null && savedFingerprint === currentFingerprint
+  const isSynced =
+    session.phase === 'loaded' &&
+    !remoteChanged &&
+    savedFingerprint !== null &&
+    savedFingerprint === currentFingerprint
 
   useEffect(() => {
     if (session.phase !== 'loaded') return
@@ -82,11 +117,16 @@ export function CloudSyncMenu(): React.JSX.Element {
         const previous = localStorage.getItem(remoteStampKey)
         if (!previous) localStorage.setItem(remoteStampKey, stamp)
         else if (previous !== stamp) setRemoteChanged(true)
-      } catch { /* Keep the current status when Drive is temporarily unavailable. */ }
+      } catch {
+        /* Keep the current status when Drive is temporarily unavailable. */
+      }
     }
     void checkRemote()
     const timer = window.setInterval(() => void checkRemote(), 5 * 60 * 1000)
-    return () => { cancelled = true; window.clearInterval(timer) }
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
   }, [remoteStampKey, session.phase])
 
   async function saveCurrentSession(): Promise<void> {
@@ -96,7 +136,17 @@ export function CloudSyncMenu(): React.JSX.Element {
     const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
     await window.api.session.save({
       key: sessionKey,
-      entries: latest.entries.map(({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }))
+      entries: latest.entries.map(
+        ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+          uid,
+          target,
+          genderTargets,
+          matchType,
+          needsReview,
+          reviewStatus,
+          history
+        })
+      )
     })
   }
 
@@ -165,7 +215,13 @@ export function CloudSyncMenu(): React.JSX.Element {
             : 'border-amber-500/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/15'
         }`}
       >
-        {busy ? <LoaderCircle size={13} className="animate-spin" /> : isSynced ? <CheckCircle2 size={13} /> : <CloudOff size={13} />}
+        {busy ? (
+          <LoaderCircle size={13} className="animate-spin" />
+        ) : isSynced ? (
+          <CheckCircle2 size={13} />
+        ) : (
+          <CloudOff size={13} />
+        )}
         {busy ? 'Syncing…' : isSynced ? 'Synced' : 'Not synced'}
       </button>
 
@@ -191,10 +247,17 @@ export function CloudSyncMenu(): React.JSX.Element {
       )}
 
       {syncResult && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/55" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
-          <div className="w-[360px] rounded-xl border border-[#3a3f47] bg-[#171a1f] p-5 shadow-2xl">
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/55"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
+          <div className="w-[360px] rounded-2xl border border-[#34343e] bg-[#15161b] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
             <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
-              {syncResult.direction === 'download' ? <Download size={17} className="text-amber-300" /> : <Upload size={17} className="text-amber-300" />}
+              {syncResult.direction === 'download' ? (
+                <Download size={17} className="text-amber-300" />
+              ) : (
+                <Upload size={17} className="text-amber-300" />
+              )}
               {syncResult.direction === 'download' ? 'Workspace downloaded' : 'Workspace uploaded'}
             </div>
             <p className="mt-3 text-sm leading-5 text-neutral-400">
@@ -203,8 +266,13 @@ export function CloudSyncMenu(): React.JSX.Element {
                 : 'The current workspace was saved to Google Drive successfully.'}
             </p>
             <div className="mt-4 rounded-lg border border-amber-500/25 bg-amber-500/8 px-3 py-2.5 text-sm">
-              <span className="font-semibold text-amber-300">{syncResult.translated.toLocaleString()}</span>
-              <span className="text-neutral-400"> / {syncResult.total.toLocaleString()} entries translated</span>
+              <span className="font-semibold text-amber-300">
+                {syncResult.translated.toLocaleString()}
+              </span>
+              <span className="text-neutral-400">
+                {' '}
+                / {syncResult.total.toLocaleString()} entries translated
+              </span>
             </div>
             <div className="mt-5 flex justify-end gap-2">
               {syncResult.direction === 'download' ? (

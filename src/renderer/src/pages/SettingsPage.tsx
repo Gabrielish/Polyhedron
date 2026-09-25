@@ -1,4 +1,14 @@
-import { Check, CheckCircle2, Copy, Download, FolderOpen, Palette, RefreshCw, Settings, Trash2 } from 'lucide-react'
+import {
+  Check,
+  CheckCircle2,
+  Copy,
+  Download,
+  FolderOpen,
+  Palette,
+  RefreshCw,
+  Settings,
+  Trash2
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
@@ -91,7 +101,7 @@ function SettingsCard({ title, children }: { title: string; children: React.Reac
 
 export function SettingsPage(): React.JSX.Element {
   const { config, loading, set } = useConfig()
-  const { theme, setTheme, accent, setAccent } = useTheme()
+  const { theme, setTheme, accent, setAccent, accentForeground, setAccentForeground } = useTheme()
   const [accentDraft, setAccentDraft] = useState(accent)
   const [logPath, setLogPath] = useState('')
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
@@ -170,19 +180,66 @@ export function SettingsPage(): React.JSX.Element {
               <RefreshCw size={18} className="mt-0.5 text-amber-400" />
               <div>
                 <p className="text-sm font-medium text-neutral-200">Check for updates</p>
-                <p className="mt-1 text-xs text-neutral-500">Manually check GitHub for a newer Polyhedron release.{isMacOS ? ' macOS downloads are opened manually.' : ''}</p>
-                {updateState?.status === 'checking' && <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>}
-                {updateState?.status === 'not-available' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400"><CheckCircle2 size={13} /> You are up to date.</p>}
-                {updateState?.status === 'available' && <p className="mt-2 text-xs text-amber-300">Version {updateState.version} is available.</p>}
-                {updateState?.status === 'downloading' && <p className="mt-2 text-xs text-neutral-400">Downloading… {Math.round(updateState.percent)}%</p>}
-                {updateState?.status === 'downloaded' && <p className="mt-2 text-xs text-emerald-400">Version {updateState.version} is ready to install.</p>}
-                {updateState?.status === 'error' && <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Manually check GitHub for a newer Polyhedron release.
+                  {isMacOS ? ' macOS downloads are opened manually.' : ''}
+                </p>
+                {updateState?.status === 'checking' && (
+                  <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>
+                )}
+                {updateState?.status === 'not-available' && (
+                  <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+                    <CheckCircle2 size={13} /> You are up to date.
+                  </p>
+                )}
+                {updateState?.status === 'available' && (
+                  <p className="mt-2 text-xs text-amber-300">
+                    Version {updateState.version} is available.
+                  </p>
+                )}
+                {updateState?.status === 'downloading' && (
+                  <p className="mt-2 text-xs text-neutral-400">
+                    Downloading… {Math.round(updateState.percent)}%
+                  </p>
+                )}
+                {updateState?.status === 'downloaded' && (
+                  <p className="mt-2 text-xs text-emerald-400">
+                    Version {updateState.version} is ready to install.
+                  </p>
+                )}
+                {updateState?.status === 'error' && (
+                  <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>
+                )}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {updateState?.status === 'available' && <button type="button" onClick={() => void handleDownloadUpdate()} className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"><Download size={15} /> {isMacOS ? 'Download new version' : 'Download update'}</button>}
-              {updateState?.status === 'downloaded' && <button type="button" onClick={() => void window.api.update.install()} className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"><RefreshCw size={15} /> Restart to update</button>}
-              <button type="button" disabled={checkingForUpdates || updateState?.status === 'downloading'} onClick={() => void handleCheckForUpdates()} className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"><RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates</button>
+              {updateState?.status === 'available' && (
+                <button
+                  type="button"
+                  onClick={() => void handleDownloadUpdate()}
+                  className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"
+                >
+                  <Download size={15} /> {isMacOS ? 'Download new version' : 'Download update'}
+                </button>
+              )}
+              {updateState?.status === 'downloaded' && (
+                <button
+                  type="button"
+                  onClick={() => void window.api.update.install()}
+                  className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
+                >
+                  <RefreshCw size={15} /> Restart to update
+                </button>
+              )}
+              <button
+                type="button"
+                disabled={checkingForUpdates || updateState?.status === 'downloading'}
+                onClick={() => void handleCheckForUpdates()}
+                className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
+              >
+                <RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check
+                for updates
+              </button>
             </div>
           </div>
         </SettingsCard>
@@ -190,7 +247,9 @@ export function SettingsPage(): React.JSX.Element {
         <SettingsCard title="Appearance">
           <div className="mb-4 flex items-center gap-2 text-sm text-neutral-400">
             <Palette size={16} className="text-amber-400" />
-            <span>Choose an interface theme and customize the accent color used across the app.</span>
+            <span>
+              Choose an interface theme and customize the accent color used across the app.
+            </span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {THEMES.map((item) => {
@@ -203,9 +262,19 @@ export function SettingsPage(): React.JSX.Element {
                   aria-label={`${item.name} theme`}
                   className={`relative rounded-lg border p-3 text-left transition-colors ${selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
                 >
-                  {selected && <Check size={14} className="absolute right-3 top-3 text-amber-400" />}
+                  {selected && (
+                    <Check size={14} className="absolute right-3 top-3 text-amber-400" />
+                  )}
                   <div className="mb-3 flex gap-1.5">
-                    {item.swatches.map((color) => <span key={color} className="h-5 w-5 rounded-full border border-white/10" style={{ backgroundColor: color.toLowerCase() === '#ed1c24' ? accent : color }} />)}
+                    {item.swatches.map((color, index) => (
+                      <span
+                        key={color}
+                        className="h-5 w-5 rounded-full border border-white/10"
+                        style={{
+                          backgroundColor: index === 0 ? accent : color
+                        }}
+                      />
+                    ))}
                   </div>
                   <div className="text-sm font-medium text-neutral-200">{item.name}</div>
                   <div className="mt-1 text-xs leading-5 text-neutral-500">{item.description}</div>
@@ -213,21 +282,32 @@ export function SettingsPage(): React.JSX.Element {
               )
             })}
             <div className="relative cursor-not-allowed rounded-lg border border-neutral-800 bg-[#0f1114] p-3 opacity-55">
-              <div className="absolute right-3 top-3 rounded-full border border-neutral-700 px-2 py-0.5 text-[10px] uppercase tracking-wider text-neutral-500">Coming Soon</div>
+              <div className="absolute right-3 top-3 rounded-full border border-neutral-700 px-2 py-0.5 text-[10px] uppercase tracking-wider text-neutral-500">
+                Coming Soon
+              </div>
               <div className="mb-3 flex gap-1.5">
-                <span className="h-5 w-5 rounded-full border border-white/10 bg-[#c62828]" />
+                <span
+                  className="h-5 w-5 rounded-full border border-white/10"
+                  style={{ backgroundColor: accent }}
+                />
                 <span className="h-5 w-5 rounded-full border border-white/10 bg-[#f4f1ed]" />
               </div>
               <div className="text-sm font-medium text-neutral-200">Liquid Glass (Light)</div>
-              <div className="mt-1 text-xs leading-5 text-neutral-500">A light variant of Liquid Glass is planned for a future update.</div>
+              <div className="mt-1 text-xs leading-5 text-neutral-500">
+                A light variant of Liquid Glass is planned for a future update.
+              </div>
             </div>
           </div>
           <div className="mt-5 border-t border-neutral-800/60 pt-5">
             <div className="flex items-baseline justify-between gap-3">
-              <label htmlFor="accent-color" className="text-sm font-medium text-neutral-200">Accent color</label>
+              <label htmlFor="accent-color" className="text-sm font-medium text-neutral-200">
+                Accent color
+              </label>
               <span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">HEX</span>
             </div>
-            <p className="mt-1 text-xs text-neutral-500">Choose the accent used for buttons, active states, borders and glow effects.</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              Choose the accent used for buttons, active states, borders and glow effects.
+            </p>
             <div className="mt-3 flex max-w-sm gap-2">
               <input
                 id="accent-color"
@@ -264,7 +344,38 @@ export function SettingsPage(): React.JSX.Element {
                 Reset default
               </button>
             </div>
-            {accentDraft && !/^#[0-9A-F]{6}$/.test(accentDraft) && <p className="mt-2 text-xs text-red-300">Enter a six-digit HEX value, for example #ED1C24.</p>}
+            {accentDraft && !/^#[0-9A-F]{6}$/.test(accentDraft) && (
+              <p className="mt-2 text-xs text-red-300">
+                Enter a six-digit HEX value, for example #ED1C24.
+              </p>
+            )}
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-neutral-200">Button text color</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  Choose the text color used on solid accent buttons. This is always manual.
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2.5">
+                <span className="text-xs text-neutral-500">
+                  {accentForeground === 'white' ? 'White' : 'Black'}
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={accentForeground === 'black'}
+                  aria-label="Use black text on accent buttons"
+                  onClick={() =>
+                    setAccentForeground(accentForeground === 'white' ? 'black' : 'white')
+                  }
+                  className={`relative h-5.5 w-9.5 shrink-0 rounded-full border transition-colors ${accentForeground === 'black' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${accentForeground === 'black' ? 'translate-x-4' : ''}`}
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         </SettingsCard>
 
@@ -272,63 +383,117 @@ export function SettingsPage(): React.JSX.Element {
           <div className="divide-y divide-neutral-800/70">
             <div className="flex items-center justify-between gap-5 py-3 first:pt-0">
               <div className="min-w-0">
-                <div className="text-sm font-medium text-neutral-200">String count on each page</div>
-                <div className="mt-0.5 text-xs text-neutral-500">Choose how many translation and glossary entries are shown at once.</div>
+                <div className="text-sm font-medium text-neutral-200">
+                  String count on each page
+                </div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  Choose how many translation and glossary entries are shown at once.
+                </div>
               </div>
               <div className="w-40 shrink-0">
                 <ThemedSelect
                   value={config['translation_page_size'] || '250'}
-                  onChange={(value) => { void set('translation_page_size', value) }}
-                  options={[100, 250, 500, 1000].map((value) => ({ value: String(value), label: `${value} strings` }))}
+                  onChange={(value) => {
+                    void set('translation_page_size', value)
+                  }}
+                  options={[100, 250, 500, 1000].map((value) => ({
+                    value: String(value),
+                    label: `${value} strings`
+                  }))}
                 />
               </div>
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">Show Glossary tab</div>
-                <div className="mt-0.5 text-xs text-neutral-500">Show the Glossary tab in the navigation bar.</div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  Show the Glossary tab in the navigation bar.
+                </div>
               </div>
-              <button type="button" role="switch" aria-checked={config['show_glossary'] === 'true'} onClick={() => void set('show_glossary', String(config['show_glossary'] !== 'true'))} className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_glossary'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}>
-                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_glossary'] === 'true' ? 'translate-x-4' : ''}`} />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={config['show_glossary'] === 'true'}
+                onClick={() =>
+                  void set('show_glossary', String(config['show_glossary'] !== 'true'))
+                }
+                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_glossary'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_glossary'] === 'true' ? 'translate-x-4' : ''}`}
+                />
               </button>
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">Show Game Interface tab</div>
-                <div className="mt-0.5 text-xs text-neutral-500">Show the Game Interface reference tab in the navigation bar.</div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  Show the Game Interface reference tab in the navigation bar.
+                </div>
               </div>
-              <button type="button" role="switch" aria-checked={config['show_game_interface'] === 'true'} onClick={() => void set('show_game_interface', String(config['show_game_interface'] !== 'true'))} className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_game_interface'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}>
-                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_game_interface'] === 'true' ? 'translate-x-4' : ''}`} />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={config['show_game_interface'] === 'true'}
+                onClick={() =>
+                  void set('show_game_interface', String(config['show_game_interface'] !== 'true'))
+                }
+                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_game_interface'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_game_interface'] === 'true' ? 'translate-x-4' : ''}`}
+                />
               </button>
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
-                <div className="text-sm font-medium text-neutral-200">{t('fields.showCounters')}</div>
-                <div className="mt-0.5 text-xs text-neutral-500">{t('descriptions.showCounters')}</div>
+                <div className="text-sm font-medium text-neutral-200">
+                  {t('fields.showCounters')}
+                </div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  {t('descriptions.showCounters')}
+                </div>
               </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={config['show_translation_counters'] === 'true'}
-                onClick={() => void set('show_translation_counters', String(config['show_translation_counters'] !== 'true'))}
+                onClick={() =>
+                  void set(
+                    'show_translation_counters',
+                    String(config['show_translation_counters'] !== 'true')
+                  )
+                }
                 className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_translation_counters'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
               >
-                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_translation_counters'] === 'true' ? 'translate-x-4' : ''}`} />
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_translation_counters'] === 'true' ? 'translate-x-4' : ''}`}
+                />
               </button>
             </div>
             <div className="flex items-center justify-between gap-5 py-3 last:pb-0">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">Hide developer notes</div>
-                <div className="mt-0.5 text-xs text-neutral-500">Hide internal strings beginning with %%% or wrapped in | ... | from the editor and progress counters.</div>
+                <div className="mt-0.5 text-xs text-neutral-500">
+                  Hide internal strings beginning with %%% or wrapped in | ... | from the editor and
+                  progress counters.
+                </div>
               </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={config['hide_developer_notes'] !== 'false'}
-                onClick={() => void set('hide_developer_notes', String(config['hide_developer_notes'] === 'false'))}
+                onClick={() =>
+                  void set(
+                    'hide_developer_notes',
+                    String(config['hide_developer_notes'] === 'false')
+                  )
+                }
                 className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['hide_developer_notes'] !== 'false' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
               >
-                <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['hide_developer_notes'] !== 'false' ? 'translate-x-4' : ''}`} />
+                <span
+                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['hide_developer_notes'] !== 'false' ? 'translate-x-4' : ''}`}
+                />
               </button>
             </div>
           </div>

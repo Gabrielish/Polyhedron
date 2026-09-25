@@ -36,20 +36,17 @@ export function TermGlossaryModal({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [open, onClose])
 
-  const sortedEntries = useMemo(
-    () => {
-      const query = search.trim().toLocaleLowerCase()
-      return [...entries]
-        .filter(
-          (entry) =>
-            !query ||
-            entry.source.toLocaleLowerCase().includes(query) ||
-            entry.translation.toLocaleLowerCase().includes(query)
-        )
-        .sort((a, b) => a.source.localeCompare(b.source, undefined, { sensitivity: 'base' }))
-    },
-    [entries, search]
-  )
+  const sortedEntries = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase()
+    return [...entries]
+      .filter(
+        (entry) =>
+          !query ||
+          entry.source.toLocaleLowerCase().includes(query) ||
+          entry.translation.toLocaleLowerCase().includes(query)
+      )
+      .sort((a, b) => a.source.localeCompare(b.source, undefined, { sensitivity: 'base' }))
+  }, [entries, search])
 
   if (!open) return null
 
@@ -87,7 +84,11 @@ export function TermGlossaryModal({
     } else {
       onChange([
         ...entries,
-        { id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, source: nextSource, translation: nextTranslation }
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          source: nextSource,
+          translation: nextTranslation
+        }
       ])
     }
     resetForm()
@@ -130,7 +131,12 @@ export function TermGlossaryModal({
               Preferred translations are shown as dotted underlines in Source EN.
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white" aria-label="Close">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+            aria-label="Close"
+          >
             <X size={18} />
           </button>
         </div>
@@ -164,12 +170,20 @@ export function TermGlossaryModal({
               />
             </label>
             <div className="flex gap-2">
-              <button type="button" onClick={submit} className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-amber-500 px-3 text-sm font-semibold text-black transition hover:bg-amber-400">
+              <button
+                type="button"
+                onClick={submit}
+                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-amber-500 px-3 text-sm font-semibold text-[color:var(--poly-accent-foreground)] transition hover:bg-amber-400"
+              >
                 {editingId ? <Pencil size={15} /> : <Plus size={16} />}
                 {editingId ? 'Update' : 'Add'}
               </button>
               {editingId && (
-                <button type="button" onClick={resetForm} className="h-10 rounded-lg border border-[#34343e] px-3 text-sm text-neutral-400 transition hover:text-white">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="h-10 rounded-lg border border-[#34343e] px-3 text-sm text-neutral-400 transition hover:text-white"
+                >
                   Cancel
                 </button>
               )}
@@ -192,33 +206,53 @@ export function TermGlossaryModal({
         )}
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
-          <div className="relative mb-3">
-            <Search className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500" size={16} />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search glossary..."
-              aria-label="Search glossary"
-              className="h-10 w-full rounded-lg border border-[#34343e] bg-[#0f1013] pr-3 pl-9 text-sm text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-amber-500/70"
-            />
+          <div className="relative sticky top-0 z-10 -mx-5 mb-3 bg-[#15161b] px-5 pb-3">
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500"
+                size={16}
+              />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search glossary..."
+                aria-label="Search glossary"
+                className="h-10 w-full rounded-lg border border-[#34343e] bg-[#0f1013] pr-3 pl-9 text-sm text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-amber-500/70"
+              />
+            </div>
           </div>
           {sortedEntries.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[#34343e] px-4 py-10 text-center text-sm text-neutral-500">
-              {search.trim() ? 'No matching glossary terms.' : 'No terms yet. Add your first preferred translation above.'}
+              {search.trim()
+                ? 'No matching glossary terms.'
+                : 'No terms yet. Add your first preferred translation above.'}
             </div>
           ) : (
             <div className="space-y-2">
               {sortedEntries.map((entry) => (
-                <div key={entry.id} className="flex items-center gap-3 rounded-xl border border-[#2c2e37] bg-[#1b1c21] px-3 py-2.5">
+                <div
+                  key={entry.id}
+                  className="flex items-center gap-3 rounded-xl border border-[#2c2e37] bg-[#1b1c21] px-3 py-2.5"
+                >
                   <div className="min-w-0 flex-1 text-sm">
                     <span className="font-medium text-neutral-100">{entry.source}</span>
                     <span className="mx-2 text-neutral-600">→</span>
                     <span className="text-amber-300">{entry.translation}</span>
                   </div>
-                  <button type="button" onClick={() => startEdit(entry)} className="rounded-md p-1.5 text-neutral-500 transition hover:bg-white/5 hover:text-white" aria-label={`Edit ${entry.source}`}>
+                  <button
+                    type="button"
+                    onClick={() => startEdit(entry)}
+                    className="rounded-md p-1.5 text-neutral-500 transition hover:bg-white/5 hover:text-white"
+                    aria-label={`Edit ${entry.source}`}
+                  >
                     <Pencil size={15} />
                   </button>
-                  <button type="button" onClick={() => onChange(entries.filter((item) => item.id !== entry.id))} className="rounded-md p-1.5 text-neutral-500 transition hover:bg-red-500/10 hover:text-red-300" aria-label={`Delete ${entry.source}`}>
+                  <button
+                    type="button"
+                    onClick={() => onChange(entries.filter((item) => item.id !== entry.id))}
+                    className="rounded-md p-1.5 text-neutral-500 transition hover:bg-red-500/10 hover:text-red-300"
+                    aria-label={`Delete ${entry.source}`}
+                  >
                     <Trash2 size={15} />
                   </button>
                 </div>

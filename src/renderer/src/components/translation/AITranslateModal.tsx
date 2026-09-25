@@ -162,7 +162,6 @@ export function AITranslateModal({
       title={t('modal.title')}
       icon={<Sparkles size={16} />}
       sizeClassName="max-w-2xl"
-      panelClassName="border-amber-500/20 bg-[#0a0b0d]/90 shadow-[0_16px_45px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl"
       onClose={onClose}
       footer={
         <>
@@ -175,16 +174,9 @@ export function AITranslateModal({
           </span>
           <button
             type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded-md bg-neutral-800 px-4 py-2 text-sm text-neutral-300 transition-colors hover:bg-neutral-700"
-          >
-            {t('actions.cancel', { ns: 'common' })}
-          </button>
-          <button
-            type="button"
             onClick={() => void handleTranslate()}
             disabled={translating}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {translating ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
             {t('modal.translate')}

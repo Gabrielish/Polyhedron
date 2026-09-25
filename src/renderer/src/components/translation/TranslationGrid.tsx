@@ -30,7 +30,15 @@ import {
   UserRound,
   X
 } from 'lucide-react'
-import { useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState, useTransition } from 'react'
+import {
+  useDeferredValue,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
@@ -516,6 +524,15 @@ export function TranslationGrid({
   const sideParentRef = useRef<HTMLDivElement>(null)
   const stackedParentRef = useRef<HTMLDivElement>(null)
   const liveGraphWebviewRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    if (!dialogueKey) return
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setDialogueKey(null)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [dialogueKey])
 
   const handleSuggestionsToggle = (checked: boolean): void => {
     setShowTranslationSuggestions(checked)
@@ -1346,12 +1363,12 @@ export function TranslationGrid({
 
   const dialogueModal = dialogueKey && (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
+      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
     >
-      <div className="flex h-[88vh] max-h-[920px] w-full max-w-[1500px] flex-col overflow-hidden rounded-xl border border-[#2a2f37] bg-[#0f1114] shadow-2xl">
-        <div className="flex shrink-0 items-center gap-3 border-b border-[#1f2329] px-5 py-3">
+      <div className="flex h-[88vh] max-h-[920px] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+        <div className="flex shrink-0 items-center gap-3 border-b border-[#2a2c34] px-5 py-3">
           <GitBranch size={16} className="text-cyan-300" />
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-semibold text-neutral-100">
@@ -1391,10 +1408,11 @@ export function TranslationGrid({
           </button>
           <button
             type="button"
-            className="inline-flex h-7 cursor-pointer items-center rounded border border-[#1f2329] bg-[#131518] px-2 text-xs font-medium text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200"
+            className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+            aria-label="Close"
             onClick={() => setDialogueKey(null)}
           >
-            <X size={13} />
+            <X size={18} />
           </button>
         </div>
         <div

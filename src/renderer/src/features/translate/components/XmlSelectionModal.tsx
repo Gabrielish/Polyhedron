@@ -1,11 +1,11 @@
 import { Check, Loader2, Package, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { PreparedTranslationInput } from '@/types'
-import { btnBase, btnGhostIcon, btnPrimary } from './styles'
+import { btnBase, btnPrimary } from './styles'
 import { XmlCandidateCard } from './XmlCandidateCard'
 
 interface XmlSelectionModalProps {
@@ -27,6 +27,13 @@ export function XmlSelectionModal({
     () => new Set(firstValidId ? [firstValidId] : [])
   )
   const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') void onCancel()
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [onCancel])
   const validCandidateIds = prepared.candidates
     .filter((candidate) => candidate.valid)
     .map((candidate) => candidate.id)
@@ -65,9 +72,9 @@ export function XmlSelectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-6">
-      <div className="w-full max-w-250 max-h-[82vh] flex flex-col rounded-xl border border-neutral-700 bg-[#0f1114] shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-3 px-5 h-12 border-b border-[#1f2329] bg-[#131518] shrink-0">
+    <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div className="flex max-h-[82vh] w-full max-w-250 flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+        <div className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2a2c34] px-5">
           <Package size={15} className="text-amber-400" />
           <div className="flex-1 min-w-0">
             <h2 className="m-0 text-sm font-semibold text-neutral-200">
@@ -77,8 +84,13 @@ export function XmlSelectionModal({
               {t('xmlSelection.description', { ns: 'translate' })}
             </p>
           </div>
-          <button type="button" className={btnGhostIcon} onClick={onCancel}>
-            <X size={14} />
+          <button
+            type="button"
+            onClick={() => void onCancel()}
+            className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+            aria-label="Close"
+          >
+            <X size={18} />
           </button>
         </div>
 
@@ -119,7 +131,7 @@ export function XmlSelectionModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2.5 px-5 py-3 border-t border-[#1f2329] bg-[#131518]">
+        <div className="flex items-center justify-end gap-2.5 border-t border-[#2a2c34] bg-[#101115] px-5 py-3">
           <button type="button" className={btnBase} onClick={onCancel}>
             {t('actions.cancel', { ns: 'common' })}
           </button>

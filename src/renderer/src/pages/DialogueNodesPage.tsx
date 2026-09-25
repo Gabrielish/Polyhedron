@@ -9,13 +9,16 @@ import {
   CircleDashed,
   CircleX,
   Copy,
+  Download,
   ExternalLink,
+  FileText,
   Flag,
   GitBranch,
   History,
   BookOpen,
   Search,
-  Sparkles
+  Sparkles,
+  X
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -312,7 +315,7 @@ function TreeItems({
                       className={cn(
                         'mb-1 block w-full truncate rounded border px-2 py-1 text-left text-[10px]',
                         selected?.file === choice.file && selected.dialogue === choice.dialogue
-                          ? 'border-amber-400/30 bg-amber-500/10 text-amber-200'
+                          ? 'border-white/30 bg-white/10 text-white'
                           : 'border-transparent text-neutral-500 hover:border-[#2a2f37]'
                       )}
                     >
@@ -428,6 +431,17 @@ export function DialogueNodesPage(): React.JSX.Element {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     () => new Set(loadDialogueViewState().expandedNodes ?? [])
   )
+  const [nodeExportOpen, setNodeExportOpen] = useState(false)
+  const [nodeExportWithTranslations, setNodeExportWithTranslations] = useState(false)
+  const [nodeExportCopied, setNodeExportCopied] = useState(false)
+  useEffect(() => {
+    if (!nodeExportOpen) return
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setNodeExportOpen(false)
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [nodeExportOpen])
   useEffect(() => {
     window.sessionStorage.setItem(
       DIALOGUE_VIEW_STATE_KEY,
@@ -530,9 +544,12 @@ export function DialogueNodesPage(): React.JSX.Element {
     visibleChoices.find((choice) => `${choice.file}:${choice.dialogue}` === selectedKey) ??
     visibleChoices[0] ??
     null
+  const allNodes = useMemo(() => {
+    if (!selected) return []
+    return getDialogueNodes(selected.dialogue)
+  }, [selected])
   const nodes = useMemo(() => {
     if (!selected) return []
-    const allNodes = getDialogueNodes(selected.dialogue)
     const query = dialogueTextSearch.trim().toLocaleLowerCase()
     if (!query) return allNodes
     const entriesByNode = dialogueEntryIndex.get(selected.dialogue)
@@ -541,7 +558,45 @@ export function DialogueNodesPage(): React.JSX.Element {
         `${entry.source}\n${entry.target}`.toLocaleLowerCase().includes(query)
       )
     )
-  }, [dialogueEntryIndex, dialogueTextSearch, selected])
+  }, [allNodes, dialogueEntryIndex, dialogueTextSearch, selected])
+
+  const nodeExportText = useMemo(() => {
+    if (!selected) return ''
+    const entriesByNode = dialogueEntryIndex.get(selected.dialogue)
+    const lines = [`Dialogue: ${selected.dialogue}`, '']
+    for (const [index, node] of allNodes.entries()) {
+      lines.push(`Node ${index + 1} — ${node.node}`)
+      if (node.details.length > 0) lines.push(`Details: ${node.details.join(' · ')}`)
+      const entries = entriesByNode?.get(node.node) ?? []
+      if (entries.length === 0) {
+        lines.push('(No localization string found)', '')
+        continue
+      }
+      for (const entry of entries) {
+        lines.push(`Source: ${entry.source}`)
+        if (nodeExportWithTranslations) lines.push(`Translation: ${entry.target || ''}`)
+        lines.push('')
+      }
+    }
+    return lines.join('\n').trim()
+  }, [allNodes, dialogueEntryIndex, nodeExportWithTranslations, selected])
+
+  const copyNodeExport = async (): Promise<void> => {
+    await navigator.clipboard.writeText(nodeExportText)
+    setNodeExportCopied(true)
+    window.setTimeout(() => setNodeExportCopied(false), 1600)
+  }
+
+  const saveNodeExport = (): void => {
+    if (!selected) return
+    const blob = new Blob([nodeExportText], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${selected.dialogue.replace(/[^a-z0-9_-]+/gi, '_')}.txt`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
 
   useEffect(() => {
     if (!focusedNode || !selected) return
@@ -710,7 +765,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                 className={cn(
                   'rounded-md border px-4 py-2 text-xs font-semibold',
                   activeAct === act.label
-                    ? 'border-amber-400/40 bg-amber-500/15 text-amber-200'
+                    ? 'border-white/30 bg-white/10 text-white'
                     : 'border-transparent text-neutral-500 hover:border-[#2a2f37] hover:text-neutral-200'
                 )}
               >
@@ -761,6 +816,17 @@ export function DialogueNodesPage(): React.JSX.Element {
                 className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-amber-400/40 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ExternalLink size={12} /> Open online
+              </button>
+              <button
+                type="button"
+                disabled={!selected}
+                onClick={() => {
+                  setNodeExportCopied(false)
+                  setNodeExportOpen(true)
+                }}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded border border-[#2a2f37] bg-[#131518] px-3 text-[11px] text-neutral-300 hover:border-amber-400/40 hover:text-amber-200 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <FileText size={12} /> Export nodes
               </button>
             </div>
           </div>
@@ -1068,6 +1134,116 @@ export function DialogueNodesPage(): React.JSX.Element {
           </section>
         </div>
       </div>
+      {nodeExportOpen && selected && (
+        <div
+          className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setNodeExportOpen(false)
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="dialogue-node-export-title"
+            className="flex max-h-[min(780px,90vh)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]"
+          >
+            <div className="flex items-center gap-3 border-b border-[#2a2c34] px-5 py-4">
+              <FileText size={20} className="shrink-0 text-amber-400" />
+              <div className="min-w-0 flex-1">
+                <h2
+                  id="dialogue-node-export-title"
+                  className="text-lg font-semibold text-neutral-100"
+                >
+                  Export dialogue nodes
+                </h2>
+                <p className="truncate text-xs text-neutral-500">{selected.dialogue}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setNodeExportOpen(false)}
+                className="rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+                aria-label="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 p-5">
+              <label className="inline-flex shrink-0 cursor-pointer items-center gap-2 text-xs font-semibold text-neutral-400">
+                <input
+                  type="checkbox"
+                  checked={nodeExportWithTranslations}
+                  onChange={(event) => setNodeExportWithTranslations(event.target.checked)}
+                  className="cursor-pointer accent-amber-500"
+                />
+                Include translations
+              </label>
+              <div
+                className="min-h-[320px] flex-1 overflow-y-auto rounded-xl border border-[#34343e] bg-[#0f1013] px-3 py-3 font-mono text-xs leading-5 text-neutral-200 outline-none"
+                aria-label="Exported dialogue node text"
+              >
+                {allNodes.map((node, index) => {
+                  const entries = dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []
+                  return (
+                    <div key={node.node} className="mb-4 last:mb-0">
+                      <div className="mb-1 text-amber-300">
+                        Node {index + 1} — {node.node}
+                      </div>
+                      {node.details.length > 0 && (
+                        <div className="mb-1 text-neutral-600">
+                          Details: {node.details.join(' · ')}
+                        </div>
+                      )}
+                      {entries.length === 0 ? (
+                        <div className="text-neutral-600">(No localization string found)</div>
+                      ) : (
+                        entries.map((entry) => (
+                          <div key={entry.rowId} className="whitespace-pre-wrap break-words">
+                            <span
+                              className="dialogue-export-label font-semibold"
+                              style={{ color: 'var(--color-amber-400, #c4b5fd)' }}
+                            >
+                              Source:
+                            </span>{' '}
+                            <span>{entry.source}</span>
+                            {nodeExportWithTranslations && (
+                              <>
+                                {'\n'}
+                                <span
+                                  className="dialogue-export-label font-semibold"
+                                  style={{ color: 'var(--color-amber-400, #c4b5fd)' }}
+                                >
+                                  Translation:
+                                </span>{' '}
+                                <span>{entry.target}</span>
+                              </>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 border-t border-[#2a2c34] bg-[#101115] px-5 py-4">
+              <button
+                type="button"
+                onClick={() => void copyNodeExport()}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[#34343e] px-3 text-sm text-neutral-300 transition hover:bg-white/5 hover:text-white"
+              >
+                <Copy size={15} /> {nodeExportCopied ? 'Copied' : 'Copy'}
+              </button>
+              <button
+                type="button"
+                onClick={saveNodeExport}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-amber-500 px-3 text-sm font-semibold text-black transition hover:bg-amber-400"
+              >
+                <Download size={15} /> Save .txt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

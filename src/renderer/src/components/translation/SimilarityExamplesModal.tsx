@@ -56,7 +56,6 @@ export function SimilarityExamplesModal({
       description={`${sourceLang} → ${targetLang}`}
       icon={<BookOpen size={16} />}
       sizeClassName="max-w-2xl"
-      panelClassName="border-amber-500/20 bg-[#0a0b0d]/90 shadow-[0_16px_45px_rgba(0,0,0,0.52),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-2xl"
       onClose={onClose}
     >
       <div className="space-y-3">
