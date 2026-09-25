@@ -26,6 +26,7 @@ import { registerUpdateHandlers } from './ipc/update.ipc'
 import { logError } from './services/log.service'
 import { createUsageService } from './services/usage.service'
 import { checkForUpdates, registerUpdateService } from './services/update.service'
+import { migrateLegacyUserData } from './services/user-data-migration.service'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -97,6 +98,7 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   app.setName('Polyhedron')
+  migrateLegacyUserData()
   ipcMain.handle('app:version', () => app.getVersion())
   electronApp.setAppUserModelId('com.icosa.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())
