@@ -14,7 +14,8 @@ import {
   CircleDashed,
   CircleX,
   CircleAlert,
-  CircleCheck
+  CircleCheck,
+  BookText
 } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useEffect } from 'react'
@@ -31,6 +32,13 @@ import {
   useTranslationSession
 } from '@/context/TranslationSession'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
+import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
+import {
+  getTermGlossaryStorageKey,
+  loadTermGlossary,
+  type TermGlossaryEntry
+} from '@/utils/termGlossary'
+import { btnGhostIcon } from '@/features/translate/components/styles'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
@@ -186,7 +194,8 @@ function TranslationField({
   onSimilarity,
   onHistory,
   toggleNeedsReview,
-  setReviewStatus
+  setReviewStatus,
+  termGlossary
 }: {
   label: string
   source: string
@@ -201,6 +210,7 @@ function TranslationField({
   onHistory: (entry: TranslationSessionEntry) => void
   toggleNeedsReview: (rowId: string) => void
   setReviewStatus: (rowId: string, status: ReviewStatus) => void
+  termGlossary: TermGlossaryEntry[]
 }): React.JSX.Element {
   const source = entries[0]?.source ?? sourceText
   const reveal = (uid: string) => {
@@ -221,7 +231,7 @@ function TranslationField({
         </button>
       </div>
       <div className="translation-source-text mb-2 whitespace-pre-wrap text-xs leading-5 text-neutral-200">
-        {renderSource(source)}
+        {renderSource(source, { termGlossary })}
       </div>
       {entries.length === 0 ? (
         <div className="text-[11px] italic text-neutral-600">
@@ -438,6 +448,23 @@ export function ReferencePage(): React.JSX.Element {
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
+  const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const termGlossaryProjectKey = session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    termGlossaryProjectKey,
+    session.sourceLang,
+    session.targetLang
+  )
+  const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
+    loadTermGlossary(termGlossaryKey)
+  )
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
+    } catch {
+      // The glossary remains available for the current session if storage is unavailable.
+    }
+  }, [termGlossary, termGlossaryKey])
   useEffect(() => {
     if (session.phase !== 'loaded') return
     const spellName = searchParams.get('spell')?.trim()
@@ -457,7 +484,7 @@ export function ReferencePage(): React.JSX.Element {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
         <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
-          <BookOpen className="mx-auto mb-3 text-amber-300" size={28} />
+          <Swords className="mx-auto mb-3" style={{ color: 'var(--poly-accent)' }} size={28} />
           <h1 className="mb-2 text-lg font-semibold text-neutral-100">Game Data</h1>
           <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
         </div>
@@ -550,8 +577,14 @@ export function ReferencePage(): React.JSX.Element {
           onClose={() => setHistoryEntry(null)}
         />
       )}
+      <TermGlossaryModal
+        open={termGlossaryOpen}
+        entries={termGlossary}
+        onChange={setTermGlossary}
+        onClose={() => setTermGlossaryOpen(false)}
+      />
       <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
-        <div className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] px-4 py-3 sm:px-5">
+        <div className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] px-6 py-5">
           <Icon size={20} className="text-amber-400" />
           <div>
             <h1 className="text-base font-semibold">Game Data</h1>
@@ -569,6 +602,16 @@ export function ReferencePage(): React.JSX.Element {
             >
               Open online <ExternalLink size={12} />
             </a>
+            <button
+              type="button"
+              onClick={() => setTermGlossaryOpen(true)}
+              title="Term Glossary"
+              aria-label="Term Glossary"
+              className={btnGhostIcon}
+            >
+              <BookText />
+            </button>
+            <div className="mx-1 h-4.5 w-px shrink-0 bg-[#1f2329]" />
             <SessionSaveButton session={session} />
           </div>
         </div>
@@ -631,6 +674,7 @@ export function ReferencePage(): React.JSX.Element {
                     onHistory={setHistoryEntry}
                     toggleNeedsReview={session.toggleNeedsReview}
                     setReviewStatus={session.setReviewStatus}
+                    termGlossary={termGlossary}
                   />
                   <TranslationField
                     label="Description EN"
@@ -646,6 +690,7 @@ export function ReferencePage(): React.JSX.Element {
                     onHistory={setHistoryEntry}
                     toggleNeedsReview={session.toggleNeedsReview}
                     setReviewStatus={session.setReviewStatus}
+                    termGlossary={termGlossary}
                   />
                 </>
               ) : (

@@ -1,7 +1,7 @@
 {
   "workspace": "Workspace",
   "translate": "Translate",
-  "dictionary": "Glossary",
+  "dictionary": "Database",
   "consistency": "Consistency",
   "mods": "Manage Mods",
   "merge": "Merge translations",

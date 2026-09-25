@@ -235,6 +235,9 @@ export type ConfigKey =
   | 'show_glossary'
   | 'hide_developer_notes'
   | 'divine_path'
+  | 'theme_id'
+  | 'theme_accent'
+  | 'theme_accent_foreground'
 
 export type UserErrorCode =
   | 'common.unknown'
@@ -691,7 +694,13 @@ export interface WorkspaceApi {
 }
 
 export interface CloudApi {
-  upload(params?: { sessionKey?: string; termGlossary?: { key: string; entries: Array<{ id: string; source: string; translation: string }> } }): Promise<{
+  upload(params?: {
+    sessionKey?: string
+    termGlossary?: {
+      key: string
+      entries: Array<{ id: string; source: string; translation: string }>
+    }
+  }): Promise<{
     fileName: string
     modifiedTime?: string
     stats: { translated: number; total: number; fingerprint: string }

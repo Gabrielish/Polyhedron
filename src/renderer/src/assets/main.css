@@ -190,6 +190,12 @@ aside div.polyhedron-scroll button[class~="bg-amber-500/10"] {
   --color-background-soft: #0d0f14;
 }
 
+/* Amber-200 is not defined by the theme palettes above and would otherwise
+   fall back to Tailwind's yellow. Keep light accent text theme-aware instead. */
+:root {
+  --color-amber-200: color-mix(in srgb, var(--poly-accent, #ed1c24) 48%, white);
+}
+
 /* Accent-filled buttons use the foreground selected in Settings. */
 button[class~="bg-amber-500"],
 button[class~="bg-amber-500/90"] {
@@ -199,6 +205,12 @@ button[class~="bg-amber-500/90"] {
 /* Some compact action controls are rendered as spans inside larger cards. */
 .accent-solid-control {
   color: var(--poly-accent-foreground, #fff) !important;
+}
+
+/* Shortcut labels inside accent-filled buttons follow the configured button
+   foreground too, while staying slightly muted so they remain secondary. */
+.accent-button-shortcut {
+  color: color-mix(in srgb, var(--poly-accent-foreground, #fff) 68%, transparent) !important;
 }
 
 /* Liquid Glass surfaces: translucent dark panels with restrained blur and
@@ -3417,7 +3429,38 @@ html[data-theme="liquid-glass"] .accent-solid-button:hover {
   min-width: 0;
 }
 .app-page-header h1 {
+  font-size: 1.125rem;
+  font-weight: 600;
   line-height: 1.15;
+}
+.app-page-header p {
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+.app-page-header > svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.app-page-header > svg.text-amber-500,
+.app-page-header > svg.text-amber-400 {
+  color: var(--poly-accent, #ed1c24) !important;
+}
+.app-page-header > svg.lucide-list-checks {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--poly-accent, #ed1c24) !important;
+}
+html[data-theme] .app-page-header > svg.lucide-list-checks {
+  color: var(--poly-accent, #ed1c24) !important;
+}
+/* The Translate language pair is intentionally a large focal heading, unlike
+   the compact page title used by the other tabs. */
+.app-page-header .editor-header-language-block h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
 }
 @media (max-width: 700px) {
   .app-page-header {
@@ -3429,6 +3472,9 @@ html[data-theme="liquid-glass"] .accent-solid-button:hover {
   }
   .app-page-header h1 {
     font-size: 1.05rem;
+  }
+  .app-page-header .editor-header-language-block h1 {
+    font-size: 25px;
   }
   .app-page-header p {
     max-width: 100%;
@@ -3608,6 +3654,22 @@ html[data-theme="liquid-glass"] .spells-edit-dialog [class~="bg-[#11151b]"] {
 }
 .spells-page [class*="hover\\:border-amber-"]:hover {
   border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 48%) !important;
+}
+
+/* Preserve the same muted Glossary tooltip label used by Translate. */
+.spells-page .term-glossary-tooltip .text-amber-300\/80 {
+  color: color-mix(in srgb, var(--color-amber-300, #fcd34d) 80%, transparent) !important;
+}
+
+/* Keep the shared Save button solid on Spells; the page palette override above
+   intentionally softens amber utility classes used by cards and filters. */
+.spells-page .accent-solid-button {
+  background-color: var(--poly-accent, #ed1c24) !important;
+  border-color: var(--poly-accent, #ed1c24) !important;
+  color: var(--poly-accent-foreground, #fff) !important;
+}
+.spells-page .accent-solid-button:hover {
+  filter: brightness(1.08);
 }
 
 .dialogue-export-label {

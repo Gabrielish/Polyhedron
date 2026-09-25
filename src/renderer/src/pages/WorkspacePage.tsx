@@ -71,8 +71,8 @@ export function WorkspacePage(): React.JSX.Element {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-y-auto p-8 text-neutral-200">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="app-page-header mb-7 flex items-start gap-3">
-          <TitleIcon className="mt-1 text-amber-400" size={24} />
+        <div className="app-page-header mb-7 flex items-center gap-3">
+          <TitleIcon className="text-amber-400" size={20} />
           <div>
             <h1 className="text-2xl font-semibold">Workspace</h1>
             <p className="mt-1 text-sm text-neutral-500">

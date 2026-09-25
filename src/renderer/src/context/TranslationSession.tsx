@@ -1,4 +1,13 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from 'react'
 import { getReferenceLinks, getReferenceTags, type ReferenceTag } from '@/data/gameReference'
 import {
   matchesDialogueFilters,
@@ -18,7 +27,14 @@ export type ReviewStatus = 'untranslated' | 'not-verified' | 'needs-review' | 'v
 
 type Phase = 'idle' | 'loading' | 'loaded'
 
-export type FilterMode = 'all' | 'untranslated' | 'translated' | 'dictionary' | 'tags' | 'brackets' | 'needs-review'
+export type FilterMode =
+  | 'all'
+  | 'untranslated'
+  | 'translated'
+  | 'dictionary'
+  | 'tags'
+  | 'brackets'
+  | 'needs-review'
 export interface FilterSpec {
   mode: FilterMode
   referenceTag: ReferenceTag | 'all'
@@ -52,7 +68,10 @@ export function isDeveloperNote(source: string): boolean {
   return value.startsWith('%%%') || (value.startsWith('|') && value.indexOf('|', 1) > 0)
 }
 
-const searchCache = new WeakMap<TranslationSessionEntry, { source: string; uid: string; uidShort: string }>()
+const searchCache = new WeakMap<
+  TranslationSessionEntry,
+  { source: string; uid: string; uidShort: string }
+>()
 
 export function entryMatchesSearch(
   entry: TranslationSessionEntry,
@@ -66,7 +85,11 @@ export function entryMatchesSearch(
   const uid = cached?.uid ?? entry.uid.toLowerCase()
   if (!cached) searchCache.set(entry, { source, uid, uidShort: uid.slice(-9) })
   const matchesText = (text: string): boolean =>
-    startsWith ? source.startsWith(normalizedQuery) : exactMatch ? text === normalizedQuery : text.includes(normalizedQuery)
+    startsWith
+      ? source.startsWith(normalizedQuery)
+      : exactMatch
+        ? text === normalizedQuery
+        : text.includes(normalizedQuery)
 
   return (
     matchesText(source) ||
@@ -83,18 +106,28 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
   if (filter.mode === 'tags' && !hasXmlTags(entry)) return false
   if (filter.mode === 'brackets' && !/\[[^\]\r\n]+\]/.test(entry.source)) return false
   if (filter.mode === 'needs-review' && !entry.needsReview) return false
-  if (filter.referenceTag !== 'all' && !getReferenceTags(entry.source).includes(filter.referenceTag)) {
+  if (
+    filter.referenceTag !== 'all' &&
+    !getReferenceTags(entry.source).includes(filter.referenceTag)
+  ) {
     return false
   }
   if (!matchesDialogueFilters(entry.source, filter.dialogueFilters)) return false
   if (!matchesDialogueScope(entry.source, filter.dialogueScope)) return false
   if (filter.search) {
-    const directMatch = entryMatchesSearch(entry, filter.search, filter.exactMatch, filter.startsWith)
+    const directMatch = entryMatchesSearch(
+      entry,
+      filter.search,
+      filter.exactMatch,
+      filter.startsWith
+    )
     if (directMatch) return true
     if (filter.linkNameDescription) {
       const query = filter.search.toLowerCase()
       return getReferenceLinks(entry.source).some((link) =>
-        filter.exactMatch ? link.text.toLowerCase() === query : link.text.toLowerCase().includes(query)
+        filter.exactMatch
+          ? link.text.toLowerCase() === query
+          : link.text.toLowerCase().includes(query)
       )
     }
     return false
@@ -131,8 +164,14 @@ export function materializeSelectedEntries(
 
 const EMPTY_EXPLICIT: SelectionState = { kind: 'explicit', uids: new Set() }
 
-function appendHistory(entry: TranslationSessionEntry, change: Omit<TranslationHistoryEntry, 'id' | 'changedAt'>): TranslationHistoryEntry[] {
-  const next = [...(entry.history ?? []), { ...change, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, changedAt: Date.now() }]
+function appendHistory(
+  entry: TranslationSessionEntry,
+  change: Omit<TranslationHistoryEntry, 'id' | 'changedAt'>
+): TranslationHistoryEntry[] {
+  const next = [
+    ...(entry.history ?? []),
+    { ...change, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, changedAt: Date.now() }
+  ]
   return next.slice(-50)
 }
 
@@ -206,7 +245,18 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
         targetFrequencies,
         entries: state.entries.map((e) =>
           e.rowId === action.rowId
-            ? { ...e, target: action.target, history: action.target.trim() ? appendHistory(e, { kind: 'translation', variant: 'default', value: action.target, previousValue: e.target }) : e.history }
+            ? {
+                ...e,
+                target: action.target,
+                history: action.target.trim()
+                  ? appendHistory(e, {
+                      kind: 'translation',
+                      variant: 'default',
+                      value: action.target,
+                      previousValue: e.target
+                    })
+                  : e.history
+              }
             : e
         )
       }
@@ -214,8 +264,29 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
     case 'UPDATE_GENDER_VARIANT': {
       const currentEntry = state.entries.find((entry) => entry.rowId === action.rowId)
       if (!currentEntry) return state
-      const genderTargets = { ...(currentEntry.genderTargets ?? {}), [action.variant]: action.target }
-      return { ...state, entries: state.entries.map((entry) => entry.rowId === action.rowId ? { ...entry, genderTargets, history: action.target.trim() ? appendHistory(entry, { kind: 'gender', variant: action.variant, value: action.target, previousValue: entry.genderTargets?.[action.variant] ?? '' }) : entry.history } : entry) }
+      const genderTargets = {
+        ...(currentEntry.genderTargets ?? {}),
+        [action.variant]: action.target
+      }
+      return {
+        ...state,
+        entries: state.entries.map((entry) =>
+          entry.rowId === action.rowId
+            ? {
+                ...entry,
+                genderTargets,
+                history: action.target.trim()
+                  ? appendHistory(entry, {
+                      kind: 'gender',
+                      variant: action.variant,
+                      value: action.target,
+                      previousValue: entry.genderTargets?.[action.variant] ?? ''
+                    })
+                  : entry.history
+              }
+            : entry
+        )
+      }
     }
     case 'MARK_MANUAL':
       return {
@@ -227,15 +298,45 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
     case 'SET_REVIEW_STATUS':
       return {
         ...state,
-        entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, reviewStatus: action.status, history: appendHistory(e, { kind: 'review', value: action.status, reviewStatus: action.status }) } : e)
+        entries: state.entries.map((e) =>
+          e.rowId === action.rowId
+            ? {
+                ...e,
+                reviewStatus: action.status,
+                history: appendHistory(e, {
+                  kind: 'review',
+                  value: action.status,
+                  reviewStatus: action.status
+                })
+              }
+            : e
+        )
       }
     case 'TOGGLE_NEEDS_REVIEW':
       return {
         ...state,
-        entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, needsReview: !e.needsReview, history: appendHistory(e, { kind: 'needs-review', value: String(!e.needsReview) }) } : e)
+        entries: state.entries.map((e) =>
+          e.rowId === action.rowId
+            ? {
+                ...e,
+                needsReview: !e.needsReview,
+                history: appendHistory(e, { kind: 'needs-review', value: String(!e.needsReview) })
+              }
+            : e
+        )
       }
     case 'DELETE_HISTORY_ENTRY':
-      return { ...state, entries: state.entries.map((e) => e.rowId === action.rowId ? { ...e, history: (e.history ?? []).filter((change) => change.id !== action.historyId) } : e) }
+      return {
+        ...state,
+        entries: state.entries.map((e) =>
+          e.rowId === action.rowId
+            ? {
+                ...e,
+                history: (e.history ?? []).filter((change) => change.id !== action.historyId)
+              }
+            : e
+        )
+      }
     case 'SELECT_ALL_MATCHING':
       return {
         ...state,
@@ -334,7 +435,9 @@ type DailyProgress = { date: string; count: number; ids: string[] }
 function readDailyProgress(): DailyProgress {
   const date = new Date().toISOString().slice(0, 10)
   try {
-    const saved = JSON.parse(window.localStorage.getItem(DAILY_PROGRESS_KEY) ?? '') as Partial<DailyProgress>
+    const saved = JSON.parse(
+      window.localStorage.getItem(DAILY_PROGRESS_KEY) ?? ''
+    ) as Partial<DailyProgress>
     if (saved.date === date && Array.isArray(saved.ids)) {
       return { date, count: saved.ids.length, ids: saved.ids }
     }
@@ -364,6 +467,36 @@ export function TranslationSessionProvider({
     storedPath: null
   })
   const [dailyProgress, setDailyProgress] = useState<DailyProgress>(readDailyProgress)
+  const sessionRef = useRef(state)
+  sessionRef.current = state
+
+  // The Translate screen is not always mounted (Game Data, Dialogue Nodes and
+  // Spells can be the active tab), so keep the local session cache safe at the
+  // provider level as well. This complements the explicit Save button and the
+  // existing Translate-page handler.
+  useEffect(() => {
+    const saveOnClose = () => {
+      const latest = sessionRef.current
+      if (latest.phase !== 'loaded' || latest.entries.length === 0) return
+      const key = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
+      void window.api.session.save({
+        key,
+        entries: latest.entries.map(
+          ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+            uid,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
+      })
+    }
+    window.addEventListener('beforeunload', saveOnClose)
+    return () => window.removeEventListener('beforeunload', saveOnClose)
+  }, [])
 
   useEffect(() => {
     window.api.config.getAll().then((cfg) => {
@@ -412,7 +545,9 @@ export function TranslationSessionProvider({
           targetLang,
           modName
         })
-        const saved = await window.api.session.load({ key: `${storedPath}|${sourceLang}|${targetLang}` })
+        const saved = await window.api.session.load({
+          key: `${storedPath}|${sourceLang}|${targetLang}`
+        })
         if (saved) {
           const savedByUid = new Map(saved.map((entry) => [entry.uid, entry]))
           entries = entries.map((entry) => {
@@ -420,10 +555,16 @@ export function TranslationSessionProvider({
             return previous
               ? {
                   ...entry,
-                  target: previous.target.trim() || previous.needsReview ? previous.target : entry.target,
-                  matchType: previous.target.trim() || previous.matchType === 'manual' ? previous.matchType : entry.matchType,
+                  target:
+                    previous.target.trim() || previous.needsReview ? previous.target : entry.target,
+                  matchType:
+                    previous.target.trim() || previous.matchType === 'manual'
+                      ? previous.matchType
+                      : entry.matchType,
                   needsReview: previous.needsReview === true,
-                  reviewStatus: previous.reviewStatus ?? (previous.target?.trim() ? 'needs-review' : 'untranslated'),
+                  reviewStatus:
+                    previous.reviewStatus ??
+                    (previous.target?.trim() ? 'needs-review' : 'untranslated'),
                   genderTargets: previous.genderTargets ?? entry.genderTargets,
                   history: previous.history ?? entry.history
                 }
@@ -453,23 +594,33 @@ export function TranslationSessionProvider({
     []
   )
 
-  const updateEntry = useCallback((rowId: string, target: string) => {
-    const currentEntry = state.entries.find((entry) => entry.rowId === rowId)
-    if (currentEntry && !currentEntry.target.trim() && target.trim()) {
-      const currentDaily = readDailyProgress()
-      const id = currentEntry.uid || rowId
-      if (!currentDaily.ids.includes(id)) {
-        const nextDaily = { date: currentDaily.date, ids: [...currentDaily.ids, id], count: currentDaily.count + 1 }
-        window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(nextDaily))
-        setDailyProgress(nextDaily)
+  const updateEntry = useCallback(
+    (rowId: string, target: string) => {
+      const currentEntry = state.entries.find((entry) => entry.rowId === rowId)
+      if (currentEntry && !currentEntry.target.trim() && target.trim()) {
+        const currentDaily = readDailyProgress()
+        const id = currentEntry.uid || rowId
+        if (!currentDaily.ids.includes(id)) {
+          const nextDaily = {
+            date: currentDaily.date,
+            ids: [...currentDaily.ids, id],
+            count: currentDaily.count + 1
+          }
+          window.localStorage.setItem(DAILY_PROGRESS_KEY, JSON.stringify(nextDaily))
+          setDailyProgress(nextDaily)
+        }
       }
-    }
-    dispatch({ type: 'UPDATE_ENTRY', rowId, target })
-  }, [state.entries])
+      dispatch({ type: 'UPDATE_ENTRY', rowId, target })
+    },
+    [state.entries]
+  )
 
-  const updateGenderVariant = useCallback((rowId: string, variant: GenderVariant, target: string) => {
-    dispatch({ type: 'UPDATE_GENDER_VARIANT', rowId, variant, target })
-  }, [])
+  const updateGenderVariant = useCallback(
+    (rowId: string, variant: GenderVariant, target: string) => {
+      dispatch({ type: 'UPDATE_GENDER_VARIANT', rowId, variant, target })
+    },
+    []
+  )
 
   const markManual = useCallback((rowId: string) => {
     dispatch({ type: 'MARK_MANUAL', rowId })
@@ -588,8 +739,8 @@ export function TranslationSessionProvider({
         selectEntry,
         selectEntries,
         loadSession,
-    updateEntry,
-    updateGenderVariant,
+        updateEntry,
+        updateGenderVariant,
         markManual,
         toggleNeedsReview,
         setReviewStatus,

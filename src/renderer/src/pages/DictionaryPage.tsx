@@ -1,5 +1,5 @@
 import {
-  BookOpen,
+  Database,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -212,7 +212,7 @@ export function DictionaryPage(): React.JSX.Element {
     count: displayEntries.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: () => 44,
-    overscan: 10,
+    overscan: 10
   })
 
   const modOptions = useMemo(
@@ -486,7 +486,6 @@ export function DictionaryPage(): React.JSX.Element {
     }
   }
 
-
   const toggleSelected = (id: number, checked: boolean) => {
     if (selectionScope === 'all-filtered') setSelectionScope('page')
     setSelectedIds((previous) => {
@@ -509,13 +508,16 @@ export function DictionaryPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0f1114] text-neutral-100">
-      <header className="app-page-header flex items-center justify-between border-b border-[#1f2329] px-5 py-3">
-        <div className="flex min-w-0 items-start gap-3">
-          <BookOpen className="mt-0.5 shrink-0 text-amber-400" size={20} />
+      <header className="app-page-header flex items-center justify-between border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <Database className="mt-0.5 shrink-0 text-[color:var(--poly-accent)]" size={20} />
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-neutral-100">{t('brand', { ns: 'dictionary' })}</h1>
+            <h1 className="text-lg font-semibold text-neutral-100">
+              {t('brand', { ns: 'dictionary' })}
+            </h1>
             <p className="mt-0.5 truncate text-xs text-neutral-500">
-              {t('stats.entries', { ns: 'dictionary', count: stats.total })} · {t('stats.mods', { ns: 'dictionary', count: stats.modCount })}
+              {t('stats.entries', { ns: 'dictionary', count: stats.total })} ·{' '}
+              {t('stats.mods', { ns: 'dictionary', count: stats.modCount })}
             </p>
           </div>
         </div>
@@ -705,7 +707,10 @@ export function DictionaryPage(): React.JSX.Element {
 
       <div className="relative min-h-0 flex-1">
         {/* grid-based virtualized layout (Option B) - avoids <table> absolute-positioning quirks */}
-        <div ref={scrollRef} className="dictionary-table-scroll polyhedron-scroll h-full overflow-auto">
+        <div
+          ref={scrollRef}
+          className="dictionary-table-scroll polyhedron-scroll h-full overflow-auto"
+        >
           {/* sticky header row */}
           <div
             className="sticky top-0 z-10 grid border-b border-[#1f2329] bg-[#131518] pr-[var(--scrollbar-width,0px)]"
@@ -787,7 +792,7 @@ export function DictionaryPage(): React.JSX.Element {
                     left: 0,
                     width: '100%',
                     transform: `translateY(${virtualItem.start}px)`,
-                    gridTemplateColumns: GRID_COLS,
+                    gridTemplateColumns: GRID_COLS
                   }}
                 >
                   <div className="px-4 py-3 text-center self-start">
@@ -869,7 +874,7 @@ export function DictionaryPage(): React.JSX.Element {
             <div className="px-6 py-20">
               <div className="flex flex-col items-center gap-3 text-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#2a2f37] bg-[#131518] text-neutral-400">
-                  <BookOpen size={20} />
+                  <Database size={20} />
                 </div>
                 <div className="text-sm font-semibold text-neutral-200">
                   {t('table.noEntries', { ns: 'dictionary' })}
@@ -913,13 +918,19 @@ export function DictionaryPage(): React.JSX.Element {
             aria-disabled={loading}
             className="dictionary-page-prev inline-flex h-7 cursor-pointer items-center justify-center rounded-md border border-[#2a2f37] px-2 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <ChevronLeft size={12} /><span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
+            <ChevronLeft size={12} />
+            <span className="sr-only">{t('actions.previous', { ns: 'common' })}</span>
           </button>
           <span className="dictionary-page-indicator font-mono text-[11px] tabular-nums text-neutral-400">
             {result.page} of {result.totalPages}
           </span>
           <span className="dictionary-page-range font-mono">
-            {t('footer.range', { ns: 'dictionary', start: pageStart, end: pageEnd, total: stats.total })}
+            {t('footer.range', {
+              ns: 'dictionary',
+              start: pageStart,
+              end: pageEnd,
+              total: stats.total
+            })}
           </span>
           <button
             type="button"
@@ -932,7 +943,8 @@ export function DictionaryPage(): React.JSX.Element {
             aria-disabled={loading}
             className="dictionary-page-next inline-flex h-7 cursor-pointer items-center justify-center rounded-md border border-[#2a2f37] px-2 text-neutral-300 transition-colors hover:bg-[#131518] disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <span className="sr-only">{t('actions.next', { ns: 'common' })}</span><ChevronRight size={12} />
+            <span className="sr-only">{t('actions.next', { ns: 'common' })}</span>
+            <ChevronRight size={12} />
           </button>
         </div>
       </footer>
@@ -1048,11 +1060,7 @@ function StatBlock({
   )
 }
 
-function DictionaryLoadingOverlay({
-  mode
-}: {
-  mode: DictionaryLoadingMode
-}): React.JSX.Element {
+function DictionaryLoadingOverlay({ mode }: { mode: DictionaryLoadingMode }): React.JSX.Element {
   return (
     <div
       className={cn(

@@ -140,6 +140,12 @@ app.whenReady().then(() => {
   })
 })
 
+// Flush and release the SQLite handle for every quit path (including Cmd+Q on
+// macOS, where `window-all-closed` is not emitted until much later).
+app.on('before-quit', () => {
+  closeDb()
+})
+
 process.on('uncaughtException', (err) => {
   logError('main.uncaughtException', err)
 })

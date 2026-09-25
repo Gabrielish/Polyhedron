@@ -166,8 +166,8 @@ export function SettingsPage(): React.JSX.Element {
   return (
     <div className="p-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="app-page-header mb-8 flex items-start gap-3">
-          <Settings className="mt-1 h-6 w-6 shrink-0 text-amber-500" />
+        <div className="app-page-header mb-8 flex items-center gap-3">
+          <Settings className="h-5 w-5 shrink-0 text-amber-500" />
           <div className="min-w-0">
             <h1 className="text-2xl font-semibold text-neutral-100">{t('title')}</h1>
             <p className="mt-1 text-sm text-neutral-500">{t('subtitle')}</p>
@@ -387,7 +387,7 @@ export function SettingsPage(): React.JSX.Element {
                   String count on each page
                 </div>
                 <div className="mt-0.5 text-xs text-neutral-500">
-                  Choose how many translation and glossary entries are shown at once.
+                  Choose how many translation and database entries are shown at once.
                 </div>
               </div>
               <div className="w-40 shrink-0">
@@ -405,9 +405,9 @@ export function SettingsPage(): React.JSX.Element {
             </div>
             <div className="flex items-center justify-between gap-5 py-3">
               <div className="min-w-0">
-                <div className="text-sm font-medium text-neutral-200">Show Glossary tab</div>
+                <div className="text-sm font-medium text-neutral-200">Show Database tab</div>
                 <div className="mt-0.5 text-xs text-neutral-500">
-                  Show the Glossary tab in the navigation bar.
+                  Show the Database tab in the navigation bar.
                 </div>
               </div>
               <button

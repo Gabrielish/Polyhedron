@@ -161,8 +161,12 @@ export function CloudSyncMenu(): React.JSX.Element {
           entries: loadTermGlossary(termGlossaryKey)
         }
       })
-      localStorage.setItem(syncKey, result.stats.fingerprint || currentFingerprint)
-      setSavedFingerprint(result.stats.fingerprint || currentFingerprint)
+      // The in-memory session is the source of truth for the status badge. The
+      // workspace archive may normalize its persisted payload, so comparing its
+      // service-side fingerprint directly can leave a successful upload marked
+      // as unsynced even though the current UI state was uploaded.
+      localStorage.setItem(syncKey, currentFingerprint)
+      setSavedFingerprint(currentFingerprint)
       const stamp = await window.api.cloud.syncStamp()
       if (stamp) localStorage.setItem(remoteStampKey, stamp)
       setRemoteChanged(false)
@@ -287,8 +291,8 @@ export function CloudSyncMenu(): React.JSX.Element {
                   / {syncResult.total.toLocaleString()} entries translated
                 </span>
               </div>
-              <div className="mt-5 flex justify-end gap-2">
-                {syncResult.direction === 'download' ? (
+              {syncResult.direction === 'download' && (
+                <div className="mt-5 flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => void window.api.window.relaunch()}
@@ -296,10 +300,8 @@ export function CloudSyncMenu(): React.JSX.Element {
                   >
                     Restart now
                   </button>
-                ) : (
-                  <span className="text-xs text-neutral-500">Press Esc or use X to close</span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import {
   CircleCheck,
   CircleDashed,
   CircleX,
-  ExternalLink,
+  BookText,
   Flag,
   Hash,
   LayoutGrid,
@@ -30,7 +30,15 @@ import spellsData from '@/data/spells.json'
 import { useTranslationSession, type ReviewStatus } from '@/context/TranslationSession'
 import { getReferenceCatalog } from '@/data/gameReference'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
-import { renderSource } from '@/utils/renderSource'
+import { renderSource as renderSourceBase } from '@/utils/renderSource'
+import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
+import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
+import {
+  getTermGlossaryStorageKey,
+  loadTermGlossary,
+  type TermGlossaryEntry
+} from '@/utils/termGlossary'
+import { btnGhostIcon } from '@/features/translate/components/styles'
 
 type GameEntry = ReturnType<typeof getReferenceCatalog>[number]
 type DisplayEntry = GameEntry & { displayKind?: EntryKind; wikiUrl?: string }
@@ -349,7 +357,7 @@ export function SpellsPage(): React.JSX.Element {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
         <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
-          <WandSparkles className="mx-auto mb-3 text-amber-300" size={28} />
+          <WandSparkles className="mx-auto mb-3" style={{ color: 'var(--poly-accent)' }} size={28} />
           <h1 className="mb-2 text-lg font-semibold text-neutral-100">Spells</h1>
           <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
         </div>
@@ -401,6 +409,28 @@ function LoadedSpellsPage({
     Record<string, { one: string; two: string }>
   >({})
   const [spellSuggestionsLoading, setSpellSuggestionsLoading] = useState(false)
+  const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const termGlossaryProjectKey = session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    termGlossaryProjectKey,
+    session.sourceLang,
+    session.targetLang
+  )
+  const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
+    loadTermGlossary(termGlossaryKey)
+  )
+  const renderSource = useCallback(
+    (value: string) => renderSourceBase(value, { termGlossary }),
+    [termGlossary]
+  )
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
+    } catch {
+      // The glossary remains available for the current session if storage is unavailable.
+    }
+  }, [termGlossary, termGlossaryKey])
 
   useEffect(() => {
     const handleFindShortcut = (event: KeyboardEvent) => {
@@ -786,25 +816,35 @@ function LoadedSpellsPage({
   }, [isEntryComplete, sorted])
 
   return (
-    <div className="spells-page flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
-      <header className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] bg-[#0f1114] px-6 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300">
-          <WandSparkles size={19} />
-        </div>
+    <>
+      <TermGlossaryModal
+        open={termGlossaryOpen}
+        entries={termGlossary}
+        onChange={setTermGlossary}
+        onClose={() => setTermGlossaryOpen(false)}
+      />
+      <div className="spells-page flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
+      <header className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
+        <WandSparkles size={20} style={{ color: 'var(--poly-accent)' }} />
         <div>
           <h1 className="text-base font-semibold text-neutral-100">Spells</h1>
           <p className="text-xs text-neutral-500">
             Game Data abilities + BG3 Wiki conditions · {referenceCatalog.length} entries
           </p>
         </div>
-        <a
-          href="https://bg3.wiki/wiki/List_of_all_spells"
-          target="_blank"
-          rel="noreferrer"
-          className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-[#2a2f37] px-2.5 py-1.5 text-xs text-neutral-400 hover:border-amber-500/40 hover:text-amber-200"
-        >
-          <ExternalLink size={13} /> BG3 Wiki
-        </a>
+        <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setTermGlossaryOpen(true)}
+            title="Term Glossary"
+            aria-label="Term Glossary"
+            className={btnGhostIcon}
+          >
+            <BookText />
+          </button>
+          <div className="mx-1 h-4.5 w-px shrink-0 bg-[#1f2329]" />
+          <SessionSaveButton session={session} className="accent-solid-button" />
+        </div>
       </header>
       <div className="flex shrink-0 flex-wrap items-center gap-2.5 border-b border-[#1f2329] bg-[#0c0d0f] px-5 py-3">
         <SpellSearchInput inputRef={searchInputRef} initialValue={query} onSearch={setQuery} />
@@ -1952,6 +1992,7 @@ function LoadedSpellsPage({
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }

@@ -95,7 +95,7 @@ export function InjectLocalizationPage({
                 onClick={() => {
                   if (!isMacOS) void inject('windows')
                 }}
-                className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60"
+                className={`group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-not-allowed disabled:opacity-60 ${running === 'windows' ? 'cursor-wait' : ''}`}
               >
                 <div className="mb-4 flex items-center justify-between">
                   <Monitor size={24} className="text-amber-400" />
@@ -123,7 +123,7 @@ export function InjectLocalizationPage({
                 onClick={() => {
                   if (isMacOS) void inject('macos')
                 }}
-                className="group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-not-allowed disabled:opacity-60"
+                className={`group rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-not-allowed disabled:opacity-60 ${running === 'macos' ? 'cursor-wait' : ''}`}
               >
                 <div className="mb-4 flex items-center justify-between">
                   <Apple size={24} className="text-amber-400" />

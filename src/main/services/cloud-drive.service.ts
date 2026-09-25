@@ -276,7 +276,12 @@ async function uploadTermGlossaryFile(
   glossary: { key: string; entries: CloudTermGlossaryEntry[] }
 ): Promise<void> {
   const { fileId, document } = await readTermGlossaryDocument(drive)
-  document.glossaries[glossary.key] = glossary.entries
+  const existingEntries = resolveTermGlossaryEntries(document, glossary.key)
+  // A migrated Polyhedron profile can still load an empty new key while the
+  // user's real glossary is stored under the legacy Icosa path. Preserve that
+  // data instead of replacing it with an empty array during upload.
+  document.glossaries[glossary.key] =
+    glossary.entries.length > 0 ? glossary.entries : (existingEntries ?? [])
   const media = { mimeType: 'application/json', body: JSON.stringify(document) }
   if (fileId) await drive.files.update({ fileId, media })
   else
@@ -292,7 +297,30 @@ async function downloadTermGlossaryFile(
 ): Promise<CloudTermGlossaryEntry[] | undefined> {
   if (!glossaryKey) return undefined
   const { document } = await readTermGlossaryDocument(drive)
-  return document.glossaries[glossaryKey]
+  return resolveTermGlossaryEntries(document, glossaryKey)
+}
+
+function normalizeTermGlossaryKey(key: string): string {
+  return key
+    .replaceAll('\\', '/')
+    .replace(/\/Application Support\/icosa\/icosa\//gi, '/Application Support/polyhedron/')
+    .replace(/\/Application Support\/icosa\//gi, '/Application Support/polyhedron/')
+}
+
+function resolveTermGlossaryEntries(
+  document: CloudTermGlossaryDocument,
+  glossaryKey: string
+): CloudTermGlossaryEntry[] | undefined {
+  const exact = document.glossaries[glossaryKey]
+  if (exact && exact.length > 0) return exact
+  const normalizedKey = normalizeTermGlossaryKey(glossaryKey)
+  const legacy = Object.entries(document.glossaries).find(
+    ([key, entries]) => entries.length > 0 && normalizeTermGlossaryKey(key) === normalizedKey
+  )
+  // An empty Polyhedron key can be left behind by the rename migration while
+  // the populated legacy key still exists. Prefer the migrated data in that
+  // case; only fall back to the exact key when no legacy match was found.
+  return legacy?.[1] ?? exact
 }
 
 async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {

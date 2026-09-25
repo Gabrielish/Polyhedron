@@ -16,6 +16,7 @@ import {
   GitBranch,
   History,
   BookOpen,
+  BookText,
   Search,
   Sparkles,
   X
@@ -37,7 +38,15 @@ import {
 } from '@/data/dialogReference'
 import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
+import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
+import {
+  getTermGlossaryStorageKey,
+  loadTermGlossary,
+  type TermGlossaryEntry
+} from '@/utils/termGlossary'
+import { renderSource } from '@/utils/renderSource'
 import { cn } from '@/lib/utils'
+import { btnGhostIcon } from '@/features/translate/components/styles'
 
 const DIALOGUE_VIEW_STATE_KEY = 'polyhedron.dialogue-nodes.view'
 const dialogueGroupsCache = new Map<string, ReturnType<typeof loadDialogueGroups>>()
@@ -422,6 +431,16 @@ export function DialogueNodesPage(): React.JSX.Element {
   const [historyEntry, setHistoryEntry] = useState<
     ReturnType<typeof useTranslationSession>['entries'][number] | null
   >(null)
+  const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const termGlossaryProjectKey = session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    termGlossaryProjectKey,
+    session.sourceLang,
+    session.targetLang
+  )
+  const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
+    loadTermGlossary(termGlossaryKey)
+  )
   const [focusedUid, setFocusedUid] = useState<string | null>(() => navigationState.uid ?? null)
   const [dialogueSearch, setDialogueSearch] = useState(() =>
     navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? '')
@@ -448,6 +467,13 @@ export function DialogueNodesPage(): React.JSX.Element {
       JSON.stringify({ activeAct, selectedKey, dialogueSearch, expandedNodes: [...expandedNodes] })
     )
   }, [activeAct, selectedKey, dialogueSearch, expandedNodes])
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
+    } catch {
+      // The glossary remains available for the current session if storage is unavailable.
+    }
+  }, [termGlossary, termGlossaryKey])
   const dialogueCatalog = useMemo(() => {
     const index: DialogueEntryIndex = new Map()
     const choiceMap = new Map<string, Choice>()
@@ -694,7 +720,7 @@ export function DialogueNodesPage(): React.JSX.Element {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
         <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
-          <GitBranch className="mx-auto mb-3 text-amber-500" size={28} />
+          <GitBranch className="mx-auto mb-3" style={{ color: 'var(--poly-accent)' }} size={28} />
           <h1 className="mb-2 text-lg font-semibold text-neutral-100">Dialogue Nodes</h1>
           <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
         </div>
@@ -740,6 +766,12 @@ export function DialogueNodesPage(): React.JSX.Element {
           onClose={() => setHistoryEntry(null)}
         />
       )}
+      <TermGlossaryModal
+        open={termGlossaryOpen}
+        entries={termGlossary}
+        onChange={setTermGlossary}
+        onClose={() => setTermGlossaryOpen(false)}
+      />
       <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f]">
         <header className="app-page-header shrink-0 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
           <div className="mb-4 flex items-center gap-3">
@@ -750,7 +782,19 @@ export function DialogueNodesPage(): React.JSX.Element {
                 Translate {session.sourceLang.toUpperCase()} → {session.targetLang.toUpperCase()}
               </p>
             </div>
-            <SessionSaveButton session={session} className="ml-auto" />
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setTermGlossaryOpen(true)}
+                title="Term Glossary"
+                aria-label="Term Glossary"
+                className={btnGhostIcon}
+              >
+                <BookText />
+              </button>
+              <div className="mx-1 h-4.5 w-px shrink-0 bg-[#1f2329]" />
+              <SessionSaveButton session={session} />
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {ACTS.map((act) => (
@@ -961,7 +1005,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                                 </button>
                               </div>
                               <div className="translation-source-text rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
-                                {entry.source}
+                                {renderSource(entry.source, { termGlossary })}
                               </div>
                             </div>
                             <div>

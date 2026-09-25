@@ -10,7 +10,7 @@ import type { Language } from '@/types'
 import { EMPTY_ENTRY_DRAFT, type EntryDraft } from './types'
 
 const META_INPUT =
-  'h-9 w-full rounded-md border border-[#2a2f37] bg-[#0c0d0f] px-3 text-sm text-neutral-200 outline-none transition-colors placeholder:text-neutral-600 focus:border-amber-500'
+  'h-9 w-full rounded-md border border-[#2a2f37] bg-[#0c0d0f] px-3 text-sm text-neutral-200 outline-none transition-colors placeholder:text-neutral-600 focus:border-[var(--poly-accent)]'
 
 interface DictionaryEntryModalProps {
   open: boolean
@@ -96,9 +96,7 @@ export function DictionaryEntryModal({
             : t('entryModal.editTitle', { id: entryId ?? '' })
         }
         description={
-          mode === 'create'
-            ? t('entryModal.createDescription')
-            : t('entryModal.editDescription')
+          mode === 'create' ? t('entryModal.createDescription') : t('entryModal.editDescription')
         }
         icon={mode === 'create' ? <Plus size={16} /> : <Pencil size={16} />}
         sizeClassName="max-w-4xl"
@@ -116,7 +114,7 @@ export function DictionaryEntryModal({
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-3 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Check size={13} />
               {saving ? t('actions.saving', { ns: 'common' }) : t('actions.save', { ns: 'common' })}
@@ -132,7 +130,7 @@ export function DictionaryEntryModal({
                 value={draft.sourceText}
                 onChange={(event) => setDraft({ ...draft, sourceText: event.target.value })}
                 rows={6}
-                containerClassName="rounded-lg border-[#2a2f37] bg-[#0c0d0f] focus-within:border-amber-500 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.22)]"
+                containerClassName="rounded-lg border-[#2a2f37] bg-[#0c0d0f] focus-within:border-[var(--poly-accent)] focus-within:shadow-[0_0_0_3px_rgba(var(--poly-accent-rgb),0.22)]"
                 overlayClassName="px-3 py-2.5 text-[13px] leading-[1.6]"
                 className="min-h-38 px-3 py-2.5 text-[13px] leading-[1.6]"
                 placeholder={t('entryModal.textLanguage1Placeholder')}
@@ -144,7 +142,7 @@ export function DictionaryEntryModal({
                 value={draft.targetText}
                 onChange={(event) => setDraft({ ...draft, targetText: event.target.value })}
                 rows={6}
-                containerClassName="rounded-lg border-[#2a2f37] bg-[#0c0d0f] focus-within:border-amber-500 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.22)]"
+                containerClassName="rounded-lg border-[#2a2f37] bg-[#0c0d0f] focus-within:border-[var(--poly-accent)] focus-within:shadow-[0_0_0_3px_rgba(var(--poly-accent-rgb),0.22)]"
                 overlayClassName="px-3 py-2.5 text-[13px] leading-[1.6]"
                 className="min-h-38 px-3 py-2.5 text-[13px] leading-[1.6]"
                 placeholder={t('entryModal.textLanguage2Placeholder')}

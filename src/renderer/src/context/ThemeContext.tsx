@@ -73,6 +73,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
       ? 'black'
       : 'white'
   )
+  // localStorage keeps the renderer fast, while the config table is the durable
+  // profile store used by packaged builds and workspace backups. Read it once
+  // on startup so a rebuilt app cannot silently fall back to the default red.
+  useEffect(() => {
+    void window.api.config
+      .getAll()
+      .then((config) => {
+        if (config.theme_id === 'liquid-glass') setThemeState('liquid-glass')
+        if (config.theme_accent) setAccentState(normalizeAccent(config.theme_accent))
+        if (
+          config.theme_accent_foreground === 'black' ||
+          config.theme_accent_foreground === 'white'
+        ) {
+          setAccentForegroundState(config.theme_accent_foreground)
+        }
+      })
+      .catch(() => undefined)
+  }, [])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -97,11 +115,21 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
   const value = useMemo<ThemeContextValue>(
     () => ({
       theme,
-      setTheme: (nextTheme) => setThemeState(nextTheme),
+      setTheme: (nextTheme) => {
+        setThemeState(nextTheme)
+        void window.api.config.set({ key: 'theme_id', value: nextTheme })
+      },
       accent,
-      setAccent: (nextAccent) => setAccentState(normalizeAccent(nextAccent)),
+      setAccent: (nextAccent) => {
+        const normalized = normalizeAccent(nextAccent)
+        setAccentState(normalized)
+        void window.api.config.set({ key: 'theme_accent', value: normalized })
+      },
       accentForeground,
-      setAccentForeground: (nextForeground) => setAccentForegroundState(nextForeground)
+      setAccentForeground: (nextForeground) => {
+        setAccentForegroundState(nextForeground)
+        void window.api.config.set({ key: 'theme_accent_foreground', value: nextForeground })
+      }
     }),
     [accent, accentForeground, theme]
   )

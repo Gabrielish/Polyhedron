@@ -63,8 +63,8 @@ export function EditorHeader({
           {t('editor.back')}
         </button>
 
-        <div className="editor-header-title flex min-w-0 items-start gap-2.5">
-          <Languages className="mt-0.5 shrink-0 text-amber-500" size={20} />
+        <div className="editor-header-title flex min-w-0 items-center gap-2.5">
+          <Languages className="shrink-0 text-amber-500" size={20} />
           <div className="min-w-0">
             <h1 className="truncate text-lg font-semibold text-neutral-100">Translate</h1>
             <p className="truncate text-xs text-neutral-500">
@@ -148,7 +148,7 @@ export function EditorHeader({
           >
             {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Save />}
             SAVE
-            <span className="shortcut-hint inline-flex items-center justify-center font-mono text-[10px] text-black/65">
+            <span className="shortcut-hint accent-button-shortcut inline-flex items-center justify-center font-mono text-[10px]">
               Ctrl S
             </span>
           </button>

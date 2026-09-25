@@ -49,7 +49,7 @@ export function SessionSaveButton({ session, className, portalSelector }: Sessio
     <button type="button" onClick={() => void saveTranslations()} disabled={isSaving} className={cn(btnPrimary, className, isSaving && 'cursor-not-allowed opacity-60')} title="Save translations">
       {isSaving ? <Loader2 className="animate-spin" /> : <Save />}
       SAVE
-      <span className="shortcut-hint inline-flex items-center justify-center font-mono text-[10px] text-black/65">Ctrl S</span>
+      <span className="shortcut-hint accent-button-shortcut inline-flex items-center justify-center font-mono text-[10px]">Ctrl S</span>
     </button>
   )
 
