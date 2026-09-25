@@ -105,7 +105,7 @@ export function WorkspacePage(): React.JSX.Element {
             <div className="mt-1 text-xs leading-5 text-neutral-500">
               Restore the Polyhedron database and imported mod data from a .pws file.
             </div>
-            <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
+            <span className="accent-solid-control mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
               {running === 'import' ? 'Importing…' : 'Choose Workspace'}
             </span>
           </button>
@@ -125,7 +125,7 @@ export function WorkspacePage(): React.JSX.Element {
             <div className="mt-1 text-xs leading-5 text-neutral-500">
               Create a portable backup containing the full translation database.
             </div>
-            <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
+            <span className="accent-solid-control mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
               {running === 'export' ? 'Exporting…' : 'Export Workspace'}
             </span>
           </button>

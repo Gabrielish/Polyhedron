@@ -275,7 +275,7 @@ export function PromptSlotsCard(): React.JSX.Element {
           <button
             type="button"
             onClick={() => void forkDefault()}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500"
+            className="accent-solid-control inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500"
           >
             <Pencil size={13} /> {t('slots.editCreateCopy')}
           </button>
@@ -285,7 +285,7 @@ export function PromptSlotsCard(): React.JSX.Element {
               type="button"
               onClick={() => void saveSlot()}
               disabled={!dirty || varsInvalid}
-              className="inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="accent-solid-control inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Check size={13} /> {t('slots.save')}
             </button>

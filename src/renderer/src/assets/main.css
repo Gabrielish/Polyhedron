@@ -196,6 +196,11 @@ button[class~="bg-amber-500/90"] {
   color: var(--poly-accent-foreground, #fff) !important;
 }
 
+/* Some compact action controls are rendered as spans inside larger cards. */
+.accent-solid-control {
+  color: var(--poly-accent-foreground, #fff) !important;
+}
+
 /* Liquid Glass surfaces: translucent dark panels with restrained blur and
    cool highlights. The effect is limited to this opt-in theme. */
 html[data-theme="liquid-glass"] body {
