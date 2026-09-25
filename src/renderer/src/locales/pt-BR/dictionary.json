@@ -34,7 +34,7 @@
     "preparing": "Preparando dicionário..."
   },
   "footer": {
-    "file": "dictionary.icosa",
+    "file": "dictionary.polyhedron",
     "encoding": "UTF-8",
     "range": "{{start}}-{{end}} de {{total}}"
   },

@@ -1,7 +1,7 @@
 import { decodeEntities, encodeEntities } from '@/lib/xmlEntities'
 
 const REPLACE_REGION_PATTERN = /(<[^>]+>|\{[^}]+\})/g
-const PLACEHOLDER_PREFIX = '__ICOSA_DICT_REGION_'
+const PLACEHOLDER_PREFIX = '__POLYHEDRON_DICT_REGION_'
 
 export function decodeDictionaryTextForUi(text: string): string {
   return decodeEntities(text)

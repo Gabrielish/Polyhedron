@@ -23,7 +23,7 @@ export function MainLayout(): React.JSX.Element {
             <CloudSyncMenu />
           </div>
         </div>
-        <main className="relative icosa-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <main className="relative polyhedron-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
           <Outlet />
           {location.pathname === '/game-interface' && session.phase === 'loaded' && (
             <div className="pointer-events-none absolute top-3 right-5 z-30">

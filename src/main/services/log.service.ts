@@ -16,7 +16,7 @@ const REDACTED = '[redacted]'
 const SENSITIVE_KEY_RE = /(key|secret|token|authorization|password)/i
 
 export function getLogPath(): string {
-  return path.join(app.getPath('userData'), 'logs', 'icosa-errors.log')
+  return path.join(app.getPath('userData'), 'logs', 'polyhedron-errors.log')
 }
 
 export function writeLog(payload: LogPayload): void {

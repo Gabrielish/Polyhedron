@@ -41,7 +41,7 @@ interface TagToken {
 }
 
 const TAG_RE = /<\/?[a-zA-Z][a-zA-Z0-9]*[^<>]*>/g
-const WRAPPER_TAG = 'icosa-root'
+const WRAPPER_TAG = 'polyhedron-root'
 
 function toDeepLLang(code: string): string {
   return code.toUpperCase()
@@ -323,18 +323,14 @@ function createTagToken(raw: string, start: number): TagToken {
   }
 }
 
-function assignSelfClosingPlaceholder(
-  token: TagToken,
-  index: number,
-  tags: ProtectedTag[]
-): void {
+function assignSelfClosingPlaceholder(token: TagToken, index: number, tags: ProtectedTag[]): void {
   const placeholderName = createPlaceholderName(index)
   token.replacement = `<${placeholderName}/>`
   tags.push({ name: placeholderName, kind: 'self', original: token.raw })
 }
 
 function createPlaceholderName(index: number): string {
-  return `icosa-${index}`
+  return `polyhedron-${index}`
 }
 
 function wrapXmlContent(text: string): string {
@@ -342,9 +338,7 @@ function wrapXmlContent(text: string): string {
 }
 
 function unwrapXmlContent(text: string): string {
-  const match = text
-    .trim()
-    .match(new RegExp(`^<${WRAPPER_TAG}>([\\s\\S]*)</${WRAPPER_TAG}>$`))
+  const match = text.trim().match(new RegExp(`^<${WRAPPER_TAG}>([\\s\\S]*)</${WRAPPER_TAG}>$`))
   if (!match) {
     throw new Error('DeepL response did not preserve the XML wrapper')
   }
@@ -352,10 +346,7 @@ function unwrapXmlContent(text: string): string {
 }
 
 function escapeXmlText(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
 function placeholderPattern(tag: ProtectedTag): RegExp {

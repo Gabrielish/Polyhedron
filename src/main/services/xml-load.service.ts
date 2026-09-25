@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { app } from 'electron'
+import { databasePath } from '../utils/app-paths'
 import type { RepositoryRegistry } from '../database/repositories/registry'
 import type {
   XmlEntry,
@@ -28,7 +28,7 @@ function languageFolder(repos: RepositoryRegistry, languageCode: string): string
 }
 
 function getDbPath(): string {
-  return path.join(app.getPath('userData'), 'icosa.db')
+  return databasePath()
 }
 
 export function loadXmlViaWorker(params: LoadXmlParams): Promise<XmlLoadResult> {

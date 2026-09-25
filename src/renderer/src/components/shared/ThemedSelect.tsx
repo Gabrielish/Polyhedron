@@ -173,7 +173,7 @@ export function ThemedSelect({
             </div>
           )}
 
-          <div className="icosa-scroll max-h-60 overflow-y-auto p-1">
+          <div className="polyhedron-scroll max-h-60 overflow-y-auto p-1">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => {
                 const active = option.value === value

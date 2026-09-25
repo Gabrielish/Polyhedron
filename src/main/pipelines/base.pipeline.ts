@@ -69,8 +69,8 @@ export abstract class BasePipeline {
     this.languageRepo = new LanguageRepository(db)
     this.modRepo = new ModRepository(db)
 
-    const tmpDir = createTempDir(`icosa_${ctx.jobId}`)
-    const outDir = createTempDir(`icosa_${ctx.jobId}_out`)
+    const tmpDir = createTempDir(`polyhedron_${ctx.jobId}`)
+    const outDir = createTempDir(`polyhedron_${ctx.jobId}_out`)
 
     try {
       // XML files are translated directly without pack/unpack
@@ -272,7 +272,7 @@ export abstract class BasePipeline {
       sourcePath: metaSrc,
       outputPath: metaDst,
       modName: translatedModName,
-      author: ctx.author ?? 'Icosa',
+      author: ctx.author ?? 'Polyhedron',
       description: originalDesc
         ? `${originalDesc} - Translated to ${ctx.targetLang}`
         : `Translated to ${ctx.targetLang}`

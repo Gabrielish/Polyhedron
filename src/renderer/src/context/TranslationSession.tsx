@@ -327,7 +327,7 @@ const Context = createContext<TranslationSessionContext | null>(null)
 
 const DEFAULT_SOURCE = 'en'
 const DEFAULT_TARGET = 'ro'
-const DAILY_PROGRESS_KEY = 'icosa.daily-progress'
+const DAILY_PROGRESS_KEY = 'polyhedron.daily-progress'
 
 type DailyProgress = { date: string; count: number; ids: string[] }
 

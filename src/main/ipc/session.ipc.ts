@@ -1,7 +1,8 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { app, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
+import { projectPath } from '../utils/app-paths'
 
 interface SessionEntry {
   uid: string
@@ -16,7 +17,7 @@ interface SessionEntry {
 
 function sessionPath(key: string): string {
   const id = crypto.createHash('sha256').update(key).digest('hex')
-  return path.join(app.getPath('userData'), 'icosa', 'sessions', `${id}.json`)
+  return projectPath('sessions', `${id}.json`)
 }
 
 export function registerSessionHandlers(): void {

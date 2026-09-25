@@ -22,8 +22,8 @@ export function WorkspacePage(): React.JSX.Element {
 
   const exportWorkspace = async () => {
     const outputPath = await window.api.fs.saveDialog({
-      defaultName: 'PolyhedronWorkspace.icws',
-      filters: [{ name: 'Polyhedron Workspace', extensions: ['icws', 'zip'] }]
+      defaultName: 'PolyhedronWorkspace.pws',
+      filters: [{ name: 'Polyhedron Workspace', extensions: ['pws', 'zip'] }]
     })
     if (!outputPath) return
     setRunning('export')
@@ -43,7 +43,7 @@ export function WorkspacePage(): React.JSX.Element {
 
   const importWorkspace = async () => {
     const files = await window.api.fs.openDialog({
-      filters: [{ name: 'Polyhedron Workspace', extensions: ['icws', 'zip'] }]
+      filters: [{ name: 'Polyhedron Workspace', extensions: ['pws', 'zip'] }]
     })
     const inputPath = files[0]
     if (!inputPath) return
@@ -83,9 +83,9 @@ export function WorkspacePage(): React.JSX.Element {
         <div className="mb-5 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-neutral-300">
           <ShieldCheck size={16} className="mt-0.5 shrink-0 text-amber-300" />
           <p>
-            <strong className="font-medium text-amber-200">icosa.db is protected.</strong> Export
-            creates a consistent SQLite backup. Import replaces the current database only after
-            saving a timestamped backup.
+            <strong className="font-medium text-amber-200">Polyhedron data is protected.</strong>{' '}
+            Export creates a consistent SQLite backup. Import replaces the current database only
+            after saving a timestamped backup.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
@@ -103,7 +103,7 @@ export function WorkspacePage(): React.JSX.Element {
             </div>
             <div className="font-medium">Import Workspace</div>
             <div className="mt-1 text-xs leading-5 text-neutral-500">
-              Restore icosa.db and imported mod data from an .icws file.
+              Restore the Polyhedron database and imported mod data from a .pws file.
             </div>
             <span className="mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
               {running === 'import' ? 'Importing…' : 'Choose Workspace'}

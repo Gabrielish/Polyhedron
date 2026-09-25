@@ -104,7 +104,7 @@ function TranslateRouteSkeleton(): React.JSX.Element {
       </div>
 
       <div className="flex-1 overflow-hidden bg-[#0f1114] px-5 py-4">
-        <div className="icosa-scroll h-full overflow-hidden">
+        <div className="polyhedron-scroll h-full overflow-hidden">
           {Array.from({ length: 5 }).map((_, index) => (
             <div
               key={`translate-route-skeleton-row-${index + 1}`}

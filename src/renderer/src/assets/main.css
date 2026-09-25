@@ -45,7 +45,7 @@
 
 /* Game Data selection follows the configurable theme accent instead of the
    default amber text used by Tailwind utility classes. */
-aside div.icosa-scroll button[class~="bg-amber-500/10"] {
+aside div.polyhedron-scroll button[class~="bg-amber-500/10"] {
   background-color: color-mix(in srgb, var(--color-amber-500) 10%, transparent) !important;
   color: color-mix(in srgb, var(--color-amber-500) 72%, white) !important;
 }
@@ -151,7 +151,7 @@ aside div.icosa-scroll button[class~="bg-amber-500/10"] {
   --color-background-soft: #101010;
 }
 
-[data-theme="icosa-green"] {
+[data-theme="polyhedron-green"] {
   --poly-accent-foreground: #101607;
   --color-amber-300: #b7f58a;
   --color-amber-400: #8ee34f;
@@ -257,8 +257,8 @@ html[data-theme="classic"] .app-content-shell main button[class~="bg-amber-500/9
   box-shadow: 0 1px 0 var(--color-amber-700, #a80f15);
 }
 
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500"],
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500/90"],
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500"],
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500/90"],
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500"],
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500/90"] {
   box-shadow: 0 3px 0 #347a02;
@@ -267,14 +267,14 @@ html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber
     box-shadow 120ms ease,
     filter 120ms ease;
 }
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500"]:hover,
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500/90"]:hover,
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500"]:hover,
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500/90"]:hover,
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500"]:hover,
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500/90"]:hover {
   filter: brightness(1.08);
 }
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500"]:active,
-html[data-theme="icosa-green"] .app-content-shell main button[class~="bg-amber-500/90"]:active,
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500"]:active,
+html[data-theme="polyhedron-green"] .app-content-shell main button[class~="bg-amber-500/90"]:active,
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500"]:active,
 html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber-500/90"]:active {
   transform: translateY(2px);
@@ -283,7 +283,7 @@ html[data-theme="duolingo-dark"] .app-content-shell main button[class~="bg-amber
 
 /* Full Duolingo treatment for the two green themes. Secondary controls get
    the same tactile motion while keeping their existing colours and meaning. */
-html[data-theme="icosa-green"] .app-content-shell main button:not(:disabled),
+html[data-theme="polyhedron-green"] .app-content-shell main button:not(:disabled),
 html[data-theme="duolingo-dark"] .app-content-shell main button:not(:disabled) {
   border-radius: 0.65rem;
   transition:
@@ -291,7 +291,7 @@ html[data-theme="duolingo-dark"] .app-content-shell main button:not(:disabled) {
     box-shadow 120ms ease,
     filter 120ms ease;
 }
-html[data-theme="icosa-green"]
+html[data-theme="polyhedron-green"]
   .app-content-shell
   main
   button:not(:disabled):not([class~="bg-amber-500"]):not([class~="bg-amber-500/90"]),
@@ -301,11 +301,11 @@ html[data-theme="duolingo-dark"]
   button:not(:disabled):not([class~="bg-amber-500"]):not([class~="bg-amber-500/90"]) {
   box-shadow: 0 2px 0 #31557d;
 }
-html[data-theme="icosa-green"] .app-content-shell main button:not(:disabled):hover,
+html[data-theme="polyhedron-green"] .app-content-shell main button:not(:disabled):hover,
 html[data-theme="duolingo-dark"] .app-content-shell main button:not(:disabled):hover {
   filter: brightness(1.06);
 }
-html[data-theme="icosa-green"] .app-content-shell main button:not(:disabled):active,
+html[data-theme="polyhedron-green"] .app-content-shell main button:not(:disabled):active,
 html[data-theme="duolingo-dark"] .app-content-shell main button:not(:disabled):active {
   transform: translateY(2px);
   box-shadow: 0 0 0 transparent;
@@ -313,8 +313,8 @@ html[data-theme="duolingo-dark"] .app-content-shell main button:not(:disabled):a
 
 /* Slightly softer cards and fields complete the friendlier interface without
    changing the layout or making the translation grid less compact. */
-html[data-theme="icosa-green"] [class~="rounded-lg"],
-html[data-theme="icosa-green"] [class~="rounded-xl"],
+html[data-theme="polyhedron-green"] [class~="rounded-lg"],
+html[data-theme="polyhedron-green"] [class~="rounded-xl"],
 html[data-theme="duolingo-dark"] [class~="rounded-lg"],
 html[data-theme="duolingo-dark"] [class~="rounded-xl"] {
   border-color: color-mix(in srgb, var(--color-amber-500) 18%, #2a2f37);
@@ -338,30 +338,30 @@ html[data-theme="duolingo-dark"] [class~="rounded-xl"] {
 .translation-flame-icon {
   transform-origin: 50% 85%;
 }
-html[data-theme="icosa-green"] .translate-grid-scroll,
+html[data-theme="polyhedron-green"] .translate-grid-scroll,
 html[data-theme="duolingo-dark"] .translate-grid-scroll {
   background-color: #0f1114;
 }
-html[data-theme="icosa-green"] .translate-entry-row,
+html[data-theme="polyhedron-green"] .translate-entry-row,
 html[data-theme="duolingo-dark"] .translate-entry-row {
   padding: 6px;
   column-gap: 10px;
   border: 0;
   background: transparent;
 }
-html[data-theme="icosa-green"] .translate-entry-row:hover,
+html[data-theme="polyhedron-green"] .translate-entry-row:hover,
 html[data-theme="duolingo-dark"] .translate-entry-row:hover {
   background: transparent !important;
 }
-html[data-theme="icosa-green"] .translate-entry-row:focus-within,
+html[data-theme="polyhedron-green"] .translate-entry-row:focus-within,
 html[data-theme="duolingo-dark"] .translate-entry-row:focus-within {
   background: transparent;
 }
-html[data-theme="icosa-green"] .translate-index-cell,
+html[data-theme="polyhedron-green"] .translate-index-cell,
 html[data-theme="duolingo-dark"] .translate-index-cell,
-html[data-theme="icosa-green"] .translate-source-cell,
+html[data-theme="polyhedron-green"] .translate-source-cell,
 html[data-theme="duolingo-dark"] .translate-source-cell,
-html[data-theme="icosa-green"] .translate-target-cell,
+html[data-theme="polyhedron-green"] .translate-target-cell,
 html[data-theme="duolingo-dark"] .translate-target-cell {
   border: 1px solid #2b3035;
   border-radius: 0.75rem;
@@ -372,15 +372,15 @@ html[data-theme="duolingo-dark"] .translate-target-cell {
     background-color 120ms ease,
     box-shadow 120ms ease;
 }
-html[data-theme="icosa-green"] .translate-index-cell,
+html[data-theme="polyhedron-green"] .translate-index-cell,
 html[data-theme="duolingo-dark"] .translate-index-cell {
   background: #111315;
 }
-html[data-theme="icosa-green"] .translate-entry-row:hover .translate-index-cell,
+html[data-theme="polyhedron-green"] .translate-entry-row:hover .translate-index-cell,
 html[data-theme="duolingo-dark"] .translate-entry-row:hover .translate-index-cell,
-html[data-theme="icosa-green"] .translate-entry-row:hover .translate-source-cell,
+html[data-theme="polyhedron-green"] .translate-entry-row:hover .translate-source-cell,
 html[data-theme="duolingo-dark"] .translate-entry-row:hover .translate-source-cell,
-html[data-theme="icosa-green"] .translate-entry-row:hover .translate-target-cell,
+html[data-theme="polyhedron-green"] .translate-entry-row:hover .translate-target-cell,
 html[data-theme="duolingo-dark"] .translate-entry-row:hover .translate-target-cell {
   border-color: var(--color-amber-500);
   background: #151719;
@@ -388,20 +388,20 @@ html[data-theme="duolingo-dark"] .translate-entry-row:hover .translate-target-ce
     0 3px 0 #0b0d0f,
     0 0 11px color-mix(in srgb, var(--color-amber-500) 18%, transparent);
 }
-html[data-theme="icosa-green"] .translate-entry-row:focus-within .translate-target-cell,
+html[data-theme="polyhedron-green"] .translate-entry-row:focus-within .translate-target-cell,
 html[data-theme="duolingo-dark"] .translate-entry-row:focus-within .translate-target-cell {
   border-color: var(--color-amber-500);
   box-shadow:
     0 3px 0 #0b0d0f,
     0 0 0 2px color-mix(in srgb, var(--color-amber-500) 22%, transparent);
 }
-html[data-theme="icosa-green"] .translate-entry-card,
+html[data-theme="polyhedron-green"] .translate-entry-card,
 html[data-theme="duolingo-dark"] .translate-entry-card {
   background-color: #151719;
   border-color: #2b3035;
   box-shadow: 0 3px 0 #0b0d0f;
 }
-html[data-theme="icosa-green"] .translate-entry-card:hover,
+html[data-theme="polyhedron-green"] .translate-entry-card:hover,
 html[data-theme="duolingo-dark"] .translate-entry-card:hover {
   background-color: #1b1e22;
   border-color: #454b52;
@@ -411,7 +411,7 @@ html[data-theme="duolingo-dark"] .translate-entry-card:hover {
 }
 
 /* Keep the select-all checkbox aligned with the inset index cards. */
-html[data-theme="icosa-green"] .translate-grid-header,
+html[data-theme="polyhedron-green"] .translate-grid-header,
 html[data-theme="duolingo-dark"] .translate-grid-header {
   padding-left: 6px;
   padding-right: 6px;
@@ -476,27 +476,27 @@ html[data-theme]:not([data-theme="classic"]) [class~="hover:bg-[#1f2329]"]:hover
   display: none;
 }
 
-/* Modern scrollbar — ICOSA design tokens */
-.icosa-scroll::-webkit-scrollbar {
+/* Modern scrollbar — Polyhedron design tokens */
+.polyhedron-scroll::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
-.icosa-scroll::-webkit-scrollbar-track {
+.polyhedron-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-.icosa-scroll::-webkit-scrollbar-thumb {
+.polyhedron-scroll::-webkit-scrollbar-thumb {
   background: #2a2f37;
   border-radius: 6px;
   border: 3px solid transparent;
   background-clip: content-box;
   transition: background 120ms;
 }
-.icosa-scroll::-webkit-scrollbar-thumb:hover {
+.polyhedron-scroll::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
   border: 3px solid transparent;
   background-clip: content-box;
 }
-.icosa-scroll::-webkit-scrollbar-corner {
+.polyhedron-scroll::-webkit-scrollbar-corner {
   background: transparent;
 }
 

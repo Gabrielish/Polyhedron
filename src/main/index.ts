@@ -100,7 +100,7 @@ app.whenReady().then(() => {
   app.setName('Polyhedron')
   migrateLegacyUserData()
   ipcMain.handle('app:version', () => app.getVersion())
-  electronApp.setAppUserModelId('com.icosa.bg3-mod-translator')
+  electronApp.setAppUserModelId('com.polyhedron.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())
 
   app.on('browser-window-created', (_, window) => {

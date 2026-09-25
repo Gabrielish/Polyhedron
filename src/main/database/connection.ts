@@ -8,6 +8,7 @@ import { dictionaryTextKey } from '../utils/dictionaryText'
 import * as schema from './schema'
 import { seedLanguages } from './seeds/languages.seed'
 import { seedPromptSlots } from './seeds/prompt-slots.seed'
+import { databasePath } from '../utils/app-paths'
 
 type AppDb = ReturnType<typeof drizzle<typeof schema>>
 
@@ -22,7 +23,7 @@ let _sqlite: Database.Database | null = null
 
 export function getDb(): AppDb {
   if (!_db) {
-    const dbPath = path.join(app.getPath('userData'), 'icosa.db')
+    const dbPath = databasePath()
     _sqlite = new Database(dbPath)
     _sqlite.pragma('journal_mode = WAL')
     _sqlite.pragma('foreign_keys = ON')

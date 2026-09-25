@@ -53,7 +53,9 @@ export type XmlLoadProgress =
 
 const MATCH_CHUNK = 500
 
-function toUiEntry(entry: LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }): Pick<XmlEntry, 'uid' | 'version' | 'source' | 'genderVariant'> {
+function toUiEntry(
+  entry: LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }
+): Pick<XmlEntry, 'uid' | 'version' | 'source' | 'genderVariant'> {
   return {
     uid: entry.contentuid,
     version: entry.version,
@@ -69,7 +71,11 @@ function findGenderLocas(rootDir: string): string[] {
     for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, item.name)
       if (item.isDirectory()) visit(full)
-      else if (item.name.toLowerCase().endsWith('.loca') && /[\\/]Gender[\\/](Female|Neutral)[\\/]/i.test(full)) result.push(full)
+      else if (
+        item.name.toLowerCase().endsWith('.loca') &&
+        /[\\/]Gender[\\/](Female|Neutral)[\\/]/i.test(full)
+      )
+        result.push(full)
     }
   }
   visit(rootDir)
@@ -109,7 +115,7 @@ export async function runXmlLoadWorker(
       xmlPath = inputPath
     } else if (ext === '.pak') {
       post({ phase: 'unpacking' })
-      const tempDir = createTempDir('icosa_xml')
+      const tempDir = createTempDir('polyhedron_xml')
       tempDirs.push(tempDir)
       await unpackMod(inputPath, tempDir)
       packageRoot = tempDir
@@ -119,12 +125,12 @@ export async function runXmlLoadWorker(
       xmlPath = xmlFiles[0]
     } else if (ext === '.zip') {
       post({ phase: 'unpacking' })
-      const archiveDir = createTempDir('icosa_zip')
+      const archiveDir = createTempDir('polyhedron_zip')
       tempDirs.push(archiveDir)
       extract(inputPath, archiveDir)
       const pakFiles = findPakFiles(archiveDir)
       if (pakFiles.length === 0) throw new Error('No .pak file found inside zip')
-      const unpackedDir = createTempDir('icosa_pak')
+      const unpackedDir = createTempDir('polyhedron_pak')
       tempDirs.push(unpackedDir)
       await unpackMod(pakFiles[0], unpackedDir)
       packageRoot = unpackedDir
@@ -137,11 +143,18 @@ export async function runXmlLoadWorker(
     }
 
     post({ phase: 'parsing' })
-    const localizationEntries: Array<LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }> = parseLocalizationXml(xmlPath)
+    const localizationEntries: Array<
+      LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }
+    > = parseLocalizationXml(xmlPath)
     if (packageRoot) {
       for (const locaPath of findGenderLocas(packageRoot)) {
         for (const entry of readLoca(locaPath)) {
-          localizationEntries.push({ contentuid: entry.key, version: String(entry.version), text: entry.text, genderVariant: variantForPath(locaPath) })
+          localizationEntries.push({
+            contentuid: entry.key,
+            version: String(entry.version),
+            text: entry.text,
+            genderVariant: variantForPath(locaPath)
+          })
         }
       }
     }
@@ -170,7 +183,9 @@ export async function runXmlLoadWorker(
         result[j] = match
           ? {
               ...uiEntry,
-              target: decodeEntities(getDictionaryTargetText(match.entry, input.sourceLang, input.targetLang)),
+              target: decodeEntities(
+                getDictionaryTargetText(match.entry, input.sourceLang, input.targetLang)
+              ),
               matchType: match.matchType,
               needsReview: false
             }

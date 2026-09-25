@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { app } from 'electron'
+import { databasePath } from '../utils/app-paths'
 import type { RepositoryRegistry } from '../database/repositories/registry'
 import type { MergeProgress, MergeResult, MergeWorkerInput } from '../workers/merge.worker.runtime'
 
@@ -49,5 +49,5 @@ export function mergeXmls(
 }
 
 function getDbPath(): string {
-  return path.join(app.getPath('userData'), 'icosa.db')
+  return databasePath()
 }

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { app } from 'electron'
 import type { ImportProgress, ImportWorkerInput } from '../workers/import.worker.runtime'
+import { databasePath } from '../utils/app-paths'
 
 export type { ImportProgress }
 
@@ -39,5 +39,5 @@ export function runImport(params: RunImportParams): Promise<number> {
 }
 
 function getDbPath(): string {
-  return path.join(app.getPath('userData'), 'icosa.db')
+  return databasePath()
 }

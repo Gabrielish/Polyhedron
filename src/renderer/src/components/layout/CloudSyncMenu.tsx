@@ -59,7 +59,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   // The workspace importer can rewrite stored/input paths. Keep the UI's saved
   // fingerprint keyed by the stable session identity so Download remains
   // "Synced" after the imported workspace is loaded or the app is restarted.
-  const syncKey = `icosa.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
+  const syncKey = `polyhedron.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const currentFingerprint = useMemo(
     () =>
       fingerprint(
@@ -97,7 +97,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     setSavedFingerprint(currentFingerprint)
   }, [currentFingerprint, session.phase, syncKey])
 
-  const remoteStampKey = `icosa.cloud-sync-remote.${syncKey}`
+  const remoteStampKey = `polyhedron.cloud-sync-remote.${syncKey}`
   const isSynced =
     session.phase === 'loaded' &&
     !remoteChanged &&

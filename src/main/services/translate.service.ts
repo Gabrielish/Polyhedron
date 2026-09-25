@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { app } from 'electron'
+import { databasePath } from '../utils/app-paths'
 import type { TranslationProvider } from '../../preload/api-types'
 import type { AiPipelineSimilarity } from '../pipelines/ai.pipeline'
 import type {
@@ -29,7 +29,7 @@ export function runTranslatePipeline(params: TranslatePipelineParams): { cancel:
   const { onProgress, onDone, onError, ...rest } = params
   const input: TranslateWorkerInput = {
     ...rest,
-    dbPath: path.join(app.getPath('userData'), 'icosa.db')
+    dbPath: databasePath()
   }
 
   let settled = false

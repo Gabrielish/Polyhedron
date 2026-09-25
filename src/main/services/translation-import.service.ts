@@ -26,6 +26,7 @@ import { parseLocalizationXml, writeLocalizationXml } from './xml-parser.service
 import { createZip, extract } from './zip.service'
 import { writePackage } from './pak/pak-writer'
 import { writeLoca } from './pak/loca-writer'
+import { projectPath } from '../utils/app-paths'
 
 export interface TranslationXmlCandidate {
   id: string
@@ -62,8 +63,8 @@ export interface ExportPackageEntry {
   version: string
   source: string
   target: string
-  genderVariant?: "default" | "female" | "neutral"
-  genderTargets?: Partial<Record<"default" | "female" | "neutral", string>>
+  genderVariant?: 'default' | 'female' | 'neutral'
+  genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
 }
 
 interface StagedImport {
@@ -80,9 +81,7 @@ function bundledAssetPath(relativePath: string): string {
   if (!app.isPackaged) return path.join(app.getAppPath(), relativePath)
 
   const unpackedPath = path.join(process.resourcesPath, 'app.asar.unpacked', relativePath)
-  return fs.existsSync(unpackedPath)
-    ? unpackedPath
-    : path.join(process.resourcesPath, relativePath)
+  return fs.existsSync(unpackedPath) ? unpackedPath : path.join(process.resourcesPath, relativePath)
 }
 
 async function runDivine(args: string[]): Promise<void> {
@@ -113,7 +112,7 @@ export async function exportLocalizationPak(
   const templateRoot = bundledAssetPath(path.join('work', 'pak'))
   if (!fs.existsSync(templateRoot)) throw new Error(`PAK template was not found at ${templateRoot}`)
 
-  const tempDir = createTempDir('icosa_pak_export')
+  const tempDir = createTempDir('polyhedron_pak_export')
   const packageRoot = path.join(tempDir, 'pak')
   const languageDir = path.join(packageRoot, 'Localization', 'English')
   // Stage 1 gender workflow: Female/Neutral represent the player/addressee,
@@ -126,9 +125,19 @@ export async function exportLocalizationPak(
   const writeEntries = async (items: ExportPackageEntry[], locaPath: string, xmlPath: string) => {
     const nonEmpty = items.filter((entry) => entry.target.trim())
     if (process.platform === 'darwin') {
-      writeLoca(nonEmpty.map((entry) => ({ key: entry.uid, version: entry.version, text: entry.target })), locaPath)
+      writeLoca(
+        nonEmpty.map((entry) => ({ key: entry.uid, version: entry.version, text: entry.target })),
+        locaPath
+      )
     } else {
-      writeLocalizationXml(nonEmpty.map((entry) => ({ contentuid: entry.uid, version: entry.version, text: encodeEntities(entry.target) })), xmlPath)
+      writeLocalizationXml(
+        nonEmpty.map((entry) => ({
+          contentuid: entry.uid,
+          version: entry.version,
+          text: encodeEntities(entry.target)
+        })),
+        xmlPath
+      )
       await runDivine(['-g', 'bg3', '-s', xmlPath, '-d', locaPath, '-a', 'convert-loca'])
       fs.rmSync(xmlPath, { force: true })
     }
@@ -137,18 +146,45 @@ export async function exportLocalizationPak(
   try {
     fs.cpSync(templateRoot, packageRoot, { recursive: true })
     fs.mkdirSync(languageDir, { recursive: true })
-    const defaults = entries.filter((entry) => !entry.genderVariant || entry.genderVariant === 'default').map((entry) => ({ ...entry, target: entry.target || entry.source }))
+    const defaults = entries
+      .filter((entry) => !entry.genderVariant || entry.genderVariant === 'default')
+      .map((entry) => ({ ...entry, target: entry.target || entry.source }))
     const female = entries.filter((entry) => entry.genderVariant === 'female')
     const neutral = entries.filter((entry) => entry.genderVariant === 'neutral')
-    const femaleFromTargets = entries.flatMap((entry) => entry.genderTargets?.female?.trim() ? [{ ...entry, target: entry.genderTargets.female, genderVariant: 'female' as const }] : [])
-    const neutralFromTargets = entries.flatMap((entry) => entry.genderTargets?.neutral?.trim() ? [{ ...entry, target: entry.genderTargets.neutral, genderVariant: 'neutral' as const }] : [])
-    await writeEntries(defaults, path.join(languageDir, 'english.loca'), path.join(languageDir, 'english.xml'))
-    await writeEntries([...female, ...femaleFromTargets], variantPaths.female, path.join(languageDir, 'english_to_F.xml'))
-    await writeEntries([...neutral, ...neutralFromTargets], variantPaths.neutral, path.join(languageDir, 'english_M_to_X.xml'))
+    const femaleFromTargets = entries.flatMap((entry) =>
+      entry.genderTargets?.female?.trim()
+        ? [{ ...entry, target: entry.genderTargets.female, genderVariant: 'female' as const }]
+        : []
+    )
+    const neutralFromTargets = entries.flatMap((entry) =>
+      entry.genderTargets?.neutral?.trim()
+        ? [{ ...entry, target: entry.genderTargets.neutral, genderVariant: 'neutral' as const }]
+        : []
+    )
+    await writeEntries(
+      defaults,
+      path.join(languageDir, 'english.loca'),
+      path.join(languageDir, 'english.xml')
+    )
+    await writeEntries(
+      [...female, ...femaleFromTargets],
+      variantPaths.female,
+      path.join(languageDir, 'english_to_F.xml')
+    )
+    await writeEntries(
+      [...neutral, ...neutralFromTargets],
+      variantPaths.neutral,
+      path.join(languageDir, 'english_M_to_X.xml')
+    )
     fs.mkdirSync(path.dirname(outputPath), { recursive: true })
     if (process.platform === 'darwin') await writePackage(packageRoot, outputPath)
     else await runDivine(['-g', 'bg3', '-s', packageRoot, '-d', outputPath, '-a', 'create-package'])
-    if (!fs.existsSync(outputPath)) throw new Error(process.platform === 'darwin' ? 'PAK writer did not create the PAK file' : 'Divine did not create the PAK file')
+    if (!fs.existsSync(outputPath))
+      throw new Error(
+        process.platform === 'darwin'
+          ? 'PAK writer did not create the PAK file'
+          : 'Divine did not create the PAK file'
+      )
     return { outputPath }
   } finally {
     cleanupTempDir(tempDir)
@@ -160,22 +196,101 @@ export async function injectLocalizationPak(
   platform: 'windows' | 'macos'
 ): Promise<{ pakPath: string; backupCreated: boolean }> {
   const home = os.homedir()
-  const candidates = platform === 'macos'
-    ? [
-        path.join(home, 'Library', 'Application Support', 'Steam', 'steamapps', 'common', 'Baldurs Gate 3', 'Baldur\'s Gate 3.app', 'Contents', 'Data', 'Localization'),
-        path.join(home, 'Library', 'Application Support', 'Steam', 'steamapps', 'common', 'Baldurs Gate 3', 'Baldur\'s Gate 3.app', 'Contents', 'Resources', 'Data', 'Localization'),
-        path.join(home, 'Library', 'Application Support', 'Steam', 'steamapps', 'common', 'Baldur\'s Gate 3', 'Baldur\'s Gate 3.app', 'Contents', 'Data', 'Localization'),
-        path.join(home, 'Library', 'Application Support', 'Steam', 'steamapps', 'common', 'Baldur\'s Gate 3', 'Data', 'Localization')
-      ]
-    : [
-        path.join('C:', 'Program Files (x86)', 'Steam', 'steamapps', 'common', 'Baldurs Gate 3', 'Data', 'Localization'),
-        path.join('C:', 'Program Files', 'Steam', 'steamapps', 'common', 'Baldurs Gate 3', 'Data', 'Localization'),
-        path.join(home, 'AppData', 'Local', 'Programs', 'Steam', 'steamapps', 'common', 'Baldurs Gate 3', 'Data', 'Localization')
-      ]
+  const candidates =
+    platform === 'macos'
+      ? [
+          path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Steam',
+            'steamapps',
+            'common',
+            'Baldurs Gate 3',
+            "Baldur's Gate 3.app",
+            'Contents',
+            'Data',
+            'Localization'
+          ),
+          path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Steam',
+            'steamapps',
+            'common',
+            'Baldurs Gate 3',
+            "Baldur's Gate 3.app",
+            'Contents',
+            'Resources',
+            'Data',
+            'Localization'
+          ),
+          path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Steam',
+            'steamapps',
+            'common',
+            "Baldur's Gate 3",
+            "Baldur's Gate 3.app",
+            'Contents',
+            'Data',
+            'Localization'
+          ),
+          path.join(
+            home,
+            'Library',
+            'Application Support',
+            'Steam',
+            'steamapps',
+            'common',
+            "Baldur's Gate 3",
+            'Data',
+            'Localization'
+          )
+        ]
+      : [
+          path.join(
+            'C:',
+            'Program Files (x86)',
+            'Steam',
+            'steamapps',
+            'common',
+            'Baldurs Gate 3',
+            'Data',
+            'Localization'
+          ),
+          path.join(
+            'C:',
+            'Program Files',
+            'Steam',
+            'steamapps',
+            'common',
+            'Baldurs Gate 3',
+            'Data',
+            'Localization'
+          ),
+          path.join(
+            home,
+            'AppData',
+            'Local',
+            'Programs',
+            'Steam',
+            'steamapps',
+            'common',
+            'Baldurs Gate 3',
+            'Data',
+            'Localization'
+          )
+        ]
 
   const localizationDir = candidates.find((candidate) => fs.existsSync(candidate))
   if (!localizationDir) {
-    throw new Error(`Baldur's Gate 3 Localization folder was not found. Checked: ${candidates.join(' | ')}`)
+    throw new Error(
+      `Baldur's Gate 3 Localization folder was not found. Checked: ${candidates.join(' | ')}`
+    )
   }
 
   const englishPath = path.join(localizationDir, 'English.pak')
@@ -183,7 +298,7 @@ export async function injectLocalizationPak(
   // this directory, so an `EnglishOld.pak` backup may override translations.
   const backupPath = path.join(localizationDir, 'EnglishOld.pak.bak')
   const legacyBackupPath = path.join(localizationDir, 'EnglishOld.pak')
-  const tempDir = createTempDir('icosa_inject')
+  const tempDir = createTempDir('polyhedron_inject')
   const tempPak = path.join(tempDir, 'English.pak')
   let backupCreated = false
 
@@ -222,7 +337,7 @@ export async function prepareTranslationInput(
     return { importId, requiresSelection: false, candidates: [candidate] }
   }
 
-  const tempDir = createTempDir('icosa_import')
+  const tempDir = createTempDir('polyhedron_import')
   const tempDirs = [tempDir]
   fs.mkdirSync(tempDir, { recursive: true })
 
@@ -306,7 +421,9 @@ export function completeTranslationImport(
   const modDir = getStoredModDir(params.modName)
   fs.mkdirSync(modDir, { recursive: true })
 
-  const mergedEntries = candidates.flatMap((candidate) => parseLocalizationXml(candidate.absolutePath))
+  const mergedEntries = candidates.flatMap((candidate) =>
+    parseLocalizationXml(candidate.absolutePath)
+  )
   const xmlPath = path.join(modDir, 'translation_merged.xml')
   writeLocalizationXml(mergedEntries, xmlPath)
 
@@ -377,7 +494,7 @@ export async function exportTranslatedPackage(
     throw new Error('BG3 language folder must not contain spaces or special characters')
   }
 
-  const tempDir = createTempDir('icosa_export')
+  const tempDir = createTempDir('polyhedron_export')
   fs.mkdirSync(tempDir, { recursive: true })
 
   try {
@@ -486,7 +603,7 @@ function readDefaultAuthor(repos: RepositoryRegistry): string {
   const row = repos.db.select().from(config).where(eq(config.key, 'author')).get() as
     | { value: string | null }
     | undefined
-  return row?.value?.trim() || 'Icosa'
+  return row?.value?.trim() || 'Polyhedron'
 }
 
 function readOriginalXmlName(
@@ -500,7 +617,7 @@ function readOriginalXmlName(
 }
 
 export function getStoredModDir(modName: string): string {
-  return path.join(app.getPath('userData'), 'icosa', 'mods', sanitizeStoredModName(modName))
+  return projectPath('mods', sanitizeStoredModName(modName))
 }
 
 function sanitizeStoredModName(name: string): string {

@@ -39,7 +39,7 @@ import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { cn } from '@/lib/utils'
 
-const DIALOGUE_VIEW_STATE_KEY = 'icosa.dialogue-nodes.view'
+const DIALOGUE_VIEW_STATE_KEY = 'polyhedron.dialogue-nodes.view'
 const dialogueGroupsCache = new Map<string, ReturnType<typeof loadDialogueGroups>>()
 function getDialogueGroups(source: string): ReturnType<typeof loadDialogueGroups> {
   const cached = dialogueGroupsCache.get(source)
@@ -878,7 +878,7 @@ export function DialogueNodesPage(): React.JSX.Element {
               )}
             </div>
           </aside>
-          <section className="order-2 icosa-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
+          <section className="order-2 polyhedron-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
             {selected ? (
               <div className="w-full space-y-3">
                 {nodes.map((node, index) => {

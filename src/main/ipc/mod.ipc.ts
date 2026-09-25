@@ -1,7 +1,8 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { app, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
+import { projectPath } from '../utils/app-paths'
 import type { RepositoryRegistry } from '../database/repositories/registry'
 import { packMod, unpackMod } from '../services/lslib.service'
 import type { MetaInfo } from '../services/lsx-parser.service'
@@ -63,7 +64,7 @@ function getSavedSessionProgress(
   if (!storedPath) return null
   const key = `${storedPath}|${sourceLang}|${targetLang}`
   const id = crypto.createHash('sha256').update(key).digest('hex')
-  const filePath = path.join(app.getPath('userData'), 'icosa', 'sessions', `${id}.json`)
+  const filePath = projectPath('sessions', `${id}.json`)
   if (!fs.existsSync(filePath)) return null
   try {
     const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as {
@@ -254,7 +255,7 @@ export function registerModHandlers(repos: RepositoryRegistry): void {
   ipcMain.handle(
     'mod:storeFile',
     async (_event, { modName, filePath }: { modName: string; filePath: string }) => {
-      const modDir = path.join(app.getPath('userData'), 'icosa', 'mods', sanitizeModName(modName))
+      const modDir = projectPath('mods', sanitizeModName(modName))
       fs.mkdirSync(modDir, { recursive: true })
 
       const fileName = path.basename(filePath)

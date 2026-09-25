@@ -92,7 +92,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
           </div>
         </header>
 
-        <div className="translate-idle-content icosa-scroll min-h-0 flex-1 overflow-y-auto px-6 pt-7 pb-6 [scrollbar-gutter:stable]">
+        <div className="translate-idle-content polyhedron-scroll min-h-0 flex-1 overflow-y-auto px-6 pt-7 pb-6 [scrollbar-gutter:stable]">
           <div className="mx-auto flex max-w-220 flex-col gap-3.5">
             <SetupStepCard step="01">
               <div>

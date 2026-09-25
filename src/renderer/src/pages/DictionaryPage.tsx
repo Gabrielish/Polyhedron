@@ -705,7 +705,7 @@ export function DictionaryPage(): React.JSX.Element {
 
       <div className="relative min-h-0 flex-1">
         {/* grid-based virtualized layout (Option B) - avoids <table> absolute-positioning quirks */}
-        <div ref={scrollRef} className="dictionary-table-scroll icosa-scroll h-full overflow-auto">
+        <div ref={scrollRef} className="dictionary-table-scroll polyhedron-scroll h-full overflow-auto">
           {/* sticky header row */}
           <div
             className="sticky top-0 z-10 grid border-b border-[#1f2329] bg-[#131518] pr-[var(--scrollbar-width,0px)]"

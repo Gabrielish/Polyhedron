@@ -23,9 +23,11 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
-const STORAGE_KEY = 'icosa-theme'
-const ACCENT_STORAGE_KEY = 'icosa-accent'
-const ACCENT_FOREGROUND_STORAGE_KEY = 'icosa-accent-foreground'
+const STORAGE_KEY = 'polyhedron-theme'
+const ACCENT_STORAGE_KEY = 'polyhedron-accent'
+const ACCENT_FOREGROUND_STORAGE_KEY = 'polyhedron-accent-foreground'
+const LEGACY_ACCENT_STORAGE_KEY = 'icosa-accent'
+const LEGACY_ACCENT_FOREGROUND_STORAGE_KEY = 'icosa-accent-foreground'
 export const DEFAULT_ACCENT = '#ED1C24'
 
 function normalizeAccent(value: string): string {
@@ -54,13 +56,22 @@ function readTheme(): ThemeId {
   return 'liquid-glass'
 }
 
+function readStorageValue(key: string, legacyKey: string): string | null {
+  return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey)
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [theme, setThemeState] = useState<ThemeId>(readTheme)
   const [accent, setAccentState] = useState(() =>
-    normalizeAccent(window.localStorage.getItem(ACCENT_STORAGE_KEY) || DEFAULT_ACCENT)
+    normalizeAccent(
+      readStorageValue(ACCENT_STORAGE_KEY, LEGACY_ACCENT_STORAGE_KEY) || DEFAULT_ACCENT
+    )
   )
   const [accentForeground, setAccentForegroundState] = useState<'white' | 'black'>(() =>
-    window.localStorage.getItem(ACCENT_FOREGROUND_STORAGE_KEY) === 'black' ? 'black' : 'white'
+    readStorageValue(ACCENT_FOREGROUND_STORAGE_KEY, LEGACY_ACCENT_FOREGROUND_STORAGE_KEY) ===
+    'black'
+      ? 'black'
+      : 'white'
   )
 
   useEffect(() => {

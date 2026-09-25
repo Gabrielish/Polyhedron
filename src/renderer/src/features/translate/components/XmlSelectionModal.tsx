@@ -94,7 +94,7 @@ export function XmlSelectionModal({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto icosa-scroll p-5">
+        <div className="flex-1 overflow-y-auto polyhedron-scroll p-5">
           {selectionMode === 'multi' && (
             <div className="mb-3 flex items-center justify-between gap-3">
               <span className="font-mono text-[11px] text-neutral-500">

@@ -381,7 +381,7 @@ function GameDataList({
     overscan: 12
   })
   return (
-    <div ref={parentRef} className="icosa-scroll min-h-0 flex-1 overflow-y-auto">
+    <div ref={parentRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
       <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
         {virtualizer.getVirtualItems().map((item) => {
           const entry = entries[item.index]

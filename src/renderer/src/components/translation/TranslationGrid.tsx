@@ -1432,7 +1432,7 @@ export function TranslationGrid({
               />
             </div>
           )}
-          <div className="icosa-scroll min-h-0 overflow-y-auto p-3">
+          <div className="polyhedron-scroll min-h-0 overflow-y-auto p-3">
             {dialogueChoices.length > 1 && (
               <div className="mb-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-[#1f2329] bg-[#131518] p-2">
                 <span className="mr-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
@@ -2415,7 +2415,7 @@ export function TranslationGrid({
 
         <div
           ref={sideParentRef}
-          className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]"
+          className="translate-grid-scroll polyhedron-scroll min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]"
         >
           <div
             style={{
@@ -2634,7 +2634,7 @@ export function TranslationGrid({
 
       <div
         ref={stackedParentRef}
-        className="translate-grid-scroll icosa-scroll min-h-0 flex-1 overflow-y-auto"
+        className="translate-grid-scroll polyhedron-scroll min-h-0 flex-1 overflow-y-auto"
       >
         <div
           style={{

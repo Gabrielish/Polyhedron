@@ -134,7 +134,7 @@ export function ManageModsPage(): React.JSX.Element {
       </div>
 
       {/* content */}
-      <div className="icosa-scroll flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-4">
+      <div className="polyhedron-scroll flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-4">
         {/* priority section */}
         <section className="flex flex-col">
           <div className="mb-2 flex items-center gap-2">
@@ -166,7 +166,7 @@ export function ManageModsPage(): React.JSX.Element {
                   items={prioritized.map((m) => m.name)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div ref={priorityScrollRef} className="icosa-scroll h-full overflow-y-auto">
+                  <div ref={priorityScrollRef} className="polyhedron-scroll h-full overflow-y-auto">
                     {prioritizedFiltered.length === 0 ? (
                       <ModListEmpty message={t('priority.empty')} />
                     ) : (
@@ -227,7 +227,7 @@ export function ManageModsPage(): React.JSX.Element {
           ) : (
             <div
               ref={fallbackScrollRef}
-              className="icosa-scroll min-h-0 flex-1 overflow-y-auto rounded-lg border border-[#1f2329] bg-[#0c0d0f]"
+              className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto rounded-lg border border-[#1f2329] bg-[#0c0d0f]"
             >
               {fallbackFiltered.length === 0 ? (
                 <ModListEmpty message={t('fallback.empty')} />
