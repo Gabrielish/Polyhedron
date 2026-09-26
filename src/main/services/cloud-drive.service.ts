@@ -307,20 +307,50 @@ function normalizeTermGlossaryKey(key: string): string {
     .replace(/\/Application Support\/icosa\//gi, '/Application Support/polyhedron/')
 }
 
+function getTermGlossaryIdentity(key: string): string | undefined {
+  const rawKey = key.replace(/^polyhedron\.term-glossary:/, '')
+  const parts = rawKey.split('|')
+  if (parts.length < 3) return undefined
+
+  const sourceLang = parts.at(-2)
+  const targetLang = parts.at(-1)
+  const filePath = normalizeTermGlossaryKey(parts.slice(0, -2).join('|')).toLowerCase()
+  const modsMarker = '/mods/'
+  const modRelativePath = filePath.includes(modsMarker)
+    ? filePath.slice(filePath.lastIndexOf(modsMarker) + modsMarker.length)
+    : filePath.split('/').slice(-2).join('/')
+
+  return `${modRelativePath}|${sourceLang}|${targetLang}`
+}
+
 function resolveTermGlossaryEntries(
   document: CloudTermGlossaryDocument,
   glossaryKey: string
 ): CloudTermGlossaryEntry[] | undefined {
   const exact = document.glossaries[glossaryKey]
-  if (exact && exact.length > 0) return exact
   const normalizedKey = normalizeTermGlossaryKey(glossaryKey)
   const legacy = Object.entries(document.glossaries).find(
     ([key, entries]) => entries.length > 0 && normalizeTermGlossaryKey(key) === normalizedKey
   )
-  // An empty Polyhedron key can be left behind by the rename migration while
-  // the populated legacy key still exists. Prefer the migrated data in that
-  // case; only fall back to the exact key when no legacy match was found.
-  return legacy?.[1] ?? exact
+  // Cloud glossary keys created on another machine contain that machine's
+  // absolute path. Match the stable part after `/mods/` instead.
+  const identity = getTermGlossaryIdentity(glossaryKey)
+  if (!identity) return exact
+  const matchingDocuments = Object.entries(document.glossaries).filter(
+    ([key, entries]) => entries.length > 0 && getTermGlossaryIdentity(key) === identity
+  )
+  if (matchingDocuments.length === 0) return legacy?.[1] ?? exact
+
+  // Older Drive files may contain both the old Icosa key and the newer
+  // Polyhedron key. Merge them so no terms are hidden by the migration.
+  const merged = new Map<string, CloudTermGlossaryEntry>()
+  for (const [, entries] of matchingDocuments) {
+    for (const entry of entries) {
+      if (!entry?.source || typeof entry.translation !== 'string') continue
+      merged.set(entry.source.trim().toLocaleLowerCase(), entry)
+    }
+  }
+  return [...merged.values()]
 }
 
 async function applyPwaSyncFromDrive(drive: drive_v3.Drive): Promise<void> {
@@ -448,7 +478,7 @@ export async function uploadWorkspaceToDrive(
 }
 
 export async function downloadWorkspaceFromDrive(
-  sessionKey?: string,
+  _sessionKey?: string,
   termGlossaryKey?: string
 ): Promise<{
   fileName: string
@@ -478,7 +508,12 @@ export async function downloadWorkspaceFromDrive(
     })
     const extractedDir = path.join(tempDir, 'extracted')
     extractZip(workspacePath, extractedDir)
-    const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'), sessionKey)
+    // The archive may have been created on another machine, where the session
+    // hash contains a different absolute file path. Restricting this lookup
+    // with the local sessionKey would therefore incorrectly produce 0/0.
+    // The download confirmation describes the whole workspace, so aggregate
+    // every session from the extracted archive.
+    const stats = getWorkspaceTranslationStats(path.join(extractedDir, 'sessions'))
     await importWorkspace(workspacePath)
     await applyPwaSyncFromDrive(drive)
     const termGlossary = await downloadTermGlossaryFile(drive, termGlossaryKey)
