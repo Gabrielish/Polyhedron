@@ -548,6 +548,11 @@ export interface WindowApi {
   close(): Promise<void>
   relaunch(): Promise<void>
   isMaximized(): Promise<boolean>
+  notifySyncComplete(payload: {
+    direction: 'upload' | 'download'
+    translated: number
+    total: number
+  }): Promise<void>
   onMaximizeChange(cb: (isMaximized: boolean) => void): UnsubscribeFn
 }
 

@@ -351,6 +351,7 @@ export function CloudSyncMenu(): React.JSX.Element {
         setSyncResult({ direction: 'upload', ...result.stats })
         setOpen(false)
       }
+      void window.api.window.notifySyncComplete({ direction: 'upload', ...result.stats })
       if (automatic) {
         setAutoSyncStatus('Last automatic sync completed')
         toast.success('Automatic Google Drive sync completed.')
@@ -388,6 +389,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       setRemoteChanged(false)
       setSyncResult({ direction: 'download', ...result.stats })
       setOpen(false)
+      void window.api.window.notifySyncComplete({ direction: 'download', ...result.stats })
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Google Drive download failed.')
     } finally {

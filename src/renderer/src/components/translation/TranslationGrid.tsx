@@ -2,8 +2,11 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   ArrowRight,
   ArrowDownAZ,
+  ArrowDownNarrowWide,
   ArrowDownUp,
+  ArrowDownWideNarrow,
   ArrowUpAZ,
+  ArrowUpWideNarrow,
   ArrowUp,
   BookOpen,
   Check,
@@ -102,6 +105,7 @@ type FilterMode =
 type XmlTagFilter = 'all' | 'untranslated' | 'translated'
 type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
+type LengthSortMode = 'default' | 'shortest' | 'longest'
 type OnlineNodeMeta = {
   kind: 'Question' | 'Answer' | 'Cinematic' | 'Technical'
   speaker: string | null
@@ -168,6 +172,7 @@ type TranslateViewState = {
   reviewFilter?: ReviewStatus | 'all'
   filter?: FilterMode
   sortMode?: SortMode
+  lengthSortMode?: LengthSortMode
   currentPage?: number
   xmlTagFilter?: XmlTagFilter
   bracketFilter?: BracketFilter
@@ -549,6 +554,14 @@ export function TranslationGrid({
     savedViewState.bracketFilter ?? 'all'
   )
   const [sortMode, setSortMode] = useState<SortMode>(savedViewState.sortMode ?? 'default')
+  const [lengthSortMode, setLengthSortMode] = useState<LengthSortMode>(
+    savedViewState.lengthSortMode ?? 'default'
+  )
+  useEffect(() => {
+    if (sortMode !== 'default' && lengthSortMode !== 'default') {
+      setLengthSortMode('default')
+    }
+  }, [lengthSortMode, sortMode])
   const [currentPage, setCurrentPage] = useState(savedViewState.currentPage ?? 1)
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
   useEffect(() => {
@@ -567,6 +580,7 @@ export function TranslationGrid({
         xmlTagFilter,
         bracketFilter,
         sortMode,
+        lengthSortMode,
         currentPage,
         highlightMatches
       } satisfies TranslateViewState)
@@ -584,6 +598,7 @@ export function TranslationGrid({
     xmlTagFilter,
     bracketFilter,
     sortMode,
+    lengthSortMode,
     currentPage,
     highlightMatches
   ])
@@ -812,6 +827,32 @@ export function TranslationGrid({
       if (reviewFilter !== 'all' && entryReviewStatus !== reviewFilter) return false
       return true
     })
+    if (lengthSortMode !== 'default') {
+      const buckets = new Map<
+        number,
+        Array<{ entry: TranslationSessionEntry; index: number; key: string }>
+      >()
+      matchingEntries.forEach((entry, index) => {
+        const bucket = buckets.get(entry.source.length)
+        const item = { entry, index, key: entry.source.toLocaleLowerCase() }
+        if (bucket) bucket.push(item)
+        else buckets.set(entry.source.length, [item])
+      })
+      const lengths = Array.from(buckets.keys()).sort((a, b) =>
+        lengthSortMode === 'shortest' ? a - b : b - a
+      )
+      const ordered: TranslationSessionEntry[] = []
+      for (const length of lengths) {
+        const bucket = buckets.get(length) ?? []
+        bucket.sort((a, b) => {
+          if (a.key < b.key) return -1
+          if (a.key > b.key) return 1
+          return a.index - b.index
+        })
+        for (const item of bucket) ordered.push(item.entry)
+      }
+      return ordered
+    }
     if (sortMode === 'default') return matchingEntries
 
     // Group identical source strings first, then sort the groups. Sorting every
@@ -842,6 +883,7 @@ export function TranslationGrid({
       .flatMap((group) => group.entries)
   }, [
     sortMode,
+    lengthSortMode,
     sourceFrequencies,
     deferredExactMatch,
     deferredStartsWith,
@@ -2359,16 +2401,21 @@ export function TranslationGrid({
                 ? 'Most repeated first'
                 : sortMode === 'least-repeated'
                   ? 'Least repeated first'
-                  : 'Default order'
+                  : 'Repeated strings'
             }
             onClick={() =>
-              setSortMode(
-                sortMode === 'default'
-                  ? 'most-repeated'
-                  : sortMode === 'most-repeated'
-                    ? 'least-repeated'
-                    : 'default'
-              )
+              (() => {
+                const nextMode =
+                  sortMode === 'default'
+                    ? 'most-repeated'
+                    : sortMode === 'most-repeated'
+                      ? 'least-repeated'
+                      : 'default'
+                startFilterTransition(() => {
+                  setSortMode(nextMode)
+                  if (nextMode !== 'default') setLengthSortMode('default')
+                })
+              })()
             }
           >
             {sortMode === 'most-repeated' ? (
@@ -2377,6 +2424,38 @@ export function TranslationGrid({
               <ArrowUpAZ size={14} />
             ) : (
               <ArrowDownUp size={14} />
+            )}
+          </SearchToolbarToggle>
+          <SearchToolbarToggle
+            active={lengthSortMode !== 'default'}
+            tooltip={
+              lengthSortMode === 'shortest'
+                ? 'Shortest strings first'
+                : lengthSortMode === 'longest'
+                  ? 'Longest strings first'
+                : 'String length'
+            }
+            onClick={() =>
+              (() => {
+                const nextMode =
+                  lengthSortMode === 'default'
+                    ? 'shortest'
+                    : lengthSortMode === 'shortest'
+                      ? 'longest'
+                      : 'default'
+                startFilterTransition(() => {
+                  setLengthSortMode(nextMode)
+                  if (nextMode !== 'default') setSortMode('default')
+                })
+              })()
+            }
+          >
+            {lengthSortMode === 'shortest' ? (
+              <ArrowDownNarrowWide size={14} />
+            ) : lengthSortMode === 'longest' ? (
+              <ArrowUpWideNarrow size={14} />
+            ) : (
+              <ArrowDownWideNarrow size={14} />
             )}
           </SearchToolbarToggle>
           <SearchToolbarToggle

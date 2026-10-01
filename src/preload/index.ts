@@ -391,6 +391,11 @@ const api: AppApi = {
     close: (): Promise<void> => ipcRenderer.invoke('window:close'),
     relaunch: (): Promise<void> => ipcRenderer.invoke('window:relaunch'),
     isMaximized: (): Promise<boolean> => ipcRenderer.invoke('window:isMaximized'),
+    notifySyncComplete: (payload: {
+      direction: 'upload' | 'download'
+      translated: number
+      total: number
+    }): Promise<void> => ipcRenderer.invoke('window:notifySyncComplete', payload),
     onMaximizeChange: (cb: (isMaximized: boolean) => void): UnsubscribeFn =>
       on('window:maximizeChange', cb)
   },
