@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<contentList date="21/09/2026 00:00">
+  <!--
+    Only add entries that have a Female translation.
+    The game should automatically use these when the line is addressed to a female character.
+    If an entry is missing here, it must fall back to english.xml.
+  -->
+  <content contentuid="h548b687bge412g423cg8072g374d54b3d00a" version="4">&lt;i&gt;Un dar. Un dar care să te facă la fel ca noi. În curând vei fi atât de frumoasă. Atât de puternică.&lt;/i&gt;</content>
+  <content contentuid="hdc770bb7g18e0g43fagbc71gc4cd5ee540f3" version="5">Te dovedești surprinzător de pricepută în luptă.</content>
+</contentList>

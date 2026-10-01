@@ -1,0 +1,269 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { AlreadyTranslatedDialog } from '@/components/translation/AlreadyTranslatedDialog'
+import { BatchActionBar } from '@/components/translation/BatchActionBar'
+import { QuotaExceededDialog } from '@/components/translation/QuotaExceededDialog'
+import { TranslationGrid } from '@/components/translation/TranslationGrid'
+import { getProviderMeta } from '@/features/settings/aiProviders'
+import { useAISettings } from '@/hooks/useAISettings'
+import { useConfig } from '@/hooks/useConfig'
+import { useAppTranslation } from '@/i18n/useAppTranslation'
+import type { Language } from '@/types'
+import { useBatchTranslation } from '../hooks/useBatchTranslation'
+import { useDictionarySave } from '../hooks/useDictionarySave'
+import { useLoadedEditorShortcuts } from '../hooks/useLoadedEditorShortcuts'
+import { useTranslationExport } from '../hooks/useTranslationExport'
+import type { TranslationSession } from '../types'
+import { isDeveloperNote } from '@/context/TranslationSession'
+import { EditorHeader } from './EditorHeader'
+import { PackageExportModal } from './PackageExportModal'
+import { TermGlossaryModal } from './TermGlossaryModal'
+import {
+  getTermGlossaryStorageKey,
+  loadTermGlossary,
+  type TermGlossaryEntry
+} from '@/utils/termGlossary'
+
+interface TranslateLoadedScreenProps {
+  session: TranslationSession
+}
+
+export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): React.JSX.Element {
+  const { t } = useAppTranslation('translate')
+  const [viewMode, setViewMode] = useState<'side' | 'stacked'>('side')
+  const [isCompactViewport, setIsCompactViewport] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 899px)').matches
+  )
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const termGlossaryProjectKey =
+    session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
+  const termGlossaryKey = getTermGlossaryStorageKey(
+    termGlossaryProjectKey,
+    session.sourceLang,
+    session.targetLang
+  )
+  const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
+    loadTermGlossary(termGlossaryKey)
+  )
+  const sessionRef = useRef(session)
+  sessionRef.current = session
+  const dictionarySave = useDictionarySave(session)
+  const batch = useBatchTranslation(session)
+  const exportFlow = useTranslationExport(session, languages)
+  const { provider: aiProvider } = useAISettings()
+  const { config } = useConfig()
+  const hideDeveloperNotes = config['hide_developer_notes'] !== 'false'
+  const visibleEntries = hideDeveloperNotes
+    ? session.entries.filter((entry) => !isDeveloperNote(entry.source))
+    : session.entries
+
+  const translatedCount = visibleEntries.filter((entry) => entry.target.trim() !== '').length
+  const total = visibleEntries.length
+  const pct = total > 0 ? (translatedCount / total) * 100 : 0
+  const verifiedCount = visibleEntries.filter(
+    (entry) => entry.target.trim() !== '' && entry.reviewStatus === 'verified'
+  ).length
+  const fileName = session.inputPath
+    ? (session.inputPath.split(/[\\/]/).pop() ?? session.modName)
+    : session.modName || t('loaded.defaultFileName')
+
+  useEffect(() => {
+    window.api.language.getAll().then(setLanguages)
+  }, [])
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
+    } catch {
+      // Glossary remains available for the current session if storage is unavailable.
+    }
+  }, [termGlossary, termGlossaryKey])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 899px)')
+    const handleViewportChange = () => setIsCompactViewport(mediaQuery.matches)
+    handleViewportChange()
+    mediaQuery.addEventListener('change', handleViewportChange)
+    return () => mediaQuery.removeEventListener('change', handleViewportChange)
+  }, [])
+
+  const handleEntryManualEdit = useCallback(
+    (rowId: string) => {
+      session.markManual(rowId)
+    },
+    [session]
+  )
+
+  const handleSaveToDictionary = useCallback(async () => {
+    const confirmed = window.confirm(
+      'Save the current translations to the Database? This will update reusable database entries.'
+    )
+    if (confirmed) await dictionarySave.saveAll()
+  }, [dictionarySave.saveAll])
+
+  const handleSaveSession = useCallback(async () => {
+    try {
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+      const latest = sessionRef.current
+      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
+      await window.api.session.save({
+        key: sessionKey,
+        entries: latest.entries.map(
+          ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          }) => ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
+      })
+      toast.success(t('translate.sessionSaved', { ns: 'toasts' }))
+    } catch (error) {
+      toast.error(String(error))
+    }
+  }, [t])
+
+  useEffect(() => {
+    const autosaveOnClose = () => {
+      const latest = sessionRef.current
+      if (latest.phase !== 'loaded' || latest.entries.length === 0) return
+      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
+      void window.api.session.save({
+        key: sessionKey,
+        entries: latest.entries.map(
+          ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          }) => ({
+            uid,
+            source,
+            target,
+            genderTargets,
+            matchType,
+            needsReview,
+            reviewStatus,
+            history
+          })
+        )
+      })
+    }
+    window.addEventListener('beforeunload', autosaveOnClose)
+    return () => window.removeEventListener('beforeunload', autosaveOnClose)
+  }, [])
+
+  useLoadedEditorShortcuts({
+    onSave: handleSaveSession,
+    onCycleExportFormat: exportFlow.cycleExportFormat,
+    onOpenExport: exportFlow.openExport
+  })
+
+  return (
+    <div className="flex flex-col h-full min-h-0">
+      <EditorHeader
+        session={session}
+        fileName={fileName}
+        viewMode={isCompactViewport ? 'stacked' : viewMode}
+        isSaving={dictionarySave.isSaving}
+        translatedCount={translatedCount}
+        total={total}
+        pct={pct}
+        verifiedCount={verifiedCount}
+        batchCompleted={batch.batchCompleted}
+        batchTotal={batch.batchTotal}
+        onViewModeChange={setViewMode}
+        onSave={handleSaveSession}
+        onSaveToGlossary={handleSaveToDictionary}
+        onOpenTermGlossary={() => setTermGlossaryOpen(true)}
+      />
+
+      <div className="flex-1 min-h-0">
+        <TranslationGrid
+          entries={visibleEntries}
+          onEntryChange={session.updateEntry}
+          onEntryManualEdit={handleEntryManualEdit}
+          termGlossary={termGlossary}
+          viewMode={isCompactViewport ? 'stacked' : viewMode}
+          selectionActions={
+            <BatchActionBar
+              selectedCount={session.selectedCount}
+              batchCompleted={batch.batchCompleted}
+              batchTotal={batch.batchTotal}
+              onTranslateDeepL={() => batch.batchTranslate('deepl')}
+              onTranslateGoogle={() => batch.batchTranslate('google')}
+              onTranslateAI={() => batch.batchTranslate(aiProvider)}
+              aiProviderName={getProviderMeta(aiProvider).name}
+              onCancelTranslation={batch.cancelBatch}
+              onClearSelection={session.clearSelection}
+              isTranslating={batch.isBatchTranslating}
+            />
+          }
+        />
+      </div>
+
+      <AlreadyTranslatedDialog
+        open={batch.pendingDecision}
+        translatedCount={batch.pendingTranslatedCount}
+        untranslatedCount={batch.pendingUntranslatedCount}
+        onProceedAll={batch.confirmProceedAll}
+        onSendOnlyUntranslated={batch.confirmSendOnlyUntranslated}
+        onClose={batch.cancelPending}
+      />
+
+      {exportFlow.exportMeta && (
+        <PackageExportModal
+          meta={exportFlow.exportMeta}
+          languages={languages}
+          selectedLanguageFolder={exportFlow.bg3LanguageFolder}
+          isExporting={exportFlow.isExporting}
+          onCancel={exportFlow.closeExportModal}
+          onSubmit={exportFlow.submitPackageExport}
+        />
+      )}
+
+      <QuotaExceededDialog
+        open={batch.quotaExceeded !== null}
+        service={batch.quotaExceeded?.service ?? ''}
+        remaining={batch.quotaExceeded?.remaining ?? 0}
+        requested={batch.quotaExceeded?.requested ?? 0}
+        allowedEntries={batch.quotaExceeded?.allowedEntries}
+        totalEntries={batch.quotaExceeded?.totalEntries}
+        renewalAt={batch.quotaExceeded?.renewalAt}
+        onConfirmPartial={
+          batch.quotaExceeded && batch.quotaExceeded.allowedEntries > 0
+            ? batch.confirmPartialBatch
+            : undefined
+        }
+        onClose={batch.dismissQuotaExceeded}
+      />
+
+      <TermGlossaryModal
+        open={termGlossaryOpen}
+        sourceLang={session.sourceLang}
+        targetLang={session.targetLang}
+        entries={termGlossary}
+        onChange={setTermGlossary}
+        onClose={() => setTermGlossaryOpen(false)}
+      />
+    </div>
+  )
+}

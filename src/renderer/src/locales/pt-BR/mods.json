@@ -1,0 +1,42 @@
+{
+  "title": "Gerenciar Mods",
+  "subtitle": "Exclua mods e defina a prioridade de carregamento do dicionário.",
+  "searchPlaceholder": "Buscar mod...",
+  "priority": {
+    "heading": "Ordem de prioridade",
+    "empty": "Nenhum mod com prioridade. Promova um mod da lista abaixo.",
+    "infoTitle": "Prioridade de carregamento do dicionário",
+    "infoBody": "Os mods listados aqui são consultados primeiro, em ordem, ao traduzir. A posição 1 tem a maior prioridade."
+  },
+  "fallback": {
+    "heading": "Outros mods",
+    "empty": "Nenhum mod encontrado."
+  },
+  "actions": {
+    "promote": "Adicionar à prioridade",
+    "demote": "Remover da prioridade",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "delete": "Excluir mod",
+    "positionLabel": "Posição",
+    "dragDisabledWhileSearch": "Limpe a busca para reordenar"
+  },
+  "delete": {
+    "title": "Excluir mod",
+    "subject": "Tem certeza que deseja excluir o mod {{name}}?",
+    "impactRows_one": "{{count}} entrada do dicionário será removida.",
+    "impactRows_other": "{{count}} entradas do dicionário serão removidas.",
+    "impactFolder": "A pasta {{path}} será excluída.",
+    "impactFolderMissing": "Nenhuma pasta de mod no disco.",
+    "irreversible": "Esta ação não pode ser desfeita.",
+    "confirm": "Excluir mod e entradas",
+    "cancel": "Cancelar"
+  },
+  "toast": {
+    "deleted": "Mod \"{{name}}\" excluído.",
+    "promoted": "Mod \"{{name}}\" promovido.",
+    "demoted": "Mod \"{{name}}\" removido da prioridade.",
+    "reordered": "Ordem de prioridade atualizada.",
+    "deleteFailed": "Falha ao excluir o mod."
+  }
+}

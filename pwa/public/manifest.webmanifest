@@ -1,0 +1,13 @@
+{
+  "name": "Polyhedron Companion",
+  "short_name": "Polyhedron",
+  "description": "Personal mobile companion for Polyhedron localization work.",
+  "start_url": "/Polyhedron/",
+  "scope": "/Polyhedron/",
+  "display": "standalone",
+  "background_color": "#0c0d0f",
+  "theme_color": "#0c0d0f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]}

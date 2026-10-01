@@ -1,0 +1,198 @@
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookText,
+  Columns2,
+  Database,
+  Loader2,
+  Languages,
+  Redo2,
+  Rows2,
+  Save,
+  Undo2
+} from 'lucide-react'
+import { useState } from 'react'
+import { useAppTranslation } from '@/i18n/useAppTranslation'
+import { cn } from '@/lib/utils'
+import type { TranslationSession } from '../types'
+import { btnBase, btnGhostIcon, btnPrimary } from './styles'
+import { TranslationStats } from './TranslationStats'
+import { RomanianDiacritics } from './RomanianDiacritics'
+
+interface EditorHeaderProps {
+  session: TranslationSession
+  fileName: string
+  viewMode: 'side' | 'stacked'
+  isSaving: boolean
+  translatedCount: number
+  total: number
+  pct: number
+  batchCompleted: number
+  batchTotal: number
+  verifiedCount: number
+  onViewModeChange: (mode: 'side' | 'stacked') => void
+  onSave: () => Promise<void>
+  onSaveToGlossary: () => Promise<void>
+  onOpenTermGlossary: () => void
+}
+
+export function EditorHeader({
+  session,
+  fileName,
+  viewMode,
+  isSaving,
+  translatedCount,
+  total,
+  pct,
+  batchCompleted,
+  batchTotal,
+  verifiedCount,
+  onViewModeChange,
+  onSave,
+  onSaveToGlossary,
+  onOpenTermGlossary
+}: EditorHeaderProps): React.JSX.Element {
+  const { t } = useAppTranslation(['translate', 'common'])
+  const [showRomanianDiacritics, setShowRomanianDiacritics] = useState(false)
+  const isRomanianTarget = /^(?:ro|romanian)(?:[-_]|$)/i.test(session.targetLang.trim())
+
+  return (
+    <div className="app-page-header editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
+      <div className="editor-header-top flex flex-wrap items-center gap-3 mb-4">
+        <button type="button" className={btnBase} onClick={session.resetSession}>
+          <ArrowLeft />
+          {t('editor.back')}
+        </button>
+
+        <div className="editor-header-title flex min-w-0 items-center gap-2.5">
+          <Languages className="shrink-0 text-amber-500" size={20} />
+          <div className="min-w-0">
+            <h1 className="truncate text-lg font-semibold text-neutral-100">Translate</h1>
+            <p className="truncate text-xs text-neutral-500">
+              {session.modName} <span className="text-neutral-700">›</span> {fileName}
+            </p>
+          </div>
+        </div>
+
+        <div className="editor-header-actions ml-auto flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center bg-[#131518] border border-[#1f2329] rounded-md p-0.75 gap-0.5">
+            <button
+              type="button"
+              title={t('editor.sideBySide')}
+              onClick={() => onViewModeChange('side')}
+              className={cn(
+                'w-6.5 h-5.5 flex items-center justify-center rounded border-0 cursor-pointer transition-all',
+                viewMode === 'side'
+                  ? 'bg-[#1f2329] text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]'
+                  : 'bg-transparent text-neutral-500 hover:text-neutral-200'
+              )}
+            >
+              <Columns2 />
+            </button>
+            <button
+              type="button"
+              title={t('editor.stacked')}
+              onClick={() => onViewModeChange('stacked')}
+              className={cn(
+                'w-6.5 h-5.5 flex items-center justify-center rounded border-0 cursor-pointer transition-all',
+                viewMode === 'stacked'
+                  ? 'bg-[#1f2329] text-neutral-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]'
+                  : 'bg-transparent text-neutral-500 hover:text-neutral-200'
+              )}
+            >
+              <Rows2 />
+            </button>
+          </div>
+
+          <button type="button" className={btnGhostIcon} title={t('editor.undo')} disabled>
+            <Undo2 />
+          </button>
+          <button type="button" className={btnGhostIcon} title={t('editor.redo')} disabled>
+            <Redo2 />
+          </button>
+
+          <div className="w-px h-4.5 bg-[#1f2329] mx-1 shrink-0" />
+
+          <button
+            type="button"
+            className={btnGhostIcon}
+            onClick={onOpenTermGlossary}
+            title="Term Glossary"
+            aria-label="Term Glossary"
+          >
+            <BookText />
+          </button>
+
+          <div className="w-px h-4.5 bg-[#1f2329] mx-1 shrink-0" />
+
+          <button
+            type="button"
+            className={cn(
+              btnPrimary,
+              'h-[30px] w-auto justify-center',
+              isSaving && 'opacity-60 cursor-not-allowed'
+            )}
+            onClick={onSaveToGlossary}
+            disabled={isSaving}
+            title="Save to Database"
+            aria-label="Save to Database"
+          >
+            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Database />}
+          </button>
+
+          <button
+            type="button"
+            className={cn(btnPrimary, isSaving && 'opacity-60 cursor-not-allowed')}
+            onClick={onSave}
+            disabled={isSaving}
+            title={t('editor.save')}
+          >
+            {isSaving ? <Loader2 size={13} className="animate-spin" /> : <Save />}
+            SAVE
+          </button>
+        </div>
+      </div>
+
+      <div className="editor-header-language-row flex items-end gap-8">
+        <div className="editor-header-language-block flex-1 min-w-0">
+          <h1 className="flex items-center gap-3.5 m-0 text-[32px] font-bold tracking-tight leading-none mb-2">
+            <span className="font-mono text-neutral-200 font-bold">
+              {session.sourceLang.toUpperCase()}
+            </span>
+            <span className="text-neutral-500 inline-flex">
+              <ArrowRight />
+            </span>
+            <span className="inline-flex items-center gap-2">
+              {isRomanianTarget ? (
+                <button
+                  type="button"
+                  onClick={() => setShowRomanianDiacritics((visible) => !visible)}
+                  aria-expanded={showRomanianDiacritics}
+                  title="Romanian diacritics"
+                  className="romanian-language-toggle cursor-pointer bg-transparent font-mono font-bold text-amber-400 outline-none transition-all"
+                >
+                  {session.targetLang.toUpperCase()}
+                </button>
+              ) : (
+                <span className="font-mono font-bold text-amber-400">
+                  {session.targetLang.toUpperCase()}
+                </span>
+              )}
+              {isRomanianTarget && showRomanianDiacritics && <RomanianDiacritics />}
+            </span>
+          </h1>
+          <div id="translation-status-tabs" className="min-h-7" />
+        </div>
+
+        <TranslationStats
+          translatedCount={translatedCount}
+          total={total}
+          pct={pct}
+          verifiedCount={verifiedCount}
+          batchCompleted={batchCompleted}
+          batchTotal={batchTotal}
+        />
+      </div>
+    </div>
+  )
+}

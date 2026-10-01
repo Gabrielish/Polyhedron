@@ -1,0 +1,2306 @@
+[
+  {
+    "id": "acid-splash",
+    "name": "Acid Splash",
+    "page": "Acid Splash",
+    "level": 0,
+    "description": "is a cantrip (Conjuration). It deals ⁠Acid damage to enemies in a small area.",
+    "icon": "https://bg3.wiki/w/images/thumb/9/99/Acid_Splash_Icon.webp/96px-Acid_Splash_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blade-ward",
+    "name": "Blade Ward",
+    "page": "Blade Ward",
+    "level": 0,
+    "description": "is a cantrip (Abjuration). It allows spellcasters to become more resilient against physical damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/04/Blade_Ward_Icon.webp/96px-Blade_Ward_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bone-chill",
+    "name": "Bone Chill",
+    "page": "Bone Chill",
+    "level": 0,
+    "description": "is a cantrip (Necromancy). It deals ⁠Necrotic damage and prevents the target from regaining Hit Points.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/03/Bone_Chill_Icon.webp/96px-Bone_Chill_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "booming-blade",
+    "name": "Booming Blade",
+    "page": "Booming Blade",
+    "level": 0,
+    "description": "is a cantrip (Evocation). It allows the caster to strike with their melee weapon, dealing further damage if the target moves afterwards.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/fd/Booming_Blade_Icon.webp/96px-Booming_Blade_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bursting-sinew",
+    "name": "Bursting Sinew",
+    "page": "Bursting Sinew",
+    "level": 0,
+    "description": "is a cantrip (Necromancy). It allows the caster to detonate a corpse into a small AoE of damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/0f/Bursting_Sinew_Icon.webp/96px-Bursting_Sinew_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dancing-lights",
+    "name": "Dancing Lights",
+    "page": "Dancing Lights",
+    "level": 0,
+    "description": "is a cantrip (Evocation). It creates magical orbs of light that brighten an area.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/ba/Dancing_Lights_Icon.webp/96px-Dancing_Lights_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "eldritch-blast",
+    "name": "Eldritch Blast",
+    "page": "Eldritch Blast",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/db/Eldritch_Blast_Icon.webp/96px-Eldritch_Blast_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "fire-bolt",
+    "name": "Fire Bolt",
+    "page": "Fire Bolt",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/23/Fire_Bolt_Icon.webp/96px-Fire_Bolt_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "friends",
+    "name": "Friends",
+    "page": "Friends",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/75/Friends_Icon.webp/96px-Friends_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "guidance",
+    "name": "Guidance",
+    "page": "Guidance",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7f/Guidance_Icon.webp/96px-Guidance_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "light",
+    "name": "Light",
+    "page": "Light",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5c/Light_Icon.webp/96px-Light_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mage-hand",
+    "name": "Mage Hand",
+    "page": "Mage Hand",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f9/Mage_Hand_Icon.webp/96px-Mage_Hand_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "minor-illusion",
+    "name": "Minor Illusion",
+    "page": "Minor Illusion",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/9/9d/Minor_Illusion_Icon.webp/96px-Minor_Illusion_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "poison-spray",
+    "name": "Poison Spray",
+    "page": "Poison Spray",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/1d/Poison_Spray_Icon.webp/96px-Poison_Spray_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "produce-flame",
+    "name": "Produce Flame",
+    "page": "Produce Flame",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/ec/Produce_Flame_Icon.webp/96px-Produce_Flame_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ray-of-frost",
+    "name": "Ray of Frost",
+    "page": "Ray of Frost",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f9/Ray_of_Frost_Icon.webp/96px-Ray_of_Frost_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "resistance-cantrip",
+    "name": "Resistance",
+    "page": "Resistance (Cantrip)",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a1/Resistance_Cantrip_Icon.webp/96px-Resistance_Cantrip_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sacred-flame",
+    "name": "Sacred Flame",
+    "page": "Sacred Flame",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/16/Sacred_Flame_Icon.webp/96px-Sacred_Flame_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shillelagh",
+    "name": "Shillelagh",
+    "page": "Shillelagh",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/68/Shillelagh_Icon.webp/96px-Shillelagh_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shocking-grasp",
+    "name": "Shocking Grasp",
+    "page": "Shocking Grasp",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2f/Shocking_Grasp_Icon.webp/96px-Shocking_Grasp_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "thaumaturgy",
+    "name": "Thaumaturgy",
+    "page": "Thaumaturgy",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3f/Thaumaturgy_Icon.webp/96px-Thaumaturgy_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "thorn-whip",
+    "name": "Thorn Whip",
+    "page": "Thorn Whip",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e8/Thorn_Whip_Icon.webp/96px-Thorn_Whip_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "toll-the-dead",
+    "name": "Toll the Dead",
+    "page": "Toll the Dead",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c0/Toll_the_Dead_Icon.webp/96px-Toll_the_Dead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "true-strike",
+    "name": "True Strike",
+    "page": "True Strike",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/4/47/True_Strike_Icon.webp/96px-True_Strike_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "vicious-mockery",
+    "name": "Vicious Mockery",
+    "page": "Vicious Mockery",
+    "level": 0,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/66/Vicious_Mockery_Icon.webp/96px-Vicious_Mockery_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "animal-friendship",
+    "name": "Animal Friendship",
+    "page": "Animal Friendship",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It charms a beast, convincing it that the caster means no harm.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/36/Animal_Friendship_Icon.webp/96px-Animal_Friendship_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "armour-of-agathys",
+    "name": "Armour of Agathys",
+    "page": "Armour of Agathys",
+    "level": 1,
+    "description": "is a level 1 abjuration spell. It allows spellcasters to create a spectral armour of frost that covers the caster and their equipment. This armour provides additional Hit Points to the caster and damages hostile targets while the added hit points are present.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/77/Armour_of_Agathys_Icon.webp/96px-Armour_of_Agathys_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "arms-of-hadar",
+    "name": "Arms of Hadar",
+    "page": "Arms of Hadar",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows the caster to summon dark tendrils and deal ⁠Necrotic damage to creatures in an area centered on the caster, preventing them from taking Reactions.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3e/Arms_of_Hadar_Icon.webp/96px-Arms_of_Hadar_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bane-spell",
+    "name": "Bane",
+    "page": "Bane (spell)",
+    "level": 1,
+    "description": "Bane is a level 1 enchantment spell. It allows the caster to temporarily curse enemies, making their attacks miss more often and weakening their Saving Throws.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/19/Bane_spell_Icon.webp/96px-Bane_spell_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bless",
+    "name": "Bless",
+    "page": "Bless",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It allows spellcasters to temporarily bolster themselves and their allies’ attacks and saving throws.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c4/Bless_Icon.webp/96px-Bless_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "burning-hands",
+    "name": "Burning Hands",
+    "page": "Burning Hands",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to shoot a flaming cone from their fingertips and deal ⁠Fire damage to enemies.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cf/Burning_Hands_Icon.webp/96px-Burning_Hands_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "charm-person",
+    "name": "Charm Person",
+    "page": "Charm Person",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It allows spellcasters to temporarily charm a humanoid creature, granting Advantage on Charisma Checks.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/bc/Charm_Person_Icon.webp/96px-Charm_Person_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "chromatic-orb",
+    "name": "Chromatic Orb",
+    "page": "Chromatic Orb",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to fire a ball of energy and deal the chosen damage type to enemies.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8e/Chromatic_Orb_Icon.webp/96px-Chromatic_Orb_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "colour-spray",
+    "name": "Colour Spray",
+    "page": "Colour Spray",
+    "level": 1,
+    "description": "is a level 1 illusion spell. It allows spellcasters to temporarily blind enemies with flashing coloured light, making their attacks miss more often and shortening their attack range.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/24/Colour_Spray_Icon.webp/96px-Colour_Spray_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "command",
+    "name": "Command",
+    "page": "Command",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It allows spellcasters to order their target to flee, move closer, freeze, drop to the ground, or drop their weapon.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7f/Command_Halt_Icon.webp/96px-Command_Halt_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "compelled-duel",
+    "name": "Compelled Duel",
+    "page": "Compelled Duel",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It allows spellcasters to compel an enemy to ignore other targets and attack only the spellcaster.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/73/Compelled_Duel_Icon.webp/96px-Compelled_Duel_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "create-or-destroy-water",
+    "name": "Create or Destroy Water",
+    "page": "Create or Destroy Water",
+    "level": 1,
+    "description": "is a level 1 transmutation spell. It allows spellcasters to conjure or destroy an area of water (or water-like surfaces).",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d1/Create_Water_Icon.webp/96px-Create_Water_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "cure-wounds",
+    "name": "Cure Wounds",
+    "page": "Cure Wounds",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to heal allies with divine magic through touch.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/40/Cure_Wounds_Icon.webp/96px-Cure_Wounds_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "disguise-self",
+    "name": "Disguise Self",
+    "page": "Disguise Self",
+    "level": 1,
+    "description": "is a level 1 illusion spell. It allows spellcasters to temporarily change their appearance. While active, gain access to the action Dispel Disguise to end the effect.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8d/Disguise_Self_Icon.webp/96px-Disguise_Self_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dissonant-whispers",
+    "name": "Dissonant Whispers",
+    "page": "Dissonant Whispers",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/4/40/Dissonant_Whispers_Icon.webp/96px-Dissonant_Whispers_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "divine-favour",
+    "name": "Divine Favour",
+    "page": "Divine Favour",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to empower their Weapons to deal extra Radiant damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/44/Divine_Favour_Icon.webp/96px-Divine_Favour_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "enhance-leap",
+    "name": "Enhance Leap",
+    "page": "Enhance Leap",
+    "level": 1,
+    "description": "is a level 1 transmutation spell. It allows spellcasters to increase a creature's Jumping distance.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/46/Enhance_Leap_Icon.webp/96px-Enhance_Leap_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ensnaring-strike",
+    "name": "Ensnaring Strike",
+    "page": "Ensnaring Strike",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. This spell allows spellcasters to use weapon attacks to ensnare enemies with thorny vines and deal ⁠Piercing damage to them each turn.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/60/Ensnaring_Strike_Ranged_Icon.webp/96px-Ensnaring_Strike_Ranged_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "entangle",
+    "name": "Entangle",
+    "page": "Entangle",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows spellcasters to conjure magical vines and turn an area within range into difficult terrain. Creatures are possibly Entangled and move at half speed while standing in this area.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d9/Entangle_Icon.webp/96px-Entangle_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "expeditious-retreat",
+    "name": "Expeditious Retreat",
+    "page": "Expeditious Retreat",
+    "level": 1,
+    "description": "is a level 1 transmutation spell. It allows spellcasters to move more swiftly.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d6/Expeditious_Retreat_Icon.webp/96px-Expeditious_Retreat_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "faerie-fire",
+    "name": "Faerie Fire",
+    "page": "Faerie Fire",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to conjure a brilliant light. Any creature caught in the radius temporarily sheds faint light and prevents Invisibility.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a1/Faerie_Fire_Icon.webp/96px-Faerie_Fire_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "false-life",
+    "name": "False Life",
+    "page": "False Life",
+    "level": 1,
+    "description": "is a level 1 necromancy spell. It allows spellcasters to gain Temporary Hit Points.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f2/False_Life_Icon.webp/96px-False_Life_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "feather-fall",
+    "name": "Feather Fall",
+    "page": "Feather Fall",
+    "level": 1,
+    "description": "is a level 1 transmutation spell. It allows spellcasters to make themselves and their allies light as a feather, preventing damage when falling from extreme heights.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/00/Feather_Fall_Icon.webp/96px-Feather_Fall_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "find-familiar",
+    "name": "Find Familiar",
+    "page": "Find Familiar",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows spellcasters to conjure a fey familiar that can aid them in combat and world exploration.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Find_Familiar_Cat_Icon.webp/96px-Find_Familiar_Cat_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "fog-cloud",
+    "name": "Fog Cloud",
+    "page": "Fog Cloud",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows spellcasters to summon a sphere of Fog on an area in range and heavily obscure the area. Creatures within the area are Blinded.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c0/Fog_Cloud_Icon.webp/96px-Fog_Cloud_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "goodberry",
+    "name": "Goodberry",
+    "page": "Goodberry",
+    "level": 1,
+    "description": "is a level 1 transmutation spell. It allows spellcasters to create magical berries which have healing properties when eaten.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/42/Goodberry_Icon.webp/96px-Goodberry_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "grease",
+    "name": "Grease",
+    "page": "Grease",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows spellcasters to conjure flammable Grease on the ground within range and turn it into Difficult Terrain.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7a/Grease_Icon.webp/96px-Grease_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "guiding-bolt",
+    "name": "Guiding Bolt",
+    "page": "Guiding Bolt",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to hit enemies with a bolt that deals ⁠Radiant damage and grants advantage to the next attack roll made against them.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2c/Guiding_Bolt_Icon.webp/96px-Guiding_Bolt_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hail-of-thorns",
+    "name": "Hail of Thorns",
+    "page": "Hail of Thorns",
+    "level": 1,
+    "description": "is a level 1 conjuration spell. It allows the caster to make a ranged attack which creates a ⁠Piercing damage explosion in addition to dealing normal weapon damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/63/Hail_of_Thorns_Icon.webp/96px-Hail_of_Thorns_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "healing-word",
+    "name": "Healing Word",
+    "page": "Healing Word",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to heal allies that they can see and are within range.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/ef/Healing_Word_Icon.webp/96px-Healing_Word_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hellish-rebuke",
+    "name": "Hellish Rebuke",
+    "page": "Hellish Rebuke",
+    "level": 1,
+    "description": "is a level 1 evocation spell. It allows spellcasters to surround a creature in hellfire that deals ⁠Fire damage as a Reaction when taking damage from them.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/82/Hellish_Rebuke_Icon.webp/96px-Hellish_Rebuke_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "heroism",
+    "name": "Heroism",
+    "page": "Heroism",
+    "level": 1,
+    "description": "is a level 1 enchantment spell. It allows spellcasters to instill courage in themselves or an ally; the affected creature cannot be frightened and gains temporary hit points.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/19/Heroism_Icon.webp/96px-Heroism_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hex",
+    "name": "Hex",
+    "page": "Hex",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/9/9f/Hex_Icon.webp/96px-Hex_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hunter-s-mark",
+    "name": "Hunter's Mark",
+    "page": "Hunter's Mark",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f6/Hunter%27s_Mark_Icon.webp/96px-Hunter%27s_Mark_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ice-knife",
+    "name": "Ice Knife",
+    "page": "Ice Knife",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/17/Ice_Knife_Icon.webp/96px-Ice_Knife_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "inflict-wounds",
+    "name": "Inflict Wounds",
+    "page": "Inflict Wounds",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3d/Inflict_Wounds_Icon.webp/96px-Inflict_Wounds_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "longstrider",
+    "name": "Longstrider",
+    "page": "Longstrider",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/35/Longstrider_Icon.webp/96px-Longstrider_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mage-armour",
+    "name": "Mage Armour",
+    "page": "Mage Armour",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/0/0d/Mage_Armour_Icon.webp/96px-Mage_Armour_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "magic-missile",
+    "name": "Magic Missile",
+    "page": "Magic Missile",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d4/Magic_Missile_Icon.webp/96px-Magic_Missile_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "protection-from-evil-and-good",
+    "name": "Protection from Evil and Good",
+    "page": "Protection from Evil and Good",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/35/Protection_from_Evil_and_Good_Icon.webp/96px-Protection_from_Evil_and_Good_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ray-of-sickness",
+    "name": "Ray of Sickness",
+    "page": "Ray of Sickness",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/74/Ray_of_Sickness_Icon.webp/96px-Ray_of_Sickness_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sanctuary",
+    "name": "Sanctuary",
+    "page": "Sanctuary",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c1/Sanctuary_Icon.webp/96px-Sanctuary_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "searing-smite",
+    "name": "Searing Smite",
+    "page": "Searing Smite",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/5/50/Searing_Smite_Icon.webp/96px-Searing_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shield-spell",
+    "name": "Shield",
+    "page": "Shield (spell)",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cf/Shield_spell_Icon.webp/96px-Shield_spell_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shield-of-faith",
+    "name": "Shield of Faith",
+    "page": "Shield of Faith",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/83/Shield_of_Faith_Icon.webp/96px-Shield_of_Faith_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sleep",
+    "name": "Sleep",
+    "page": "Sleep",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/ae/Sleep_Icon.webp/96px-Sleep_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "speak-with-animals",
+    "name": "Speak with Animals",
+    "page": "Speak with Animals",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/24/Speak_with_Animals_Icon.webp/96px-Speak_with_Animals_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "tasha-s-hideous-laughter",
+    "name": "Tasha's Hideous Laughter",
+    "page": "Tasha's Hideous Laughter",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/27/Tasha%27s_Hideous_Laughter_Icon.webp/96px-Tasha%27s_Hideous_Laughter_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "thunderous-smite",
+    "name": "Thunderous Smite",
+    "page": "Thunderous Smite",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/dd/Thunderous_Smite_Icon.webp/96px-Thunderous_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "thunderwave",
+    "name": "Thunderwave",
+    "page": "Thunderwave",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/0/04/Thunderwave_Icon.webp/96px-Thunderwave_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "witch-bolt",
+    "name": "Witch Bolt",
+    "page": "Witch Bolt",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d2/Witch_Bolt_Icon.webp/96px-Witch_Bolt_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wrathful-smite",
+    "name": "Wrathful Smite",
+    "page": "Wrathful Smite",
+    "level": 1,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/79/Wrathful_Smite_Icon.webp/96px-Wrathful_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "aid",
+    "name": "Aid",
+    "page": "Aid",
+    "level": 2,
+    "description": "is a level 2 abjuration spell. It allows spellcasters to heal and embolden their allies and themselves with resolve. Affected creatures have their maximum Hit Points increased for the duration of the spell.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/50/Aid_Icon.webp/96px-Aid_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "arcane-lock",
+    "name": "Arcane Lock",
+    "page": "Arcane Lock",
+    "level": 2,
+    "description": "is a level 2 abjuration spell. It allows spellcasters to magically lock a container.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/79/Arcane_Lock_Icon.webp/96px-Arcane_Lock_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "barkskin",
+    "name": "Barkskin",
+    "page": "Barkskin",
+    "level": 2,
+    "description": "is a level 2 transmutation spell. It allows spellcasters to fortify the defense of a willing creature and increase their Armour Class. While under the effect of this spell, the target's skin has a bark-like texture.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Barkskin_Icon.webp/96px-Barkskin_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blindness",
+    "name": "Blindness",
+    "page": "Blindness",
+    "level": 2,
+    "description": "is a level 2 necromancy spell. It allows spellcasters to magically Blind a targeted hostile creature.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5a/Blindness_Icon.webp/96px-Blindness_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blur",
+    "name": "Blur",
+    "page": "Blur",
+    "level": 2,
+    "description": "is a level 2 illusion spell. It blurs the spellcaster's body, making them harder to hit.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/0d/Blur_Icon.webp/96px-Blur_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "branding-smite",
+    "name": "Branding Smite",
+    "page": "Branding Smite",
+    "level": 2,
+    "description": "is a level 2 evocation spell. It causes a spellcaster's weapon to gleam with astral radiance, allowing them to mark targets with light, preventing them from turning Invisible.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5e/Branding_Smite_Melee_Icon.webp/96px-Branding_Smite_Melee_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "calm-emotions",
+    "name": "Calm Emotions",
+    "page": "Calm Emotions",
+    "level": 2,
+    "description": "is a level 2 enchantment spell. It allows spellcasters to magically subdue intense emotions in targeted creatures. The affected target becomes neutral to the creatures it was hostile toward. It also cannot be Charmed or Frightened during the duration of the spell.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d9/Calm_Emotions_Icon.webp/96px-Calm_Emotions_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "cloud-of-daggers",
+    "name": "Cloud of Daggers",
+    "page": "Cloud of Daggers",
+    "level": 2,
+    "description": "is a level 2 conjuration spell. It allows spellcasters to conjure a barrage of daggers in an area which deals Slashing damage to any creature entering or starting its turn in the area.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3d/Cloud_of_Daggers_Icon.webp/96px-Cloud_of_Daggers_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "crown-of-madness",
+    "name": "Crown of Madness",
+    "page": "Crown of Madness",
+    "level": 2,
+    "description": "is a level 2 enchantment spell. It allows spellcasters to temporarily charm a humanoid creature and induce madness in their mind. The affected creature then makes a melee attack against any creature aside from the caster within its reach.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/48/Crown_of_Madness_Icon.webp/96px-Crown_of_Madness_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "darkness",
+    "name": "Darkness",
+    "page": "Darkness",
+    "level": 2,
+    "description": "is a level 2 evocation spell. It allows spellcasters to conjure a cloud of darkness in an area within range which obscures and inflicts Blindness to those within it.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/bf/Darkness_Icon.webp/96px-Darkness_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "darkvision-spell",
+    "name": "Darkvision",
+    "page": "Darkvision (spell)",
+    "level": 2,
+    "description": "Darkvision is a level 2 transmutation spell. It allows spellcasters to alter a creature's sight, granting them the ability to see in the dark.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/01/Darkvision_spell_Icon.webp/96px-Darkvision_spell_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "detect-thoughts",
+    "name": "Detect Thoughts",
+    "page": "Detect Thoughts",
+    "level": 2,
+    "description": "is a level 2 divination spell. It allows spellcasters to telepathically link to unprotected minds and hear the thoughts of targeted creatures while talking to them.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b6/Detect_Thoughts_Icon.webp/96px-Detect_Thoughts_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "enhance-ability",
+    "name": "Enhance Ability",
+    "page": "Enhance Ability",
+    "level": 2,
+    "description": "is a level 2 transmutation spell. It allows spellcasters to strengthen an aspect of a creature's physical or mental attributes.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/65/Enhance_Ability_Icon.webp/96px-Enhance_Ability_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "enlarge-reduce",
+    "name": "Enlarge/Reduce",
+    "page": "Enlarge/Reduce",
+    "level": 2,
+    "description": "is a level 2 transmutation spell. It allows spellcasters to alter a creature's body size. The caster can choose to double or halve the size of the affected creature.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c6/Enlarge_Reduce_Icon.webp/96px-Enlarge_Reduce_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "enthrall",
+    "name": "Enthrall",
+    "page": "Enthrall",
+    "level": 2,
+    "description": "is a level 2 enchantment spell. It allows spellcasters to capture the attention of a creature, forcing it to focus on them.",
+    "icon": "https://bg3.wiki/w/images/thumb/9/90/Enthrall_Icon.webp/96px-Enthrall_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "flame-blade",
+    "name": "Flame Blade",
+    "page": "Flame Blade",
+    "level": 2,
+    "description": "is a level 2 evocation spell. It allows spellcasters to summon a fiery scimitar in their free hand that sheds bright light. Casters can make a melee weapon attack with the blade to deal Fire damage to enemies.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c8/Flame_Blade_Icon.webp/96px-Flame_Blade_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "flaming-sphere",
+    "name": "Flaming Sphere",
+    "page": "Flaming Sphere",
+    "level": 2,
+    "description": "is a level 2 conjuration spell. It allows spellcasters to conjure a Flaming Sphere which can attack and burn enemies.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/66/Flaming_Sphere_Icon.webp/96px-Flaming_Sphere_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "gust-of-wind",
+    "name": "Gust of Wind",
+    "page": "Gust of Wind",
+    "level": 2,
+    "description": "is a level 2 evocation spell. It allows spellcasters to conjure a squall to clear dangerous gasses or throw creatures back, potentially causing a dangerous fall.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/58/Gust_of_Wind_Icon.webp/96px-Gust_of_Wind_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "heat-metal",
+    "name": "Heat Metal",
+    "page": "Heat Metal",
+    "level": 2,
+    "description": "is a level 2 transmutation spell. It allows spellcasters to heat up a metal weapon or armour on the targeted creature, forcing them to let go or receive damage or suffer various penalties.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a3/Heat_Metal_Icon.webp/96px-Heat_Metal_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hold-person",
+    "name": "Hold Person",
+    "page": "Hold Person",
+    "level": 2,
+    "description": "is a level 2 enchantment spell. It allows spellcasters to hold a target humanoid in place. The affected creature is unable to move or act and is more susceptible to attacks.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/75/Hold_Person_Icon.webp/96px-Hold_Person_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "invisibility-spell",
+    "name": "Invisibility",
+    "page": "Invisibility (spell)",
+    "level": 2,
+    "description": "Invisibility is a level 2 illusion spell. It allows spellcasters to turn themselves and other creatures Invisible to the naked eye.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/4e/Invisibility_spell_Icon.webp/96px-Invisibility_spell_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "knock",
+    "name": "Knock",
+    "page": "Knock",
+    "level": 2,
+    "description": "is a level 2 transmutation spell. It allows spellcasters to unlock non-magical locks.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a4/Knock_Icon.webp/96px-Knock_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "lesser-restoration",
+    "name": "Lesser Restoration",
+    "page": "Lesser Restoration",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e4/Lesser_Restoration_Icon.webp/96px-Lesser_Restoration_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "magic-weapon",
+    "name": "Magic Weapon",
+    "page": "Magic Weapon",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/9/9c/Magic_Weapon_Icon.webp/96px-Magic_Weapon_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "melf-s-acid-arrow",
+    "name": "Melf's Acid Arrow",
+    "page": "Melf's Acid Arrow",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/67/Melf%27s_Acid_Arrow_Icon.webp/96px-Melf%27s_Acid_Arrow_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mirror-image",
+    "name": "Mirror Image",
+    "page": "Mirror Image",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/4/41/Mirror_Image_Icon.webp/96px-Mirror_Image_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "misty-step",
+    "name": "Misty Step",
+    "page": "Misty Step",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/1f/Misty_Step_Icon.webp/96px-Misty_Step_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "moonbeam",
+    "name": "Moonbeam",
+    "page": "Moonbeam",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Moonbeam_Icon.webp/96px-Moonbeam_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "pass-without-trace",
+    "name": "Pass Without Trace",
+    "page": "Pass Without Trace",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2b/Pass_Without_Trace_Icon.webp/96px-Pass_Without_Trace_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "phantasmal-force",
+    "name": "Phantasmal Force",
+    "page": "Phantasmal Force",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/ac/Phantasmal_Force_Icon.webp/96px-Phantasmal_Force_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "prayer-of-healing",
+    "name": "Prayer of Healing",
+    "page": "Prayer of Healing",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e0/Prayer_of_Healing_Icon.webp/96px-Prayer_of_Healing_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "protection-from-poison",
+    "name": "Protection from Poison",
+    "page": "Protection from Poison",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3b/Protection_from_Poison_Icon.webp/96px-Protection_from_Poison_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ray-of-enfeeblement",
+    "name": "Ray of Enfeeblement",
+    "page": "Ray of Enfeeblement",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7b/Ray_of_Enfeeblement_Icon.webp/96px-Ray_of_Enfeeblement_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "scorching-ray",
+    "name": "Scorching Ray",
+    "page": "Scorching Ray",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8e/Scorching_Ray_Icon.webp/96px-Scorching_Ray_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "see-invisibility-spell",
+    "name": "See Invisibility",
+    "page": "See Invisibility (spell)",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c3/See_Invisibility_Icon.webp/96px-See_Invisibility_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shadow-blade",
+    "name": "Shadow Blade",
+    "page": "Shadow Blade",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6e/Shadow_Blade_Icon.webp/96px-Shadow_Blade_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shatter",
+    "name": "Shatter",
+    "page": "Shatter",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c5/Shatter_Icon.webp/96px-Shatter_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "silence",
+    "name": "Silence",
+    "page": "Silence",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/78/Silence_Icon.webp/96px-Silence_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "spike-growth",
+    "name": "Spike Growth",
+    "page": "Spike Growth",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d4/Spike_Growth_Icon.webp/96px-Spike_Growth_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "spiritual-weapon",
+    "name": "Spiritual Weapon",
+    "page": "Spiritual Weapon",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/73/Spiritual_Weapon_Halberd_Icon.webp/96px-Spiritual_Weapon_Halberd_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "warding-bond",
+    "name": "Warding Bond",
+    "page": "Warding Bond",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/ea/Warding_Bond_Icon.webp/96px-Warding_Bond_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "web",
+    "name": "Web",
+    "page": "Web",
+    "level": 2,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Web_Icon.webp/96px-Web_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "animate-dead",
+    "name": "Animate Dead",
+    "page": "Animate Dead",
+    "level": 3,
+    "description": "is a level 3 necromancy spell. It allows spellcasters to animate a corpse to create an undead servant.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2f/Animate_Dead_Icon.webp/96px-Animate_Dead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "beacon-of-hope",
+    "name": "Beacon of Hope",
+    "page": "Beacon of Hope",
+    "level": 3,
+    "description": "is a level 3 abjuration spell. It allows spellcasters to bolster their allies with hope and vitality.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5d/Beacon_of_Hope_Icon.webp/96px-Beacon_of_Hope_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bestow-curse",
+    "name": "Bestow Curse",
+    "page": "Bestow Curse",
+    "level": 3,
+    "description": "is a level 3 necromancy spell. It allows spellcasters to curse a target with their touch.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/00/Bestow_Curse_Icon.webp/96px-Bestow_Curse_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blinding-smite",
+    "name": "Blinding Smite",
+    "page": "Blinding Smite",
+    "level": 3,
+    "description": "is a level 3 evocation spell. It allows a Paladin to expend a Spell Slot to deal additional ⁠Radiant damage with a melee weapon attack and possibly blind their target.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5e/Blinding_Smite_Icon.webp/96px-Blinding_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blink",
+    "name": "Blink",
+    "page": "Blink",
+    "level": 3,
+    "description": "is a level 3 transmutation spell. It allows the spellcaster to travel to the Ethereal Plane, unassailable and unseen until they return.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b3/Blink_Icon.webp/96px-Blink_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "call-lightning",
+    "name": "Call Lightning",
+    "page": "Call Lightning",
+    "level": 3,
+    "description": "is a level 3 conjuration spell. It allows spellcasters to call down lightning to hit all targets within the area of effect. The spellcaster can also call down lightning repeatedly on subsequent turns.",
+    "icon": "https://bg3.wiki/w/images/thumb/9/99/Call_Lightning_Icon.webp/96px-Call_Lightning_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "conjure-barrage",
+    "name": "Conjure Barrage",
+    "page": "Conjure Barrage",
+    "level": 3,
+    "description": "is a level 3 conjuration spell. It allows rangers to use one of their weapons to strike everyone within a wide cone with a barrage of magical blades.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/df/Conjure_Barrage_Icon.webp/96px-Conjure_Barrage_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "counterspell",
+    "name": "Counterspell",
+    "page": "Counterspell",
+    "level": 3,
+    "description": "is a level 3 abjuration spell. It allows spellcasters to interrupt another caster's spellcasting, causing it to fail and have no effect.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/50/Counterspell_Icon.webp/96px-Counterspell_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "crusader-s-mantle",
+    "name": "Crusader's Mantle",
+    "page": "Crusader's Mantle",
+    "level": 3,
+    "description": "is a level 3 evocation spell. It allows spellcasters to imbue their allies' weapons with holy power, causing them to deal additional Radiant damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/4/4d/Crusader%27s_Mantle_Icon.webp/96px-Crusader%27s_Mantle_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "daylight",
+    "name": "Daylight",
+    "page": "Daylight",
+    "level": 3,
+    "description": "is a level 3 evocation spell. It allows spellcasters to dispel darkness by summoning a sphere of light or enchanting an item to shine like the sun.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6e/Daylight_Icon.webp/96px-Daylight_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "elemental-weapon",
+    "name": "Elemental Weapon",
+    "page": "Elemental Weapon",
+    "level": 3,
+    "description": "is a level 3 transmutation spell. It imbues a weapon with a chosen energy type, increasing its damage and accuracy.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/06/Elemental_Weapon_Icon.webp/96px-Elemental_Weapon_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "fear",
+    "name": "Fear",
+    "page": "Fear",
+    "level": 3,
+    "description": "is a level 3 illusion spell. It allows spellcasters to terrify targets by projecting phantasmal images, forcing enemies to flee.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/ad/Fear_Icon.webp/96px-Fear_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "feign-death",
+    "name": "Feign Death",
+    "page": "Feign Death",
+    "level": 3,
+    "description": "is a level 3 necromancy spell. It allows spellcasters to put their allies into a magical, protective coma, feigning death.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/fe/Feign_Death_Icon.webp/96px-Feign_Death_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "fireball",
+    "name": "Fireball",
+    "page": "Fireball",
+    "level": 3,
+    "description": "is a level 3 evocation spell. It allows spellcasters to unleash a streak of fire from their hands which ignites into a large explosion at a chosen point within range.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cb/Fireball_Icon.webp/96px-Fireball_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "gaseous-form",
+    "name": "Gaseous Form",
+    "page": "Gaseous Form",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/62/Gaseous_Form_Icon.webp/96px-Gaseous_Form_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "glyph-of-warding",
+    "name": "Glyph of Warding",
+    "page": "Glyph of Warding",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/88/Glyph_of_Warding_Icon.webp/96px-Glyph_of_Warding_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "grant-flight",
+    "name": "Grant Flight",
+    "page": "Grant Flight",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/4/45/Grant_Flight_Icon.webp/96px-Grant_Flight_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "haste",
+    "name": "Haste",
+    "page": "Haste",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/11/Haste_Icon.webp/96px-Haste_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hunger-of-hadar",
+    "name": "Hunger of Hadar",
+    "page": "Hunger of Hadar",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/4/44/Hunger_of_Hadar_Icon.webp/96px-Hunger_of_Hadar_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hypnotic-pattern",
+    "name": "Hypnotic Pattern",
+    "page": "Hypnotic Pattern",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/28/Hypnotic_Pattern_Icon.webp/96px-Hypnotic_Pattern_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "lightning-arrow",
+    "name": "Lightning Arrow",
+    "page": "Lightning Arrow",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e3/Lightning_Arrow_Icon.webp/96px-Lightning_Arrow_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "lightning-bolt",
+    "name": "Lightning Bolt",
+    "page": "Lightning Bolt",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cb/Lightning_Bolt_Icon.webp/96px-Lightning_Bolt_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mass-healing-word",
+    "name": "Mass Healing Word",
+    "page": "Mass Healing Word",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f8/Mass_Healing_Word_Icon.webp/96px-Mass_Healing_Word_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "plant-growth",
+    "name": "Plant Growth",
+    "page": "Plant Growth",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/ad/Plant_Growth_Icon.webp/96px-Plant_Growth_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "protection-from-energy",
+    "name": "Protection from Energy",
+    "page": "Protection from Energy",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/15/Protection_from_Energy_Icon.webp/96px-Protection_from_Energy_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "remove-curse",
+    "name": "Remove Curse",
+    "page": "Remove Curse",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7f/Remove_Curse_Icon.webp/96px-Remove_Curse_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "revivify",
+    "name": "Revivify",
+    "page": "Revivify",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/5/59/Revivify_Icon.webp/96px-Revivify_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sleet-storm",
+    "name": "Sleet Storm",
+    "page": "Sleet Storm",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/5/50/Sleet_Storm_Icon.webp/96px-Sleet_Storm_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "slow",
+    "name": "Slow",
+    "page": "Slow",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/b/be/Slow_Icon.webp/96px-Slow_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "speak-with-dead",
+    "name": "Speak with Dead",
+    "page": "Speak with Dead",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8c/Speak_with_Dead_Icon.webp/96px-Speak_with_Dead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "spirit-guardians",
+    "name": "Spirit Guardians",
+    "page": "Spirit Guardians",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d6/Spirit_Guardians_Icon.webp/96px-Spirit_Guardians_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "stinking-cloud",
+    "name": "Stinking Cloud",
+    "page": "Stinking Cloud",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b7/Stinking_Cloud_Icon.webp/96px-Stinking_Cloud_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "vampiric-touch",
+    "name": "Vampiric Touch",
+    "page": "Vampiric Touch",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/85/Vampiric_Touch_Icon.webp/96px-Vampiric_Touch_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "warden-of-vitality",
+    "name": "Warden of Vitality",
+    "page": "Warden of Vitality",
+    "level": 3,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/0/0b/Warden_of_Vitality_Icon.webp/96px-Warden_of_Vitality_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "banishment",
+    "name": "Banishment",
+    "page": "Banishment",
+    "level": 4,
+    "description": "is a level 4 abjuration spell. It allows spellcasters to temporarily send a target to another plane of existence.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6d/Banishment_Icon.webp/96px-Banishment_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blight",
+    "name": "Blight",
+    "page": "Blight",
+    "level": 4,
+    "description": "is a level 4 necromancy spell. It allows spellcasters to drain the moisture and vitality from a target creature using necromantic energy. It is especially effective versus plants.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e0/Blight_Icon.webp/96px-Blight_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "confusion",
+    "name": "Confusion",
+    "page": "Confusion",
+    "level": 4,
+    "description": "is a level 4 enchantment spell. It allows the caster to confuse a group of creatures, drastically reducing their effectiveness in combat.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7b/Confusion_Icon.webp/96px-Confusion_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "conjure-minor-elemental",
+    "name": "Conjure Minor Elemental",
+    "page": "Conjure Minor Elemental",
+    "level": 4,
+    "description": "is a level 4 conjuration spell. It conjures 2 Mud Mephits, 2 Ice Mephits, or an Azer to fight for you.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/08/Conjure_Minor_Elemental_Azer_Icon.webp/96px-Conjure_Minor_Elemental_Azer_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "conjure-woodland-being",
+    "name": "Conjure Woodland Being",
+    "page": "Conjure Woodland Being",
+    "level": 4,
+    "description": "is a level 4 conjuration spell. It summons a Dryad to fight alongside the caster.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8a/Conjure_Woodland_Being_Icon.webp/96px-Conjure_Woodland_Being_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "death-ward",
+    "name": "Death Ward",
+    "page": "Death Ward",
+    "level": 4,
+    "description": "is a level 4 abjuration spell. It allows spellcasters to prevent a target from dying.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/84/Death_Ward_Icon.webp/96px-Death_Ward_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dimension-door",
+    "name": "Dimension Door",
+    "page": "Dimension Door",
+    "level": 4,
+    "description": "is a level 4 conjuration spell. It teleports the caster and an ally.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/da/Dimension_Door_Icon.webp/96px-Dimension_Door_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dominate-beast",
+    "name": "Dominate Beast",
+    "page": "Dominate Beast",
+    "level": 4,
+    "description": "is a level 4 enchantment spell. It allows spellcasters to temporarily charm a Beast into fighting alongside the caster, rather than against them.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/83/Dominate_Beast_Icon.webp/96px-Dominate_Beast_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "evard-s-black-tentacles",
+    "name": "Evard's Black Tentacles",
+    "page": "Evard's Black Tentacles",
+    "level": 4,
+    "description": "is a level 4 conjuration spell. It summons tentacles in an area that make it difficult to move and harm creatures.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d6/Evard%27s_Black_Tentacles_Icon.webp/96px-Evard%27s_Black_Tentacles_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "fire-shield",
+    "name": "Fire Shield",
+    "page": "Fire Shield",
+    "level": 4,
+    "description": "is a level 4 evocation spell. It shields the spellcaster with luminous energy.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e0/Fire_Shield_Icon.webp/96px-Fire_Shield_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "freedom-of-movement",
+    "name": "Freedom of Movement",
+    "page": "Freedom of Movement",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f0/Freedom_of_Movement_Icon.webp/96px-Freedom_of_Movement_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "grasping-vine",
+    "name": "Grasping Vine",
+    "page": "Grasping Vine",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Grasping_Vine_Icon.webp/96px-Grasping_Vine_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "greater-invisibility",
+    "name": "Greater Invisibility",
+    "page": "Greater Invisibility",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/2/28/Greater_Invisibility_Icon.webp/96px-Greater_Invisibility_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "guardian-of-faith",
+    "name": "Guardian of Faith",
+    "page": "Guardian of Faith",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7d/Guardian_of_Faith_Icon.webp/96px-Guardian_of_Faith_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ice-storm",
+    "name": "Ice Storm",
+    "page": "Ice Storm",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/9/9b/Ice_Storm_Icon.webp/96px-Ice_Storm_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "otiluke-s-resilient-sphere",
+    "name": "Otiluke's Resilient Sphere",
+    "page": "Otiluke's Resilient Sphere",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/82/Otiluke%27s_Resilient_Sphere_Icon.webp/96px-Otiluke%27s_Resilient_Sphere_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "phantasmal-killer",
+    "name": "Phantasmal Killer",
+    "page": "Phantasmal Killer",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/da/Phantasmal_Killer_Icon.webp/96px-Phantasmal_Killer_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "polymorph",
+    "name": "Polymorph",
+    "page": "Polymorph",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f6/Polymorph_Icon.webp/96px-Polymorph_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "staggering-smite",
+    "name": "Staggering Smite",
+    "page": "Staggering Smite",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/0/03/Staggering_Smite_Icon.webp/96px-Staggering_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "stoneskin",
+    "name": "Stoneskin",
+    "page": "Stoneskin",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c3/Stoneskin_Icon.webp/96px-Stoneskin_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wall-of-fire",
+    "name": "Wall of Fire",
+    "page": "Wall of Fire",
+    "level": 4,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/ca/Wall_of_Fire_Icon.webp/96px-Wall_of_Fire_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "banishing-smite",
+    "name": "Banishing Smite",
+    "page": "Banishing Smite",
+    "level": 5,
+    "description": "is a level 5 abjuration spell. It allows spellcasters to imbue their weapon with power, dealing force damage and possibly Banishing the target.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3b/Banishing_Smite_Melee_Icon.webp/96px-Banishing_Smite_Melee_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "cloudkill",
+    "name": "Cloudkill",
+    "page": "Cloudkill",
+    "level": 5,
+    "description": "is a level 5 conjuration spell. It conjures a moveable cloud which damages and obscures everything it envelops.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/74/Cloudkill_Icon.webp/96px-Cloudkill_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "cone-of-cold",
+    "name": "Cone of Cold",
+    "page": "Cone of Cold",
+    "level": 5,
+    "description": "is a level 5 evocation spell. It allows spellcasters to blast icy air into a region in front of them, damaging affected creatures and turning existing Water surfaces into Ice Surfaces.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/ef/Cone_of_Cold_Icon.webp/96px-Cone_of_Cold_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "conjure-elemental",
+    "name": "Conjure Elemental",
+    "page": "Conjure Elemental",
+    "level": 5,
+    "description": "is a level 5 conjuration spell. It allows spellcasters to summon a Fire, Earth, Water, or Air Elemental.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e6/Conjure_Elemental_Icon.webp/96px-Conjure_Elemental_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "contagion",
+    "name": "Contagion",
+    "page": "Contagion",
+    "level": 5,
+    "description": "is a level 5 necromancy spell. It allows spellcasters to infect their target with an affliction of their choosing, potentially resulting in the target contracting a disease.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/60/Contagion_Filth_Fever_Icon.webp/96px-Contagion_Filth_Fever_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "curriculum-of-strategy-artistry-of-war",
+    "name": "Curriculum of Strategy: Artistry of War",
+    "page": "Curriculum of Strategy: Artistry of War",
+    "level": 5,
+    "description": "is a level 5 evocation spell. It is a unique spell which fires a devastating barrage of homing projectiles that deal ⁠Force damage. Only wizards can learn this spell by transcribing it from a unique scroll.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b7/Curriculum_of_Strategy_Artistry_of_War_Icon.webp/96px-Curriculum_of_Strategy_Artistry_of_War_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "destructive-wave",
+    "name": "Destructive Wave",
+    "page": "Destructive Wave",
+    "level": 5,
+    "description": "is a level 5 evocation spell. It allows the caster to create a massive shockwave that damages enemies and can possibly knock them prone.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/fd/Destructive_Wave_Icon.webp/96px-Destructive_Wave_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dethrone",
+    "name": "Dethrone",
+    "page": "Dethrone",
+    "level": 5,
+    "description": "is a level 5 necromancy spell. It is a unique spell which deals a devastating amount of ⁠Necrotic damage to a single target. Only wizards can learn this spell by transcribing it from a unique scroll.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6e/Dethrone_Icon.webp/96px-Dethrone_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dispel-evil-and-good",
+    "name": "Dispel Evil And Good",
+    "page": "Dispel Evil And Good",
+    "level": 5,
+    "description": "is a level 5 abjuration spell. It allows spellcasters to protect themselves from Evil and Good creatures, and allows them to break Enchantments on allies.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a5/Dispel_Evil_And_Good_Icon.webp/96px-Dispel_Evil_And_Good_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "dominate-person",
+    "name": "Dominate Person",
+    "page": "Dominate Person",
+    "level": 5,
+    "description": "is a level 5 enchantment spell. It allows spellcasters to force a humanoid to temporarily fight as an ally.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/1d/Dominate_Person_Icon.webp/96px-Dominate_Person_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "flame-strike",
+    "name": "Flame Strike",
+    "page": "Flame Strike",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b8/Flame_Strike_Icon.webp/96px-Flame_Strike_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "greater-restoration",
+    "name": "Greater Restoration",
+    "page": "Greater Restoration",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/ee/Greater_Restoration_Icon.webp/96px-Greater_Restoration_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hold-monster",
+    "name": "Hold Monster",
+    "page": "Hold Monster",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cf/Hold_Monster_Icon.webp/96px-Hold_Monster_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "insect-plague",
+    "name": "Insect Plague",
+    "page": "Insect Plague",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a2/Insect_Plague_Icon.webp/96px-Insect_Plague_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mass-cure-wounds",
+    "name": "Mass Cure Wounds",
+    "page": "Mass Cure Wounds",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/32/Mass_Cure_Wounds_Icon.webp/96px-Mass_Cure_Wounds_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "planar-binding",
+    "name": "Planar Binding",
+    "page": "Planar Binding",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/fa/Planar_Binding_Icon.webp/96px-Planar_Binding_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "seeming",
+    "name": "Seeming",
+    "page": "Seeming",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f4/Seeming_Icon.webp/96px-Seeming_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "telekinesis",
+    "name": "Telekinesis",
+    "page": "Telekinesis",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c7/Telekinesis_Icon.webp/96px-Telekinesis_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wall-of-stone",
+    "name": "Wall of Stone",
+    "page": "Wall of Stone",
+    "level": 5,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e2/Wall_of_Stone_Icon.webp/96px-Wall_of_Stone_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "arcane-gate",
+    "name": "Arcane Gate",
+    "page": "Arcane Gate",
+    "level": 6,
+    "description": "is a level 6 conjuration spell. It creates two connected portals which allow creatures to freely teleport between them.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6e/Arcane_Gate_Icon.webp/96px-Arcane_Gate_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "blade-barrier",
+    "name": "Blade Barrier",
+    "page": "Blade Barrier",
+    "level": 6,
+    "description": "is a level 6 evocation spell. It allows spellcasters to summon a wall of cutting blades.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/bb/Blade_Barrier_Icon.webp/96px-Blade_Barrier_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "chain-lightning",
+    "name": "Chain Lightning",
+    "page": "Chain Lightning",
+    "level": 6,
+    "description": "is a level 6 evocation spell. It allows casters to create a bolt of lightning which strikes a target and chains to nearby enemies.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c9/Chain_Lightning_Icon.webp/96px-Chain_Lightning_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "circle-of-death",
+    "name": "Circle of Death",
+    "page": "Circle of Death",
+    "level": 6,
+    "description": "is a level 6 necromancy spell. It devastates all creatures within a large radius with ⁠Necrotic energy.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f2/Circle_of_Death_Icon.webp/96px-Circle_of_Death_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "create-undead",
+    "name": "Create Undead",
+    "page": "Create Undead",
+    "level": 6,
+    "description": "is a level 6 necromancy spell. It allows spellcasters to animate a corpse, creating an undead servant.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/da/Create_Undead_Icon.webp/96px-Create_Undead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "disintegrate",
+    "name": "Disintegrate",
+    "page": "Disintegrate",
+    "level": 6,
+    "description": "is a level 6 transmutation spell. It allows casters to deal devastating ⁠Force damage to a single target, possibly destroying it completely.",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8a/Disintegrate_Icon.webp/96px-Disintegrate_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "eyebite",
+    "name": "Eyebite",
+    "page": "Eyebite",
+    "level": 6,
+    "description": "is a level 6 necromancy spell. It allows casters to choose amongst one of three debilitating conditions to impose on a single target.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f7/Eyebite_Panicked_Icon.webp/96px-Eyebite_Panicked_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "flesh-to-stone",
+    "name": "Flesh to Stone",
+    "page": "Flesh to Stone",
+    "level": 6,
+    "description": "is a level 6 transmutation spell. It allows the caster to Atrophy a foe, Restraining them until they temporarily turn to stone.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/72/Flesh_to_Stone_Icon.webp/96px-Flesh_to_Stone_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "globe-of-invulnerability",
+    "name": "Globe of Invulnerability",
+    "page": "Globe of Invulnerability",
+    "level": 6,
+    "description": "is a level 6 abjuration spell.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7a/Globe_of_Invulnerability_Icon.webp/96px-Globe_of_Invulnerability_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "harm",
+    "name": "Harm",
+    "page": "Harm",
+    "level": 6,
+    "description": "is a level 6 necromancy spell. It allows spellcasters to greatly enfeeble an enemy.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/09/Harm_Icon.webp/96px-Harm_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "heal",
+    "name": "Heal",
+    "page": "Heal",
+    "level": 6,
+    "description": "is a level 6 evocation spell. It allows spellcasters to substantially heal a target by recovering Hit Points and removing Blindness and Diseases.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d3/Heal_Icon.webp/96px-Heal_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "heroes-feast",
+    "name": "Heroes' Feast",
+    "page": "Heroes' Feast",
+    "level": 6,
+    "description": "is a level 6 conjuration spell. It allows spellcasters to summon a bountiful smorgasbord to bolster themselves and their allies and strengthen their resolve.",
+    "icon": "https://bg3.wiki/w/images/thumb/a/a0/Heroes%27_Feast_Icon.webp/96px-Heroes%27_Feast_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "otiluke-s-freezing-sphere",
+    "name": "Otiluke's Freezing Sphere",
+    "page": "Otiluke's Freezing Sphere",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/a/af/Otiluke%27s_Freezing_Sphere_Icon.webp/96px-Otiluke%27s_Freezing_Sphere_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "otto-s-irresistible-dance",
+    "name": "Otto's Irresistible Dance",
+    "page": "Otto's Irresistible Dance",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8c/Otto%27s_Irresistible_Dance_Icon.webp/96px-Otto%27s_Irresistible_Dance_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "planar-ally",
+    "name": "Planar Ally",
+    "page": "Planar Ally",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f3/Planar_Ally_Icon.webp/96px-Planar_Ally_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sights-of-the-seelie-summon-deva",
+    "name": "Sights of the Seelie: Summon Deva",
+    "page": "Sights of the Seelie: Summon Deva",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d8/Sights_of_the_Seelie_Summon_Deva_Icon.webp/96px-Sights_of_the_Seelie_Summon_Deva_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sunbeam",
+    "name": "Sunbeam",
+    "page": "Sunbeam",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/63/Sunbeam_Icon.webp/96px-Sunbeam_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wall-of-ice",
+    "name": "Wall of Ice",
+    "page": "Wall of Ice",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d2/Wall_of_Ice_Icon.webp/96px-Wall_of_Ice_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wall-of-thorns",
+    "name": "Wall of Thorns",
+    "page": "Wall of Thorns",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6e/Wall_of_Thorns_Icon.webp/96px-Wall_of_Thorns_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wind-walk",
+    "name": "Wind Walk",
+    "page": "Wind Walk",
+    "level": 6,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/0/06/Wind_Walk_Icon.webp/96px-Wind_Walk_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "bhaal-s-power-word-kill-ritual",
+    "name": "Bhaal's Power Word Kill Ritual",
+    "page": "Bhaal's Power Word Kill Ritual",
+    "level": 9,
+    "description": "is a unique spell cast by Farslayer of Bhaal Ghislev which casts Power Word Kill on a target after completing a multi-turn ritual. Upon completion, the target of the ritual dies instantly if below 101 hit points.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/1e/Power_Word_Kill_Icon.webp/96px-Power_Word_Kill_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "power-word-kill",
+    "name": "Power Word Kill",
+    "page": "Power Word Kill",
+    "level": 9,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/1/1e/Power_Word_Kill_Icon.webp/96px-Power_Word_Kill_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "karsus-compulsion",
+    "name": "Karsus' Compulsion",
+    "page": "Karsus' Compulsion",
+    "level": 9,
+    "description": "is a level 9 enchantment spell. It is granted by the Triune Netherstone and is usable only by Full-Illithids to control the Crown of Karsus.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/10/Karsus%27_Compulsion_Icon.webp/96px-Karsus%27_Compulsion_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "formsculpt-tressym",
+    "name": "Formsculpt: Tressym",
+    "page": "Formsculpt: Tressym",
+    "level": 9,
+    "description": "Formsculpt Tressym is a level 9 transmutation spell. It transforms a creature into a Tressym.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Formsculpt_Tressym_Icon.webp/96px-Formsculpt_Tressym_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "power-word-ruin",
+    "name": "Power Word: Ruin",
+    "page": "Power Word: Ruin",
+    "level": 9,
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/5/54/Power_Word_Ruin_Icon.webp/96px-Power_Word_Ruin_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "divine-revelry",
+    "name": "Divine Revelry",
+    "page": "Divine Revelry",
+    "level": 9,
+    "description": "is a level 9 enchantment spell. It allows Gale to create a firewine barrel and force several creatures to dance in place.",
+    "icon": "https://bg3.wiki/w/images/thumb/d/d7/Divine_Revelry_Icon.webp/96px-Divine_Revelry_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "elemental-retort",
+    "name": "Elemental Retort",
+    "page": "Elemental Retort",
+    "level": "npc",
+    "description": "is a level 5 evocation spell. It is unique to Lorroakan, allowing him to retaliate with elemental damage siphoned from his myrmidons when attacked. Each of Lorroakan's myrmidons adds 3d8 damage to to this spell and an additional Reaction to cast it with. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c1/Generic_Damage_Icon.webp/96px-Generic_Damage_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "finger-of-death",
+    "name": "Finger of Death",
+    "page": "Finger of Death",
+    "level": "npc",
+    "description": "is a level 7 necromancy spell. It is only available to Apostle of Myrkul after it consumes a Necromite and has the condition Reaper's Reward. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2e/Generic_Death_Icon.webp/96px-Generic_Death_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "hellfire-orb",
+    "name": "Hellfire Orb",
+    "page": "Hellfire Orb",
+    "level": "npc",
+    "description": "is a level 6 evocation spell. It allows spellcasters to unleash a streak of fire from their hands that ignites into a large explosion at a chosen point within range. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/cb/Fireball_Icon.webp/96px-Fireball_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "incinerate",
+    "name": "Incinerate",
+    "page": "Incinerate",
+    "level": "npc",
+    "description": "is a level 6 evocation spell. It can be cast by Raphael for two Soul Charges, dealing 8d8⁠⁠Fire damage in an area. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/b/b8/Flame_Strike_Icon.webp/96px-Flame_Strike_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "keeper-s-fee",
+    "name": "Keeper's Fee",
+    "page": "Keeper's Fee",
+    "level": "npc",
+    "description": "is a level 5 spell. It is unique to Helsik in Tactician difficulty, and disarms a target. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "lunar-smite",
+    "name": "Lunar Smite",
+    "page": "Lunar Smite",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/c/ca/Lunar_Smite_Icon.webp/96px-Lunar_Smite_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "lovely-assistant",
+    "name": "Lovely Assistant",
+    "page": "Lovely Assistant",
+    "level": "npc",
+    "description": "is a level 5 necromancy spell. When Malus Thorm's assistants are dead, he uses this spell to reanimate them. It cannot be learned by party members.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/25/Animate_Dead_Zombie_Icon.webp/96px-Animate_Dead_Zombie_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "mind-spike",
+    "name": "Mind Spike",
+    "page": "Mind Spike",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/7/7f/Mind_Spike_Icon.webp/96px-Mind_Spike_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "possession",
+    "name": "Possession",
+    "page": "Possession",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "promise-of-wealth",
+    "name": "Promise of Wealth",
+    "page": "Promise of Wealth",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "revoke-guest-status",
+    "name": "Revoke Guest Status",
+    "page": "Revoke Guest Status",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/6/6d/Banishment_Icon.webp/96px-Banishment_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shield-of-screams",
+    "name": "Shield of Screams",
+    "page": "Shield of Screams",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "summon-gilded-hellsboar",
+    "name": "Summon Gilded Hellsboar",
+    "page": "Summon Gilded Hellsboar",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/8/8b/Find_Familiar_Cat_Icon.webp/96px-Find_Familiar_Cat_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "teleport-to-submersible",
+    "name": "Teleport to Submersible",
+    "page": "Teleport to Submersible",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f4/Teleport_to_Submersible_Icon.webp/96px-Teleport_to_Submersible_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "the-closed-fist-of-bane",
+    "name": "The Closed Fist of Bane",
+    "page": "The Closed Fist of Bane",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/d/dc/Generic_Explosion_Icon.webp/96px-Generic_Explosion_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "tyrant-s-bindings",
+    "name": "Tyrant's Bindings",
+    "page": "Tyrant's Bindings",
+    "level": "npc",
+    "description": "",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "beckoning-darkness",
+    "name": "Beckoning Darkness",
+    "page": "Beckoning Darkness",
+    "level": "item",
+    "description": "is a level 4 necromancy spell. It curses a creature to take ⁠Necrotic damage if it enters or starts its turn in a Lightly or Heavily Obscured area.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/56/Generic_Darkness_Icon.webp/96px-Generic_Darkness_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "brand-the-weak",
+    "name": "Brand the Weak",
+    "page": "Brand the Weak",
+    "level": "item",
+    "description": "is a level 1 transmutation spell. It imposes vulnerability on an enemy to ⁠Bludgeoning, ⁠Slashing, or ⁠Piercing damage.",
+    "icon": "https://bg3.wiki/w/images/thumb/f/f1/Brand_the_Weak_Icon.webp/96px-Brand_the_Weak_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "challenge-to-duel",
+    "name": "Challenge to Duel",
+    "page": "Challenge to Duel",
+    "level": "item",
+    "description": "is a unique spell-like action which can be cast when wielding Duellist's Prerogative. It allows spellcasters to compel an enemy to only attack them.",
+    "icon": "https://bg3.wiki/w/images/thumb/7/73/Compelled_Duel_Icon.webp/96px-Compelled_Duel_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "danse-macabre",
+    "name": "Danse Macabre",
+    "page": "Danse Macabre",
+    "level": "item",
+    "description": "is a level 5 necromancy spell. It summons 4 uncontrollable Ghouls to fight for the caster.",
+    "icon": "https://bg3.wiki/w/images/thumb/9/92/Danse_Macabre_Icon.webp/96px-Danse_Macabre_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "draconic-elemental-weapon",
+    "name": "Draconic Elemental Weapon",
+    "page": "Draconic Elemental Weapon",
+    "level": "item",
+    "description": "is a level 3 transmutation spell. It imbues a weapon with a chosen energy type, increasing its damage and accuracy. This item spell is similar to the Paladin spell Elemental Weapon.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/06/Elemental_Weapon_Icon.webp/96px-Elemental_Weapon_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "elemental-age",
+    "name": "Elemental Age",
+    "page": "Elemental Age",
+    "level": "item",
+    "description": "is a level 3 transmutation spell. It enhances the caster's main hand weapon with a chosen element, increasing its damage and accuracy.",
+    "icon": "https://bg3.wiki/w/images/thumb/0/06/Elemental_Weapon_Icon.webp/96px-Elemental_Weapon_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ensnaring-strands",
+    "name": "Ensnaring Strands",
+    "page": "Ensnaring Strands",
+    "level": "item",
+    "description": "is a level 1 conjuration spell. It is an item spell similar to Ensnaring Strike which can be cast while wielding Cruel Sting.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/59/Ensnaring_Strands_Icon.webp/96px-Ensnaring_Strands_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "exhort-the-risen",
+    "name": "Exhort the Risen",
+    "page": "Exhort the Risen",
+    "level": "item",
+    "description": "is a level 1 enchantment spell. It allows the caster to command the undead, similar to the spell Command.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5e/Command_Halt_Undead_Icon.webp/96px-Command_Halt_Undead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "find-familiar-cheeky-quasit",
+    "name": "Find Familiar: Cheeky Quasit",
+    "page": "Find Familiar: Cheeky Quasit",
+    "level": "item",
+    "description": "is a level 1 conjuration spell. It is a special version of Find Familiar: Quasit that summons the quasit named Shovel.",
+    "icon": "https://bg3.wiki/w/images/thumb/9/98/Find_Familiar_Quasit_Icon.webp/96px-Find_Familiar_Quasit_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "flesh-to-gold",
+    "name": "Flesh to Gold",
+    "page": "Flesh to Gold",
+    "level": "item",
+    "description": "is a level 6 transmutation spell. It restrains a target and turns it into gold after 3 turns.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/67/Flesh_to_Gold_Icon.webp/96px-Flesh_to_Gold_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "howl-of-the-dead",
+    "name": "Howl of the Dead",
+    "page": "Howl of the Dead",
+    "level": "item",
+    "description": "is a cantrip. It afflicts all nearby creatures with the Numbed condition and can be cast while wearing Reaper's Embrace.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/51/Howl_of_the_Dead_Icon.webp/96px-Howl_of_the_Dead_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "kereska-s-favour",
+    "name": "Kereska's Favour",
+    "page": "Kereska's Favour",
+    "level": "item",
+    "description": "is a level 4 evocation spell. Granted by Markoheshkir, it allows its caster to imbue themselves with an element, thereby unlocking resistances and spells associated with it.",
+    "icon": "https://bg3.wiki/w/images/thumb/1/15/Protection_from_Energy_Icon.webp/96px-Protection_from_Energy_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "khalid-s-gift-aid",
+    "name": "Khalid's Gift: Aid",
+    "page": "Khalid's Gift: Aid",
+    "level": "item",
+    "description": "is a level 3 abjuration spell. It allows the wearer of Khalid's Gift to cast a version of Aid to increase their hit points by 10.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/50/Aid_Icon.webp/96px-Aid_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "paralyzing-ray",
+    "name": "Paralyzing Ray",
+    "page": "Paralyzing Ray",
+    "level": "item",
+    "description": "is a level 3 necromancy spell. It paralyses its target.",
+    "icon": "https://bg3.wiki/w/images/thumb/c/c1/Generic_Damage_Icon.webp/96px-Generic_Damage_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "protection-from-missiles",
+    "name": "Protection from Missiles",
+    "page": "Protection from Missiles",
+    "level": "item",
+    "description": "is a level 2 abjuration spell. It protects the caster against ranged weapon attacks for up to 10 turns.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/5d/Protection_from_Missiles_Icon.webp/96px-Protection_from_Missiles_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ray-of-fear",
+    "name": "Ray of Fear",
+    "page": "Ray of Fear",
+    "level": "item",
+    "description": "is a level 3 necromancy spell. It is a unique spell which frightens its target and can be used by equipping the amulet The Spectator Eyes.",
+    "icon": "https://bg3.wiki/w/images/thumb/3/3a/Generic_Control_Icon.webp/96px-Generic_Control_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "ride-the-winds",
+    "name": "Ride the Winds",
+    "page": "Ride the Winds",
+    "level": "item",
+    "description": "is a level 3 transmutation spell. It can be cast when wearing the Amulet of Windrider and transforms the wearer into a small cloud of mist. It is equivalent to Gaseous Form except it only affects the caster.",
+    "icon": "https://bg3.wiki/w/images/thumb/6/62/Gaseous_Form_Icon.webp/96px-Gaseous_Form_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "sel-ne-s-dream",
+    "name": "Selûne's Dream",
+    "page": "Selûne's Dream",
+    "level": "item",
+    "description": "is a cantrip (Evocation). It heals an ally, but may also put them to sleep. Selûne's Dream is in game only as a once per Long Rest action granted by the Amulet of Selûne's Chosen.",
+    "icon": "https://bg3.wiki/w/images/thumb/5/59/Sel%C3%BBne%27s_Dream_Icon.webp/96px-Sel%C3%BBne%27s_Dream_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "shar-s-aegis",
+    "name": "Shar's Aegis",
+    "page": "Shar's Aegis",
+    "level": "item",
+    "description": "is a level 1 abjuration spell. It allows spellcasters to surround themselves with Shar's protection and gain a bonus to their Armour Class, reduce incoming damage and apply ⁠Necrotic damage to all attackers.[See: Bugs]",
+    "icon": "https://bg3.wiki/w/images/thumb/8/83/Shield_of_Faith_Icon.webp/96px-Shield_of_Faith_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "summon-quothe-the-raven",
+    "name": "Summon Quothe the Raven",
+    "page": "Summon Quothe the Raven",
+    "level": "item",
+    "description": "is a level 3 conjuration spell. It summons the raven Quothe.",
+    "icon": "https://bg3.wiki/w/images/thumb/e/e7/Find_Familiar_Raven_Icon.webp/96px-Find_Familiar_Raven_Icon.webp",
+    "variants": []
+  },
+  {
+    "id": "wounding-ray",
+    "name": "Wounding Ray",
+    "page": "Wounding Ray",
+    "level": "item",
+    "description": "is a level 3 necromancy spell. It is a spell granted by The Spectator Eyes which allows the user to shoot a deadly necrotic beam.",
+    "icon": "https://bg3.wiki/w/images/thumb/2/2e/Generic_Necrotic_Icon.webp/96px-Generic_Necrotic_Icon.webp",
+    "variants": []
+  }
+]

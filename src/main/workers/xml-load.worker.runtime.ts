@@ -1,0 +1,203 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import Database from 'better-sqlite3'
+import { drizzle } from 'drizzle-orm/better-sqlite3'
+import {
+  DictionaryRepository,
+  getDictionaryTargetText
+} from '../database/repositories/dictionary.repo'
+import { ModRepository } from '../database/repositories/mod.repo'
+import * as schema from '../database/schema'
+import { unpackMod } from '../services/lslib.service'
+import { decodeEntities } from '../services/xml-entities.service'
+import {
+  findLocalizationXmls,
+  type LocalizationEntry,
+  parseLocalizationXml
+} from '../services/xml-parser.service'
+import { extract } from '../services/zip.service'
+import { findPakFiles } from '../utils/findPakFiles'
+import { cleanupTempDir, createTempDir } from '../utils/tempDir'
+import { readLoca } from '../services/pak/loca-reader'
+
+export interface XmlLoadWorkerInput {
+  inputPath: string
+  sourceLang: string
+  targetLang: string
+  modName?: string
+  sourceFolder: string
+  dbPath: string
+}
+
+export interface XmlEntry {
+  uid: string
+  version: string
+  source: string
+  target: string
+  matchType: 'none' | 'mod-text' | 'text' | 'manual'
+  needsReview: boolean
+  genderVariant?: 'default' | 'female' | 'neutral'
+}
+
+export interface XmlLoadResult {
+  entries: XmlEntry[]
+}
+
+export type XmlLoadProgress =
+  | { phase: 'unpacking' }
+  | { phase: 'parsing' }
+  | { phase: 'loading-cache' }
+  | { phase: 'matching'; processed: number; total: number }
+  | { phase: 'done'; result: XmlLoadResult }
+  | { phase: 'error'; message: string }
+
+const MATCH_CHUNK = 500
+
+function toUiEntry(
+  entry: LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }
+): Pick<XmlEntry, 'uid' | 'version' | 'source' | 'genderVariant'> {
+  return {
+    uid: entry.contentuid,
+    version: entry.version,
+    source: decodeEntities(entry.text),
+    genderVariant: entry.genderVariant
+  }
+}
+
+function findGenderLocas(rootDir: string): string[] {
+  const result: string[] = []
+  const visit = (dir: string): void => {
+    if (!fs.existsSync(dir)) return
+    for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, item.name)
+      if (item.isDirectory()) visit(full)
+      else if (
+        item.name.toLowerCase().endsWith('.loca') &&
+        /[\\/]Gender[\\/](Female|Neutral)[\\/]/i.test(full)
+      )
+        result.push(full)
+    }
+  }
+  visit(rootDir)
+  return result.sort()
+}
+
+function variantForPath(filePath: string): XmlEntry['genderVariant'] {
+  const normalized = filePath.replace(/\\/g, '/').toLowerCase()
+  if (normalized.includes('/gender/female/')) return 'female'
+  if (normalized.includes('/gender/neutral/')) return 'neutral'
+  return 'default'
+}
+
+export async function runXmlLoadWorker(
+  input: XmlLoadWorkerInput,
+  post: (msg: XmlLoadProgress) => void
+): Promise<void> {
+  const sqlite = new Database(input.dbPath)
+  sqlite.pragma('journal_mode = WAL')
+  sqlite.pragma('foreign_keys = ON')
+  sqlite.pragma('synchronous = NORMAL')
+  sqlite.pragma('cache_size = -64000')
+  sqlite.pragma('temp_store = MEMORY')
+  sqlite.pragma('mmap_size = 268435456')
+
+  const tempDirs: string[] = []
+
+  try {
+    const db = drizzle(sqlite, { schema })
+    const { inputPath, sourceFolder } = input
+    const ext = path.extname(inputPath).toLowerCase()
+
+    let xmlPath: string
+    let packageRoot: string | null = null
+
+    if (ext === '.xml') {
+      xmlPath = inputPath
+    } else if (ext === '.pak') {
+      post({ phase: 'unpacking' })
+      const tempDir = createTempDir('polyhedron_xml')
+      tempDirs.push(tempDir)
+      await unpackMod(inputPath, tempDir)
+      packageRoot = tempDir
+      const xmlFiles = findLocalizationXmls(tempDir, sourceFolder)
+      if (xmlFiles.length === 0)
+        throw new Error(`No XML found for language "${sourceFolder}" in pak`)
+      xmlPath = xmlFiles[0]
+    } else if (ext === '.zip') {
+      post({ phase: 'unpacking' })
+      const archiveDir = createTempDir('polyhedron_zip')
+      tempDirs.push(archiveDir)
+      extract(inputPath, archiveDir)
+      const pakFiles = findPakFiles(archiveDir)
+      if (pakFiles.length === 0) throw new Error('No .pak file found inside zip')
+      const unpackedDir = createTempDir('polyhedron_pak')
+      tempDirs.push(unpackedDir)
+      await unpackMod(pakFiles[0], unpackedDir)
+      packageRoot = unpackedDir
+      const xmlFiles = findLocalizationXmls(unpackedDir, sourceFolder)
+      if (xmlFiles.length === 0)
+        throw new Error(`No XML found for language "${sourceFolder}" in pak`)
+      xmlPath = xmlFiles[0]
+    } else {
+      throw new Error(`Unsupported file type: ${ext}. Use .xml, .pak, or .zip`)
+    }
+
+    post({ phase: 'parsing' })
+    const localizationEntries: Array<
+      LocalizationEntry & { genderVariant?: XmlEntry['genderVariant'] }
+    > = parseLocalizationXml(xmlPath)
+    if (packageRoot) {
+      for (const locaPath of findGenderLocas(packageRoot)) {
+        for (const entry of readLoca(locaPath)) {
+          localizationEntries.push({
+            contentuid: entry.key,
+            version: String(entry.version),
+            text: entry.text,
+            genderVariant: variantForPath(locaPath)
+          })
+        }
+      }
+    }
+    const total = localizationEntries.length
+    const result: XmlEntry[] = new Array(total)
+
+    post({ phase: 'loading-cache' })
+    const priorityMods = new ModRepository(db).getPriorityOrdered()
+    const index = new DictionaryRepository(db).loadMatchIndex(
+      input.sourceLang,
+      input.targetLang,
+      null,
+      priorityMods
+    )
+
+    for (let i = 0; i < total; i += MATCH_CHUNK) {
+      const end = Math.min(i + MATCH_CHUNK, total)
+      for (let j = i; j < end; j++) {
+        const entry = localizationEntries[j]
+        const uiEntry = toUiEntry(entry)
+        const match = index.resolve({
+          modName: input.modName ?? null,
+          uid: entry.contentuid,
+          sourceText: entry.text
+        })
+        result[j] = match
+          ? {
+              ...uiEntry,
+              target: decodeEntities(
+                getDictionaryTargetText(match.entry, input.sourceLang, input.targetLang)
+              ),
+              matchType: match.matchType,
+              needsReview: false
+            }
+          : { ...uiEntry, target: '', matchType: 'none', needsReview: false }
+      }
+      post({ phase: 'matching', processed: end, total })
+      await new Promise<void>((resolve) => setImmediate(resolve))
+    }
+
+    post({ phase: 'done', result: { entries: result } })
+  } finally {
+    for (const tempDir of tempDirs) cleanupTempDir(tempDir)
+    sqlite.close()
+  }
+}
