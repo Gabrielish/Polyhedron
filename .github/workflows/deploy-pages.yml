@@ -7,7 +7,7 @@ on:
       - "pwa/**"
       - "package.json"
       - "pnpm-lock.yaml"
-      - ".github/workflows/deploy-pwa.yml"
+      - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
 permissions:
