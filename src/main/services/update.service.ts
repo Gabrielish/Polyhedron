@@ -16,6 +16,11 @@ function emit(state: UpdateState): void {
   currentWindow?.()?.webContents.send('update:state', state)
 }
 
+function isMissingReleaseError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error)
+  return /(?:HTTP\s*)?404|latest\.yml/i.test(message)
+}
+
 export function registerUpdateService(getWindow: () => BrowserWindow | null): void {
   currentWindow = getWindow
   autoUpdater.autoDownload = false
@@ -26,7 +31,11 @@ export function registerUpdateService(getWindow: () => BrowserWindow | null): vo
   autoUpdater.on('update-not-available', (info) => emit({ status: 'not-available', version: info.version }))
   autoUpdater.on('download-progress', (progress) => emit({ status: 'downloading', percent: progress.percent }))
   autoUpdater.on('update-downloaded', (info) => emit({ status: 'downloaded', version: info.version }))
-  autoUpdater.on('error', (error) => emit({ status: 'error', message: error.message }))
+  autoUpdater.on('error', (error) => {
+    // A fresh repository may not have a published release yet. That is a
+    // normal "no update available" state, not an error worth showing at launch.
+    if (!isMissingReleaseError(error)) emit({ status: 'error', message: error.message })
+  })
 }
 
 
@@ -47,6 +56,10 @@ async function checkLatestMacRelease(): Promise<void> {
     },
     signal: AbortSignal.timeout(10000)
   })
+  if (response.status === 404) {
+    emit({ status: 'not-available', version: app.getVersion() })
+    return
+  }
   if (!response.ok) throw new Error(`GitHub Releases returned HTTP ${response.status}`)
 
   const release = (await response.json()) as { tag_name?: string }
@@ -69,6 +82,10 @@ export async function checkForUpdates(): Promise<void> {
     }
     await autoUpdater.checkForUpdates()
   } catch (error) {
+    if (isMissingReleaseError(error)) {
+      emit({ status: 'not-available', version: app.getVersion() })
+      return
+    }
     emit({ status: 'error', message: error instanceof Error ? error.message : String(error) })
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { BookText, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
+import { BookText, PawPrint, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import type { TermGlossaryEntry } from '@/utils/termGlossary'
 import { normalizeSearchText } from '@/utils/search'
 import { RomanianDiacritics } from './RomanianDiacritics'
@@ -11,6 +11,7 @@ interface TermGlossaryModalProps {
   targetLang: string
   entries: TermGlossaryEntry[]
   onChange: (entries: TermGlossaryEntry[]) => void
+  onOpenCreatureGuide?: () => void
   onClose: () => void
 }
 
@@ -20,6 +21,7 @@ export function TermGlossaryModal({
   targetLang,
   entries,
   onChange,
+  onOpenCreatureGuide,
   onClose
 }: TermGlossaryModalProps): React.JSX.Element | null {
   const [source, setSource] = useState('')
@@ -140,6 +142,17 @@ export function TermGlossaryModal({
               {sourceLang.toUpperCase()}.
             </p>
           </div>
+          {onOpenCreatureGuide && (
+            <button
+              type="button"
+              onClick={onOpenCreatureGuide}
+              className="hidden items-center gap-1.5 rounded-lg border border-[#34343e] px-2.5 py-2 text-xs font-medium text-neutral-400 transition hover:border-amber-500/50 hover:text-amber-300 sm:inline-flex"
+              title="Open Creature Guide"
+            >
+              <PawPrint size={15} />
+              Creature Guide
+            </button>
+          )}
           <button
             type="button"
             onClick={onClose}

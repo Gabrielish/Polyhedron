@@ -4,8 +4,8 @@ import {
   BookText,
   Columns2,
   Database,
-  Loader2,
   Languages,
+  Loader2,
   Redo2,
   Rows2,
   Save,
@@ -15,9 +15,9 @@ import { useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { TranslationSession } from '../types'
+import { RomanianDiacritics } from './RomanianDiacritics'
 import { btnBase, btnGhostIcon, btnPrimary } from './styles'
 import { TranslationStats } from './TranslationStats'
-import { RomanianDiacritics } from './RomanianDiacritics'
 
 interface EditorHeaderProps {
   session: TranslationSession
@@ -57,7 +57,7 @@ export function EditorHeader({
   const isRomanianTarget = /^(?:ro|romanian)(?:[-_]|$)/i.test(session.targetLang.trim())
 
   return (
-    <div className="app-page-header editor-header bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
+    <div className="app-page-header editor-header min-w-0 overflow-x-hidden bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
       <div className="editor-header-top flex flex-wrap items-center gap-3 mb-4">
         <button type="button" className={btnBase} onClick={session.resetSession}>
           <ArrowLeft />

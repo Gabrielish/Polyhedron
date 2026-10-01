@@ -4,25 +4,26 @@ import { AlreadyTranslatedDialog } from '@/components/translation/AlreadyTransla
 import { BatchActionBar } from '@/components/translation/BatchActionBar'
 import { QuotaExceededDialog } from '@/components/translation/QuotaExceededDialog'
 import { TranslationGrid } from '@/components/translation/TranslationGrid'
+import { isDeveloperNote } from '@/context/TranslationSession'
 import { getProviderMeta } from '@/features/settings/aiProviders'
 import { useAISettings } from '@/hooks/useAISettings'
 import { useConfig } from '@/hooks/useConfig'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { Language } from '@/types'
-import { useBatchTranslation } from '../hooks/useBatchTranslation'
-import { useDictionarySave } from '../hooks/useDictionarySave'
-import { useLoadedEditorShortcuts } from '../hooks/useLoadedEditorShortcuts'
-import { useTranslationExport } from '../hooks/useTranslationExport'
-import type { TranslationSession } from '../types'
-import { isDeveloperNote } from '@/context/TranslationSession'
-import { EditorHeader } from './EditorHeader'
-import { PackageExportModal } from './PackageExportModal'
-import { TermGlossaryModal } from './TermGlossaryModal'
 import {
   getTermGlossaryStorageKey,
   loadTermGlossary,
   type TermGlossaryEntry
 } from '@/utils/termGlossary'
+import { useBatchTranslation } from '../hooks/useBatchTranslation'
+import { useDictionarySave } from '../hooks/useDictionarySave'
+import { useLoadedEditorShortcuts } from '../hooks/useLoadedEditorShortcuts'
+import { useTranslationExport } from '../hooks/useTranslationExport'
+import type { TranslationSession } from '../types'
+import { CreatureGuideModal } from './CreatureGuideModal'
+import { EditorHeader } from './EditorHeader'
+import { PackageExportModal } from './PackageExportModal'
+import { TermGlossaryModal } from './TermGlossaryModal'
 
 interface TranslateLoadedScreenProps {
   session: TranslationSession
@@ -36,6 +37,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   )
   const [languages, setLanguages] = useState<Language[]>([])
   const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
+  const [creatureGuideOpen, setCreatureGuideOpen] = useState(false)
   const termGlossaryProjectKey =
     session.storedPath ?? session.inputPath ?? session.modName ?? 'current'
   const termGlossaryKey = getTermGlossaryStorageKey(
@@ -178,7 +180,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   })
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="translate-page flex h-full min-h-0 min-w-0 flex-col overflow-x-hidden">
       <EditorHeader
         session={session}
         fileName={fileName}
@@ -262,7 +264,40 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
         targetLang={session.targetLang}
         entries={termGlossary}
         onChange={setTermGlossary}
+        onOpenCreatureGuide={() => {
+          setTermGlossaryOpen(false)
+          setCreatureGuideOpen(true)
+        }}
         onClose={() => setTermGlossaryOpen(false)}
+      />
+
+      <CreatureGuideModal
+        open={creatureGuideOpen}
+        targetLang={session.targetLang}
+        termGlossary={termGlossary}
+        onSaveToGlossary={(entry, translation) => {
+          setTermGlossary((current) => {
+            const existing = current.find(
+              (item) =>
+                item.source.trim().toLocaleLowerCase() === entry.name.trim().toLocaleLowerCase()
+            )
+            if (existing) {
+              return current.map((item) =>
+                item.id === existing.id ? { ...item, translation } : item
+              )
+            }
+            return [
+              ...current,
+              {
+                id: `creature-${entry.id}`,
+                source: entry.name,
+                translation
+              }
+            ]
+          })
+          toast.success(`${entry.name} saved to Term Glossary`)
+        }}
+        onClose={() => setCreatureGuideOpen(false)}
       />
     </div>
   )
