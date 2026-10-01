@@ -475,21 +475,29 @@ function DialogueSkeleton(): React.JSX.Element {
           <div className="h-3 w-12 rounded bg-[#2a2f37]" />
           <div className="h-4 w-px bg-[#1f2329]" />
           <div className="h-3 flex-1 rounded bg-[#181c21]" />
+          <div className="h-4 w-5 rounded bg-[#20242a]" />
+          <div className="h-4 w-5 rounded bg-[#20242a]" />
         </div>
-        <div className="ml-3 h-8 min-w-0 flex-1 rounded-md border border-[#1f2329] bg-[#131518]" />
-        <div className="h-9 w-44 rounded-lg bg-[#181c21]" />
-        <div className="h-9 w-28 rounded-lg bg-[#181c21]" />
-        <div className="h-9 w-32 rounded-lg bg-[#181c21]" />
+        <div className="ml-3 flex h-8 min-w-0 flex-1 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3">
+          <div className="h-3 w-3 rounded-full bg-[#2a2f37]" />
+          <div className="h-3 flex-1 rounded bg-[#181c21]" />
+          <div className="h-4 w-5 rounded bg-[#20242a]" />
+          <div className="h-4 w-5 rounded bg-[#20242a]" />
+        </div>
+        <div className="h-9 w-44 rounded-lg border border-[#1f2329] bg-[#181c21]" />
+        <div className="h-9 w-28 rounded-lg border border-[#1f2329] bg-[#181c21]" />
+        <div className="h-9 w-32 rounded-lg border border-[#1f2329] bg-[#181c21]" />
       </div>
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)] gap-px bg-[#1f2329]">
         <div className="grid min-h-0 grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] bg-[#0c0d0f]">
-          <div className="flex-1 space-y-2 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0f1114] p-3">
-            {Array.from({ length: 10 }).map((_, index) => (
+          <div className="flex-1 space-y-1 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0f1114] p-3">
+            {Array.from({ length: 9 }).map((_, index) => (
               <div
                 key={index}
-                className={`flex h-8 items-center gap-2 rounded-lg border border-[#1f2329] px-3 ${index === 4 ? 'bg-[#25252a]' : 'bg-[#0c0d0f]'}`}
+                className={`flex h-9 items-center gap-2 rounded-md px-3 ${index === 0 || index === 2 ? 'bg-[#241b3b]' : 'bg-transparent'}`}
               >
-                <div className="h-3 w-[55%] rounded bg-[#20242a]" />
+                <div className="h-3 w-3 rounded bg-[#20242a]" />
+                <div className={`h-3 rounded bg-[#20242a] ${index === 1 ? 'ml-3 w-[62%]' : 'w-[55%]'}`} />
                 <div className="ml-auto h-4 w-14 rounded bg-[#2b2119]" />
                 <div className="h-4 w-12 rounded bg-[#192a25]" />
               </div>
@@ -506,30 +514,29 @@ function DialogueSkeleton(): React.JSX.Element {
           </div>
         </div>
         <div className="min-h-0 space-y-4 overflow-hidden bg-[#0c0d0f] p-5">
-          {Array.from({ length: 4 }).map((_, index) => (
+          {Array.from({ length: 2 }).map((_, index) => (
             <div key={index} className="rounded-xl border border-[#1f2329] bg-[#131518] p-5">
               <div className="mb-4 flex items-center gap-3">
                 <div className="h-5 w-14 rounded bg-[#241b3b]" />
-                <div className="h-3 w-64 rounded bg-[#181c21]" />
+                <div className="h-5 w-12 rounded bg-[#2b2119]" />
+                <div className="h-5 w-16 rounded bg-[#192a25]" />
               </div>
-              <div className="mb-5 h-10 rounded-lg border border-[#1f2329] bg-[#0c0d0f]" />
-              {Array.from({ length: index === 1 ? 3 : 1 }).map((__, rowIndex) => (
-                <div key={rowIndex} className="mb-4 grid grid-cols-2 gap-5 last:mb-0">
-                  <div>
-                    <div className="mb-2 h-3 w-24 rounded bg-[#241b3b]" />
+              {index === 1 && <div className="mb-4 h-10 rounded-lg border border-[#1f2329] bg-[#0c0d0f]" />}
+              <div className="grid grid-cols-2 gap-5">
+                {Array.from({ length: 2 }).map((__, columnIndex) => (
+                  <div key={columnIndex}>
+                    <div className="mb-2 h-3 w-28 rounded bg-[#241b3b]" />
                     <div className="h-14 rounded-lg border border-[#1f2329] bg-[#0c0d0f]" />
+                    {columnIndex === 1 && (
+                      <div className="mt-2 flex gap-2">
+                        {Array.from({ length: 7 }).map((___, controlIndex) => (
+                          <div key={controlIndex} className="h-5 w-5 rounded-full bg-[#20242a]" />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <div className="mb-2 h-3 w-32 rounded bg-[#241b3b]" />
-                    <div className="h-14 rounded-lg border border-[#241b3b] bg-[#0c0d0f]" />
-                    <div className="mt-2 flex gap-2">
-                      <div className="h-6 w-20 rounded-full bg-[#241b3b]" />
-                      <div className="h-6 w-7 rounded-full bg-[#181c21]" />
-                      <div className="h-6 w-7 rounded-full bg-[#181c21]" />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           ))}
         </div>
@@ -556,24 +563,23 @@ function GameDataSkeleton(): React.JSX.Element {
       </div>
       <div className="grid min-h-0 flex-1 grid-cols-[42%_58%] gap-px bg-[#1f2329]">
         <div className="min-h-0 overflow-hidden bg-[#0c0d0f] p-4">
-          <div className="mb-3 h-9 rounded-md border border-[#1f2329] bg-[#131518]" />
-          <div className="mb-3 flex gap-5 border-b border-[#1f2329] pb-3">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div
-                key={index}
-                className={`h-4 w-14 rounded ${index === 0 ? 'bg-[#241b3b]' : 'bg-[#181c21]'}`}
-              />
-            ))}
+          <div className="mb-3 flex h-9 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3">
+            <div className="h-4 w-4 rounded-full bg-[#20242a]" />
+            <div className="h-5 w-16 rounded bg-[#241b3b]" />
+            <div className="h-4 w-px bg-[#2a2f37]" />
+            <div className="h-3 flex-1 rounded bg-[#181c21]" />
+            <div className="h-4 w-10 rounded bg-[#20242a]" />
+            <div className="h-4 w-10 rounded bg-[#20242a]" />
           </div>
           <div className="space-y-1">
             {Array.from({ length: 16 }).map((_, index) => (
               <div
                 key={index}
-                className={`flex h-10 items-center gap-3 rounded-lg px-3 ${index === 0 ? 'bg-[#241b3b]' : 'bg-transparent'}`}
+                className={`flex min-h-[52px] items-start gap-3 rounded-md px-3 py-2 ${index === 0 ? 'bg-[#241b3b]' : 'bg-transparent'}`}
               >
-                <div className="h-4 w-4 rounded bg-[#20242a]" />
+                <div className="mt-1 h-4 w-4 rounded bg-[#20242a]" />
                 <div className="min-w-0 flex-1 space-y-1.5">
-                  <div className="h-3 w-[62%] rounded bg-[#20242a]" />
+                  <div className="h-4 w-[62%] rounded bg-[#20242a]" />
                   <div className="h-2.5 w-20 rounded bg-[#181c21]" />
                 </div>
                 <div className="h-5 w-14 rounded bg-[#2b2119]" />
@@ -588,11 +594,22 @@ function GameDataSkeleton(): React.JSX.Element {
               <div className="h-6 w-56 rounded bg-[#20242a]" />
               <div className="h-6 w-16 rounded-md bg-[#241b3b]" />
             </div>
-            <div className="space-y-4 rounded-lg border border-[#1f2329] bg-[#0c0d0f] p-4">
-              <div className="h-3 w-24 rounded bg-[#241b3b]" />
-              <div className="h-12 rounded-md bg-[#181c21]" />
-              <div className="h-3 w-32 rounded bg-[#241b3b]" />
-              <div className="h-20 rounded-md bg-[#181c21]" />
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="space-y-3 rounded-lg border border-[#1f2329] bg-[#0c0d0f] p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-3 w-28 rounded bg-[#241b3b]" />
+                    <div className="h-3 w-4 rounded bg-[#20242a]" />
+                  </div>
+                  <div className="h-12 rounded-md bg-[#181c21]" />
+                  <div className="flex gap-2">
+                    {Array.from({ length: 8 }).map((__, controlIndex) => (
+                      <div key={controlIndex} className="h-5 w-5 rounded bg-[#20242a]" />
+                    ))}
+                  </div>
+                  <div className="h-16 rounded-md bg-[#181c21]" />
+                </div>
+              ))}
             </div>
           </div>
           <div className="min-h-0 flex-1 rounded-xl border border-[#1f2329] bg-[#131518] p-4">

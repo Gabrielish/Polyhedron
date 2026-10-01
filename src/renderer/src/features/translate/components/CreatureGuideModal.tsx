@@ -174,8 +174,13 @@ export function CreatureGuideModal({
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search creatures..."
                 aria-label="Search creatures"
-                className="h-9 w-full rounded-md border border-[#34343e] bg-[#0f1013] pr-2 pl-8 text-xs text-neutral-100 outline-none placeholder:text-neutral-600 focus:border-amber-500/70"
+                className="h-9 w-full rounded-md border border-[#34343e] bg-[#0f1013] pr-8 pl-8 text-xs text-neutral-100 outline-none placeholder:text-neutral-600 focus:border-amber-500/70"
               />
+              {search && (
+                <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => setSearch('')} aria-label="Clear search" className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+                  <X size={13} />
+                </button>
+              )}
             </div>
             <div className="polyhedron-scroll flex max-h-40 gap-1 overflow-x-auto p-2 md:max-h-none md:flex-col md:overflow-y-auto md:overflow-x-hidden">
               {filteredTypes.map((type) => (

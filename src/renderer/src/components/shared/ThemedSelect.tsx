@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Search } from 'lucide-react'
+import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
@@ -193,13 +193,24 @@ export function ThemedSelect({
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder={resolvedSearchPlaceholder}
-                  className="flex-1 bg-transparent text-xs text-neutral-200 placeholder:text-neutral-600 focus:outline-none"
+                  className="min-w-0 flex-1 bg-transparent text-xs text-neutral-200 placeholder:text-neutral-600 focus:outline-none"
                 />
+                {query && (
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => setQuery('')}
+                    aria-label="Clear search"
+                    className="shrink-0 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200"
+                  >
+                    <X size={13} />
+                  </button>
+                )}
               </div>
             )}
 
             <div
-              className="max-h-60 overflow-y-scroll py-1 pl-1 pr-0"
+              className="themed-select-options max-h-60 overflow-x-hidden overflow-y-auto py-1 pl-1 pr-1"
               onScroll={(event) => setOptionScrollTop(event.currentTarget.scrollTop)}
               style={virtualized ? { height: 240 } : undefined}
             >

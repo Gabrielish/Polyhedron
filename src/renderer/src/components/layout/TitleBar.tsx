@@ -1,4 +1,4 @@
-import { Maximize2, Minimize2, Minus, X } from 'lucide-react'
+import { Copy, Minus, Square, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -9,6 +9,7 @@ const NO_DRAG: AppRegionStyle = { WebkitAppRegion: 'no-drag' }
 
 export function TitleBar(): React.JSX.Element {
   const [isMaximized, setIsMaximized] = useState(false)
+  const [isCloseHovered, setIsCloseHovered] = useState(false)
   const [appVersion, setAppVersion] = useState('')
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const { t } = useAppTranslation('common')
@@ -48,7 +49,7 @@ export function TitleBar(): React.JSX.Element {
           <button
             title={t('window.minimize')}
             onClick={() => window.api.window.minimize()}
-            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
+            className="flex h-9 w-12 items-center justify-center text-neutral-500 transition-colors hover:bg-white/5 hover:text-neutral-200"
           >
             <Minus size={13} />
           </button>
@@ -56,17 +57,24 @@ export function TitleBar(): React.JSX.Element {
           <button
             title={t(isMaximized ? 'window.restore' : 'window.maximize')}
             onClick={() => window.api.window.maximize()}
-            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-white/5 hover:text-neutral-200 transition-colors"
+            className="flex h-9 w-12 items-center justify-center text-neutral-500 transition-colors hover:bg-white/5 hover:text-neutral-200"
           >
-            {isMaximized ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+            {isMaximized ? (
+              <Copy className="-scale-x-100" size={13} />
+            ) : (
+              <Square size={13} />
+            )}
           </button>
 
           <button
             title={t('window.close')}
             onClick={() => window.api.window.close()}
-            className="h-9 w-11 flex items-center justify-center text-neutral-500 hover:bg-red-500 hover:text-white transition-colors"
+            onMouseEnter={() => setIsCloseHovered(true)}
+            onMouseLeave={() => setIsCloseHovered(false)}
+            style={isCloseHovered ? { backgroundColor: '#ca3230', color: '#ffffff' } : undefined}
+            className="titlebar-close-button flex h-9 w-12 items-center justify-center text-neutral-500 transition-colors"
           >
-            <X size={13} />
+            <X size={18} strokeWidth={1.6} />
           </button>
         </>}
       </div>

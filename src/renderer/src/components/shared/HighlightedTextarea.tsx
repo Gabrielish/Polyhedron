@@ -89,7 +89,8 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
               variant: 'editor',
               highlightQuery,
               searchHighlight,
-              termGlossary
+              termGlossary,
+              whitespaceHighlight: true
             })
           ) : (
             <span className="italic text-neutral-600">{placeholder}</span>

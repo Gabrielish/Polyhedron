@@ -25,6 +25,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
+import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { StyledWebview } from '@/components/shared/StyledWebview'
 import {
@@ -44,7 +45,7 @@ import {
 } from '@/data/dialogReference'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
-import { normalizeSearchText } from '@/utils/search'
+import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
 import {
   getTermGlossaryStorageKey,
   loadTermGlossary,
@@ -78,6 +79,21 @@ function loadDialogueViewState(): DialogueViewState {
   } catch {
     return {}
   }
+}
+
+function dialogueSearchMatches(
+  value: string,
+  query: string,
+  matchCase: boolean,
+  wholeWord: boolean
+): boolean {
+  const needle = query.trim()
+  if (!needle) return true
+  const haystack = matchCase ? stripSearchDiacritics(value) : normalizeSearchText(value)
+  const normalizedNeedle = matchCase ? stripSearchDiacritics(needle) : normalizeSearchText(needle)
+  if (!wholeWord) return haystack.includes(normalizedNeedle)
+  const escaped = normalizedNeedle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(?:^|\\b)${escaped}(?=$|\\b)`).test(haystack)
 }
 
 const ACTS: Array<{ label: string; categories: DialogueCategory[] }> = [
@@ -290,15 +306,10 @@ function TreeItems({
               type="button"
               onClick={() => toggle(node.key)}
               aria-expanded={open}
-              className="dialogue-tree-item flex w-full items-center gap-1 rounded border border-transparent px-2 py-1.5 text-left text-xs text-neutral-300 transition-colors"
-              style={
-                open
-                  ? {
-                      borderColor: 'color-mix(in srgb, var(--poly-accent) 45%, transparent)',
-                      backgroundColor: 'color-mix(in srgb, var(--poly-accent) 10%, transparent)'
-                    }
-                  : undefined
-              }
+              className={cn(
+                'dialogue-tree-item flex w-full cursor-pointer items-center gap-1 rounded-md border-0 px-2 py-1.5 text-left text-xs transition-colors',
+                open ? 'text-[var(--poly-accent)]' : 'text-neutral-300'
+              )}
             >
               {open ? (
                 <ChevronDown size={12} className="text-[var(--poly-accent)]" />
@@ -317,7 +328,7 @@ function TreeItems({
               </span>
             </button>
             {open && (
-              <div className="ml-3 border-l border-[#1f2329] pl-2">
+              <div className="mt-1 ml-3 border-l border-[#1f2329] pl-2">
                 {node.children.size > 0 && (
                   <TreeItems
                     nodes={[...node.children.values()]}
@@ -343,21 +354,11 @@ function TreeItems({
                       }
                       onClick={() => select(key)}
                       className={cn(
-                        'dialogue-tree-choice mb-1 block w-full truncate rounded border px-2 py-1 text-left text-[10px] transition-colors',
+                        'dialogue-tree-choice translation-special-filter-option mb-1 block w-full cursor-pointer truncate rounded-md border-0 px-2.5 py-2 text-left text-[10px] transition-colors focus:outline-none focus-visible:outline-none',
                         selected?.file === choice.file && selected.dialogue === choice.dialogue
-                          ? 'text-white'
-                          : 'border-transparent text-neutral-500'
+                          ? 'is-selected text-[var(--poly-accent)]'
+                          : 'text-neutral-300'
                       )}
-                      style={
-                        selected?.file === choice.file && selected.dialogue === choice.dialogue
-                          ? {
-                              borderColor:
-                                'color-mix(in srgb, var(--poly-accent) 70%, transparent)',
-                              backgroundColor:
-                                'color-mix(in srgb, var(--poly-accent) 16%, transparent)'
-                            }
-                          : undefined
-                      }
                     >
                       <span className="truncate">{choice.dialogue}</span>
                       {translated.has(choice.dialogue) && (
@@ -478,6 +479,7 @@ export function DialogueNodesPage(): React.JSX.Element {
   const location = useLocation()
   const navigationState = (location.state ?? {}) as DialogueNavigationState
   const graphWebviewRef = useRef<HTMLElement | null>(null)
+  const [graphLoading, setGraphLoading] = useState(true)
   const copySource = async (event: React.MouseEvent, source: string) => {
     event.stopPropagation()
     await navigator.clipboard.writeText(source)
@@ -524,6 +526,9 @@ export function DialogueNodesPage(): React.JSX.Element {
     loadTermGlossary(termGlossaryKey)
   )
   const [focusedUid, setFocusedUid] = useState<string | null>(() => navigationState.uid ?? null)
+  const [nodeNavigationLoading, setNodeNavigationLoading] = useState(
+    () => Boolean(navigationState.node)
+  )
   const translationInputRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const [tagSelections, setTagSelections] = useState<Record<string, TextSelection>>({})
   const [tagProgress, setTagProgress] = useState<Record<string, number>>({})
@@ -531,6 +536,10 @@ export function DialogueNodesPage(): React.JSX.Element {
     navigationState.dialogue ? '' : (loadDialogueViewState().dialogueSearch ?? '')
   )
   const [dialogueTextSearch, setDialogueTextSearch] = useState('')
+  const [dialogueMatchCase, setDialogueMatchCase] = useState(false)
+  const [dialogueMatchWholeWord, setDialogueMatchWholeWord] = useState(false)
+  const [dialogueTextMatchCase, setDialogueTextMatchCase] = useState(false)
+  const [dialogueTextMatchWholeWord, setDialogueTextMatchWholeWord] = useState(false)
   const [reviewFilter, setReviewFilter] = useState<'all' | ReviewStatus>('all')
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
     () => new Set(loadDialogueViewState().expandedNodes ?? [])
@@ -627,12 +636,9 @@ export function DialogueNodesPage(): React.JSX.Element {
     return stats
   }, [choices, dialogueEntryIndex])
   const visibleChoices = useMemo(() => {
-    const nameQuery = normalizeSearchText(dialogueSearch.trim())
-    const textQuery = normalizeSearchText(dialogueTextSearch.trim())
     return choices.filter((choice) => {
       if (
-        nameQuery &&
-        !normalizeSearchText(
+        !dialogueSearchMatches(
           `${choice.dialogue} ${
             showContentUid
               ? [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])]
@@ -640,18 +646,34 @@ export function DialogueNodesPage(): React.JSX.Element {
                   .map((entry) => entry.uid)
                   .join(' ')
               : ''
-          }`
-        ).includes(nameQuery)
+          }`,
+          dialogueSearch,
+          dialogueMatchCase,
+          dialogueMatchWholeWord
+        )
       ) return false
-      if (!textQuery) return true
+      if (!dialogueTextSearch.trim()) return true
       const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
       return rows.some((entry) =>
-        normalizeSearchText(
-          `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid}` : ''}`
-        ).includes(textQuery)
+        dialogueSearchMatches(
+          `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid}` : ''}`,
+          dialogueTextSearch,
+          dialogueTextMatchCase,
+          dialogueTextMatchWholeWord
+        )
       )
     })
-  }, [choices, dialogueEntryIndex, dialogueSearch, dialogueTextSearch, showContentUid])
+  }, [
+    choices,
+    dialogueEntryIndex,
+    dialogueMatchCase,
+    dialogueMatchWholeWord,
+    dialogueSearch,
+    dialogueTextMatchCase,
+    dialogueTextMatchWholeWord,
+    dialogueTextSearch,
+    showContentUid
+  ])
   const tree = useMemo(() => makeTree(visibleChoices), [visibleChoices])
   useEffect(() => {
     if (!selectedKey) return
@@ -691,17 +713,27 @@ export function DialogueNodesPage(): React.JSX.Element {
   }, [selected])
   const nodes = useMemo(() => {
     if (!selected) return []
-    const query = normalizeSearchText(dialogueTextSearch.trim())
-    if (!query) return allNodes
+    if (!dialogueTextSearch.trim()) return allNodes
     const entriesByNode = dialogueEntryIndex.get(selected.dialogue)
     return allNodes.filter((node) =>
       (entriesByNode?.get(node.node) ?? []).some((entry) =>
-        normalizeSearchText(
-          `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid} ${node.node}` : ''}`
-        ).includes(query)
+        dialogueSearchMatches(
+          `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid} ${node.node}` : ''}`,
+          dialogueTextSearch,
+          dialogueTextMatchCase,
+          dialogueTextMatchWholeWord
+        )
       )
     )
-  }, [allNodes, dialogueEntryIndex, dialogueTextSearch, selected, showContentUid])
+  }, [
+    allNodes,
+    dialogueEntryIndex,
+    dialogueTextMatchCase,
+    dialogueTextMatchWholeWord,
+    dialogueTextSearch,
+    selected,
+    showContentUid
+  ])
 
   const applyNextSourceTag = (
     entry: ReturnType<typeof useTranslationSession>['entries'][number],
@@ -782,6 +814,7 @@ export function DialogueNodesPage(): React.JSX.Element {
       const nodeTarget = document.getElementById(`dialogue-node-${focusedNode}`)
       if (!nodeTarget) {
         if (attempts++ < 12) retryTimer = window.setTimeout(focusTargets, 100)
+        else setNodeNavigationLoading(false)
         return
       }
       const stringTarget = [
@@ -792,6 +825,7 @@ export function DialogueNodesPage(): React.JSX.Element {
           (focusedSource && element.dataset.dialogueSource === focusedSource)
       )
       ;(stringTarget ?? nodeTarget).scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setNodeNavigationLoading(false)
       retryTimer = window.setTimeout(() => {
         setFocusedNode(null)
         setFocusedSource(null)
@@ -803,6 +837,19 @@ export function DialogueNodesPage(): React.JSX.Element {
       if (retryTimer) window.clearTimeout(retryTimer)
     }
   }, [focusedNode, focusedSource, focusedUid, selected?.dialogue, nodes])
+
+  useEffect(() => {
+    const webview = graphWebviewRef.current
+    if (!webview || !selected?.dialogue) return
+    setGraphLoading(true)
+    const handleLoaded = () => setGraphLoading(false)
+    webview.addEventListener('did-finish-load', handleLoaded)
+    const fallbackTimer = window.setTimeout(handleLoaded, 15000)
+    return () => {
+      webview.removeEventListener('did-finish-load', handleLoaded)
+      window.clearTimeout(fallbackTimer)
+    }
+  }, [selected?.dialogue])
 
   useEffect(() => {
     if (!selectedKey) return
@@ -961,37 +1008,33 @@ export function DialogueNodesPage(): React.JSX.Element {
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             <div className="ml-0 flex min-w-0 flex-1 justify-end gap-2 sm:ml-auto sm:min-w-[280px] lg:min-w-[360px]">
-              <label className="relative z-20 flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 text-xs text-neutral-500 transition-colors focus-within:border-neutral-600 lg:basis-[calc(39%_-_5px)] lg:grow-0 lg:shrink-0">
-                <Search size={14} />
-                <ThemedSelect
-                  value={activeAct}
-                  onChange={(value) => {
-                    setActiveAct(value)
-                    setSelectedKey(null)
-                    setExpandedNodes(new Set())
-                  }}
-                  options={ACTS.map((act) => ({ value: act.label, label: act.label }))}
-                  className="w-[7.5rem] shrink-0"
-                  triggerClassName="h-6 border-0 bg-transparent px-1.5 text-[11px] shadow-none hover:border-transparent hover:bg-[#1c1f24]"
-                  menuMinWidth={148}
-                />
-                <span className="h-4 w-px shrink-0 bg-[#1f2329]" />
-                <input
-                  value={dialogueSearch}
-                  onChange={(event) => setDialogueSearch(event.target.value)}
-                  placeholder="Search dialogue node name..."
-                  className="dialogue-search-input min-w-0 flex-1 border-0 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-0 focus:outline-none focus:ring-0"
-                />
-              </label>
-              <label className="ml-3 flex min-w-0 flex-1 items-center gap-2 rounded-md border border-[#2a2f37] bg-[#131518] px-3 text-xs text-neutral-500 focus-within:border-amber-400/40">
-                <Search size={14} />
-                <input
-                  value={dialogueTextSearch}
-                  onChange={(event) => setDialogueTextSearch(event.target.value)}
-                  placeholder="Search source or translation..."
-                  className="dialogue-search-input min-w-0 flex-1 bg-transparent py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-600"
-                />
-              </label>
+              <TextSearchInput
+                value={dialogueSearch}
+                onChange={setDialogueSearch}
+                placeholder="Search dialogue node name..."
+                matchCase={dialogueMatchCase}
+                onMatchCaseChange={setDialogueMatchCase}
+                matchWholeWord={dialogueMatchWholeWord}
+                onMatchWholeWordChange={setDialogueMatchWholeWord}
+                scopeValue={activeAct}
+                onScopeChange={(value) => {
+                  setActiveAct(value)
+                  setSelectedKey(null)
+                  setExpandedNodes(new Set())
+                }}
+                scopeOptions={ACTS.map((act) => ({ value: act.label, label: act.label }))}
+                className="min-w-0 flex-1 lg:basis-[calc(39%_-_5px)] lg:grow-0 lg:shrink-0"
+              />
+              <TextSearchInput
+                value={dialogueTextSearch}
+                onChange={setDialogueTextSearch}
+                placeholder="Search source or translation..."
+                matchCase={dialogueTextMatchCase}
+                onMatchCaseChange={setDialogueTextMatchCase}
+                matchWholeWord={dialogueTextMatchWholeWord}
+                onMatchWholeWordChange={setDialogueTextMatchWholeWord}
+                className="ml-3 min-w-0 flex-1"
+              />
               <ThemedSelect
                 value={reviewFilter}
                 onChange={(value) => setReviewFilter(value as 'all' | ReviewStatus)}
@@ -1066,6 +1109,14 @@ export function DialogueNodesPage(): React.JSX.Element {
                       className="block h-full min-h-0 w-full min-w-0 border-0"
                       style={{ height: '100%', width: '100%', display: 'flex' }}
                     />
+                    {graphLoading && (
+                      <div className="absolute inset-0 z-10 space-y-3 bg-[#0c0d0f] p-4" aria-label="Loading dialogue graph">
+                        <div className="h-4 w-2/5 animate-pulse rounded bg-[#1f2329]" />
+                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
+                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
+                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
@@ -1075,11 +1126,10 @@ export function DialogueNodesPage(): React.JSX.Element {
               )}
             </div>
           </aside>
-          <section className="order-2 polyhedron-scroll min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
+          <section className="order-2 polyhedron-scroll relative min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
             {selected ? (
               <div className="w-full space-y-3">
                 {nodes.map((node, index) => {
-                  const query = normalizeSearchText(dialogueTextSearch.trim())
                   const matches = (
                     dialogueEntryIndex.get(selected.dialogue)?.get(node.node) ?? []
                   ).filter(
@@ -1088,10 +1138,12 @@ export function DialogueNodesPage(): React.JSX.Element {
                         (!entry.target.trim()
                           ? 'untranslated'
                           : (entry.reviewStatus ?? 'needs-review')) === reviewFilter) &&
-                      (!query ||
-                        normalizeSearchText(
-                          `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid} ${node.node}` : ''}`
-                        ).includes(query))
+                      dialogueSearchMatches(
+                        `${entry.source}\n${entry.target}${showContentUid ? `\n${entry.uid} ${node.node}` : ''}`,
+                        dialogueTextSearch,
+                        dialogueTextMatchCase,
+                        dialogueTextMatchWholeWord
+                      )
                   )
                   const borderClass = 'border-[#1f2329]'
                   return (
@@ -1133,14 +1185,14 @@ export function DialogueNodesPage(): React.JSX.Element {
                             <>
                               <span className="self-center text-neutral-600">|</span>
                               {metadata.speaker && (
-                                <span className="self-center rounded border border-orange-400/30 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-orange-300">
+                                <span className="self-center rounded border border-orange-400/30 bg-orange-500/10 px-1.5 py-0.5 font-sans text-[9px] font-semibold text-orange-300">
                                   {metadata.speaker}
                                 </span>
                               )}
                               {metadata.category && (
                                 <span
                                   className={cn(
-                                      'self-center rounded border px-1.5 py-0.5 text-[9px] font-semibold',
+                                      'self-center rounded border px-1.5 py-0.5 font-sans text-[9px] font-semibold',
                                     categoryClass
                                   )}
                                 >
@@ -1153,7 +1205,7 @@ export function DialogueNodesPage(): React.JSX.Element {
                         {showContentUid && (
                           <>
                             <span className="self-center text-neutral-600">|</span>
-                            <span className="self-center text-[10px] font-normal tracking-normal text-neutral-600">
+                            <span className="self-center text-[10px] font-normal tracking-normal text-neutral-400">
                               {node.node}
                             </span>
                           </>
@@ -1197,7 +1249,10 @@ export function DialogueNodesPage(): React.JSX.Element {
                                 </button>
                               </div>
                               <div className="translation-source-text rounded border border-[#1f2329] bg-[#0c0d0f] px-3 py-2 text-xs leading-5 text-neutral-200">
-                                {renderSource(entry.source, { termGlossary })}
+                                {renderSource(entry.source, {
+                                  termGlossary,
+                                  whitespaceHighlight: true
+                                })}
                               </div>
                             </div>
                             <div>
@@ -1377,6 +1432,13 @@ export function DialogueNodesPage(): React.JSX.Element {
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-neutral-600">
                 Select a dialogue from the list.
+              </div>
+            )}
+            {nodeNavigationLoading && selected && (
+              <div className="absolute inset-0 z-20 space-y-3 bg-[#0c0d0f] p-3 sm:p-5" aria-label="Loading dialogue node">
+                <div className="h-20 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
+                <div className="h-28 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
+                <div className="h-24 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
               </div>
             )}
           </section>

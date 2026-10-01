@@ -1059,15 +1059,17 @@ export function TranslationGrid({
   const sideVirtualizer = useVirtualizer({
     count: pageEntries.length,
     getScrollElement: () => sideParentRef.current,
-    estimateSize: () => 72,
-    overscan: 10
+    estimateSize: () => (showTranslationSuggestions ? 150 : 72),
+    overscan: 12,
+    useAnimationFrameWithResizeObserver: true
   })
 
   const stackedVirtualizer = useVirtualizer({
     count: pageEntries.length,
     getScrollElement: () => stackedParentRef.current,
-    estimateSize: () => 220,
-    overscan: 10
+    estimateSize: () => (showTranslationSuggestions ? 300 : 220),
+    overscan: 12,
+    useAnimationFrameWithResizeObserver: true
   })
 
   const selectedStats = useMemo(() => {
@@ -2153,7 +2155,10 @@ export function TranslationGrid({
           return (
             <div
               key={item.mode}
-              onClick={() => startFilterTransition(() => setFilter(item.mode))}
+              onClick={() => {
+                setOpenSpecialFilter(null)
+                startFilterTransition(() => setFilter(item.mode))
+              }}
               className={cn(
                 'translation-special-filter relative inline-flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-all',
                 isXmlTagFilter ? 'translation-special-filter-xml' : 'translation-special-filter-pl',
@@ -2197,15 +2202,8 @@ export function TranslationGrid({
                 aria-haspopup="menu"
                 aria-expanded={openSpecialFilter === item.mode}
                 aria-label={`${isXmlTagFilter ? 'XML' : 'PL'} ${selectedFilter}`}
-                title={
-                  selectedFilter === 'all'
-                    ? 'All'
-                    : selectedFilter === 'translated'
-                      ? 'Translated'
-                      : 'Untranslated'
-                }
                 className={cn(
-                  'inline-flex cursor-pointer items-center gap-0.5 bg-transparent text-[11px] font-semibold outline-none',
+                  'inline-flex cursor-pointer items-center gap-1 bg-transparent text-[11px] font-semibold outline-none',
                   isXmlTagFilter ? 'text-purple-200' : 'text-cyan-200'
                 )}
               >
@@ -2221,15 +2219,9 @@ export function TranslationGrid({
               {openSpecialFilter === item.mode && (
                 <div
                   role="menu"
-                  className="bulk-status-menu absolute top-[calc(100%+6px)] right-0 z-[1001] w-9 min-w-0 overflow-hidden rounded-lg border border-[#3a3f47] bg-[#171a1f] p-1 shadow-2xl"
+                  className="bulk-status-menu absolute top-[calc(100%+6px)] right-0 z-[1001] w-full overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl"
                 >
                   {(['all', 'untranslated', 'translated'] as const).map((value) => {
-                    const OptionIcon =
-                      value === 'all'
-                        ? CircleDashed
-                        : value === 'translated'
-                          ? CircleCheck
-                          : CircleX
                     const label =
                       value === 'all'
                         ? 'All'
@@ -2242,7 +2234,6 @@ export function TranslationGrid({
                         type="button"
                         role="menuitem"
                         aria-label={label}
-                        title={label}
                         onClick={(event) => {
                           event.stopPropagation()
                           startFilterTransition(() => {
@@ -2253,15 +2244,14 @@ export function TranslationGrid({
                           setOpenSpecialFilter(null)
                         }}
                         className={cn(
-                          'flex w-full items-center justify-center rounded px-1 py-1.5 text-left text-xs font-medium transition-colors hover:bg-white/10',
+                          'translation-special-filter-option flex w-full cursor-pointer items-center justify-between rounded-md px-2.5 py-2 text-left text-xs font-medium transition-colors',
                           value === selectedFilter
-                            ? isXmlTagFilter
-                              ? 'text-purple-300'
-                              : 'text-cyan-300'
-                            : 'text-neutral-300'
+                            ? 'is-selected bg-amber-400/10 text-amber-400 hover:bg-amber-400/10 hover:text-amber-400'
+                            : 'text-neutral-300 hover:bg-neutral-800'
                         )}
                       >
-                        <OptionIcon size={14} />
+                        {label}
+                        {value === selectedFilter && <Check size={12} />}
                       </button>
                     )
                   })}
@@ -2795,7 +2785,7 @@ export function TranslationGrid({
                 type="checkbox"
                 checked={allFiltered}
                 onChange={(event) => handleSelectAll(event.target.checked)}
-                className="cursor-pointer accent-amber-500"
+                className="translation-selection-checkbox"
               />
             </div>
             <div className="px-4 py-2 text-[10px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
@@ -2864,7 +2854,7 @@ export function TranslationGrid({
                       checked={isRowSelected}
                       onChange={() => toggleEntry(entry.rowId)}
                       onClick={(event) => event.stopPropagation()}
-                      className="cursor-pointer accent-amber-500"
+                      className="translation-selection-checkbox"
                     />
                     <span className="font-mono text-[11px] tabular-nums text-neutral-600">
                       {String(globalIndex + 1).padStart(3, '0')}
@@ -2878,18 +2868,21 @@ export function TranslationGrid({
                   </div>
 
                   <div className="translate-source-cell flex min-w-0 cursor-text flex-col gap-2 px-4 py-3">
-                    <div className="translation-source-text wrap-break-word text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
-                      {entry.source ? (
-                        renderSource(entry.source, {
-                          highlightQuery: effectiveSearch,
-                          searchHighlight: highlightMatches ? 'underline' : 'select',
-                          termGlossary
-                        })
-                      ) : (
-                        <span className="italic text-neutral-600">
-                          {t('grid.emptySource', { ns: 'translate' })}
-                        </span>
-                      )}
+                    <div className="flex min-w-0 items-start gap-2">
+                      <div className="translation-source-text min-w-0 flex-1 wrap-break-word text-[13px] leading-[1.6] text-neutral-200 whitespace-pre-wrap">
+                        {entry.source ? (
+                          renderSource(entry.source, {
+                            highlightQuery: effectiveSearch,
+                            searchHighlight: highlightMatches ? 'underline' : 'select',
+                            termGlossary,
+                            whitespaceHighlight: true
+                          })
+                        ) : (
+                          <span className="italic text-neutral-600">
+                            {t('grid.emptySource', { ns: 'translate' })}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {renderTranslationSuggestions(entry)}
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -3037,7 +3030,7 @@ export function TranslationGrid({
           type="checkbox"
           checked={allFiltered}
           onChange={(event) => handleSelectAll(event.target.checked)}
-          className="cursor-pointer accent-amber-500"
+          className="translation-selection-checkbox"
         />
         <span className="text-[11px] font-medium tabular-nums text-neutral-500">
           {t('grid.entries', { ns: 'translate', count: filteredEntries.length })}
@@ -3114,7 +3107,7 @@ export function TranslationGrid({
                         checked={isRowSelected}
                         onChange={() => toggleEntry(entry.rowId)}
                         onClick={(event) => event.stopPropagation()}
-                        className="cursor-pointer accent-amber-500"
+                        className="translation-selection-checkbox"
                       />
 
                       <span
@@ -3207,18 +3200,21 @@ export function TranslationGrid({
                           <Copy size={11} />
                         </button>
                       </div>
-                      <div className="translation-source-text wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
-                        {entry.source ? (
-                          renderSource(entry.source, {
-                            highlightQuery: effectiveSearch,
-                            searchHighlight: highlightMatches ? 'underline' : 'select',
-                            termGlossary
-                          })
-                        ) : (
-                          <span className="italic text-neutral-600">
-                            {t('grid.emptySource', { ns: 'translate' })}
-                          </span>
-                        )}
+                      <div className="flex min-w-0 items-start gap-2">
+                        <div className="translation-source-text min-w-0 flex-1 wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">
+                          {entry.source ? (
+                            renderSource(entry.source, {
+                              highlightQuery: effectiveSearch,
+                              searchHighlight: highlightMatches ? 'underline' : 'select',
+                              termGlossary,
+                              whitespaceHighlight: true
+                            })
+                          ) : (
+                            <span className="italic text-neutral-600">
+                              {t('grid.emptySource', { ns: 'translate' })}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {renderTranslationSuggestions(entry)}
                       {isDictionary && (

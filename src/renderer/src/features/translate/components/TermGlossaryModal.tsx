@@ -239,8 +239,13 @@ export function TermGlossaryModal({
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search glossary..."
                 aria-label="Search glossary"
-                className="h-10 w-full rounded-lg border border-[#34343e] bg-[#0f1013] pr-3 pl-9 text-sm text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-amber-500/70"
+                className="h-10 w-full rounded-lg border border-[#34343e] bg-[#0f1013] pr-9 pl-9 text-sm text-neutral-100 outline-none transition placeholder:text-neutral-600 focus:border-amber-500/70"
               />
+              {search && (
+                <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => setSearch('')} aria-label="Clear search" className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+                  <X size={13} />
+                </button>
+              )}
             </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto p-5 pt-3">

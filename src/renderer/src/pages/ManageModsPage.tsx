@@ -14,7 +14,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { Boxes, Info, Search } from 'lucide-react'
+import { Boxes, Info, Search, X } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { DeleteModConfirm } from '@/components/mods/DeleteModConfirm'
 import { FallbackModRow } from '@/components/mods/FallbackModRow'
@@ -115,14 +115,19 @@ export function ManageModsPage(): React.JSX.Element {
           <span className="text-sm text-neutral-500">{t('subtitle')}</span>
         </div>
 
-        <div className="flex h-8 w-56 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 focus-within:border-amber-500/50">
+        <div className="relative flex h-8 w-56 items-center gap-2 rounded-md border border-[#1f2329] bg-[#131518] px-3 focus-within:border-amber-500/50">
           <Search size={13} className="shrink-0 text-neutral-500" />
           <input
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent pr-5 text-sm text-neutral-200 placeholder:text-neutral-600 focus:outline-none"
           />
+          {searchQuery && (
+            <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => setSearchQuery('')} aria-label="Clear search" className="absolute right-3 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+              <X size={13} />
+            </button>
+          )}
         </div>
       </header>
 

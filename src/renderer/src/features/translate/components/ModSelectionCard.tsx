@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { ModInfo } from '@/types'
@@ -87,11 +87,16 @@ export function ModSelectionCard({
               <Search size={12} />
             </span>
             <input
-              className="w-full h-8 pl-8 pr-3 rounded-md border border-[#1f2329] bg-[#0f1114] text-xs text-neutral-200 focus:outline-none focus:border-neutral-600 placeholder:text-neutral-600"
+              className="w-full h-8 pl-8 pr-8 rounded-md border border-[#1f2329] bg-[#0f1114] text-xs text-neutral-200 focus:outline-none focus:border-neutral-600 placeholder:text-neutral-600"
               placeholder={t('setup.modSelection.searchPlaceholder')}
               value={modSearch}
               onChange={(event) => onModSearchChange(event.target.value)}
             />
+            {modSearch && (
+              <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => onModSearchChange('')} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+                <X size={13} />
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">

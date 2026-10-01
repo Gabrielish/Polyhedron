@@ -260,8 +260,13 @@ function SpellSearchInput({
         placeholder="Search spells, actions, abilities..."
         className="spells-search-input min-w-0 flex-1 border-0 bg-transparent text-xs text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-0 focus:outline-none focus:ring-0"
       />
+      {value && (
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setValue(''); setPending(true) }} aria-label="Clear search" className="relative z-10 shrink-0 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+          <X size={13} />
+        </button>
+      )}
       {pending && (
-        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-amber-300/80">
+        <span className="pointer-events-none absolute right-8 top-1/2 -translate-y-1/2 text-[10px] text-amber-300/80">
           Searching…
         </span>
       )}

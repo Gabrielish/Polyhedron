@@ -17,13 +17,13 @@ import {
   CircleCheck,
   BookText,
   Hash,
-  Code2
+  Code2,
+  X
 } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { normalizeSearchText } from '@/utils/search'
+import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
 import {
   getReferenceCatalog,
   type ReferenceCatalogEntry,
@@ -49,6 +49,7 @@ import { cn } from '@/lib/utils'
 import { renderSource } from '@/utils/renderSource'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { StyledWebview } from '@/components/shared/StyledWebview'
+import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { extractLarianTags, wrapSelectionWithTag, type TextSelection } from '@/utils/larianTags'
 const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [
   { label: 'All' },
@@ -121,24 +122,49 @@ function LocalTranslationInput({
     />
   )
 }
-function GameDataSearch({ onSearch }: { onSearch: (value: string) => void }): React.JSX.Element {
-  const [draft, setDraft] = useState('')
+function gameDataSearchMatches(value: string, query: string, matchCase: boolean, wholeWord: boolean): boolean {
+  const needle = query.trim()
+  if (!needle) return true
+  const haystack = matchCase ? stripSearchDiacritics(value) : normalizeSearchText(value)
+  const normalizedNeedle = matchCase ? stripSearchDiacritics(needle) : normalizeSearchText(needle)
+  if (!wholeWord) return haystack.includes(normalizedNeedle)
+  const escaped = normalizedNeedle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(?:^|\\b)${escaped}(?=$|\\b)`).test(haystack)
+}
+
+function GameDataSearch({
+  query,
+  onSearch,
+  category,
+  onCategoryChange,
+  matchCase,
+  onMatchCaseChange,
+  wholeWord,
+  onWholeWordChange
+}: {
+  query: string
+  onSearch: (value: string) => void
+  category: ReferenceCategory | undefined
+  onCategoryChange: (value: ReferenceCategory | undefined) => void
+  matchCase: boolean
+  onMatchCaseChange: (value: boolean) => void
+  wholeWord: boolean
+  onWholeWordChange: (value: boolean) => void
+}): React.JSX.Element {
   return (
-    <div className="mb-2 flex items-center gap-2">
-      <div className="flex min-w-0 flex-1 items-center gap-2 rounded border border-[#2a2f37] bg-[#131518] px-2 py-1.5">
-        <Search size={14} className="text-neutral-600" />
-        <input
-          value={draft}
-          onChange={(event) => {
-            const value = event.target.value
-            setDraft(value)
-            onSearch(value)
-          }}
-          placeholder="Search game data..."
-          className="game-data-search-input w-full bg-transparent text-xs outline-none placeholder:text-neutral-600"
-        />
-      </div>
-    </div>
+    <TextSearchInput
+      value={query}
+      onChange={onSearch}
+      placeholder="Search game data..."
+      matchCase={matchCase}
+      onMatchCaseChange={onMatchCaseChange}
+      matchWholeWord={wholeWord}
+      onMatchWholeWordChange={onWholeWordChange}
+      scopeValue={category ?? 'all'}
+      onScopeChange={(value) => onCategoryChange(value === 'all' ? undefined : (value as ReferenceCategory))}
+      scopeOptions={CATEGORIES.map((item) => ({ value: item.value ?? 'all', label: item.label }))}
+      className="mb-2 w-full"
+    />
   )
 }
 function entryReviewStatus(entry: TranslationSessionEntry): ReviewStatus {
@@ -269,7 +295,7 @@ function TranslationField({
         </button>
       </div>
       <div className="translation-source-text mb-2 whitespace-pre-wrap text-xs leading-5 text-neutral-200">
-        {renderSource(source, { termGlossary })}
+        {renderSource(source, { termGlossary, whitespaceHighlight: true })}
       </div>
       {entries.length === 0 ? (
         <div className="text-[11px] italic text-neutral-600">
@@ -421,58 +447,54 @@ function GameDataList({
     }
     return result
   }, [rowsBySource])
-  const virtualizer = useVirtualizer({
-    count: entries.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 42,
-    overscan: 12
-  })
   useEffect(() => {
     const scrollElement = parentRef.current
     if (scrollElement) scrollElement.scrollTop = 0
   }, [entries])
   return (
     <div ref={parentRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
-      <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
-        {virtualizer.getVirtualItems().map((item) => {
-          const entry = entries[item.index]
+      <div className="w-full">
+        {entries.map((entry) => {
           const ItemIcon = iconFor(entry.category)
           const key = `${entry.category}:${entry.name}`
           const translated = translatedKeys.has(key)
           const verified = verifiedKeys.has(key)
           return (
-            <button
+            <div
               key={key}
-              type="button"
-              onClick={() => onSelect(entry)}
-              className={cn(
-                'absolute left-0 flex w-full items-start gap-2 rounded px-2 py-2 text-left',
-                current?.name === entry.name && current?.category === entry.category
-                  ? 'bg-amber-500/10 text-amber-200'
-                  : 'text-neutral-400 hover:bg-[#131518]'
-              )}
-              style={{ transform: `translateY(${item.start}px)` }}
+              className="w-full pb-1"
             >
-              <ItemIcon size={14} className="mt-0.5 shrink-0" />
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2 truncate text-xs">
-                  {entry.name}
-                  {translated && (
-                    <span className="shrink-0 rounded border border-orange-400/30 bg-orange-500/10 px-1 py-0.5 text-[9px] text-orange-300">
-                      Translated
-                    </span>
-                  )}
-                  {verified && (
-                    <span className="shrink-0 rounded border border-emerald-500/30 bg-emerald-500/10 px-1 py-0.5 text-[9px] text-emerald-300">
-                      Verified
-                    </span>
-                  )}
+              <button
+                type="button"
+                onClick={() => onSelect(entry)}
+                className={cn(
+                  'game-data-list-row translation-special-filter-option flex min-h-[52px] w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left transition-colors focus:outline-none focus-visible:outline-none',
+                  current?.name === entry.name && current?.category === entry.category
+                    ? 'is-selected text-[var(--poly-accent)]'
+                    : 'text-neutral-300'
+                )}
+              >
+                <ItemIcon size={14} className="mt-0.5 shrink-0" />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2 truncate text-xs">
+                    {entry.name}
+                    {translated && (
+                      <span className="shrink-0 rounded border border-orange-400/30 bg-orange-500/10 px-1 py-0.5 text-[9px] text-orange-300">
+                        Translated
+                      </span>
+                    )}
+                    {verified && (
+                      <span className="shrink-0 rounded border border-emerald-500/30 bg-emerald-500/10 px-1 py-0.5 text-[9px] text-emerald-300">
+                        Verified
+                      </span>
+                    )}
+                  </span>
+                  <span className="block truncate text-[10px] text-neutral-600">
+                    {entry.category}
+                  </span>
                 </span>
-                <span className="block truncate text-[10px] text-neutral-600">
-                  {entry.category}
-                </span>
-              </span>
-            </button>
+              </button>
+            </div>
           )
         })}
       </div>
@@ -484,6 +506,8 @@ export function ReferencePage(): React.JSX.Element {
   const [searchParams] = useSearchParams()
   const [category, setCategory] = useState<ReferenceCategory | undefined>()
   const [query, setQuery] = useState('')
+  const [matchCase, setMatchCase] = useState(false)
+  const [wholeWord, setWholeWord] = useState(false)
   const [selected, setSelected] = useState<ReferenceCatalogEntry | null>(null)
   const [showContentUid, setShowContentUid] = useState(false)
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
@@ -537,13 +561,15 @@ export function ReferencePage(): React.JSX.Element {
     )
   const allEntries = useMemo(
     () =>
-      getReferenceCatalog(category).filter(
+      getReferenceCatalog()
+        .filter((entry) => !category || entry.category === category)
+        .filter(
         (entry) =>
           !entry.name.trim().startsWith('%%%') &&
           !entry.description.trim().startsWith('%%%') &&
           !/\|[^|\n]{1,120}\|/.test(entry.name) &&
           !/\|[^|\n]{1,120}\|/.test(entry.description)
-      ),
+        ),
     [category]
   )
   const uidBySource = useMemo(() => {
@@ -558,18 +584,17 @@ export function ReferencePage(): React.JSX.Element {
     () =>
       allEntries.map((entry) => ({
         entry,
-        searchText: normalizeSearchText(
-          `${entry.name} ${entry.description} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
-        )
+        searchText: `${entry.name} ${entry.description} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
       })),
     [allEntries, showContentUid, uidBySource]
   )
   const filtered = useMemo(() => {
-    const q = normalizeSearchText(query.trim())
-    return q
-      ? searchableEntries.filter((item) => item.searchText.includes(q)).map((item) => item.entry)
+    return query.trim()
+      ? searchableEntries
+          .filter((item) => gameDataSearchMatches(item.searchText, query, matchCase, wholeWord))
+          .map((item) => item.entry)
       : allEntries
-  }, [allEntries, query, searchableEntries])
+  }, [allEntries, matchCase, query, searchableEntries, wholeWord])
   const rowsBySource = useMemo(() => {
     const map = new Map<string, TranslationSessionEntry[]>()
     for (const row of session.entries) {
@@ -714,28 +739,25 @@ export function ReferencePage(): React.JSX.Element {
         </div>
         <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto md:grid-cols-[minmax(280px,0.42fr)_minmax(0,0.58fr)] md:overflow-hidden">
           <aside className="flex min-h-[250px] max-h-[46vh] min-w-0 flex-col border-b border-[#1f2329] p-3 md:min-h-0 md:max-h-none md:border-b-0 md:border-r">
-            <GameDataSearch onSearch={setQuery} />
-            <div className="mb-3 flex flex-wrap gap-1">
-              {CATEGORIES.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => {
-                    setCategory(item.value)
-                    setSelected(null)
-                  }}
-                  className={cn(
-                    'rounded px-2 py-1 text-[10px]',
-                    category === item.value
-                      ? 'bg-amber-500/15 text-amber-300'
-                      : 'text-neutral-500 hover:bg-[#1c1f24]'
-                  )}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-            <GameDataList entries={filtered} current={current} onSelect={setSelected} />
+            <GameDataSearch
+              query={query}
+              onSearch={setQuery}
+              category={category}
+              onCategoryChange={(value) => {
+                setCategory(value)
+                setSelected(null)
+              }}
+              matchCase={matchCase}
+              onMatchCaseChange={setMatchCase}
+              wholeWord={wholeWord}
+              onWholeWordChange={setWholeWord}
+            />
+            <GameDataList
+              key={category ?? 'all'}
+              entries={filtered}
+              current={current}
+              onSelect={setSelected}
+            />
           </aside>
           <main className="grid min-h-[680px] min-w-0 grid-rows-[minmax(260px,auto)_minmax(320px,1fr)] p-3 sm:min-h-[720px] sm:p-4 md:min-h-0 md:grid-rows-[minmax(300px,0.5fr)_minmax(0,0.5fr)]">
             <section className="mb-3 overflow-y-auto rounded-lg border border-[#1f2329] bg-[#131518] p-4">

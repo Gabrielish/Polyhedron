@@ -7,6 +7,7 @@ interface RenderSourceOptions {
   highlightQuery?: string
   searchHighlight?: 'underline' | 'select'
   termGlossary?: TermGlossaryEntry[]
+  whitespaceHighlight?: boolean
 }
 
 function GlossaryCopyButton({
@@ -48,7 +49,8 @@ export function renderSource(
     variant = 'display',
     highlightQuery = '',
     searchHighlight = 'select',
-    termGlossary = []
+    termGlossary = [],
+    whitespaceHighlight = false
   }: RenderSourceOptions = {}
 ): React.ReactNode {
   const query = highlightQuery.trim()
@@ -129,6 +131,13 @@ export function renderSource(
     )
     return !previous
   })
+  const whitespaceRanges: Array<[number, number]> = []
+  if (whitespaceHighlight) {
+    const leading = text.match(/^[ \t]+/)
+    const trailing = text.match(/[ \t]+$/)
+    if (leading) whitespaceRanges.push([0, leading[0].length])
+    if (trailing) whitespaceRanges.push([text.length - trailing[0].length, text.length])
+  }
   const highlightText = (
     value: string,
     keyPrefix: string,
@@ -148,7 +157,10 @@ export function renderSource(
         end: Math.min(term.end, offset + value.length)
       }))
       .filter((term) => term.end > term.start)
-    if (ranges.length === 0 && terms.length === 0) return value
+    const hasWhitespace = whitespaceRanges.some(
+      ([start, end]) => start < offset + value.length && end > offset
+    )
+    if (ranges.length === 0 && terms.length === 0 && !hasWhitespace) return value
     const children: React.ReactNode[] = []
     const boundaries = new Set<number>([0, value.length])
     ranges.forEach(([start, end]) => {
@@ -156,6 +168,10 @@ export function renderSource(
       boundaries.add(end - offset)
     })
     terms.forEach(({ start, end }) => {
+      boundaries.add(start - offset)
+      boundaries.add(end - offset)
+    })
+    whitespaceRanges.forEach(([start, end]) => {
       boundaries.add(start - offset)
       boundaries.add(end - offset)
     })
@@ -179,6 +195,9 @@ export function renderSource(
           .map((translation) => ({ source: match.source, translation }))
       )
       const isSearchMatch = ranges.some(
+        ([start, end]) => absoluteStart < end && offset + localEnd > start
+      )
+      const isWhitespaceMatch = whitespaceRanges.some(
         ([start, end]) => absoluteStart < end && offset + localEnd > start
       )
       let node: React.ReactNode = value.slice(localStart, localEnd)
@@ -226,6 +245,13 @@ export function renderSource(
                 )}
               </span>
             </span>
+          </span>
+        )
+      }
+      if (isWhitespaceMatch) {
+        node = (
+          <span className={`whitespace-selection-highlight whitespace-selection-${variant}`}>
+            {node}
           </span>
         )
       }

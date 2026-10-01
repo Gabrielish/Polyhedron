@@ -15,6 +15,32 @@
   font-family: "Cascadia Code";
 }
 
+.translation-selection-checkbox {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  accent-color: var(--poly-accent, #8c52ff);
+  border: 1px solid #3a3a3a;
+  border-radius: 0.2rem;
+  background-color: #050505 !important;
+  background-image: none !important;
+  display: inline-grid;
+  place-content: center;
+}
+
+.translation-selection-checkbox:checked {
+  appearance: auto;
+  border-radius: revert;
+  background: revert;
+}
+
+.translation-selection-checkbox:not(:checked) {
+  background-color: #050505 !important;
+  background-image: none !important;
+}
+
 ::selection {
   background-color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 34%, transparent);
   color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 72%, white);
@@ -63,17 +89,104 @@
   box-shadow: none !important;
 }
 
+/* Keep native scrolling available without reserving a dead scrollbar gutter
+   on Windows when a dropdown is shorter than its max height. */
+.themed-select-options {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.themed-select-options::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.titlebar-close-button:hover {
+  background: #ca3230 !important;
+  color: #ffffff !important;
+}
+
+html body .titlebar-close-button:hover {
+  background: #ca3230 !important;
+  color: #ffffff !important;
+}
+
+.titlebar-close-button:hover svg {
+  color: #ffffff !important;
+  stroke: currentColor !important;
+}
+
 .dialogue-tree-item:hover,
-.dialogue-tree-choice:hover {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 24%) !important;
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 8%) !important;
+.dialogue-tree-choice:not([aria-current="true"]):hover {
+  border: 0 !important;
+  background-color: #262626 !important;
   color: #eeeeee !important;
 }
 
-.dialogue-tree-choice[aria-current="true"] {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 70%);
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 16%);
+.dialogue-tree-item[aria-expanded="true"],
+.dialogue-tree-choice[aria-current="true"],
+.dialogue-tree-choice[aria-current="true"]:hover {
+  border: 0 !important;
+  background-color: color-mix(in srgb, var(--poly-accent) 10%, transparent) !important;
+  color: var(--poly-accent) !important;
 }
+
+.dialogue-tree-choice:not([aria-current="true"]) {
+  border: 0 !important;
+  background-color: transparent !important;
+}
+
+.dialogue-tree-choice:focus,
+.dialogue-tree-choice:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* The Liquid Glass theme adds a generic glow to every hovered button. These
+   tree rows use the same flat interaction treatment as the All statuses menu. */
+html[data-theme] .app-content-shell main button.dialogue-tree-item:not(:disabled):hover,
+html[data-theme] .app-content-shell main button.dialogue-tree-choice:not(:disabled):hover,
+html[data-theme] .app-content-shell main button.dialogue-tree-choice:focus,
+html[data-theme] .app-content-shell main button.dialogue-tree-choice:focus-visible {
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+html[data-theme] .app-content-shell main button.dialogue-tree-choice:not([aria-current="true"]):hover {
+  background-color: #262626 !important;
+  color: #e5e5e5 !important;
+}
+
+html[data-theme] .app-content-shell main button.dialogue-tree-choice[aria-current="true"],
+html[data-theme] .app-content-shell main button.dialogue-tree-choice[aria-current="true"]:hover {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
+  color: var(--color-amber-400, #c4b5fd) !important;
+}
+
+html[data-theme] .app-content-shell aside button.game-data-list-row:hover,
+html[data-theme] .app-content-shell aside button.game-data-list-row:focus,
+html[data-theme] .app-content-shell aside button.game-data-list-row:focus-visible,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option:hover,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option:focus,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option:focus-visible {
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+html[data-theme] .app-content-shell aside button.game-data-list-row:not(.is-selected):hover,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option:not(.is-selected):hover {
+  background-color: #262626 !important;
+  color: #e5e5e5 !important;
+}
+
+html[data-theme] .app-content-shell aside button.game-data-list-row.is-selected,
+html[data-theme] .app-content-shell aside button.game-data-list-row.is-selected:hover,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option.is-selected,
+html[data-theme] .app-content-shell aside button.translation-special-filter-option.is-selected:hover {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
+  color: var(--color-amber-400, #c4b5fd) !important;
+}
+
 
 .game-data-search-input,
 .game-data-search-input:focus,
@@ -1243,6 +1356,17 @@ html[data-theme="liquid-glass"] .app-content-shell main button.bulk-status-optio
   box-shadow:
     0 0 0 1px rgb(255 255 255 / 6%),
     0 0 8px rgb(255 255 255 / 6%) !important;
+}
+
+html[data-theme] .translation-special-filter-option.is-selected,
+html[data-theme] .translation-special-filter-option.is-selected:hover {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
+  color: var(--color-amber-400, #c4b5fd) !important;
+}
+
+html[data-theme] .translation-special-filter-option:not(.is-selected):hover {
+  background-color: #262626 !important;
+  color: #e5e5e5 !important;
 }
 
 .translation-search-bar {
@@ -4106,4 +4230,44 @@ html .animate-pulse [class~="bg-[#2b2119]"],
 html .animate-pulse [class~="bg-[#2b1d25]"],
 html .animate-pulse [class~="bg-[#2b2a1d]"] {
   background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+}
+.whitespace-selection-highlight {
+  background-color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 34%, transparent);
+  color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 72%, white);
+}
+
+.whitespace-selection-display {
+  line-height: inherit;
+  padding-block: calc(0.1em + 1px);
+  margin-block: calc(-0.1em - 1px);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.whitespace-selection-editor {
+  line-height: inherit;
+  padding-top: calc(0.06em + 0.5px);
+  padding-bottom: 0.06em;
+  margin-top: calc(-0.06em - 0.5px);
+  margin-bottom: -0.06em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Final Windows titlebar override: keep the close hover identical to ChatGPT. */
+html body button.titlebar-close-button:hover,
+html body button.titlebar-close-button:focus-visible {
+  background: #ca3230 !important;
+  background-color: #ca3230 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  isolation: isolate;
+}
+
+html body button.titlebar-close-button:hover svg,
+html body button.titlebar-close-button:focus-visible svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
