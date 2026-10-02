@@ -15,8 +15,8 @@
   "setup": {
     "steps": {
       "languages": "Languages",
-      "mod": "Mod",
-      "file": "File"
+      "mod": "Project",
+      "file": "Localization"
     },
     "languagePair": {
       "title": "Language pair",
@@ -25,21 +25,22 @@
       "target": "Target"
     },
     "modSelection": {
-      "title": "Mod",
-      "description": "Select an existing mod or create a new one.",
+      "title": "Project",
+      "description": "Select an existing project or create a new one.",
       "existing": "Existing",
       "new": "+ New",
-      "searchPlaceholder": "Search mod...",
-      "noMods": "No mods found. Create a new one.",
+      "searchPlaceholder": "Search project...",
+      "newProjectPlaceholder": "Project name...",
+      "noMods": "No projects found. Create a new one.",
       "noSearchResults": "No results for this search.",
       "modName": "Mod name",
-      "modNamePlaceholder": "ex: Order of the Dracolich"
+      "modNamePlaceholder": "Mod name..."
     },
     "fileCard": {
-      "title": "Mod file",
-      "description": "Drop here or browse. Accepts .xml, .pak, .zip.",
+      "title": "Localization file",
+      "description": "Drop here or browse for a localization file.",
       "dropZone": "File drop area",
-      "dropPrompt": "Drag the mod file here",
+      "dropPrompt": "Drag the localization file here",
       "browseFile": "Browse file",
       "fileSelected": "File selected"
     },

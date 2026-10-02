@@ -20,12 +20,17 @@ export function InjectLocalizationPage({
   const [languages, setLanguages] = useState<Language[]>([])
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const exportFlow = useTranslationExport(session, languages)
+  const isBg3Profile = session.gameProfile === 'bg3'
 
   useEffect(() => {
     window.api.language.getAll().then(setLanguages)
   }, [])
 
   const inject = async (platform: TargetPlatform) => {
+    if (!isBg3Profile) {
+      toast.error("Injection is only available for the Baldur's Gate 3 profile.")
+      return
+    }
     if (session.phase !== 'loaded' || session.entries.length === 0) {
       toast.error('Load a localization XML in Translate first.')
       return
@@ -91,7 +96,7 @@ export function InjectLocalizationPage({
             <div className="grid gap-4 sm:grid-cols-2">
               <button
                 type="button"
-                disabled={running !== null || isMacOS}
+                disabled={running !== null || isMacOS || !isBg3Profile}
                 onClick={() => {
                   if (!isMacOS) void inject('windows')
                 }}
@@ -119,7 +124,7 @@ export function InjectLocalizationPage({
               </button>
               <button
                 type="button"
-                disabled={running !== null || !isMacOS}
+                disabled={running !== null || !isMacOS || !isBg3Profile}
                 onClick={() => {
                   if (isMacOS) void inject('macos')
                 }}
@@ -159,6 +164,7 @@ export function InjectLocalizationPage({
                 onFormatChange={exportFlow.setExportFormat}
                 onExport={exportFlow.openExport}
                 onPakExport={exportFlow.exportPak}
+                packageExportEnabled={exportFlow.packageExportEnabled}
               />
             </div>
           </>

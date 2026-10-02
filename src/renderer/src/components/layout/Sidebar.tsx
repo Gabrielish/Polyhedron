@@ -16,6 +16,7 @@ import { startTransition, useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import { useConfig } from '@/hooks/useConfig'
+import { useTranslationSession } from '@/context/TranslationSession'
 
 type NavItemConfig = { to: string; icon: React.ElementType; labelKey: string }
 type NavGroupConfig = { label: string; icon: React.ElementType; items: NavItemConfig[] }
@@ -49,6 +50,8 @@ const NAV_GROUPS: NavGroupConfig[] = [
 const FOOTER_ITEMS: NavItemConfig[] = [
   { to: '/settings', icon: Settings, labelKey: 'settings' }
 ]
+
+const BG3_REFERENCE_PATHS = new Set(['/dialogues', '/game-data', '/spells'])
 
 function NavItem({
   to,
@@ -153,14 +156,17 @@ function NavCapsule({
 export function Sidebar(): React.JSX.Element {
   const { t } = useAppTranslation('sidebar')
   const { config } = useConfig()
+  const { gameProfile } = useTranslationSession()
   const showGlossary = config['show_glossary'] === 'true'
+  const showBg3Reference = gameProfile === 'bg3'
   return (
     <aside className="sidebar-shell group/sidebar fixed top-0 left-0 z-40 flex h-screen w-16 flex-col overflow-hidden border-r border-[#1f2329] bg-[#0f1114] transition-[width] duration-200 hover:w-72">
       <nav className="sidebar-nav flex-1 overflow-y-auto px-2 py-3">
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter(
             (item) =>
-              (item.to !== '/dictionary' || showGlossary)
+              (item.to !== '/dictionary' || showGlossary) &&
+              (showBg3Reference || !BG3_REFERENCE_PATHS.has(item.to))
           )
           return items.length > 0 ? (
             <NavCapsule key={group.label} group={{ ...group, items }} translate={t} />

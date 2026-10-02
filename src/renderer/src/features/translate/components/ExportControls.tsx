@@ -9,13 +9,15 @@ interface ExportControlsProps {
   onFormatChange: (format: ExportFormat) => void
   onExport: () => Promise<void>
   onPakExport: () => Promise<void>
+  packageExportEnabled?: boolean
 }
 
 export function ExportControls({
   exportFormat,
   onFormatChange,
   onExport,
-  onPakExport
+  onPakExport,
+  packageExportEnabled = true
 }: ExportControlsProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common'])
 
@@ -29,14 +31,16 @@ export function ExportControls({
         menuClassName="border-neutral-700"
         options={[
           { value: 'xml', label: 'xml' },
-          { value: 'pak', label: 'pak' },
-          { value: 'zip', label: 'zip' }
+          ...(packageExportEnabled
+            ? [{ value: 'pak', label: 'pak' }, { value: 'zip', label: 'zip' }]
+            : [])
         ]}
       />
       <button
         type="button"
         className={btnPrimary}
         onClick={onPakExport}
+        disabled={!packageExportEnabled}
         title="Create English.pak"
       >
         <Archive />

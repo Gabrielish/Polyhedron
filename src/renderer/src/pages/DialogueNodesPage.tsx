@@ -17,7 +17,6 @@ import {
   BookOpen,
   BookText,
   Hash,
-  Search,
   Sparkles,
   Code2,
   X

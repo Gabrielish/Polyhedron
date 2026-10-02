@@ -1,7 +1,8 @@
 import path from 'node:path'
 import { Worker } from 'node:worker_threads'
-import { databasePath } from '../utils/app-paths'
 import type { RepositoryRegistry } from '../database/repositories/registry'
+import { databasePath } from '../utils/app-paths'
+import { toBg3LanguageFolder } from '../utils/languages'
 import type {
   XmlEntry,
   XmlLoadProgress,
@@ -24,7 +25,7 @@ export interface LoadXmlParams {
 
 function languageFolder(repos: RepositoryRegistry, languageCode: string): string {
   const lang = repos.language.findByCode(languageCode)
-  return (lang?.name ?? languageCode).replace(/[^a-zA-Z0-9]/g, '')
+  return toBg3LanguageFolder(languageCode, lang?.name)
 }
 
 function getDbPath(): string {

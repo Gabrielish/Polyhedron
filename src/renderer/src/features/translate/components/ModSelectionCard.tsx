@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react'
+import { FolderPlus, Search, X } from 'lucide-react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { ModInfo } from '@/types'
@@ -10,16 +10,12 @@ interface ModSelectionCardProps {
   newModName: string
   mods: ModInfo[]
   filteredMods: ModInfo[]
-  pagedMods: ModInfo[]
   modSearch: string
-  clampedPage: number
-  totalPages: number
   onExistingMode: () => void
   onNewMode: () => void
   onNewModNameChange: (value: string) => void
   onModSearchChange: (value: string) => void
   onModSelect: (mod: ModInfo) => void
-  onPageChange: (updater: (page: number) => number) => void
 }
 
 export function ModSelectionCard({
@@ -28,16 +24,12 @@ export function ModSelectionCard({
   newModName,
   mods,
   filteredMods,
-  pagedMods,
   modSearch,
-  clampedPage,
-  totalPages,
   onExistingMode,
   onNewMode,
   onNewModNameChange,
   onModSearchChange,
-  onModSelect,
-  onPageChange
+  onModSelect
 }: ModSelectionCardProps): React.JSX.Element {
   const { t, currentLanguage } = useAppTranslation(['translate', 'common'])
   const shouldHighlightNewMode = mods.length === 0 && isNewMod
@@ -83,8 +75,8 @@ export function ModSelectionCard({
       {!isNewMod ? (
         <div className="flex flex-col gap-2">
           <div className="relative">
-            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none">
-              <Search size={12} />
+            <span className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-neutral-400">
+              <Search size={13} strokeWidth={2} />
             </span>
             <input
               className="w-full h-8 pl-8 pr-8 rounded-md border border-[#1f2329] bg-[#0f1114] text-xs text-neutral-200 focus:outline-none focus:border-neutral-600 placeholder:text-neutral-600"
@@ -99,7 +91,7 @@ export function ModSelectionCard({
             )}
           </div>
 
-          <div className="flex flex-col gap-1.5">
+          <div className="polyhedron-scroll flex max-h-36 flex-col gap-1.5 overflow-y-auto pr-1">
             {filteredMods.length === 0 ? (
               <p className="text-xs text-neutral-600 py-4 text-center">
                 {mods.length === 0
@@ -107,7 +99,7 @@ export function ModSelectionCard({
                   : t('setup.modSelection.noSearchResults')}
               </p>
             ) : (
-              pagedMods.map((mod) => (
+              filteredMods.map((mod) => (
                 <ModOption
                   key={mod.name}
                   mod={mod}
@@ -118,43 +110,23 @@ export function ModSelectionCard({
               ))
             )}
           </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-0.5">
-              <button
-                type="button"
-                disabled={clampedPage === 0}
-                onClick={() => onPageChange((page) => Math.max(0, page - 1))}
-                className="inline-flex items-center gap-1 text-[11px] text-neutral-500 hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                {t('actions.previous', { ns: 'common' })}
-              </button>
-              <span className="font-mono text-[11px] text-neutral-600 tabular-nums">
-                {clampedPage + 1} / {totalPages}
-              </span>
-              <button
-                type="button"
-                disabled={clampedPage >= totalPages - 1}
-                onClick={() => onPageChange((page) => Math.min(totalPages - 1, page + 1))}
-                className="inline-flex items-center gap-1 text-[11px] text-neutral-500 hover:text-neutral-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
-              >
-                {t('actions.next', { ns: 'common' })}
-              </button>
-            </div>
-          )}
         </div>
       ) : (
         <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            {t('setup.modSelection.modName')}
-          </span>
-          <input
-            className="h-9 px-3 rounded-md border border-[#1f2329] bg-[#0f1114] text-sm text-neutral-200 focus:outline-none focus:border-amber-500 focus:shadow-[0_0_0_3px_rgba(245,158,11,0.15)] placeholder:text-neutral-600"
-            placeholder={t('setup.modSelection.modNamePlaceholder')}
-            value={newModName}
-            onChange={(event) => onNewModNameChange(event.target.value)}
-            autoFocus={mods.length === 0}
-          />
+          <div className="relative">
+            <FolderPlus
+              size={13}
+              strokeWidth={2}
+              className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-neutral-400"
+            />
+            <input
+              className="h-8 w-full rounded-md border border-[#1f2329] bg-[#0f1114] pl-8 pr-3 text-xs text-neutral-200 focus:border-amber-500 focus:outline-none focus:shadow-[0_0_0_3px_rgba(245,158,11,0.15)] placeholder:text-neutral-600"
+              placeholder={t('setup.modSelection.newProjectPlaceholder')}
+              value={newModName}
+              onChange={(event) => onNewModNameChange(event.target.value)}
+              autoFocus={mods.length === 0}
+            />
+          </div>
         </div>
       )}
     </>

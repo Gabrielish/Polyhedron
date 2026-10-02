@@ -7,15 +7,16 @@ export interface LocalizationEntry {
   text: string
 }
 
-// Regex-based parse to preserve mixed content (LSTag elements inside text nodes).
-// fast-xml-parser would strip inner XML - raw regex keeps it intact.
+// Regex-based parse to preserve mixed content (LSTag/font elements inside text
+// nodes). DOS1/DOS2 omit BG3's version attribute, so it is optional and an
+// empty version is carried through to the writer.
 export function parseLocalizationXml(filePath: string): LocalizationEntry[] {
   const raw = fs.readFileSync(filePath, 'utf-8')
   const entries: LocalizationEntry[] = []
-  const re = /<content\s+contentuid="([^"]+)"\s+version="([^"]+)">([\s\S]*?)<\/content>/g
+  const re = /<content\s+contentuid="([^"]+)"(?:\s+version="([^"]+)")?\s*>([\s\S]*?)<\/content>/g
   let match = re.exec(raw)
   while (match !== null) {
-    entries.push({ contentuid: match[1], version: match[2], text: match[3] })
+    entries.push({ contentuid: match[1], version: match[2] ?? '', text: match[3] })
     match = re.exec(raw)
   }
   return entries
@@ -26,7 +27,8 @@ export function writeLocalizationXml(entries: LocalizationEntry[], outputPath: s
     '<?xml version="1.0" encoding="utf-8"?>',
     '<contentList>',
     ...entries.map(
-      (e) => `\t<content contentuid="${e.contentuid}" version="${e.version}">${e.text}</content>`
+      (e) =>
+        `\t<content contentuid="${e.contentuid}"${e.version ? ` version="${e.version}"` : ''}>${e.text}</content>`
     ),
     '</contentList>'
   ]

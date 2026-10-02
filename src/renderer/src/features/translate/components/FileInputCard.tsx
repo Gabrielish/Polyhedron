@@ -5,6 +5,7 @@ import { btnBase, btnGhostIcon } from './styles'
 
 interface FileInputCardProps {
   fileName: string | null
+  acceptedExtensions?: string[]
   isDragging: boolean
   onBrowse: () => Promise<void>
   onDragOver: (event: React.DragEvent) => void
@@ -15,6 +16,7 @@ interface FileInputCardProps {
 
 export function FileInputCard({
   fileName,
+  acceptedExtensions = ['xml', 'pak', 'zip'],
   isDragging,
   onBrowse,
   onDragOver,
@@ -43,37 +45,34 @@ export function FileInputCard({
         className={cn(
           'rounded-xl border transition-all',
           fileName
-            ? 'p-3.5 border-amber-500 bg-[#0f1114]'
+            ? 'p-3 border-amber-500 bg-[#0f1114]'
             : isDragging
-              ? 'p-8 border-dashed border-amber-500 bg-amber-400/5'
-              : 'p-8 border-dashed border-[#2a2f37] bg-[#0f1114]'
+              ? 'p-3 border-dashed border-amber-500 bg-amber-400/5'
+              : 'p-3 border-dashed border-[#2a2f37] bg-[#0f1114]'
         )}
       >
         {!fileName ? (
-          <div className="flex flex-col items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <div
               aria-hidden="true"
               className={cn(
-                'w-12 h-12 rounded-full border flex items-center justify-center',
+                'h-10 w-10 shrink-0 rounded-xl border flex items-center justify-center',
                 isDragging
                   ? 'border-amber-400 bg-[#131518] text-amber-400'
                   : 'border-[#1f2329] bg-neutral-900 text-neutral-500'
               )}
             >
-              <Upload />
+              <Upload size={17} />
             </div>
-            <div className="text-[13px] font-medium text-neutral-300">
-              {t('setup.fileCard.dropPrompt', { ns: 'translate' })}
-            </div>
-            <div className="flex gap-1.5">
-              {['.xml', '.pak', '.zip'].map((ext) => (
-                <span
-                  key={ext}
-                  className="font-mono text-[10px] px-1.5 py-0.5 bg-[#131518] border border-[#1f2329] rounded text-neutral-500"
-                >
-                  {ext}
-                </span>
-              ))}
+            <div className="min-w-0 flex-1">
+              <div className="text-[13px] font-medium text-neutral-300">
+                {t('setup.fileCard.dropPrompt', { ns: 'translate' })}
+              </div>
+              <div className="mt-1 flex items-center gap-1.5 text-[10px] text-neutral-600">
+                {acceptedExtensions.map((extension) => (
+                  <span key={extension} className="font-mono">.{extension}</span>
+                ))}
+              </div>
             </div>
             <button type="button" onClick={onBrowse} className={btnBase}>
               <File size={13} />

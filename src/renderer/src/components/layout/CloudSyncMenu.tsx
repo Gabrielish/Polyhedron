@@ -48,7 +48,10 @@ function fingerprint(
 ): string {
   let hash = 2166136261
   for (const entry of entries) {
-    const value = `${entry.uid}\u0000${entry.target}\u0000${JSON.stringify(entry.genderTargets ?? {})}\u0000${entry.matchType}\u0000${entry.needsReview}\u0000${entry.reviewStatus ?? ''}\u0000${JSON.stringify(entry.history ?? [])}`
+    // Keep this aligned with the fingerprint stored in the Drive workspace
+    // metadata. The remote sync document identifies the current translation
+    // content by UID and target text; review metadata is synced separately.
+    const value = `${entry.uid}\u0000${entry.target}`
     for (let index = 0; index < value.length; index += 1) {
       hash ^= value.charCodeAt(index)
       hash = Math.imul(hash, 16777619)
@@ -73,6 +76,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [syncResult])
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
+  const [remoteFingerprint, setRemoteFingerprint] = useState<string | null>(null)
   const [lastUploadedAt, setLastUploadedAt] = useState<string | null>(null)
   const [lastDownloadedAt, setLastDownloadedAt] = useState<string | null>(null)
   const [autoSyncBlocked, setAutoSyncBlocked] = useState(false)
@@ -148,6 +152,7 @@ export function CloudSyncMenu(): React.JSX.Element {
 
   useEffect(() => {
     setSavedFingerprint(localStorage.getItem(syncKey))
+    setRemoteFingerprint(null)
     setLastUploadedAt(localStorage.getItem(lastUploadedKey))
     setLastDownloadedAt(localStorage.getItem(lastDownloadedKey))
     setAutoSyncBlocked(false)
@@ -173,7 +178,9 @@ export function CloudSyncMenu(): React.JSX.Element {
     session.phase === 'loaded' &&
     !remoteChanged &&
     savedFingerprint !== null &&
-    savedFingerprint === currentFingerprint
+    savedFingerprint === currentFingerprint &&
+    remoteFingerprint !== null &&
+    remoteFingerprint === currentFingerprint
 
   useEffect(() => {
     if (session.phase !== 'loaded') return
@@ -184,7 +191,11 @@ export function CloudSyncMenu(): React.JSX.Element {
     const checkRemote = async () => {
       try {
         if (busy) return
-        const stamp = await window.api.cloud.syncStamp()
+        const [stamp, cloudStatus] = await Promise.all([
+          window.api.cloud.syncStamp(),
+          window.api.cloud.status()
+        ])
+        if (!cancelled && cloudStatus.fingerprint) setRemoteFingerprint(cloudStatus.fingerprint)
         if (cancelled || autoSyncStateRef.current.busy || !stamp) return
         const previous = localStorage.getItem(remoteStampKey)
         if (!previous) {
@@ -338,6 +349,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       // as unsynced even though the current UI state was uploaded.
       localStorage.setItem(syncKey, currentFingerprint)
       setSavedFingerprint(currentFingerprint)
+      setRemoteFingerprint(result.stats.fingerprint)
       const uploadedAt = result.modifiedTime ?? new Date().toISOString()
       localStorage.setItem(lastUploadedKey, uploadedAt)
       localStorage.setItem(globalLastUploadedKey, uploadedAt)
@@ -380,6 +392,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       }
       localStorage.setItem(syncKey, 'download-pending')
       setSavedFingerprint('download-pending')
+      setRemoteFingerprint(null)
       const downloadedAt = new Date().toISOString()
       localStorage.setItem(lastDownloadedKey, downloadedAt)
       localStorage.setItem(globalLastDownloadedKey, downloadedAt)

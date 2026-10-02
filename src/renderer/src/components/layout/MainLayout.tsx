@@ -116,18 +116,13 @@ function TranslateSetupSkeleton(): React.JSX.Element {
   return (
     <div className="flex min-h-full flex-1 flex-col animate-pulse bg-[#0c0d0f]">
       <div className="shrink-0 border-b border-[#1f2329] bg-[#101114] px-6 py-4">
-        <div className="mx-auto flex max-w-220 items-center justify-between gap-5">
+        <div className="mx-auto flex max-w-220 items-center gap-5">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl border border-[#6d45d8]/40 bg-[#241b3b]" />
             <div className="space-y-2">
               <div className="h-4 w-40 rounded bg-[#20242a]" />
               <div className="h-3 w-64 rounded bg-[#181c21]" />
             </div>
-          </div>
-          <div className="flex gap-1.5 rounded-xl border border-[#1f2329] bg-[#0b0c0f] p-1">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-7 w-20 rounded-lg bg-[#241b3b]" />
-            ))}
           </div>
         </div>
       </div>

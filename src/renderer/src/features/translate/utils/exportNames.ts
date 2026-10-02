@@ -1,6 +1,27 @@
 import type { Language } from '@/types'
 
+const BG3_OFFICIAL_LANGUAGE_FOLDERS: Record<string, string> = {
+  de: 'German',
+  en: 'English',
+  es: 'Spanish',
+  'es-419': 'LatinSpanish',
+  fr: 'French',
+  it: 'Italian',
+  ja: 'Japanese',
+  ko: 'Korean',
+  pl: 'Polish',
+  'pt-BR': 'BrazilianPortuguese',
+  ru: 'Russian',
+  tr: 'Turkish',
+  uk: 'Ukrainian',
+  'zh-CN': 'Chinese',
+  'zh-TW': 'ChineseTraditional'
+}
+
 export function languageToBg3Folder(language: Language | undefined, fallback: string): string {
+  const code = language?.code ?? fallback
+  const officialFolder = BG3_OFFICIAL_LANGUAGE_FOLDERS[code]
+  if (officialFolder) return officialFolder
   return (language?.name ?? fallback).replace(/[^a-zA-Z0-9]/g, '')
 }
 

@@ -220,7 +220,10 @@ const api: AppApi = {
     storeFile: (params: { modName: string; filePath: string }): Promise<{ storedPath: string }> =>
       ipcRenderer.invoke('mod:storeFile', params),
 
-    prepareTranslationInput: (params: { inputPath: string }) =>
+    prepareTranslationInput: (params: {
+      inputPath: string
+      gameProfile: 'bg3' | 'dos1' | 'dos2'
+    }) =>
       ipcRenderer.invoke('mod:prepareTranslationInput', params),
 
     discardTranslationInput: (params: { importId: string }): Promise<{ success: boolean }> =>
@@ -474,6 +477,7 @@ const api: AppApi = {
       modifiedTime: string | null
       translated: number | null
       total: number | null
+      fingerprint: string | null
     }> => ipcRenderer.invoke('cloud:status')
   },
 

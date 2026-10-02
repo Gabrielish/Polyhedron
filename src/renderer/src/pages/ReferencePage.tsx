@@ -1,5 +1,4 @@
 import {
-  Search,
   ExternalLink,
   Swords,
   Shield,
@@ -18,7 +17,6 @@ import {
   BookText,
   Hash,
   Code2,
-  X
 } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { useEffect } from 'react'

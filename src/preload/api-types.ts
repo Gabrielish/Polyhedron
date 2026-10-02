@@ -202,6 +202,8 @@ export interface PreparedTranslationInput {
   candidates: TranslationXmlCandidate[]
 }
 
+export type TranslationGameProfile = 'bg3' | 'dos1' | 'dos2'
+
 export interface CompleteTranslationImportResult {
   xmlPath: string
   meta: ModMeta
@@ -225,6 +227,10 @@ export type ConfigKey =
   | 'ai_similarity_min_score'
   | 'last_source_lang'
   | 'last_target_lang'
+  | 'last_game_profile'
+  | 'last_project_bg3'
+  | 'last_project_dos1'
+  | 'last_project_dos2'
   | 'app_language'
   | 'author'
   | 'dictionary_page_size'
@@ -407,7 +413,10 @@ export interface ModApi {
     lastFilePath?: string
   }): Promise<{ success: boolean }>
   storeFile(params: { modName: string; filePath: string }): Promise<{ storedPath: string }>
-  prepareTranslationInput(params: { inputPath: string }): Promise<PreparedTranslationInput>
+  prepareTranslationInput(params: {
+    inputPath: string
+    gameProfile: TranslationGameProfile
+  }): Promise<PreparedTranslationInput>
   discardTranslationInput(params: { importId: string }): Promise<{ success: boolean }>
   completeTranslationImport(params: {
     importId: string
@@ -760,6 +769,7 @@ export interface CloudApi {
     modifiedTime: string | null
     translated: number | null
     total: number | null
+    fingerprint: string | null
   }>
 }
 

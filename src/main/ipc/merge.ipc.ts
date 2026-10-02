@@ -64,7 +64,7 @@ export function registerMergeHandlers(repos: RepositoryRegistry): void {
   ipcMain.handle(
     'merge:prepareInput',
     async (_event, payload: PrepareInputPayload): Promise<PreparedTranslationInput> =>
-      prepareTranslationInput(payload.inputPath)
+      prepareTranslationInput(payload.inputPath, 'bg3')
   )
 
   ipcMain.handle(

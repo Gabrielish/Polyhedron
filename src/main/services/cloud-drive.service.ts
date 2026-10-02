@@ -289,14 +289,16 @@ export async function getCloudWorkspaceStatus(): Promise<{
   modifiedTime: string | null
   translated: number | null
   total: number | null
+  fingerprint: string | null
 }> {
   const drive = google.drive({ version: 'v3', auth: await getAuth() })
   const file = await findWorkspaceFile(drive)
-  if (!file) return { modifiedTime: null, translated: null, total: null }
+  if (!file) return { modifiedTime: null, translated: null, total: null, fingerprint: null }
   try {
     const metadata = JSON.parse(file.description ?? '') as {
       translated?: unknown
       total?: unknown
+      fingerprint?: unknown
     }
     if (typeof metadata.translated !== 'number' || typeof metadata.total !== 'number') {
       throw new Error('Workspace description has no sync statistics')
@@ -304,7 +306,8 @@ export async function getCloudWorkspaceStatus(): Promise<{
     return {
       modifiedTime: file.modifiedTime ?? null,
       translated: metadata.translated,
-      total: metadata.total
+      total: metadata.total,
+      fingerprint: typeof metadata.fingerprint === 'string' ? metadata.fingerprint : null
     }
   } catch {
     // Older workspace files do not have Drive description metadata yet. Fall
@@ -317,7 +320,7 @@ export async function getCloudWorkspaceStatus(): Promise<{
       pageSize: 1
     })
     const syncFileId = syncFile.data.files?.[0]?.id
-    if (!syncFileId) return { modifiedTime: file.modifiedTime ?? null, translated: null, total: null }
+    if (!syncFileId) return { modifiedTime: file.modifiedTime ?? null, translated: null, total: null, fingerprint: null }
     try {
       const response = await drive.files.get({ fileId: syncFileId, alt: 'media' }, { responseType: 'json' })
       const document = response.data as {
@@ -327,10 +330,11 @@ export async function getCloudWorkspaceStatus(): Promise<{
       return {
         modifiedTime: file.modifiedTime ?? null,
         translated: entries.filter((entry) => Boolean(entry.target?.trim())).length,
-        total: entries.length
+        total: entries.length,
+        fingerprint: null
       }
     } catch {
-      return { modifiedTime: file.modifiedTime ?? null, translated: null, total: null }
+      return { modifiedTime: file.modifiedTime ?? null, translated: null, total: null, fingerprint: null }
     }
   }
 }

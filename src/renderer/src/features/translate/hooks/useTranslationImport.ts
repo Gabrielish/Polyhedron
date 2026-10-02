@@ -10,13 +10,15 @@ interface UseTranslationImportParams {
   sourceLang: string
   targetLang: string
   modName: string
+  gameProfile: 'bg3' | 'dos1' | 'dos2'
 }
 
 export function useTranslationImport({
   session,
   sourceLang,
   targetLang,
-  modName
+  modName,
+  gameProfile
 }: UseTranslationImportParams) {
   const { t } = useAppTranslation(['toasts', 'common'])
   const [isPreparing, setIsPreparing] = useState(false)
@@ -40,7 +42,7 @@ export function useTranslationImport({
 
     try {
       setIsPreparing(true)
-      const prepared = await window.api.mod.prepareTranslationInput({ inputPath: filePath })
+      const prepared = await window.api.mod.prepareTranslationInput({ inputPath: filePath, gameProfile })
       const validCandidates = prepared.candidates.filter((candidate) => candidate.valid)
       if (prepared.requiresSelection) {
         setPreparedImport(prepared)

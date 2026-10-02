@@ -14,8 +14,8 @@
   "setup": {
     "steps": {
       "languages": "Idiomas",
-      "mod": "Mod",
-      "file": "Arquivo"
+      "mod": "Projeto",
+      "file": "Localização"
     },
     "languagePair": {
       "title": "Par de idiomas",
@@ -24,21 +24,22 @@
       "target": "Destino"
     },
     "modSelection": {
-      "title": "Mod",
-      "description": "Selecione um mod existente ou crie um novo.",
+      "title": "Projeto",
+      "description": "Selecione um projeto existente ou crie um novo.",
       "existing": "Existente",
       "new": "+ Novo",
-      "searchPlaceholder": "Buscar mod...",
-      "noMods": "Nenhum mod encontrado. Crie um novo.",
+      "searchPlaceholder": "Buscar projeto...",
+      "newProjectPlaceholder": "Nome do projeto...",
+      "noMods": "Nenhum projeto encontrado. Crie um novo.",
       "noSearchResults": "Nenhum resultado para a busca.",
       "modName": "Nome do mod",
-      "modNamePlaceholder": "ex: Order of the Dracolich"
+      "modNamePlaceholder": "Nome do mod..."
     },
     "fileCard": {
-      "title": "Arquivo do mod",
-      "description": "Solte aqui ou procure. Aceita .xml, .pak, .zip.",
+      "title": "Arquivo de localização",
+      "description": "Solte aqui ou procure um arquivo de localização.",
       "dropZone": "Área de drop de arquivo",
-      "dropPrompt": "Arraste o arquivo do mod aqui",
+      "dropPrompt": "Arraste o arquivo de localização aqui",
       "browseFile": "Buscar arquivo",
       "fileSelected": "Arquivo selecionado"
     },

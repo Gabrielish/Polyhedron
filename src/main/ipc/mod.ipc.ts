@@ -2,7 +2,6 @@ import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { ipcMain } from 'electron'
-import { projectPath } from '../utils/app-paths'
 import type { RepositoryRegistry } from '../database/repositories/registry'
 import { packMod, unpackMod } from '../services/lslib.service'
 import type { MetaInfo } from '../services/lsx-parser.service'
@@ -10,18 +9,19 @@ import { deleteMod } from '../services/mod-delete.service'
 import {
   completeTranslationImport as completeImport,
   discardTranslationInput,
-  exportTranslatedPackage,
   exportLocalizationPak,
-  injectLocalizationPak,
+  exportTranslatedPackage,
   getMetaForMod,
   getStoredModDir,
+  injectLocalizationPak,
   prepareTranslationInput,
   upsertMetaForMod
 } from '../services/translation-import.service'
 import { findLocalizationXmls, parseLocalizationXml } from '../services/xml-parser.service'
 import { extract } from '../services/zip.service'
+import { projectPath } from '../utils/app-paths'
 import { findPakFiles } from '../utils/findPakFiles'
-import { normalizeLangs } from '../utils/languages'
+import { normalizeLangs, toBg3LanguageFolder } from '../utils/languages'
 
 interface ExtractPayload {
   inputPath: string
@@ -48,7 +48,7 @@ function sanitizeModName(name: string): string {
 
 function languageFolder(repos: RepositoryRegistry, languageCode: string): string {
   const language = repos.language.findByCode(languageCode)
-  return (language?.name ?? languageCode).replace(/[^a-zA-Z0-9]/g, '')
+  return toBg3LanguageFolder(languageCode, language?.name)
 }
 
 function isDeveloperNote(source: string): boolean {
@@ -149,8 +149,14 @@ export function registerModHandlers(repos: RepositoryRegistry): void {
 
   ipcMain.handle(
     'mod:prepareTranslationInput',
-    async (_event, { inputPath }: { inputPath: string }) => {
-      return prepareTranslationInput(inputPath)
+    async (
+      _event,
+      {
+        inputPath,
+        gameProfile
+      }: { inputPath: string; gameProfile: 'bg3' | 'dos1' | 'dos2' }
+    ) => {
+      return prepareTranslationInput(inputPath, gameProfile)
     }
   )
 

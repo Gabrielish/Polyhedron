@@ -28,6 +28,8 @@ import { writePackage } from './pak/pak-writer'
 import { writeLoca } from './pak/loca-writer'
 import { projectPath } from '../utils/app-paths'
 
+export type TranslationGameProfile = 'bg3' | 'dos1' | 'dos2'
+
 export interface TranslationXmlCandidate {
   id: string
   absolutePath: string
@@ -321,13 +323,14 @@ export async function injectLocalizationPak(
 }
 
 export async function prepareTranslationInput(
-  inputPath: string
+  inputPath: string,
+  gameProfile: TranslationGameProfile
 ): Promise<PreparedTranslationInput> {
   const ext = path.extname(inputPath).toLowerCase()
   const importId = randomUUID()
 
   if (ext === '.xml') {
-    const candidate = inspectXmlCandidate(inputPath, inputPath, 'direct')
+    const candidate = inspectXmlCandidate(inputPath, inputPath, 'direct', gameProfile)
     stagedImports.set(importId, {
       inputPath,
       tempDirs: [],
@@ -359,7 +362,7 @@ export async function prepareTranslationInput(
 
     const xmlPaths = findLocalizationXmlsDeep(unpackedDir)
     const candidates = xmlPaths.map((xmlPath, index) =>
-      inspectXmlCandidate(xmlPath, unpackedDir, `candidate-${index}`)
+      inspectXmlCandidate(xmlPath, unpackedDir, `candidate-${index}`, gameProfile)
     )
     const metaPath = findMetaLsx(unpackedDir)
 
@@ -627,7 +630,8 @@ function sanitizeStoredModName(name: string): string {
 function inspectXmlCandidate(
   xmlPath: string,
   rootDir: string,
-  id: string
+  id: string,
+  gameProfile: TranslationGameProfile
 ): TranslationXmlCandidate {
   const stat = fs.statSync(xmlPath)
   let stringCount = 0
@@ -636,14 +640,26 @@ function inspectXmlCandidate(
   } catch {
     stringCount = 0
   }
+  const raw = fs.readFileSync(xmlPath, 'utf-8')
+  const hasVersionAttributes = /<content\b[^>]*\bversion="[^"]+"/.test(raw)
+  const divinity2Markers =
+    (raw.match(/&lt;(?:i|b)&gt;/gi) ?? []).length +
+    (raw.match(/\[(?:IFAN|SCHOLAR|SEBILLE|FANE|LOHSE|UNDEAD|OUTLAW|MYSTIC|VILLAIN|BARBARIAN)\]/g) ?? []).length
+  const looksLikeDivinity2 = divinity2Markers >= 3
+  const matchesProfile =
+    gameProfile === 'bg3'
+      ? hasVersionAttributes
+      : !hasVersionAttributes &&
+        (gameProfile === 'dos2' ? looksLikeDivinity2 : !looksLikeDivinity2)
+  const valid = stringCount > 0 && matchesProfile
   return {
     id,
     absolutePath: xmlPath,
     relativePath: relativeFromLocalization(xmlPath, rootDir),
     stringCount,
     sizeKb: Number((stat.size / 1024).toFixed(1)),
-    valid: stringCount > 0,
-    status: stringCount > 0 ? 'valid' : 'invalid'
+    valid,
+    status: valid ? 'valid' : 'invalid'
   }
 }
 

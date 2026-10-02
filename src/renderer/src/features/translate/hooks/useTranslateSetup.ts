@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import type { ModInfo } from '@/types'
 import { normalizeSearchText } from '@/utils/search'
 import type { TranslationSession } from '../types'
-
-const MODS_PER_PAGE = 6
+import { DEFAULT_GAME_PROFILE, getGameProfile, type GameProfileId } from '../gameProfiles'
 
 function fileNameFromPath(path: string): string {
   return path.split(/[\\/]/).pop() ?? path
@@ -12,6 +11,9 @@ function fileNameFromPath(path: string): string {
 export function useTranslateSetup(session: TranslationSession) {
   const [sourceLang, setSourceLangLocal] = useState(session.sourceLang)
   const [targetLang, setTargetLangLocal] = useState(session.targetLang)
+  const [gameProfile, setGameProfileLocal] = useState<GameProfileId>(
+    session.gameProfile ?? DEFAULT_GAME_PROFILE
+  )
   const [selectedMod, setSelectedMod] = useState<string | null>(null)
   const [isNewMod, setIsNewMod] = useState(false)
   const [newModName, setNewModName] = useState('')
@@ -19,21 +21,21 @@ export function useTranslateSetup(session: TranslationSession) {
   const [fileName, setFileName] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [mods, setMods] = useState<ModInfo[]>([])
+  const [savedProjectNames, setSavedProjectNames] = useState<Record<string, string>>({})
+  const [savedProjectsLoaded, setSavedProjectsLoaded] = useState(false)
   const [languages, setLanguages] = useState<
     Awaited<ReturnType<typeof window.api.language.getAll>>
   >([])
   const [modSearch, setModSearch] = useState('')
-  const [modPage, setModPage] = useState(0)
   const [hasUserChosenMode, setHasUserChosenMode] = useState(false)
+  const gameProfileInfo = getGameProfile(gameProfile)
+
+  useEffect(() => {
+    if (session.gameProfile !== gameProfile) setGameProfileLocal(session.gameProfile)
+  }, [gameProfile, session.gameProfile])
 
   const filteredMods = mods.filter((mod) =>
     normalizeSearchText(mod.name).includes(normalizeSearchText(modSearch))
-  )
-  const totalPages = Math.max(1, Math.ceil(filteredMods.length / MODS_PER_PAGE))
-  const clampedPage = Math.min(modPage, totalPages - 1)
-  const pagedMods = filteredMods.slice(
-    clampedPage * MODS_PER_PAGE,
-    (clampedPage + 1) * MODS_PER_PAGE
   )
 
   const modName = isNewMod ? newModName.trim() : (selectedMod ?? '')
@@ -47,6 +49,14 @@ export function useTranslateSetup(session: TranslationSession) {
 
   useEffect(() => {
     window.api.language.getAll().then(setLanguages)
+    window.api.config.getAll().then((config) => {
+      setSavedProjectNames({
+        bg3: config.last_project_bg3 ?? '',
+        dos1: config.last_project_dos1 ?? '',
+        dos2: config.last_project_dos2 ?? ''
+      })
+      setSavedProjectsLoaded(true)
+    })
   }, [])
 
   useEffect(() => {
@@ -57,9 +67,30 @@ export function useTranslateSetup(session: TranslationSession) {
   }, [sourceLang, targetLang])
 
   useEffect(() => {
-    if (hasUserChosenMode) return
+    if (hasUserChosenMode || !savedProjectsLoaded) return
     if (mods.length === 0) {
       setIsNewMod(true)
+      setSelectedMod(null)
+      return
+    }
+    const rememberedProject = savedProjectNames[gameProfile]
+    const rememberedMod = rememberedProject
+      ? mods.find((mod) => mod.name === rememberedProject)
+      : undefined
+    if (rememberedMod) {
+      setIsNewMod(false)
+      setSelectedMod(rememberedMod.name)
+      if (rememberedMod.lastFilePath) {
+        setFilePath(rememberedMod.lastFilePath)
+        setFileName(fileNameFromPath(rememberedMod.lastFilePath))
+      }
+      return
+    }
+
+    // Projects are shared in the database and do not carry a game profile,
+    // so never auto-select the first (often BG3) project for DOS.
+    if (gameProfile !== DEFAULT_GAME_PROFILE) {
+      setIsNewMod(false)
       setSelectedMod(null)
       return
     }
@@ -72,12 +103,25 @@ export function useTranslateSetup(session: TranslationSession) {
         setFileName(fileNameFromPath(defaultMod.lastFilePath))
       }
     }
-  }, [hasUserChosenMode, mods, selectedMod])
+  }, [gameProfile, hasUserChosenMode, mods, savedProjectNames, savedProjectsLoaded, selectedMod])
 
   const handleSourceChange = (lang: string) => {
     setSourceLangLocal(lang)
     session.setSourceLang(lang)
     window.api.config.set({ key: 'last_source_lang', value: lang })
+  }
+
+  const handleGameProfileChange = (profile: string) => {
+    const next = profile as GameProfileId
+    setGameProfileLocal(next)
+    session.setGameProfile(next)
+    void window.api.config.set({ key: 'last_game_profile', value: next })
+    // A project belongs to a specific game/profile. Clear the old selection
+    // so its radio state and cached file cannot be reused for another game.
+    setHasUserChosenMode(false)
+    setSelectedMod(null)
+    setIsNewMod(false)
+    clearFile()
   }
 
   const handleTargetChange = (lang: string) => {
@@ -90,6 +134,11 @@ export function useTranslateSetup(session: TranslationSession) {
     setSelectedMod(mod.name)
     setIsNewMod(false)
     setHasUserChosenMode(true)
+    setSavedProjectNames((previous) => ({ ...previous, [gameProfile]: mod.name }))
+    void window.api.config.set({
+      key: `last_project_${gameProfile}` as 'last_project_bg3' | 'last_project_dos1' | 'last_project_dos2',
+      value: mod.name
+    })
     if (mod.lastFilePath) {
       setFilePath(mod.lastFilePath)
       setFileName(fileNameFromPath(mod.lastFilePath))
@@ -98,12 +147,11 @@ export function useTranslateSetup(session: TranslationSession) {
 
   const handleModSearchChange = (query: string) => {
     setModSearch(query)
-    setModPage(0)
   }
 
   const handleBrowse = async () => {
     const paths = await window.api.fs.openDialog({
-      filters: [{ name: 'Mod Files', extensions: ['xml', 'pak', 'zip'] }]
+      filters: [{ name: 'Localization Files', extensions: gameProfileInfo.extensions }]
     })
     if (paths.length > 0) {
       setFilePath(paths[0])
@@ -116,6 +164,8 @@ export function useTranslateSetup(session: TranslationSession) {
     setIsDragging(false)
     const file = event.dataTransfer.files[0]
     if (!file) return
+    const extension = file.name.split('.').pop()?.toLowerCase()
+    if (!extension || !gameProfileInfo.extensions.includes(extension)) return
     const path = window.api.fs.getPathForFile(file)
     setFilePath(path)
     setFileName(file.name)
@@ -129,6 +179,8 @@ export function useTranslateSetup(session: TranslationSession) {
   return {
     sourceLang,
     targetLang,
+    gameProfile,
+    gameProfileInfo,
     selectedMod,
     isNewMod,
     newModName,
@@ -138,11 +190,7 @@ export function useTranslateSetup(session: TranslationSession) {
     mods,
     languages,
     modSearch,
-    modPage,
     filteredMods,
-    pagedMods,
-    totalPages,
-    clampedPage,
     modName,
     step1Done,
     step2Done,
@@ -156,9 +204,9 @@ export function useTranslateSetup(session: TranslationSession) {
     },
     setNewModName,
     setIsDragging,
-    setModPage,
     handleSourceChange,
     handleTargetChange,
+    handleGameProfileChange,
     handleModSelect,
     handleModSearchChange,
     handleBrowse,

@@ -18,6 +18,7 @@ import {
 import { i18n } from '@/i18n'
 import type { TranslationHistoryEntry, XmlEntry, XmlLoadProgress } from '@/types'
 import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
+import type { GameProfileId } from '@/features/translate/gameProfiles'
 
 export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
@@ -208,6 +209,7 @@ export interface TranslationSessionState {
   targetFrequencies: Map<string, number>
   selection: SelectionState
   modName: string
+  gameProfile: GameProfileId
   sourceLang: string
   targetLang: string
   inputPath: string | null
@@ -254,6 +256,7 @@ type Action =
   | { type: 'TOGGLE_ENTRY'; rowId: string }
   | { type: 'CLEAR_SELECTION' }
   | { type: 'SET_MOD_NAME'; name: string }
+  | { type: 'SET_GAME_PROFILE'; profile: GameProfileId }
   | { type: 'SET_SOURCE_LANG'; lang: string }
   | { type: 'SET_TARGET_LANG'; lang: string }
   | { type: 'SET_INPUT_PATH'; path: string }
@@ -426,6 +429,8 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
       return { ...state, selection: EMPTY_EXPLICIT }
     case 'SET_MOD_NAME':
       return { ...state, modName: action.name }
+    case 'SET_GAME_PROFILE':
+      return { ...state, gameProfile: action.profile }
     case 'SET_SOURCE_LANG':
       return { ...state, sourceLang: action.lang }
     case 'SET_TARGET_LANG':
@@ -483,6 +488,7 @@ interface TranslationSessionContext extends TranslationSessionState {
   setReviewStatus: (rowId: string, status: ReviewStatus) => void
   deleteHistoryEntry: (rowId: string, historyId: string) => void
   setModName: (name: string) => void
+  setGameProfile: (profile: GameProfileId) => void
   setSourceLang: (lang: string) => void
   setTargetLang: (lang: string) => void
   resetSession: () => void
@@ -525,6 +531,7 @@ export function TranslationSessionProvider({
     targetFrequencies: new Map<string, number>(),
     selection: EMPTY_EXPLICIT,
     modName: '',
+    gameProfile: 'bg3',
     sourceLang: DEFAULT_SOURCE,
     targetLang: DEFAULT_TARGET,
     inputPath: null,
@@ -570,6 +577,9 @@ export function TranslationSessionProvider({
         void window.api.config.set({ key: 'last_target_lang', value: DEFAULT_TARGET })
       } else if (cfg.last_target_lang) {
         dispatch({ type: 'SET_TARGET_LANG', lang: cfg.last_target_lang })
+      }
+      if (cfg.last_game_profile === 'bg3' || cfg.last_game_profile === 'dos1' || cfg.last_game_profile === 'dos2') {
+        dispatch({ type: 'SET_GAME_PROFILE', profile: cfg.last_game_profile })
       }
     })
   }, [])
@@ -776,6 +786,10 @@ export function TranslationSessionProvider({
     dispatch({ type: 'SET_MOD_NAME', name })
   }, [])
 
+  const setGameProfile = useCallback((profile: GameProfileId) => {
+    dispatch({ type: 'SET_GAME_PROFILE', profile })
+  }, [])
+
   const setSourceLang = useCallback((lang: string) => {
     dispatch({ type: 'SET_SOURCE_LANG', lang })
   }, [])
@@ -810,6 +824,7 @@ export function TranslationSessionProvider({
         setReviewStatus,
         deleteHistoryEntry,
         setModName,
+        setGameProfile,
         setSourceLang,
         setTargetLang,
         resetSession

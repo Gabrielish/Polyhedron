@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
@@ -15,6 +15,11 @@ export function useTranslationExport(session: TranslationSession, languages: Lan
   const [exportMeta, setExportMeta] = useState<ModMeta | null>(null)
   const [bg3LanguageFolder, setBg3LanguageFolder] = useState('')
   const { entries, modName, targetLang } = session
+  const packageExportEnabled = session.gameProfile === 'bg3'
+
+  useEffect(() => {
+    if (!packageExportEnabled && exportFormat !== 'xml') setExportFormat('xml')
+  }, [exportFormat, packageExportEnabled])
 
   const exportXml = useCallback(async () => {
     const outputPath = await window.api.fs.saveDialog({
@@ -32,6 +37,7 @@ export function useTranslationExport(session: TranslationSession, languages: Lan
   }, [entries, modName, t, targetLang])
 
   const exportPak = useCallback(async () => {
+    if (!packageExportEnabled) return
     const outputPath = await window.api.fs.saveDialog({
       defaultName: 'English.pak',
       filters: [{ name: 'PAK', extensions: ['pak'] }]
@@ -44,7 +50,7 @@ export function useTranslationExport(session: TranslationSession, languages: Lan
     } catch (err) {
       toast.error(getLocalizedErrorMessage(err, t))
     }
-  }, [entries, t])
+  }, [entries, packageExportEnabled, t])
 
   const openExport = useCallback(async () => {
     if (exportFormat === 'xml') {
@@ -109,6 +115,7 @@ export function useTranslationExport(session: TranslationSession, languages: Lan
     exportFormat,
     exportMeta,
     bg3LanguageFolder,
+    packageExportEnabled,
     setExportFormat,
     cycleExportFormat,
     openExport,

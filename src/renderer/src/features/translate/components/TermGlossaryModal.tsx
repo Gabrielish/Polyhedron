@@ -146,12 +146,12 @@ export function TermGlossaryModal({
             <button
               type="button"
               onClick={onOpenCreatureGuide}
-              className="hidden items-center gap-1.5 rounded-lg border border-[#34343e] px-2.5 py-2 text-xs font-medium text-neutral-400 transition hover:border-amber-500/50 hover:text-amber-300 sm:inline-flex"
+              className="hidden h-9 w-9 items-center justify-center rounded-lg border border-[#34343e] text-neutral-400 transition hover:border-amber-500/50 hover:text-amber-300 sm:inline-flex"
               title="Open Creature Guide"
+              aria-label="Open Creature Guide"
             >
-              <PawPrint size={15} />
-              Creature Guide
-            </button>
+            <PawPrint size={15} />
+          </button>
           )}
           <button
             type="button"
