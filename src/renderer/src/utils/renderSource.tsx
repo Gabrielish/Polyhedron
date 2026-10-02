@@ -5,7 +5,7 @@ import { normalizeSearchText } from './search'
 interface RenderSourceOptions {
   variant?: 'display' | 'editor'
   highlightQuery?: string
-  searchHighlight?: 'underline' | 'select'
+  searchHighlight?: 'underline' | 'select' | 'off'
   termGlossary?: TermGlossaryEntry[]
   whitespaceHighlight?: boolean
 }
@@ -201,7 +201,7 @@ export function renderSource(
         ([start, end]) => absoluteStart < end && offset + localEnd > start
       )
       let node: React.ReactNode = value.slice(localStart, localEnd)
-      if (isSearchMatch) {
+      if (isSearchMatch && searchHighlight !== 'off') {
         node = (
           <mark
             className={
@@ -283,7 +283,7 @@ export function renderSource(
     parts.push(
       <span
         key={`m${match.index}`}
-        className={`${highlightClass}${matchRanges.some(([start, end]) => end > match!.index && start < match!.index + match![0].length) ? (searchHighlight === 'underline' ? ' search-tag-underline' : ' search-tag-highlight') : ''}`}
+        className={`${highlightClass}${searchHighlight !== 'off' && matchRanges.some(([start, end]) => end > match!.index && start < match!.index + match![0].length) ? (searchHighlight === 'underline' ? ' search-tag-underline' : ' search-tag-highlight') : ''}`}
       >
         {highlightText(match[0], `m${match.index}`, match.index, false)}
       </span>

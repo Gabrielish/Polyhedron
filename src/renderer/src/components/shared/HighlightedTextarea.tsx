@@ -9,7 +9,7 @@ interface HighlightedTextareaProps
   containerClassName?: string
   overlayClassName?: string
   highlightQuery?: string
-  searchHighlight?: 'underline' | 'select'
+  searchHighlight?: 'underline' | 'select' | 'off'
   termGlossary?: TermGlossaryEntry[]
   autoGrow?: boolean
   focusRing?: boolean

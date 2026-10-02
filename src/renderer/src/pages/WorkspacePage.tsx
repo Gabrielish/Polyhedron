@@ -112,7 +112,7 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null}
                 onClick={() => void importWorkspace()}
-                className="accent-solid-control mt-5 inline-flex rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-wait disabled:opacity-60"
+                className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {running === 'import' ? 'Importing…' : 'Choose Workspace'}
               </button>
@@ -136,7 +136,7 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null || !canExport}
                 onClick={() => void exportWorkspace()}
-                className="accent-solid-control mt-5 inline-flex rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {running === 'export'
                   ? 'Exporting…'

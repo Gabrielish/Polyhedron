@@ -1,13 +1,14 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
-  ArrowRight,
   ArrowDownAZ,
   ArrowDownNarrowWide,
   ArrowDownUp,
   ArrowDownWideNarrow,
+  ArrowRight,
+  ArrowRightToLine,
+  ArrowUp,
   ArrowUpAZ,
   ArrowUpWideNarrow,
-  ArrowUp,
   BookOpen,
   Check,
   ChevronDown,
@@ -16,24 +17,24 @@ import {
   ChevronsLeft,
   ChevronsRight,
   ChevronUp,
-  Copy,
   CircleAlert,
   CircleCheck,
   CircleDashed,
   CircleX,
+  Code2,
+  Copy,
   Equal,
   Flag,
   GitBranch,
   Hash,
   Highlighter,
   History,
+  Redo2,
   RefreshCw,
   Replace,
   ReplaceAll,
   Sparkles,
-  Code2,
-  ArrowRightToLine,
-  Redo2,
+  SquareDashed,
   Undo2,
   X
 } from 'lucide-react'
@@ -46,29 +47,36 @@ import {
   useState,
   useTransition
 } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
-import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { StyledWebview } from '@/components/shared/StyledWebview'
+import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { ThemedSelect, type ThemedSelectOption } from '@/components/shared/ThemedSelect'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
+  createEntrySearchMatcher,
   type FilterSpec,
   type GenderVariant,
-  type ReviewStatus,
-  createEntrySearchMatcher,
   materializeSelectedEntries,
+  type ReviewStatus,
   type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
-import { useConfig } from '@/hooks/useConfig'
-import { getLocalizedErrorMessage } from '@/i18n/errors'
-import { useAppTranslation } from '@/i18n/useAppTranslation'
-import { normalizeSearchText } from '@/utils/search'
+import { getItemTags } from '@/data/armorReference'
+import {
+  type DialogueFilter,
+  type DialogueScope,
+  getDialogueFilterTags,
+  getDialogueNodes,
+  getDialogueGroups as loadDialogueGroups,
+  loadDialogueNodeSpeakers,
+  matchesDialogueFilters,
+  matchesDialogueScope
+} from '@/data/dialogReference'
 import {
   getReferenceDisplayText,
   getReferenceLinks as loadReferenceLinks,
@@ -76,22 +84,15 @@ import {
   type ReferenceLink,
   type ReferenceTag
 } from '@/data/gameReference'
-import {
-  getDialogueFilterTags,
-  getDialogueGroups as loadDialogueGroups,
-  getDialogueNodes,
-  loadDialogueNodeSpeakers,
-  matchesDialogueFilters,
-  matchesDialogueScope,
-  type DialogueFilter,
-  type DialogueScope
-} from '@/data/dialogReference'
-import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata'
+import { useConfig } from '@/hooks/useConfig'
+import { getLocalizedErrorMessage } from '@/i18n/errors'
+import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
-import { getItemTags } from '@/data/armorReference'
+import { extractLarianTags, type TextSelection, wrapSelectionWithTag } from '@/utils/larianTags'
 import { renderSource } from '@/utils/renderSource'
+import { normalizeSearchText } from '@/utils/search'
+import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import type { TermGlossaryEntry } from '@/utils/termGlossary'
-import { extractLarianTags, wrapSelectionWithTag, type TextSelection } from '@/utils/larianTags'
 
 type TranslationCategory = 'dictionary' | 'tool' | 'manual' | 'none'
 type FilterMode =
@@ -106,6 +107,7 @@ type XmlTagFilter = 'all' | 'untranslated' | 'translated'
 type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
 type LengthSortMode = 'default' | 'shortest' | 'longest'
+type EdgeSpaceSortMode = 'default' | 'fewest' | 'most'
 type OnlineNodeMeta = {
   kind: 'Question' | 'Answer' | 'Cinematic' | 'Technical'
   speaker: string | null
@@ -173,10 +175,20 @@ type TranslateViewState = {
   filter?: FilterMode
   sortMode?: SortMode
   lengthSortMode?: LengthSortMode
+  edgeSpaceSortMode?: EdgeSpaceSortMode
   currentPage?: number
   xmlTagFilter?: XmlTagFilter
   bracketFilter?: BracketFilter
   highlightMatches?: boolean
+  searchMatchDisplayMode?: SearchMatchDisplayMode
+}
+
+type SearchMatchDisplayMode = 'off' | 'underline' | 'select'
+
+function getEdgeWhitespaceCount(value: string): number {
+  const leading = value.match(/^\s+/)?.[0].length ?? 0
+  const trailing = value.match(/\s+$/)?.[0].length ?? 0
+  return leading + trailing
 }
 
 function loadTranslateViewState(): TranslateViewState {
@@ -532,7 +544,10 @@ export function TranslationGrid({
   const [startsWith, setStartsWith] = useState(false)
   const [linkNameDescription] = useState(false)
   const [showId, setShowId] = useState(savedViewState.showId ?? false)
-  const [highlightMatches, setHighlightMatches] = useState(savedViewState.highlightMatches ?? true)
+  const [searchMatchDisplayMode, setSearchMatchDisplayMode] = useState<SearchMatchDisplayMode>(
+    savedViewState.searchMatchDisplayMode ??
+      (savedViewState.highlightMatches === false ? 'select' : 'underline')
+  )
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
   const [referenceTag] = useState<ReferenceTag | 'all'>('all')
   const [dialogueFilters] = useState<DialogueFilter[]>([])
@@ -557,11 +572,20 @@ export function TranslationGrid({
   const [lengthSortMode, setLengthSortMode] = useState<LengthSortMode>(
     savedViewState.lengthSortMode ?? 'default'
   )
+  const [edgeSpaceSortMode, setEdgeSpaceSortMode] = useState<EdgeSpaceSortMode>(
+    savedViewState.edgeSpaceSortMode ?? 'default'
+  )
   useEffect(() => {
     if (sortMode !== 'default' && lengthSortMode !== 'default') {
       setLengthSortMode('default')
     }
-  }, [lengthSortMode, sortMode])
+    if (sortMode !== 'default' && edgeSpaceSortMode !== 'default') {
+      setEdgeSpaceSortMode('default')
+    }
+    if (lengthSortMode !== 'default' && edgeSpaceSortMode !== 'default') {
+      setEdgeSpaceSortMode('default')
+    }
+  }, [edgeSpaceSortMode, lengthSortMode, sortMode])
   const [currentPage, setCurrentPage] = useState(savedViewState.currentPage ?? 1)
   const [statusTabsTarget, setStatusTabsTarget] = useState<HTMLElement | null>(null)
   useEffect(() => {
@@ -581,8 +605,9 @@ export function TranslationGrid({
         bracketFilter,
         sortMode,
         lengthSortMode,
+        edgeSpaceSortMode,
         currentPage,
-        highlightMatches
+        searchMatchDisplayMode
       } satisfies TranslateViewState)
     )
   }, [
@@ -599,8 +624,9 @@ export function TranslationGrid({
     bracketFilter,
     sortMode,
     lengthSortMode,
+    edgeSpaceSortMode,
     currentPage,
-    highlightMatches
+    searchMatchDisplayMode
   ])
   useLayoutEffect(() => {
     const findStatusTabsTarget = () => {
@@ -827,6 +853,19 @@ export function TranslationGrid({
       if (reviewFilter !== 'all' && entryReviewStatus !== reviewFilter) return false
       return true
     })
+    if (edgeSpaceSortMode !== 'default') {
+      const ordered = matchingEntries
+        .map((entry, index) => ({ entry, index, spaces: getEdgeWhitespaceCount(entry.source) }))
+        .filter((item) => item.spaces > 0)
+        .sort((a, b) => {
+          const spaceOrder =
+            edgeSpaceSortMode === 'fewest' ? a.spaces - b.spaces : b.spaces - a.spaces
+          if (spaceOrder !== 0) return spaceOrder
+          const keyOrder = a.entry.source.localeCompare(b.entry.source)
+          return keyOrder !== 0 ? keyOrder : a.index - b.index
+        })
+      return ordered.map((item) => item.entry)
+    }
     if (lengthSortMode !== 'default') {
       const buckets = new Map<
         number,
@@ -884,6 +923,7 @@ export function TranslationGrid({
   }, [
     sortMode,
     lengthSortMode,
+    edgeSpaceSortMode,
     sourceFrequencies,
     deferredExactMatch,
     deferredStartsWith,
@@ -910,6 +950,7 @@ export function TranslationGrid({
     setCurrentPage(1)
   }, [
     sortMode,
+    edgeSpaceSortMode,
     deferredExactMatch,
     deferredStartsWith,
     deferredFilter,
@@ -1003,9 +1044,12 @@ export function TranslationGrid({
 
   useEffect(() => {
     let active = true
-    void window.api.dialogue.allSpeakers().then((speakers) => {
-      if (active) setApiSpeakers(speakers)
-    }).catch(() => undefined)
+    void window.api.dialogue
+      .allSpeakers()
+      .then((speakers) => {
+        if (active) setApiSpeakers(speakers)
+      })
+      .catch(() => undefined)
     return () => {
       active = false
     }
@@ -1027,7 +1071,12 @@ export function TranslationGrid({
       void window.api.dialogue.speakersBatch(dialogues, speakerFilter).then((payload) => {
         if (active) {
           setDialogueNodeMetadata(
-            new Map(Object.entries(payload).map(([dialogue, nodes]) => [dialogue, new Map(Object.entries(nodes))]))
+            new Map(
+              Object.entries(payload).map(([dialogue, nodes]) => [
+                dialogue,
+                new Map(Object.entries(nodes))
+              ])
+            )
           )
         }
       })
@@ -1036,7 +1085,9 @@ export function TranslationGrid({
       }
     }
     void Promise.all(
-      dialogues.map(async (dialogue) => [dialogue, await loadDialogueNodeSpeakers(dialogue)] as const)
+      dialogues.map(
+        async (dialogue) => [dialogue, await loadDialogueNodeSpeakers(dialogue)] as const
+      )
     ).then((results) => {
       if (active) setDialogueNodeMetadata(new Map(results))
     })
@@ -1282,7 +1333,8 @@ export function TranslationGrid({
     if (!wrapped) return
 
     const variant = selectedGenderVariant(entry)
-    if (variant === 'default' || entry.genderVariant === variant) updateEntryTarget(entry, wrapped.value)
+    if (variant === 'default' || entry.genderVariant === variant)
+      updateEntryTarget(entry, wrapped.value)
     else {
       session.updateGenderVariant(entry.rowId, variant, wrapped.value)
       onEntryManualEdit(entry.rowId)
@@ -1563,8 +1615,8 @@ export function TranslationGrid({
           const owner = element.closest('[data-node-id], [data-uuid], [data-id], [id], .node, [class*="node"]') || element
           const nodeId = getId(owner) || getId(element)
           if (!nodeId) continue
-          const speakerText = labels.find((text) => /^Speaker\s*:/i.test(text))
-          output.push({ nodeId, kind, speaker: speakerText ? speakerText.replace(/^Speaker\s*:\s*/i, '').trim() : null })
+          const speakerText = labels.find((text) => /^Speakers*:/i.test(text))
+          output.push({ nodeId, kind, speaker: speakerText ? speakerText.replace(/^Speakers*:s*/i, '').trim() : null })
         }
         return output
       })()
@@ -1600,7 +1652,7 @@ export function TranslationGrid({
       (() => {
         const nodeId = ${serializedNode}
         const source = ${serializedSource}
-        const wanted = source.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLowerCase()
+        const wanted = source.replace(/<[^>]*>/g, '').replace(/s+/g, ' ').trim().toLowerCase()
         const findTarget = () => {
           let target = document.getElementById(nodeId)
           if (!target) target = document.querySelector('[data-node-id="' + nodeId + '"], [data-uuid="' + nodeId + '"], [data-id="' + nodeId + '"]')
@@ -1608,7 +1660,7 @@ export function TranslationGrid({
           if (!target && wanted) {
             const candidates = [...document.querySelectorAll('.react-flow__node, [data-node-id], [data-uuid], [data-id], a, button, [role="button"], [role="treeitem"], li, tr, td, text, p, div')]
             target = candidates
-              .map((element) => ({ element, text: (element.textContent ?? '').replace(/\s+/g, ' ').trim().toLowerCase() }))
+              .map((element) => ({ element, text: (element.textContent ?? '').replace(/s+/g, ' ').trim().toLowerCase() }))
               .filter(({ text }) => text.includes(wanted))
               .sort((a, b) => a.text.length - b.text.length)[0]?.element ?? null
           }
@@ -2327,20 +2379,19 @@ export function TranslationGrid({
     ],
     []
   )
-  const speakerOptions = useMemo<ThemedSelectOption[]>(
-    () => {
-      const known = getKnownSpeakers().map((speaker) => speaker.name)
-      const online = [...dialogueNodeMetadata.values()].flatMap((nodes) =>
-        [...nodes.values()].flatMap((metadata) => (metadata.speaker ? [metadata.speaker] : []))
-      )
-      const names = [...new Set([...known, ...apiSpeakers, ...online])].sort((a, b) => a.localeCompare(b))
-      return [
-        { value: 'all', label: 'All speakers' },
-        ...names.map((name) => ({ value: name, label: name }))
-      ]
-    },
-    [apiSpeakers, dialogueNodeMetadata]
-  )
+  const speakerOptions = useMemo<ThemedSelectOption[]>(() => {
+    const known = getKnownSpeakers().map((speaker) => speaker.name)
+    const online = [...dialogueNodeMetadata.values()].flatMap((nodes) =>
+      [...nodes.values()].flatMap((metadata) => (metadata.speaker ? [metadata.speaker] : []))
+    )
+    const names = [...new Set([...known, ...apiSpeakers, ...online])].sort((a, b) =>
+      a.localeCompare(b)
+    )
+    return [
+      { value: 'all', label: 'All speakers' },
+      ...names.map((name) => ({ value: name, label: name }))
+    ]
+  }, [apiSpeakers, dialogueNodeMetadata])
   const reviewOptions = useMemo<ThemedSelectOption[]>(
     () => [
       { value: 'all', label: 'All statuses' },
@@ -2403,7 +2454,10 @@ export function TranslationGrid({
                       : 'default'
                 startFilterTransition(() => {
                   setSortMode(nextMode)
-                  if (nextMode !== 'default') setLengthSortMode('default')
+                  if (nextMode !== 'default') {
+                    setLengthSortMode('default')
+                    setEdgeSpaceSortMode('default')
+                  }
                 })
               })()
             }
@@ -2423,7 +2477,7 @@ export function TranslationGrid({
                 ? 'Shortest strings first'
                 : lengthSortMode === 'longest'
                   ? 'Longest strings first'
-                : 'String length'
+                  : 'String length'
             }
             onClick={() =>
               (() => {
@@ -2435,7 +2489,10 @@ export function TranslationGrid({
                       : 'default'
                 startFilterTransition(() => {
                   setLengthSortMode(nextMode)
-                  if (nextMode !== 'default') setSortMode('default')
+                  if (nextMode !== 'default') {
+                    setSortMode('default')
+                    setEdgeSpaceSortMode('default')
+                  }
                 })
               })()
             }
@@ -2449,6 +2506,35 @@ export function TranslationGrid({
             )}
           </SearchToolbarToggle>
           <SearchToolbarToggle
+            active={edgeSpaceSortMode !== 'default'}
+            tooltip={
+              edgeSpaceSortMode === 'fewest'
+                ? 'Fewest edge spaces'
+                : edgeSpaceSortMode === 'most'
+                  ? 'Most edge spaces'
+                  : 'Edge spaces'
+            }
+            onClick={() =>
+              (() => {
+                const nextMode =
+                  edgeSpaceSortMode === 'default'
+                    ? 'fewest'
+                    : edgeSpaceSortMode === 'fewest'
+                      ? 'most'
+                      : 'default'
+                startFilterTransition(() => {
+                  setEdgeSpaceSortMode(nextMode)
+                  if (nextMode !== 'default') {
+                    setSortMode('default')
+                    setLengthSortMode('default')
+                  }
+                })
+              })()
+            }
+          >
+            <SquareDashed size={14} />
+          </SearchToolbarToggle>
+          <SearchToolbarToggle
             active={showId}
             tooltip="Show content ID"
             onClick={() => setShowId(!showId)}
@@ -2456,9 +2542,19 @@ export function TranslationGrid({
             <Hash size={14} />
           </SearchToolbarToggle>
           <SearchToolbarToggle
-            active={highlightMatches}
-            tooltip={highlightMatches ? 'Underline search matches' : 'Select search matches'}
-            onClick={() => setHighlightMatches(!highlightMatches)}
+            active={searchMatchDisplayMode !== 'off'}
+            tooltip={
+              searchMatchDisplayMode === 'underline'
+                ? 'Underline matches'
+                : searchMatchDisplayMode === 'select'
+                  ? 'Select matches'
+                  : 'Highlighting off'
+            }
+            onClick={() =>
+              setSearchMatchDisplayMode((mode) =>
+                mode === 'underline' ? 'select' : mode === 'select' ? 'off' : 'underline'
+              )
+            }
           >
             <Highlighter size={14} />
           </SearchToolbarToggle>
@@ -2562,7 +2658,8 @@ export function TranslationGrid({
           tooltip="Back to top"
           className="ml-auto border border-[#1f2329] bg-[#131518] hover:border-amber-500/60 hover:text-amber-300"
           onClick={() => {
-            const scrollElement = viewMode === 'side' ? sideParentRef.current : stackedParentRef.current
+            const scrollElement =
+              viewMode === 'side' ? sideParentRef.current : stackedParentRef.current
             if (!scrollElement) return
             scrollElement.scrollTo({ top: 0, behavior: 'smooth' })
           }}
@@ -2873,7 +2970,7 @@ export function TranslationGrid({
                         {entry.source ? (
                           renderSource(entry.source, {
                             highlightQuery: effectiveSearch,
-                            searchHighlight: highlightMatches ? 'underline' : 'select',
+                            searchHighlight: searchMatchDisplayMode,
                             termGlossary,
                             whitespaceHighlight: true
                           })
@@ -2961,7 +3058,7 @@ export function TranslationGrid({
                       }
                       termGlossary={termGlossary}
                       highlightQuery={effectiveSearch}
-                      searchHighlight={highlightMatches ? 'underline' : 'select'}
+                      searchHighlight={searchMatchDisplayMode}
                       onFocus={() => setEditingRowId(entry.rowId)}
                       onBlur={(event) => {
                         updateGenderValue(entry, event.target.value)
@@ -3205,7 +3302,7 @@ export function TranslationGrid({
                           {entry.source ? (
                             renderSource(entry.source, {
                               highlightQuery: effectiveSearch,
-                              searchHighlight: highlightMatches ? 'underline' : 'select',
+                              searchHighlight: searchMatchDisplayMode,
                               termGlossary,
                               whitespaceHighlight: true
                             })
@@ -3292,7 +3389,7 @@ export function TranslationGrid({
                         }
                         termGlossary={termGlossary}
                         highlightQuery={effectiveSearch}
-                        searchHighlight={highlightMatches ? 'underline' : 'select'}
+                        searchHighlight={searchMatchDisplayMode}
                         onFocus={() => setEditingRowId(entry.rowId)}
                         onBlur={(event) => {
                           updateGenderValue(entry, event.target.value)

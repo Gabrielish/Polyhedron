@@ -1,11 +1,11 @@
-import { ArrowRight, File, Loader2 } from 'lucide-react'
+import { File, Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
+import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
-import { ThemedSelect } from '@/components/shared/ThemedSelect'
+import { GAME_PROFILES } from '../gameProfiles'
 import { useTranslateSetup } from '../hooks/useTranslateSetup'
 import { useTranslationImport } from '../hooks/useTranslationImport'
-import { GAME_PROFILES } from '../gameProfiles'
 import type { TranslationSession } from '../types'
 import { FileInputCard } from './FileInputCard'
 import { LanguagePicker } from './LanguagePicker'
@@ -130,7 +130,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
                     <p className="mb-5 text-xs text-neutral-500">
                       {t('setup.languagePair.description', { ns: 'translate' })}
                     </p>
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2.5">
+                    <div className="flex max-w-full flex-col gap-4">
                       <div>
                         <span className="mb-1.5 block text-[10px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
                           {t('setup.languagePair.source', { ns: 'translate' })}
@@ -141,10 +141,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
                           languages={setup.languages}
                         />
                       </div>
-                      <div className="pb-2 text-neutral-600">
-                        <ArrowRight size={16} />
-                      </div>
-                      <div>
+                      <div className="relative -top-[3px]">
                         <span className="mb-1.5 block text-[10px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
                           {t('setup.languagePair.target', { ns: 'translate' })}
                         </span>

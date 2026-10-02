@@ -77,8 +77,9 @@ export function DragDrop({ accept, onFile, label, className }: DragDropProps): R
         <p className="mt-1 text-xs text-neutral-500">.{accept.join(', .')}</p>
       </div>
       <button
+        type="button"
         onClick={handleBrowse}
-        className="rounded-md bg-neutral-800 px-4 py-1.5 text-xs text-neutral-200 transition-colors hover:bg-neutral-700"
+        className="cursor-pointer rounded-md bg-neutral-800 px-4 py-1.5 text-xs text-neutral-200 transition-colors hover:bg-neutral-700"
       >
         {t('actions.browse')}
       </button>
