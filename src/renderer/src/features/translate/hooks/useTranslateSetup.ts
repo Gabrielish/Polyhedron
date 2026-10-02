@@ -136,7 +136,10 @@ export function useTranslateSetup(session: TranslationSession) {
     setHasUserChosenMode(true)
     setSavedProjectNames((previous) => ({ ...previous, [gameProfile]: mod.name }))
     void window.api.config.set({
-      key: `last_project_${gameProfile}` as 'last_project_bg3' | 'last_project_dos1' | 'last_project_dos2',
+      key: `last_project_${gameProfile}` as
+        | 'last_project_bg3'
+        | 'last_project_dos1'
+        | 'last_project_dos2',
       value: mod.name
     })
     if (mod.lastFilePath) {
@@ -147,6 +150,31 @@ export function useTranslateSetup(session: TranslationSession) {
 
   const handleModSearchChange = (query: string) => {
     setModSearch(query)
+  }
+
+  const refreshMods = async () => {
+    const nextMods = await window.api.mod.getAll({ lang1: sourceLang, lang2: targetLang })
+    setMods(nextMods)
+  }
+
+  const handleModRename = async (mod: ModInfo, nextName: string) => {
+    await window.api.mod.rename({ modName: mod.name, nextName })
+    setSavedProjectNames((previous) =>
+      previous[gameProfile] === mod.name ? { ...previous, [gameProfile]: nextName } : previous
+    )
+    await refreshMods()
+  }
+
+  const handleModDelete = async (mod: ModInfo) => {
+    await window.api.mod.delete({ modName: mod.name })
+    setSavedProjectNames((previous) =>
+      previous[gameProfile] === mod.name ? { ...previous, [gameProfile]: '' } : previous
+    )
+    if (selectedMod === mod.name) {
+      setSelectedMod(null)
+      clearFile()
+    }
+    await refreshMods()
   }
 
   const handleBrowse = async () => {
@@ -209,6 +237,8 @@ export function useTranslateSetup(session: TranslationSession) {
     handleGameProfileChange,
     handleModSelect,
     handleModSearchChange,
+    handleModRename,
+    handleModDelete,
     handleBrowse,
     handleDrop,
     clearFile

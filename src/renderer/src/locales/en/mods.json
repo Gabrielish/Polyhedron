@@ -1,7 +1,7 @@
 {
   "title": "Manage Mods",
   "subtitle": "Delete mods and set the dictionary lookup priority.",
-  "searchPlaceholder": "Search mod...",
+  "searchPlaceholder": "Search project...",
   "priority": {
     "heading": "Priority order",
     "empty": "No priority mods yet. Promote a mod from the list below.",

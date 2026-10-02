@@ -1,4 +1,3 @@
-import { Merge } from 'lucide-react'
 import { XmlSelectionModal } from '@/features/translate/components/XmlSelectionModal'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { PreparedTranslationInput } from '@/types'
@@ -21,11 +20,8 @@ export function MergeToolScreen(): React.JSX.Element {
   return (
     <>
       <div className="merge-tool-screen flex flex-col">
-        <div className="flex h-10 shrink-0 items-center gap-3 border-b border-[#1f2329] bg-[#131518] px-5">
-          <span className="flex items-center gap-1.5 font-mono text-[12px] text-neutral-200">
-            <Merge size={12} />
-            {t('title')}
-          </span>
+        <div className="flex shrink-0 items-center gap-3 border-b border-neutral-800/50 px-6 py-4">
+          <span className="text-sm font-medium text-neutral-200">{t('title')}</span>
           <span className="flex-1" />
           <span className="flex items-center gap-2 font-mono text-[11px]">
             <span className={setup.step1Done ? 'text-amber-400' : 'text-neutral-600'}>
@@ -42,36 +38,42 @@ export function MergeToolScreen(): React.JSX.Element {
           </span>
         </div>
 
-        <div className="merge-tool-scroll px-6 pt-7 pb-0">
-          <div className="mx-auto flex max-w-220 flex-col gap-3.5">
-            <MergeFileStep
-              step="01"
-              title={t('sourceFile.title')}
-              description={t('sourceFile.description')}
-              slot={setup.source}
-              slotKey="source"
-              languages={setup.languages}
-              onLangChange={setup.setSourceLang}
-              onBrowse={setup.browseFile}
-              onDrop={setup.dropFile}
-              onDragChange={setup.setDragging}
-              onClear={setup.clearFile}
-            />
+        <div className="merge-tool-scroll px-6">
+          <div className="flex flex-col gap-0">
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <div className="md:border-r md:border-neutral-800/60 md:pr-6">
+                <MergeFileStep
+                  step="01"
+                  title={t('sourceFile.title')}
+                  description={t('sourceFile.description')}
+                  slot={setup.source}
+                  slotKey="source"
+                  languages={setup.languages}
+                  onLangChange={setup.setSourceLang}
+                  onBrowse={setup.browseFile}
+                  onDrop={setup.dropFile}
+                  onDragChange={setup.setDragging}
+                  onClear={setup.clearFile}
+                />
+              </div>
 
-            <MergeFileStep
-              step="02"
-              title={t('translatedFile.title')}
-              description={t('translatedFile.description')}
-              slot={setup.target}
-              slotKey="target"
-              languages={setup.languages}
-              accent
-              onLangChange={setup.setTargetLang}
-              onBrowse={setup.browseFile}
-              onDrop={setup.dropFile}
-              onDragChange={setup.setDragging}
-              onClear={setup.clearFile}
-            />
+              <div className="md:pl-6">
+                <MergeFileStep
+                  step="02"
+                  title={t('translatedFile.title')}
+                  description={t('translatedFile.description')}
+                  slot={setup.target}
+                  slotKey="target"
+                  languages={setup.languages}
+                  accent
+                  onLangChange={setup.setTargetLang}
+                  onBrowse={setup.browseFile}
+                  onDrop={setup.dropFile}
+                  onDragChange={setup.setDragging}
+                  onClear={setup.clearFile}
+                />
+              </div>
+            </div>
 
             <MergeNameStep value={setup.modName} onChange={setup.setModName} />
           </div>

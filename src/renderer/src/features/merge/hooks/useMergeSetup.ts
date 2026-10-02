@@ -74,7 +74,7 @@ export function useMergeSetup(): UseMergeSetupResult {
     window.api.language.getAll().then((items) => {
       const sourceDefault = items.find((item) => item.code === 'en')?.code ?? items[0]?.code ?? ''
       const targetDefault =
-        items.find((item) => item.code === 'pt-BR')?.code ?? items[1]?.code ?? items[0]?.code ?? ''
+        items.find((item) => item.code === 'ro')?.code ?? items[1]?.code ?? items[0]?.code ?? ''
 
       setLanguages(items)
       setSource((prev) => (prev.lang ? prev : { ...prev, lang: sourceDefault }))

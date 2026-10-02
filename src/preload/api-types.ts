@@ -412,6 +412,7 @@ export interface ModApi {
     totalStrings?: number
     lastFilePath?: string
   }): Promise<{ success: boolean }>
+  rename(params: { modName: string; nextName: string }): Promise<{ success: boolean }>
   storeFile(params: { modName: string; filePath: string }): Promise<{ storedPath: string }>
   prepareTranslationInput(params: {
     inputPath: string

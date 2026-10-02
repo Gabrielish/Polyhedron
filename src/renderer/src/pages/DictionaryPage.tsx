@@ -883,9 +883,7 @@ export function DictionaryPage(): React.JSX.Element {
               </div>
             </div>
           )}
-
         </div>
-
       </div>
 
       <footer className="dictionary-footer flex items-center gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-4 py-2 text-[11px] text-neutral-500">
@@ -974,7 +972,7 @@ export function DictionaryPage(): React.JSX.Element {
         title={pendingDelete?.title ?? t('dialogs.deleteEntryTitle', { ns: 'dictionary' })}
         description={pendingDelete?.description ?? ''}
         confirmLabel={t('dialogs.deleteConfirm', { ns: 'dictionary' })}
-        destructive
+        hideCancel
         onClose={() => setPendingDelete(null)}
         onConfirm={() => {
           if (pendingDelete?.filterBased) void handleDeleteByFilter()
@@ -1051,7 +1049,6 @@ function StatBlock({
     </div>
   )
 }
-
 
 function buildExportName(filters: DictionaryFilters): string {
   const parts = ['dictionary']

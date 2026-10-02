@@ -8,6 +8,7 @@ interface ConfirmDialogProps {
   description: string
   confirmLabel: string
   cancelLabel?: string
+  hideCancel?: boolean
   destructive?: boolean
   onConfirm: () => void | Promise<void>
   onClose: () => void
@@ -19,6 +20,7 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   cancelLabel,
+  hideCancel = false,
   destructive = false,
   onConfirm,
   onClose
@@ -35,13 +37,15 @@ export function ConfirmDialog({
       onClose={onClose}
       footer={
         <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 cursor-pointer items-center rounded-md border border-neutral-700 bg-[#131518] px-3 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800"
-          >
-            {cancelLabel ?? t('actions.cancel')}
-          </button>
+          {!hideCancel && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-8 cursor-pointer items-center rounded-md border border-neutral-700 bg-[#131518] px-3 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800"
+            >
+              {cancelLabel ?? t('actions.cancel')}
+            </button>
+          )}
           <button
             type="button"
             onClick={onConfirm}

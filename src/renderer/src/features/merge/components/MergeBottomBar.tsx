@@ -1,4 +1,4 @@
-import { Loader2, Merge } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { btnBase, btnPrimary } from '@/features/translate/components/styles'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
@@ -48,10 +48,8 @@ export function MergeBottomBar({
       : undefined
 
   return (
-    <div className="merge-bottom-bar shrink-0 px-6 pt-3.5 pb-3">
-      <div className="mx-auto grid max-w-220 grid-cols-[56px_1fr] overflow-hidden rounded-xl border border-neutral-700 bg-[#131518] shadow-xl">
-        <div className="border-r border-neutral-800 px-4 py-4 font-mono text-[11px] font-semibold tracking-widest text-neutral-500">04</div>
-        <div className="flex flex-col gap-2 px-4 py-3">
+    <div className="merge-bottom-bar shrink-0 border-t border-neutral-800/50 px-6 py-4">
+      <div className="flex flex-col gap-2">
         {showProgress && (
           <div className="space-y-1.5">
             {progressPct !== undefined ? (
@@ -84,13 +82,12 @@ export function MergeBottomBar({
             disabled={!ready || isRunning}
             onClick={onRun}
           >
-            {isRunning ? <Loader2 size={13} className="animate-spin" /> : <Merge size={13} />}
+              {isRunning && <Loader2 size={13} className="animate-spin" />}
             {isRunning
               ? t('bottomBar.running', { ns: 'merge' })
               : t('actions.run', { ns: 'common' })}
           </button>
         </div>
-      </div>
       </div>
     </div>
   )

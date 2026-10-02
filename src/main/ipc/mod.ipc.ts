@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { ipcMain } from 'electron'
 import type { RepositoryRegistry } from '../database/repositories/registry'
+import { config } from '../database/schema'
 import { packMod, unpackMod } from '../services/lslib.service'
 import type { MetaInfo } from '../services/lsx-parser.service'
 import { deleteMod } from '../services/mod-delete.service'
@@ -44,6 +45,40 @@ export interface ModInfo {
 
 function sanitizeModName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100)
+}
+
+function isPathInside(parent: string, candidate: string): boolean {
+  const relative = path.relative(parent, candidate)
+  return (
+    relative === '' ||
+    (relative !== '..' && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
+  )
+}
+
+function sessionFileForKey(key: string): string {
+  return projectPath('sessions', `${crypto.createHash('sha256').update(key).digest('hex')}.json`)
+}
+
+function copyRenamedSessionCache(
+  oldPath: string | null | undefined,
+  nextPath: string | null | undefined,
+  repos: RepositoryRegistry
+): void {
+  if (!oldPath || !nextPath || oldPath === nextPath) return
+  const settings = new Map(
+    repos.db
+      .select()
+      .from(config)
+      .all()
+      .map((row) => [row.key, row.value ?? ''])
+  )
+  const sourceLang = settings.get('last_source_lang') || 'en'
+  const targetLang = settings.get('last_target_lang') || 'ro'
+  const oldSession = sessionFileForKey(`${oldPath}|${sourceLang}|${targetLang}`)
+  const nextSession = sessionFileForKey(`${nextPath}|${sourceLang}|${targetLang}`)
+  if (!fs.existsSync(oldSession) || fs.existsSync(nextSession)) return
+  fs.mkdirSync(path.dirname(nextSession), { recursive: true })
+  fs.copyFileSync(oldSession, nextSession)
 }
 
 function languageFolder(repos: RepositoryRegistry, languageCode: string): string {
@@ -151,10 +186,7 @@ export function registerModHandlers(repos: RepositoryRegistry): void {
     'mod:prepareTranslationInput',
     async (
       _event,
-      {
-        inputPath,
-        gameProfile
-      }: { inputPath: string; gameProfile: 'bg3' | 'dos1' | 'dos2' }
+      { inputPath, gameProfile }: { inputPath: string; gameProfile: 'bg3' | 'dos1' | 'dos2' }
     ) => {
       return prepareTranslationInput(inputPath, gameProfile)
     }
@@ -254,6 +286,64 @@ export function registerModHandlers(repos: RepositoryRegistry): void {
       }: { name: string; totalStrings?: number; lastFilePath?: string }
     ) => {
       repos.mod.upsert(name, { totalStrings, lastFilePath })
+      return { success: true }
+    }
+  )
+
+  ipcMain.handle(
+    'mod:rename',
+    (_event, { modName, nextName }: { modName: string; nextName: string }) => {
+      const current = modName.trim()
+      const next = nextName.trim()
+      if (!current || !next) throw new Error('Project name cannot be empty')
+      if (current !== next && repos.mod.findByName(next))
+        throw new Error('Project name already exists')
+      if (current === next) return { success: true }
+
+      const currentMod = repos.mod.findByName(current)
+      if (!currentMod) throw new Error(`Project not found: ${current}`)
+      const currentMeta = repos.modMeta.findByModName(current)
+      const oldDir = getStoredModDir(current)
+      const nextDir = getStoredModDir(next)
+      const folderExists = fs.existsSync(oldDir)
+      const destinationExists = fs.existsSync(nextDir)
+      if (oldDir === nextDir)
+        throw new Error('The new project name maps to the existing storage folder')
+      if (destinationExists) throw new Error('A folder already exists for the new project name')
+
+      const nextFilePath =
+        currentMod.lastFilePath && isPathInside(oldDir, currentMod.lastFilePath)
+          ? path.join(nextDir, path.relative(oldDir, currentMod.lastFilePath))
+          : (currentMod.lastFilePath ?? undefined)
+      const nextMetaPath =
+        currentMeta && isPathInside(oldDir, currentMeta.metaFilePath)
+          ? path.join(nextDir, path.relative(oldDir, currentMeta.metaFilePath))
+          : currentMeta?.metaFilePath
+
+      let movedFolder = false
+      if (oldDir !== nextDir && folderExists) {
+        fs.renameSync(oldDir, nextDir)
+        movedFolder = true
+      }
+
+      try {
+        repos.mod.rename(current, next, {
+          lastFilePath: nextFilePath,
+          metaFilePath: nextMetaPath
+        })
+      } catch (error) {
+        if (movedFolder && fs.existsSync(nextDir) && !fs.existsSync(oldDir)) {
+          fs.renameSync(nextDir, oldDir)
+        }
+        throw error
+      }
+      // The session cache is an optimization; a failed copy must not undo a
+      // successful rename. The PWA sync document can rebuild it on download.
+      try {
+        copyRenamedSessionCache(currentMod.lastFilePath, nextFilePath, repos)
+      } catch {
+        // Keep the rename successful; the next session save recreates the cache.
+      }
       return { success: true }
     }
   )

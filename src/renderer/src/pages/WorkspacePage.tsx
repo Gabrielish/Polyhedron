@@ -1,16 +1,24 @@
-import { Archive, FileDown, FileUp, FolderSync, ShieldCheck } from 'lucide-react'
+import { Archive, FileDown, FileUp, FolderSync } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { useTranslationSession } from '@/context/TranslationSession'
+import { ExportControls } from '@/features/translate/components/ExportControls'
+import { PackageExportModal } from '@/features/translate/components/PackageExportModal'
+import { useTranslationExport } from '@/features/translate/hooks/useTranslationExport'
+import type { Language } from '@/types'
 import { InjectLocalizationPage } from './InjectLocalizationPage'
 import { ModsPage } from './ModsPage'
 
 export function WorkspacePage(): React.JSX.Element {
   const TitleIcon = FolderSync
+  const session = useTranslationSession()
   const [running, setRunning] = useState<'import' | 'export' | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [importedStats, setImportedStats] = useState<{ translated: number; total: number } | null>(
     null
   )
+  const [languages, setLanguages] = useState<Language[]>([])
+  const exportFlow = useTranslationExport(session, languages)
   useEffect(() => {
     if (!importedStats) return
     const handleEscape = (event: KeyboardEvent) => {
@@ -20,7 +28,12 @@ export function WorkspacePage(): React.JSX.Element {
     return () => window.removeEventListener('keydown', handleEscape)
   }, [importedStats])
 
+  useEffect(() => {
+    window.api.language.getAll().then(setLanguages)
+  }, [])
+
   const exportWorkspace = async () => {
+    if (session.phase !== 'loaded' || session.entries.length === 0) return
     const outputPath = await window.api.fs.saveDialog({
       defaultName: 'PolyhedronWorkspace.pws',
       filters: [{ name: 'Polyhedron Workspace', extensions: ['pws', 'zip'] }]
@@ -40,6 +53,8 @@ export function WorkspacePage(): React.JSX.Element {
       setRunning(null)
     }
   }
+
+  const canExport = session.phase === 'loaded' && session.entries.length > 0
 
   const importWorkspace = async () => {
     const files = await window.api.fs.openDialog({
@@ -69,81 +84,117 @@ export function WorkspacePage(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto p-8 text-neutral-200">
-      <div className="mx-auto w-full max-w-4xl">
-        <div className="app-page-header mb-7 flex items-center gap-3">
+    <div className="h-full min-h-0 overflow-y-auto p-8 text-neutral-200">
+      <div className="mx-auto w-full max-w-4xl space-y-6">
+        <div className="app-page-header mb-8 flex items-center gap-3">
           <TitleIcon className="text-amber-400" size={20} />
           <div>
             <h1 className="text-2xl font-semibold">Workspace</h1>
             <p className="mt-1 text-sm text-neutral-500">
-              Move your translations, dictionary and mod data between Windows and macOS.
+              Import or export your translation projects and mod data.
             </p>
           </div>
         </div>
-        <div className="mb-5 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-neutral-300">
-          <ShieldCheck size={16} className="mt-0.5 shrink-0 text-amber-300" />
-          <p>
-            <strong className="font-medium text-amber-200">Polyhedron data is protected.</strong>{' '}
-            Export creates a consistent SQLite backup. Import replaces the current database only
-            after saving a timestamped backup.
-          </p>
-        </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <button
-            type="button"
-            disabled={running !== null}
-            onClick={() => void importWorkspace()}
-            className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60"
+          <div className="workspace-action-card overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]">
+            <div className="p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <FileDown size={24} className="text-amber-400" />
+                <span className="text-xs text-neutral-600">
+                  {running === 'import' ? 'Importing…' : 'Import'}
+                </span>
+              </div>
+              <div className="font-medium">Import Workspace</div>
+              <div className="mt-1 whitespace-nowrap text-xs leading-5 text-neutral-500">
+                Restore the Polyhedron database and mod data from a .pws file.
+              </div>
+              <button
+                type="button"
+                disabled={running !== null}
+                onClick={() => void importWorkspace()}
+                className="accent-solid-control mt-5 inline-flex rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-wait disabled:opacity-60"
+              >
+                {running === 'import' ? 'Importing…' : 'Choose Workspace'}
+              </button>
+            </div>
+          </div>
+          <div
+            className={`workspace-action-card overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416] ${!canExport ? 'opacity-45' : ''}`}
           >
-            <div className="mb-4 flex items-center justify-between">
-              <FileDown size={24} className="text-amber-400" />
-              <span className="text-xs text-neutral-600">
-                {running === 'import' ? 'Importing…' : 'Import'}
-              </span>
+            <div className="p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <FileUp size={24} className="text-amber-400" />
+                <span className="text-xs text-neutral-600">
+                  {running === 'export' ? 'Exporting…' : canExport ? 'Export' : 'No project loaded'}
+                </span>
+              </div>
+              <div className="font-medium">Export Workspace</div>
+              <div className="mt-1 text-xs leading-5 text-neutral-500">
+                Create a portable backup containing the full translation database.
+              </div>
+              <button
+                type="button"
+                disabled={running !== null || !canExport}
+                onClick={() => void exportWorkspace()}
+                className="accent-solid-control mt-5 inline-flex rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {running === 'export'
+                  ? 'Exporting…'
+                  : canExport
+                    ? 'Export Workspace'
+                    : 'Load a project first'}
+              </button>
             </div>
-            <div className="font-medium">Import Workspace</div>
-            <div className="mt-1 text-xs leading-5 text-neutral-500">
-              Restore the Polyhedron database and imported mod data from a .pws file.
-            </div>
-            <span className="accent-solid-control mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
-              {running === 'import' ? 'Importing…' : 'Choose Workspace'}
-            </span>
-          </button>
-          <button
-            type="button"
-            disabled={running !== null}
-            onClick={() => void exportWorkspace()}
-            className="rounded-xl border border-[#2a2f37] bg-[#131518] p-5 text-left transition-colors hover:border-amber-500/40 hover:bg-amber-500/5 disabled:cursor-wait disabled:opacity-60"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <FileUp size={24} className="text-amber-400" />
-              <span className="text-xs text-neutral-600">
-                {running === 'export' ? 'Exporting…' : 'Export'}
-              </span>
-            </div>
-            <div className="font-medium">Export Workspace</div>
-            <div className="mt-1 text-xs leading-5 text-neutral-500">
-              Create a portable backup containing the full translation database.
-            </div>
-            <span className="accent-solid-control mt-5 inline-flex rounded-md bg-amber-500/90 px-4 py-2 text-xs font-semibold text-neutral-950">
-              {running === 'export' ? 'Exporting…' : 'Export Workspace'}
-            </span>
-          </button>
+          </div>
         </div>
+        {canExport ? (
+          <div className="flex w-full items-center justify-between gap-6 rounded-xl border border-neutral-800/80 bg-[#141416] p-4">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-neutral-200">
+                Export current translation
+              </div>
+              <div className="mt-1 text-xs text-neutral-500">
+                Create XML, PAK or ZIP from the loaded session.
+              </div>
+            </div>
+            <ExportControls
+              exportFormat={exportFlow.exportFormat}
+              onFormatChange={exportFlow.setExportFormat}
+              onExport={exportFlow.openExport}
+              onPakExport={exportFlow.exportPak}
+              packageExportEnabled={exportFlow.packageExportEnabled}
+            />
+          </div>
+        ) : (
+          <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-6 text-sm text-neutral-500">
+            Load a localization XML in Translate first.
+          </div>
+        )}
         {message && (
-          <div className="mt-5 flex items-start gap-2 rounded-lg border border-[#2a2f37] bg-[#131518] p-4 text-xs text-neutral-300">
+          <div className="flex items-start gap-2 rounded-lg border border-[#2a2f37] bg-[#131518] p-4 text-xs text-neutral-300">
             <Archive size={15} className="mt-0.5 shrink-0 text-amber-400" />
             <span className="break-all">{message}</span>
           </div>
         )}
 
-        <div className="mt-4 border-t border-[#1f2329] pt-4">
+        <div className="border-t border-[#1f2329] pt-4">
           <InjectLocalizationPage embedded />
         </div>
-        <div className="mt-4 border-t border-[#1f2329] pt-4">
+        <div className="border-t border-[#1f2329] pt-4">
           <ModsPage embedded />
         </div>
       </div>
+
+      {exportFlow.exportMeta && (
+        <PackageExportModal
+          meta={exportFlow.exportMeta}
+          languages={languages}
+          selectedLanguageFolder={exportFlow.bg3LanguageFolder}
+          isExporting={exportFlow.isExporting}
+          onCancel={exportFlow.closeExportModal}
+          onSubmit={exportFlow.submitPackageExport}
+        />
+      )}
 
       {importedStats && (
         <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 backdrop-blur-sm">

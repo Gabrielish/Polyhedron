@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { btnBase, btnPrimary } from '@/features/translate/components/styles'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -41,60 +42,67 @@ export function PackagePage(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <h1 className="text-xl font-semibold text-neutral-100">{t('title')}</h1>
+    <div className="package-tool-screen flex min-h-0 flex-col">
+      <header className="flex shrink-0 items-center border-b border-neutral-800/50 px-6 py-4">
+        <h2 className="text-sm font-medium text-neutral-200">{t('title')}</h2>
+      </header>
 
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-neutral-400">{t('inputFolder')}</label>
-        <div className="flex gap-2">
-          <input
-            readOnly
-            value={inputFolder}
-            placeholder={t('selectInputFolder')}
-            className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-400"
-          />
+      <div className="flex flex-col gap-5 px-6 py-6">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="package-input-folder" className="text-xs text-neutral-400">
+            {t('inputFolder')}
+          </label>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              id="package-input-folder"
+              value={inputFolder}
+              placeholder={t('selectInputFolder')}
+              className="flex-1 rounded-md border border-[#1f2329] bg-transparent px-3 py-2 text-sm text-neutral-400 outline-none"
+            />
+            <button type="button" onClick={pickInput} className={`${btnBase} h-[34px]`}>
+              {t('actions.browse', { ns: 'common' })}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="package-output-file" className="text-xs text-neutral-400">
+            {t('outputFile')}
+          </label>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              id="package-output-file"
+              value={outputPath}
+              placeholder={t('saveAsPak')}
+              className="flex-1 rounded-md border border-[#1f2329] bg-transparent px-3 py-2 text-sm text-neutral-400 outline-none"
+            />
+            <button type="button" onClick={pickOutput} className={`${btnBase} h-[34px]`}>
+              {t('actions.browse', { ns: 'common' })}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
           <button
-            onClick={pickInput}
-            className="rounded-md bg-neutral-800 px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-700"
+            type="button"
+            onClick={handlePack}
+            disabled={running || !inputFolder || !outputPath}
+            className={btnPrimary}
           >
-            {t('actions.browse', { ns: 'common' })}
+            {running ? t('creating') : t('create')}
           </button>
         </div>
+
+        {log.length > 0 && (
+          <div className="rounded-lg border border-[#1f2329] bg-transparent p-3 font-mono text-xs text-neutral-300">
+            {log.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        )}
       </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-neutral-400">{t('outputFile')}</label>
-        <div className="flex gap-2">
-          <input
-            readOnly
-            value={outputPath}
-            placeholder={t('saveAsPak')}
-            className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-400"
-          />
-          <button
-            onClick={pickOutput}
-            className="rounded-md bg-neutral-800 px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-700"
-          >
-            {t('actions.browse', { ns: 'common' })}
-          </button>
-        </div>
-      </div>
-
-      <button
-        onClick={handlePack}
-        disabled={running || !inputFolder || !outputPath}
-        className="w-fit rounded-md border border-amber-500 bg-amber-500 px-6 py-2 text-sm font-medium text-neutral-950 hover:border-amber-400 hover:bg-amber-400 disabled:opacity-50"
-      >
-        {running ? t('creating') : t('create')}
-      </button>
-
-      {log.length > 0 && (
-        <div className="rounded-md bg-neutral-900 p-3 font-mono text-xs text-neutral-300">
-          {log.map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

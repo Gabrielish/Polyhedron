@@ -210,7 +210,7 @@ export function SettingsPage(): React.JSX.Element {
   }
 
   return (
-    <div className="p-8">
+    <div className="settings-page-shell p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="app-page-header mb-8 flex items-center gap-3">
           <Settings className="h-5 w-5 shrink-0 text-amber-500" />

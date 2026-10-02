@@ -47,17 +47,11 @@ const NAV_GROUPS: NavGroupConfig[] = [
   }
 ]
 
-const FOOTER_ITEMS: NavItemConfig[] = [
-  { to: '/settings', icon: Settings, labelKey: 'settings' }
-]
+const FOOTER_ITEMS: NavItemConfig[] = [{ to: '/settings', icon: Settings, labelKey: 'settings' }]
 
 const BG3_REFERENCE_PATHS = new Set(['/dialogues', '/game-data', '/spells'])
 
-function NavItem({
-  to,
-  icon: Icon,
-  label,
-}: NavItemConfig & { label: string }): React.JSX.Element {
+function NavItem({ to, icon: Icon, label }: NavItemConfig & { label: string }): React.JSX.Element {
   const navigate = useNavigate()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
@@ -114,16 +108,17 @@ function NavItem({
       <span className="flex-1 whitespace-nowrap text-xs font-medium opacity-0 transition-opacity duration-150 group-hover/sidebar:opacity-100">
         {label}
       </span>
-      {tooltipVisible && createPortal(
-        <span
-          role="tooltip"
-          className="pointer-events-none fixed z-[5000] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-100 shadow-2xl"
-          style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
-        >
-          {label}
-        </span>,
-        document.body
-      )}
+      {tooltipVisible &&
+        createPortal(
+          <span
+            role="tooltip"
+            className="pointer-events-none fixed z-[5000] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-100 shadow-2xl"
+            style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
+          >
+            {label}
+          </span>,
+          document.body
+        )}
     </NavLink>
   )
 }
@@ -156,9 +151,13 @@ function NavCapsule({
 export function Sidebar(): React.JSX.Element {
   const { t } = useAppTranslation('sidebar')
   const { config } = useConfig()
-  const { gameProfile } = useTranslationSession()
+  const { gameProfile, phase, modName } = useTranslationSession()
   const showGlossary = config['show_glossary'] === 'true'
-  const showBg3Reference = gameProfile === 'bg3'
+  const hasActiveProject = phase === 'loaded' && modName.trim().length > 0
+  // Reference tools are meaningful only while a translation project is open.
+  // Keep them out of the navigation on the setup screen, where no project has
+  // been entered yet.
+  const showBg3Reference = gameProfile === 'bg3' && hasActiveProject
   return (
     <aside className="sidebar-shell group/sidebar fixed top-0 left-0 z-40 flex h-screen w-16 flex-col overflow-hidden border-r border-[#1f2329] bg-[#0f1114] transition-[width] duration-200 hover:w-72">
       <nav className="sidebar-nav flex-1 overflow-y-auto px-2 py-3">
@@ -166,6 +165,7 @@ export function Sidebar(): React.JSX.Element {
           const items = group.items.filter(
             (item) =>
               (item.to !== '/dictionary' || showGlossary) &&
+              (item.to !== '/consistency' || hasActiveProject) &&
               (showBg3Reference || !BG3_REFERENCE_PATHS.has(item.to))
           )
           return items.length > 0 ? (

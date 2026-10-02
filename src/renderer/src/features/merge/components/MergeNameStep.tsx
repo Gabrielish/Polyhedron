@@ -1,5 +1,5 @@
-import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { SetupStepCard } from '@/features/translate/components/SetupStepCard'
+import { useAppTranslation } from '@/i18n/useAppTranslation'
 
 interface MergeNameStepProps {
   value: string
@@ -10,7 +10,7 @@ export function MergeNameStep({ value, onChange }: MergeNameStepProps): React.JS
   const { t } = useAppTranslation('merge')
 
   return (
-    <SetupStepCard step="03">
+    <SetupStepCard step="03" flat compactTop>
       <div>
         <h3 className="m-0 text-[15px] font-semibold tracking-tight text-neutral-200">
           {t('nameStep.title')}

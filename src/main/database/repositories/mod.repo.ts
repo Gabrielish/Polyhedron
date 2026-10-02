@@ -9,6 +9,11 @@ export interface ModUpsertOptions {
   lastFilePath?: string
 }
 
+export interface ModRenameOptions {
+  lastFilePath?: string
+  metaFilePath?: string
+}
+
 export class ModRepository {
   constructor(private db: AppDb) {}
 
@@ -42,6 +47,28 @@ export class ModRepository {
         }
       })
       .run()
+  }
+
+  rename(name: string, nextName: string, options: ModRenameOptions = {}): void {
+    this.db.transaction((tx) => {
+      tx.update(dictionary).set({ modName: nextName }).where(eq(dictionary.modName, name)).run()
+      const current = tx.select({ id: mod.id }).from(mod).where(eq(mod.name, name)).get()
+      if (!current) throw new Error(`Mod not found: ${name}`)
+      tx.update(mod)
+        .set({
+          name: nextName,
+          ...(options.lastFilePath !== undefined && { lastFilePath: options.lastFilePath }),
+          updatedAt: sql`(datetime('now'))`
+        })
+        .where(eq(mod.name, name))
+        .run()
+      if (options.metaFilePath !== undefined) {
+        tx.update(modMeta)
+          .set({ metaFilePath: options.metaFilePath, updatedAt: sql`(datetime('now'))` })
+          .where(eq(modMeta.modId, current.id))
+          .run()
+      }
+    })
   }
 
   // Returns mod names ordered by priority ASC (1 = highest), then name for deterministic ties.

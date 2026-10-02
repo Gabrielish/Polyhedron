@@ -2065,7 +2065,7 @@ export function TranslationGrid({
 
   // Keep enough scroll room for the floating pagination dock so the final
   // translation row can always be brought fully above it.
-  const paginationBottomSpacer = 96
+  const paginationBottomSpacer = 112
 
   const filterItems = useMemo<
     Array<{

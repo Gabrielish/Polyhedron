@@ -70,23 +70,14 @@ export function DeleteModConfirm({
       icon={<AlertTriangle size={16} />}
       onClose={onClose}
       footer={
-        <>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-8 cursor-pointer items-center rounded-md border border-neutral-700 bg-[#131518] px-3 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-800"
-          >
-            {t('delete.cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            disabled={disabled}
-            className="inline-flex h-8 cursor-pointer items-center rounded-md border border-red-500/40 bg-red-500/10 px-3 text-xs font-semibold text-red-200 transition-colors hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {t('delete.confirm')}
-          </button>
-        </>
+        <button
+          type="button"
+          onClick={handleConfirm}
+          disabled={disabled}
+          className="accent-solid-button inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {t('delete.confirm')}
+        </button>
       }
     >
       <div className="space-y-3">

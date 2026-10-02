@@ -217,14 +217,16 @@ const api: AppApi = {
       lastFilePath?: string
     }): Promise<{ success: boolean }> => ipcRenderer.invoke('mod:upsert', params),
 
+    rename: (params: { modName: string; nextName: string }): Promise<{ success: boolean }> =>
+      ipcRenderer.invoke('mod:rename', params),
+
     storeFile: (params: { modName: string; filePath: string }): Promise<{ storedPath: string }> =>
       ipcRenderer.invoke('mod:storeFile', params),
 
     prepareTranslationInput: (params: {
       inputPath: string
       gameProfile: 'bg3' | 'dos1' | 'dos2'
-    }) =>
-      ipcRenderer.invoke('mod:prepareTranslationInput', params),
+    }) => ipcRenderer.invoke('mod:prepareTranslationInput', params),
 
     discardTranslationInput: (params: { importId: string }): Promise<{ success: boolean }> =>
       ipcRenderer.invoke('mod:discardTranslationInput', params),
@@ -366,10 +368,10 @@ const api: AppApi = {
   },
 
   ai: {
-  translate: (payload: AiTranslatePayload): Promise<string> =>
-    ipcRenderer.invoke('ai:translate', payload),
-  variants: (payload: AiVariantsPayload): Promise<AiVariantsResult> =>
-    ipcRenderer.invoke('ai:variants', payload),
+    translate: (payload: AiTranslatePayload): Promise<string> =>
+      ipcRenderer.invoke('ai:translate', payload),
+    variants: (payload: AiVariantsPayload): Promise<AiVariantsResult> =>
+      ipcRenderer.invoke('ai:variants', payload),
 
     translateBatch: (payload: AiBatchPayload): Promise<{ jobId: string }> =>
       ipcRenderer.invoke('ai:translateBatch', payload)
@@ -407,7 +409,9 @@ const api: AppApi = {
     open: (dialogueName: string): Promise<void> =>
       ipcRenderer.invoke('dialogue:open', dialogueName),
     allSpeakers: (): Promise<string[]> => ipcRenderer.invoke('dialogue:allSpeakers'),
-    speakers: (dialogueName: string): Promise<Record<string, { speaker?: string; category?: string }>> =>
+    speakers: (
+      dialogueName: string
+    ): Promise<Record<string, { speaker?: string; category?: string }>> =>
       ipcRenderer.invoke('dialogue:speakers', dialogueName),
     speakersBatch: (
       dialogueNames: string[],

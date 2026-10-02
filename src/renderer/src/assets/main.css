@@ -63,6 +63,24 @@
   box-shadow: none !important;
 }
 
+.manage-mod-search,
+.manage-mod-search:focus-within,
+.manage-mod-search-input,
+.manage-mod-search-input:focus,
+.manage-mod-search-input:focus-visible {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: #1f2329 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.manage-mod-search-input,
+.manage-mod-search-input:focus,
+.manage-mod-search-input:focus-visible {
+  border: 0 !important;
+}
+
 /* Search toggles use the Save button's accent colour on hover without the
    generic Liquid Glass dark button capsule. */
 .translation-toolbar-toggle:hover,
@@ -445,6 +463,21 @@ button[class~="bg-amber-500/90"] {
   color: var(--poly-accent-foreground, #fff) !important;
 }
 
+/* Settings-style workspace cards are static surfaces. Keep theme-wide button
+   effects away from the card itself; only their inner action controls react. */
+html[data-theme] .app-content-shell main button.workspace-action-card,
+html[data-theme] .app-content-shell main button.workspace-action-card:hover,
+html[data-theme] .app-content-shell main button.workspace-action-card:focus,
+html[data-theme] .app-content-shell main button.workspace-action-card:focus-visible,
+html[data-theme] .app-content-shell main button.workspace-action-card:active {
+  background-color: #141416 !important;
+  border-color: rgb(38 38 42 / 80%) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+
 /* Shortcut labels inside accent-filled buttons follow the configured button
    foreground too, while staying slightly muted so they remain secondary. */
 .accent-button-shortcut {
@@ -483,6 +516,14 @@ html[data-theme="liquid-glass"] .app-content-shell main button:not(:disabled):ho
   background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
   border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 38%);
   box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+/* Workspace import/export cards use the same quiet surface as Settings cards;
+   they are action containers, not hoverable navigation cards. */
+html[data-theme="liquid-glass"] .app-content-shell main button.workspace-action-card,
+html[data-theme="liquid-glass"] .app-content-shell main button.workspace-action-card:hover {
+  background-color: #141416;
+  border-color: rgb(38 38 42 / 80%);
+  box-shadow: none;
 }
 html[data-theme="liquid-glass"] .app-content-shell main button[class~="bg-amber-500"],
 html[data-theme="liquid-glass"] .app-content-shell main button[class~="bg-amber-500/90"] {
@@ -1302,6 +1343,11 @@ html[data-theme="liquid-glass"] .translate-idle-footer {
   margin-bottom: 96px;
 }
 
+/* Leave the same breathing room as Mods below the final Translate card. */
+html[data-theme="liquid-glass"] .translate-idle-content {
+  padding-bottom: 112px;
+}
+
 html[data-theme="liquid-glass"] .bulk-status-menu {
   border-color: #525252 !important;
   background-color: #101010 !important;
@@ -1652,6 +1698,27 @@ html[data-theme="liquid-glass"] .mods-page-main {
   scrollbar-gutter: stable;
 }
 
+/* Keep breathing room outside the embedded Mods card, so the card itself does not grow. */
+html[data-theme="liquid-glass"] .mods-embedded .mods-page-main {
+  padding-bottom: 0;
+}
+html[data-theme="liquid-glass"] .mods-bottom-spacer {
+  /* Workspace already contributes 32px of bottom padding. */
+  flex: 0 0 80px;
+}
+
+/* Keep the final Settings card clear of the floating dock. */
+html[data-theme="liquid-glass"] .settings-page-shell {
+  padding-bottom: 80px;
+}
+
+/* The Mods tool card owns the surface color. Keep its nested main transparent
+   so it does not paint a darker layer over the Settings-style card. */
+.app-content-shell main.mods-page-main,
+html[data-theme="liquid-glass"] .app-content-shell main.mods-page-main {
+  background-color: transparent !important;
+}
+
 html[data-theme="liquid-glass"] .merge-tool-screen {
   min-height: 0;
 }
@@ -1659,7 +1726,6 @@ html[data-theme="liquid-glass"] .merge-tool-screen {
 html[data-theme="liquid-glass"] .merge-bottom-bar {
   position: relative;
   z-index: 2;
-  padding-bottom: 112px;
 }
 
 /* Keep the Settings item on the same rhythm as the navigation icons. */

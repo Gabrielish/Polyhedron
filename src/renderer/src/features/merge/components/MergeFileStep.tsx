@@ -1,8 +1,7 @@
-import { ArrowRight } from 'lucide-react'
-import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { FileInputCard } from '@/features/translate/components/FileInputCard'
 import { LanguagePicker } from '@/features/translate/components/LanguagePicker'
 import { SetupStepCard } from '@/features/translate/components/SetupStepCard'
+import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { Language } from '@/types'
 import type { MergeFileSlot, SlotKey } from '../types'
 
@@ -38,45 +37,42 @@ export function MergeFileStep({
   const { t } = useAppTranslation('merge')
 
   return (
-    <SetupStepCard step={step}>
+    <SetupStepCard step={step} flat>
       <div>
         <h3 className="m-0 text-[15px] font-semibold tracking-tight text-neutral-200">{title}</h3>
         <p className="mt-1 m-0 text-xs text-neutral-500">{description}</p>
       </div>
 
-      <div className="grid grid-cols-[1fr_auto] items-end gap-3.5">
-        <div>
-          <span className="mb-1.5 block text-[10px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
-            {t('language')}
-          </span>
-          <LanguagePicker
-            value={slot.lang}
-            onChange={onLangChange}
-            languages={languages}
-            accent={accent}
-          />
-        </div>
-        <div className="pb-2 text-neutral-600">
-          <ArrowRight size={16} />
-        </div>
+      <div className="pb-2">
+        <span className="mb-2 block text-[10px] font-semibold tracking-[0.08em] text-neutral-500 uppercase">
+          {t('language')}
+        </span>
+        <LanguagePicker
+          value={slot.lang}
+          onChange={onLangChange}
+          languages={languages}
+          accent={accent}
+        />
       </div>
 
-      <FileInputCard
-        fileName={slot.fileName}
-        isDragging={slot.isDragging}
-        onBrowse={() => onBrowse(slotKey)}
-        onDragOver={(event) => {
-          event.preventDefault()
-          onDragChange(slotKey, true)
-        }}
-        onDragLeave={() => onDragChange(slotKey, false)}
-        onDrop={(event) => {
-          void onDrop(slotKey, event)
-        }}
-        onClear={() => {
-          void onClear(slotKey)
-        }}
-      />
+      <div className="flex flex-col gap-2">
+        <FileInputCard
+          fileName={slot.fileName}
+          isDragging={slot.isDragging}
+          onBrowse={() => onBrowse(slotKey)}
+          onDragOver={(event) => {
+            event.preventDefault()
+            onDragChange(slotKey, true)
+          }}
+          onDragLeave={() => onDragChange(slotKey, false)}
+          onDrop={(event) => {
+            void onDrop(slotKey, event)
+          }}
+          onClear={() => {
+            void onClear(slotKey)
+          }}
+        />
+      </div>
 
       {slot.prepared && slot.candidateId && <CandidateSummary slot={slot} />}
     </SetupStepCard>

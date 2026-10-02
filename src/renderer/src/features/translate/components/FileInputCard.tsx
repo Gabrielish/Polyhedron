@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { btnBase, btnGhostIcon } from './styles'
 
 interface FileInputCardProps {
+  showHeader?: boolean
   fileName: string | null
   acceptedExtensions?: string[]
   isDragging: boolean
@@ -15,6 +16,7 @@ interface FileInputCardProps {
 }
 
 export function FileInputCard({
+  showHeader = true,
   fileName,
   acceptedExtensions = ['xml', 'pak', 'zip'],
   isDragging,
@@ -28,14 +30,16 @@ export function FileInputCard({
 
   return (
     <>
-      <div>
-        <h3 className="text-[15px] font-semibold text-neutral-200 tracking-tight m-0">
-          {t('setup.fileCard.title', { ns: 'translate' })}
-        </h3>
-        <p className="text-xs text-neutral-500 mt-1 m-0">
-          {t('setup.fileCard.description', { ns: 'translate' })}
-        </p>
-      </div>
+      {showHeader && (
+        <div>
+          <h3 className="text-[15px] font-semibold text-neutral-200 tracking-tight m-0">
+            {t('setup.fileCard.title', { ns: 'translate' })}
+          </h3>
+          <p className="text-xs text-neutral-500 mt-1 m-0">
+            {t('setup.fileCard.description', { ns: 'translate' })}
+          </p>
+        </div>
+      )}
 
       <section
         aria-label={t('setup.fileCard.dropZone', { ns: 'translate' })}
@@ -70,7 +74,9 @@ export function FileInputCard({
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-[10px] text-neutral-600">
                 {acceptedExtensions.map((extension) => (
-                  <span key={extension} className="font-mono">.{extension}</span>
+                  <span key={extension} className="font-mono">
+                    .{extension}
+                  </span>
                 ))}
               </div>
             </div>

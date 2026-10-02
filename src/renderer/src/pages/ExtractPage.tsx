@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { DragDrop } from '@/components/shared/DragDrop'
 import { LanguageSelect } from '@/components/shared/LanguageSelect'
+import { btnBase, btnPrimary } from '@/features/translate/components/styles'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -41,61 +42,64 @@ export function ExtractPage(): React.JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <h1 className="text-xl font-semibold text-neutral-100">{t('title')}</h1>
+    <div className="extract-tool-screen flex min-h-0 flex-col">
+      <header className="flex shrink-0 items-center border-b border-neutral-800/50 px-6 py-4">
+        <h2 className="text-sm font-medium text-neutral-200">{t('title')}</h2>
+      </header>
 
-      <DragDrop
-        accept={['zip', 'pak']}
-        onFile={setInputPath}
-        label={t('dropLabel')}
-      />
-
-      {inputPath && (
-        <p className="truncate text-xs text-neutral-400" title={inputPath}>
-          {inputPath}
-        </p>
-      )}
-
-      <LanguageSelect
-        label={t('fields.sourceLanguage', { ns: 'common' })}
-        value={sourceLang}
-        onChange={setSourceLang}
-        className="w-56"
-      />
-
-      <div className="flex flex-col gap-1">
-        <label className="text-xs text-neutral-400">{t('outputFolder')}</label>
-        <div className="flex gap-2">
-          <input
-            readOnly
-            value={outputPath}
-            placeholder={t('selectOutputFolder')}
-            className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-400"
+      <div className="flex flex-col gap-5 px-6 py-6">
+        <div className="grid grid-cols-1 items-end gap-5 md:grid-cols-[minmax(220px,0.42fr)_minmax(0,1fr)]">
+          <LanguageSelect
+            label={t('fields.sourceLanguage', { ns: 'common' })}
+            value={sourceLang}
+            onChange={setSourceLang}
+            className="w-full"
           />
+          <DragDrop
+            accept={['zip', 'pak']}
+            onFile={setInputPath}
+            label={t('dropLabel')}
+            className="!flex-row !items-center !justify-start !gap-3 !rounded-xl !border !border-dashed !border-[#2a2f37] !bg-[#0f1114] !p-2.5 [&>div]:flex-1 [&>div]:text-left [&>svg]:h-6 [&>svg]:w-6 [&>button]:ml-auto [&>button]:h-[30px]"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="extract-output-folder" className="text-xs text-neutral-400">
+            {t('outputFolder')}
+          </label>
+          <div className="flex gap-2">
+            <input
+              readOnly
+              id="extract-output-folder"
+              value={outputPath}
+              placeholder={t('selectOutputFolder')}
+              className="flex-1 rounded-md border border-[#1f2329] bg-transparent px-3 py-2 text-sm text-neutral-400 outline-none"
+            />
+            <button type="button" onClick={pickOutput} className={`${btnBase} h-[34px]`}>
+              {t('actions.browse', { ns: 'common' })}
+            </button>
+          </div>
+        </div>
+
+        <div className="flex justify-end">
           <button
-            onClick={pickOutput}
-            className="cursor-pointer rounded-md bg-neutral-800 px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-700"
+            type="button"
+            onClick={handleExtract}
+            disabled={running || !inputPath || !outputPath || !sourceLang}
+            className={btnPrimary}
           >
-            {t('actions.browse', { ns: 'common' })}
+            {running ? t('extracting') : t('extract')}
           </button>
         </div>
+
+        {log.length > 0 && (
+          <div className="rounded-lg border border-[#1f2329] bg-transparent p-3 font-mono text-xs text-neutral-300">
+            {log.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        )}
       </div>
-
-      <button
-        onClick={handleExtract}
-        disabled={running || !inputPath || !outputPath || !sourceLang}
-        className="w-fit cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-6 py-2 text-sm font-medium text-neutral-950 hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {running ? t('extracting') : t('extract')}
-      </button>
-
-      {log.length > 0 && (
-        <div className="rounded-md bg-neutral-900 p-3 font-mono text-xs text-neutral-300">
-          {log.map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
-        </div>
-      )}
     </div>
   )
 }
