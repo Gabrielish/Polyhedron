@@ -3,6 +3,7 @@ import './assets/main.css'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import { initializeTheme } from './context/ThemeContext'
 import { initI18n } from './i18n'
 
 window.addEventListener('error', (event) => {
@@ -27,7 +28,7 @@ async function bootstrap(): Promise<void> {
   // Source strings use Cascadia Code exclusively. Wait for the local font
   // before mounting the editor so font-display:block cannot leave blank source
   // cells during the first render.
-  await Promise.all([initI18n(), document.fonts.load('400 14px "Cascadia Code"')])
+  await Promise.all([initializeTheme(), initI18n(), document.fonts.load('400 14px "Cascadia Code"')])
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

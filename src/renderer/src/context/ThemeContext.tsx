@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { ACCENT_FAVORITES_STORAGE_KEY, parseAccentFavorites } from '@/utils/accentFavorites'
 
 export type ThemeId = 'liquid-glass'
@@ -63,6 +63,55 @@ function readStorageValue(key: string, legacyKey: string): string | null {
   return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey)
 }
 
+function applyTheme(theme: ThemeId, accent: string, accentForeground: 'white' | 'black'): void {
+  document.documentElement.dataset.theme = theme
+  window.localStorage.setItem(STORAGE_KEY, theme)
+  document.documentElement.style.setProperty('--poly-accent', accent)
+  document.documentElement.style.setProperty(
+    '--poly-accent-foreground',
+    accentForeground === 'black' ? '#101010' : '#ffffff'
+  )
+  document.documentElement.style.setProperty('--poly-accent-rgb', hexToRgb(accent))
+  document.documentElement.style.setProperty('--color-amber-300', mixHex(accent, '#ffffff', 0.55))
+  document.documentElement.style.setProperty('--color-amber-400', mixHex(accent, '#ffffff', 0.3))
+  document.documentElement.style.setProperty('--color-amber-500', accent)
+  document.documentElement.style.setProperty('--color-amber-600', mixHex(accent, '#000000', 0.18))
+  document.documentElement.style.setProperty('--color-amber-700', mixHex(accent, '#000000', 0.38))
+  document.documentElement.style.setProperty('--color-amber-800', mixHex(accent, '#000000', 0.55))
+  document.documentElement.style.setProperty('--color-amber-900', mixHex(accent, '#000000', 0.68))
+  window.localStorage.setItem(ACCENT_STORAGE_KEY, accent)
+  window.localStorage.setItem(ACCENT_FOREGROUND_STORAGE_KEY, accentForeground)
+}
+
+// Resolve the durable profile before mounting React. A stale renderer cache
+// must not briefly paint a different accent, including the title-bar icon.
+export async function initializeTheme(): Promise<void> {
+  try {
+    const config = await window.api.config.getAll()
+    if (config.theme_accent) {
+      window.localStorage.setItem(ACCENT_STORAGE_KEY, normalizeAccent(config.theme_accent))
+    }
+    if (config.theme_accent_favorites) {
+      window.localStorage.setItem(
+        ACCENT_FAVORITES_STORAGE_KEY,
+        JSON.stringify(parseAccentFavorites(config.theme_accent_favorites))
+      )
+    }
+    if (config.theme_accent_foreground === 'black' || config.theme_accent_foreground === 'white') {
+      window.localStorage.setItem(ACCENT_FOREGROUND_STORAGE_KEY, config.theme_accent_foreground)
+    }
+  } catch {
+    // Keep the cached appearance when the config service is unavailable.
+  }
+  applyTheme(
+    readTheme(),
+    normalizeAccent(readStorageValue(ACCENT_STORAGE_KEY, LEGACY_ACCENT_STORAGE_KEY) || DEFAULT_ACCENT),
+    readStorageValue(ACCENT_FOREGROUND_STORAGE_KEY, LEGACY_ACCENT_FOREGROUND_STORAGE_KEY) === 'black'
+      ? 'black'
+      : 'white'
+  )
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [theme, setThemeState] = useState<ThemeId>(readTheme)
   const [accent, setAccentState] = useState(() =>
@@ -79,50 +128,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
   const [accentFavorites, setAccentFavoritesState] = useState(() =>
     parseAccentFavorites(window.localStorage.getItem(ACCENT_FAVORITES_STORAGE_KEY))
   )
-  // localStorage keeps the renderer fast, while the config table is the durable
-  // profile store used by packaged builds and workspace backups. Read it once
-  // on startup so a rebuilt app cannot silently fall back to the default red.
-  useEffect(() => {
-    void window.api.config
-      .getAll()
-      .then((config) => {
-        if (config.theme_id === 'liquid-glass') setThemeState('liquid-glass')
-        if (config.theme_accent) setAccentState(normalizeAccent(config.theme_accent))
-        if (config.theme_accent_favorites) {
-          setAccentFavoritesState(parseAccentFavorites(config.theme_accent_favorites))
-        }
-        if (
-          config.theme_accent_foreground === 'black' ||
-          config.theme_accent_foreground === 'white'
-        ) {
-          setAccentForegroundState(config.theme_accent_foreground)
-        }
-      })
-      .catch(() => undefined)
-  }, [])
-
   useEffect(() => {
     window.localStorage.setItem(ACCENT_FAVORITES_STORAGE_KEY, JSON.stringify(accentFavorites))
   }, [accentFavorites])
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme
-    window.localStorage.setItem(STORAGE_KEY, theme)
-    document.documentElement.style.setProperty('--poly-accent', accent)
-    document.documentElement.style.setProperty(
-      '--poly-accent-foreground',
-      accentForeground === 'black' ? '#101010' : '#ffffff'
-    )
-    document.documentElement.style.setProperty('--poly-accent-rgb', hexToRgb(accent))
-    document.documentElement.style.setProperty('--color-amber-300', mixHex(accent, '#ffffff', 0.55))
-    document.documentElement.style.setProperty('--color-amber-400', mixHex(accent, '#ffffff', 0.3))
-    document.documentElement.style.setProperty('--color-amber-500', accent)
-    document.documentElement.style.setProperty('--color-amber-600', mixHex(accent, '#000000', 0.18))
-    document.documentElement.style.setProperty('--color-amber-700', mixHex(accent, '#000000', 0.38))
-    document.documentElement.style.setProperty('--color-amber-800', mixHex(accent, '#000000', 0.55))
-    document.documentElement.style.setProperty('--color-amber-900', mixHex(accent, '#000000', 0.68))
-    window.localStorage.setItem(ACCENT_STORAGE_KEY, accent)
-    window.localStorage.setItem(ACCENT_FOREGROUND_STORAGE_KEY, accentForeground)
+  useLayoutEffect(() => {
+    applyTheme(theme, accent, accentForeground)
   }, [accent, accentForeground, theme])
 
   const value = useMemo<ThemeContextValue>(

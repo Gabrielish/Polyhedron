@@ -193,7 +193,7 @@ export function ThemedSelect({
             role="listbox"
             id={listboxId}
             className={cn(
-              'fixed z-[80] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] shadow-2xl',
+              'fixed z-[10000] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] shadow-2xl',
               menuClassName
             )}
             style={{

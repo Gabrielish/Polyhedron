@@ -18,10 +18,11 @@ async function run() {
       import {ThemedSelect} from './src/renderer/src/components/shared/ThemedSelect';
       const root=createRoot(document.getElementById('root'));
       let key=0;
-      window.mountScenario=({top=350,count=2,searchable=false,virtualized=false,left=20})=>{
-        root.render(<div key={++key} style={{position:'absolute',top,left,width:160}}>
+      window.mountScenario=({top=350,count=2,searchable=false,virtualized=false,left=20,replaceOpen=false})=>{
+        root.render(<div key={++key} className={replaceOpen?'translation-search-bar':undefined} style={{position:'absolute',top,left,width:160}}>
           <ThemedSelect value="0" onChange={()=>{}} searchable={searchable} virtualized={virtualized}
             options={Array.from({length:count},(_,index)=>({value:String(index),label:'Option '+index}))}/>
+          {replaceOpen&&<div className="translation-replace-controls" style={{height:48,background:'#101010'}}>Find &amp; Replace</div>}
         </div>);
       };
     ` },
@@ -35,9 +36,11 @@ async function run() {
   const win=new BrowserWindow({show:false,width:800,height:600,webPreferences:{backgroundThrottling:false}})
   win.setContentSize(800,600)
   await win.loadURL('https://dropdown.test')
-  const assets=path.join(root,'out/renderer/assets')
-  const css=(await fs.readdir(assets)).find(name=>name.endsWith('.css'))
-  await win.webContents.insertCSS(await fs.readFile(path.join(assets,css),'utf8'))
+  const cssPath=path.join(root,'src/renderer/src/assets/main.css')
+  const {compile}=createRequire(require.resolve('@tailwindcss/vite'))('@tailwindcss/node')
+  const css=await compile(await fs.readFile(cssPath,'utf8'),{base:path.dirname(cssPath),onDependency:()=>{}})
+  const selectSource=await fs.readFile(path.join(root,'src/renderer/src/components/shared/ThemedSelect.tsx'),'utf8')
+  await win.webContents.insertCSS(css.build([...new Set(selectSource.split(/[\s"'`{}]+/))]))
   await win.webContents.executeJavaScript(bundle.outputFiles[0].text)
   const evaluate=source=>win.webContents.executeJavaScript(source,true)
   const settle=()=>new Promise(resolve=>setTimeout(resolve,100))
@@ -59,6 +62,9 @@ async function run() {
   }
   const down=`(()=>{const g=window.geometry();return Math.abs(g.top-g.triggerBottom-4)<1 && g.bottom<=g.viewport-3})()`
   const up=`(()=>{const g=window.geometry();return Math.abs(g.triggerTop-g.bottom-4)<1 && g.top>=3})()`
+  await scenario({top:20,count:100,searchable:true,replaceOpen:true})
+  await check('dropdown search header is above Find & Replace',`(()=>{const input=document.querySelector('[role="listbox"] input'),r=input.getBoundingClientRect();return document.elementFromPoint(r.left+r.width/2,r.top+r.height/2)===input})()`)
+  await check('first dropdown option is clickable above Find & Replace',`(()=>{const option=document.querySelector('.themed-select-options button'),r=option.getBoundingClientRect();return option.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2))})()`)
   await scenario({top:350,count:2})
   await check('short menu opens down when less than 240px remains',down)
   await scenario({top:550,count:2})
