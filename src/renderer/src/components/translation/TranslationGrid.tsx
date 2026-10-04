@@ -1293,10 +1293,10 @@ export function TranslationGrid({
       await navigator.clipboard.writeText(selectedEntries.map((entry) => entry.uid).join('\n'))
       toast.success(
         `${selectedEntries.length} content ${selectedEntries.length === 1 ? 'ID' : 'IDs'} copied to clipboard`,
-        { position: 'bottom-left' }
+        { position: 'bottom-right' }
       )
     } catch (err) {
-      toast.error(getLocalizedErrorMessage(err, t), { position: 'bottom-left' })
+      toast.error(getLocalizedErrorMessage(err, t), { position: 'bottom-right' })
     }
   }
 
