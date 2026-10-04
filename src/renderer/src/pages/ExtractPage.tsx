@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { DragDrop } from '@/components/shared/DragDrop'
 import { LanguageSelect } from '@/components/shared/LanguageSelect'
 import { btnBase, btnPrimary } from '@/features/translate/components/styles'
+import { cn } from '@/lib/utils'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -88,7 +89,7 @@ export function ExtractPage(): React.JSX.Element {
             type="button"
             onClick={handleExtract}
             disabled={running || !inputPath || !outputPath || !sourceLang}
-            className={btnPrimary}
+            className={cn(btnPrimary, (running || !inputPath || !outputPath || !sourceLang) && 'cursor-not-allowed opacity-40')}
           >
             {running ? <Loader2 size={13} className="animate-spin" /> : <FileArchive size={13} aria-hidden="true" />}
             {running ? t('extracting') : t('extract')}

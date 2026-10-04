@@ -2,6 +2,7 @@ import { PackagePlus, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { btnBase, btnPrimary } from '@/features/translate/components/styles'
+import { cn } from '@/lib/utils'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -90,7 +91,7 @@ export function PackagePage(): React.JSX.Element {
             type="button"
             onClick={handlePack}
             disabled={running || !inputFolder || !outputPath}
-            className={btnPrimary}
+            className={cn(btnPrimary, (running || !inputFolder || !outputPath) && 'cursor-not-allowed opacity-40')}
           >
             {running ? <Loader2 size={13} className="animate-spin" /> : <PackagePlus size={13} aria-hidden="true" />}
             {running ? t('creating') : t('create')}

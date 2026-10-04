@@ -7,8 +7,8 @@ export const THEMES: Array<{ id: ThemeId; name: string; description: string; swa
   [
     {
       id: 'liquid-glass',
-      name: 'Liquid Glass (Dark)',
-      description: 'Dark glass with a custom accent.',
+      name: 'Dark',
+      description: 'Dark interface with a custom accent.',
       swatches: ['#8c52ff', '#0a0d12']
     }
   ]

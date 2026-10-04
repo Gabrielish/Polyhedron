@@ -22,7 +22,7 @@
     "title": "Merged mod",
     "description": "Choose the destination mod name for the merged output.",
     "label": "Mod name",
-    "placeholder": "ex: Shared Translation Pack"
+    "placeholder": "Enter name..."
   },
   "bottomBar": {
     "ready": "Ready to merge files",

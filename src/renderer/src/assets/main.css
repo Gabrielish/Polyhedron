@@ -2648,6 +2648,24 @@ html[data-theme="liquid-glass"] .translation-pagination-controls:hover {
 html[data-theme="liquid-glass"] .translation-pagination-footer {
   justify-content: flex-end !important;
 }
+
+/* The pagination root is only a positioning layer. Its old full-width dark
+   background created a large black strip behind the floating navigation dock. */
+html[data-theme="liquid-glass"] .translation-pagination-footer,
+html[data-theme="liquid-glass"] .translation-pagination-footer::before,
+html[data-theme="liquid-glass"] .translation-pagination-footer::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-top-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="liquid-glass"] .translate-grid-scroll,
+html[data-theme="liquid-glass"] .translate-grid-scroll > div {
+  background: transparent !important;
+  background-color: transparent !important;
+}
 html[data-theme="liquid-glass"] .translation-pagination-controls {
   margin-left: auto !important;
 }

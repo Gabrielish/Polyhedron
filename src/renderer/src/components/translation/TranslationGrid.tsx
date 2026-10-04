@@ -2039,7 +2039,7 @@ export function TranslationGrid({
     'inline-flex h-7 cursor-pointer items-center rounded border border-[#1f2329] bg-[#131518] px-2 text-xs font-medium text-neutral-400 transition-colors hover:border-[#2a2f37] hover:text-neutral-200 disabled:cursor-not-allowed disabled:opacity-40'
 
   const PaginationFooter = (
-    <div className="translation-pagination-footer flex shrink-0 items-center justify-between gap-4 border-t border-[#1f2329] bg-[#0c0d0f] px-5 py-2">
+    <div className="translation-pagination-footer flex shrink-0 items-center justify-between gap-4">
       <div className="translation-pagination-controls flex items-center gap-2">
         <span className="translation-page-indicator font-mono text-[11px] tabular-nums text-neutral-500">
           {currentPage} of {totalPages}

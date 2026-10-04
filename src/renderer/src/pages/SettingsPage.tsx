@@ -442,9 +442,9 @@ export function SettingsPage(): React.JSX.Element {
                 />
                 <span className="h-5 w-5 rounded-full border border-white/10 bg-[#f4f1ed]" />
               </div>
-              <div className="text-sm font-medium text-neutral-200">Liquid Glass (Light)</div>
+              <div className="text-sm font-medium text-neutral-200">Light</div>
               <div className="mt-1 text-xs leading-5 text-neutral-500">
-                A light variant of Liquid Glass is planned for a future update.
+                A light interface variant is planned for a future update.
               </div>
             </div>
           </div>
