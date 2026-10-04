@@ -1277,6 +1277,29 @@ export function TranslationGrid({
     }
   }
 
+  const handleContentIdClick = async () => {
+    if (!showId) {
+      setShowId(true)
+      return
+    }
+
+    const selectedEntries = materializeSelectedEntries(session)
+    if (selectedEntries.length === 0) {
+      setShowId(false)
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(selectedEntries.map((entry) => entry.uid).join('\n'))
+      toast.success(
+        `${selectedEntries.length} content ${selectedEntries.length === 1 ? 'ID' : 'IDs'} copied to clipboard`,
+        { position: 'bottom-left' }
+      )
+    } catch (err) {
+      toast.error(getLocalizedErrorMessage(err, t), { position: 'bottom-left' })
+    }
+  }
+
   const updateEntryTarget = (entry: TranslationSessionEntry, value: string) => {
     if (value !== entry.target) {
       onEntryChange(entry.rowId, value)
@@ -2535,8 +2558,14 @@ export function TranslationGrid({
           </SearchToolbarToggle>
           <SearchToolbarToggle
             active={showId}
-            tooltip="Show content ID"
-            onClick={() => setShowId(!showId)}
+            tooltip={
+              !showId
+                ? 'Show content ID'
+                : selectedStats.selectedStrings > 0
+                  ? 'Copy selected content IDs'
+                  : 'Hide content ID'
+            }
+            onClick={handleContentIdClick}
           >
             <Hash size={14} />
           </SearchToolbarToggle>
