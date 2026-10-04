@@ -1,4 +1,4 @@
-import { Archive, FileDown, FileUp, FolderSync } from 'lucide-react'
+import { FileDown, FileUp, FolderSync, Loader2, RotateCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
@@ -8,12 +8,13 @@ import { useTranslationExport } from '@/features/translate/hooks/useTranslationE
 import type { Language } from '@/types'
 import { InjectLocalizationPage } from './InjectLocalizationPage'
 import { ModsPage } from './ModsPage'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 
 export function WorkspacePage(): React.JSX.Element {
   const TitleIcon = FolderSync
   const session = useTranslationSession()
   const [running, setRunning] = useState<'import' | 'export' | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const [pendingImportPath, setPendingImportPath] = useState<string | null>(null)
   const [importedStats, setImportedStats] = useState<{ translated: number; total: number } | null>(
     null
   )
@@ -40,14 +41,11 @@ export function WorkspacePage(): React.JSX.Element {
     })
     if (!outputPath) return
     setRunning('export')
-    setMessage(null)
     try {
       await window.api.workspace.export({ outputPath })
-      setMessage(`Workspace exported to ${outputPath}`)
       toast.success('Workspace exported successfully.')
     } catch (error) {
       const text = error instanceof Error ? error.message : String(error)
-      setMessage(text)
       toast.error(text)
     } finally {
       setRunning(null)
@@ -62,21 +60,19 @@ export function WorkspacePage(): React.JSX.Element {
     })
     const inputPath = files[0]
     if (!inputPath) return
-    if (
-      !window.confirm(
-        'Importing a workspace will replace the current Polyhedron database. A backup will be created first. Continue?'
-      )
-    )
-      return
+    setPendingImportPath(inputPath)
+  }
+
+  const confirmImportWorkspace = async () => {
+    const inputPath = pendingImportPath
+    if (!inputPath) return
+    setPendingImportPath(null)
     setRunning('import')
-    setMessage(null)
     try {
       const result = await window.api.workspace.import({ inputPath })
       setImportedStats(result.stats)
-      setMessage(`Workspace imported. Backup created at ${result.backupPath}.`)
     } catch (error) {
       const text = error instanceof Error ? error.message : String(error)
-      setMessage(text)
       toast.error(text)
     } finally {
       setRunning(null)
@@ -85,6 +81,15 @@ export function WorkspacePage(): React.JSX.Element {
 
   return (
     <div className="h-full min-h-0 overflow-y-auto p-8 text-neutral-200">
+      <ConfirmDialog
+        open={pendingImportPath !== null}
+        title="Import workspace"
+        description="Importing a workspace will replace the current Polyhedron database. A backup will be created first. Continue?"
+        confirmLabel="Import"
+        confirmIcon={<FileDown size={13} aria-hidden="true" />}
+        onConfirm={confirmImportWorkspace}
+        onClose={() => setPendingImportPath(null)}
+      />
       <div className="mx-auto w-full max-w-4xl space-y-6">
         <div className="app-page-header mb-8 flex items-center gap-3">
           <TitleIcon className="text-amber-400" size={20} />
@@ -112,14 +117,15 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null}
                 onClick={() => void importWorkspace()}
-                className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {running === 'import' ? <Loader2 size={13} className="animate-spin" /> : <FileDown size={13} aria-hidden="true" />}
                 {running === 'import' ? 'Importing…' : 'Choose Workspace'}
               </button>
             </div>
           </div>
           <div
-            className={`workspace-action-card overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416] ${!canExport ? 'opacity-45' : ''}`}
+            className={`workspace-action-card overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416] ${!canExport ? 'cursor-not-allowed [&_*]:!cursor-not-allowed opacity-45' : ''}`}
           >
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
@@ -136,8 +142,9 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null || !canExport}
                 onClick={() => void exportWorkspace()}
-                className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-export-button accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
+                {running === 'export' ? <Loader2 size={13} className="animate-spin" /> : <FileUp size={13} aria-hidden="true" />}
                 {running === 'export'
                   ? 'Exporting…'
                   : canExport
@@ -170,13 +177,6 @@ export function WorkspacePage(): React.JSX.Element {
             Load a localization XML in Translate first.
           </div>
         )}
-        {message && (
-          <div className="flex items-start gap-2 rounded-lg border border-[#2a2f37] bg-[#131518] p-4 text-xs text-neutral-300">
-            <Archive size={15} className="mt-0.5 shrink-0 text-amber-400" />
-            <span className="break-all">{message}</span>
-          </div>
-        )}
-
         <div className="border-t border-[#1f2329] pt-4">
           <InjectLocalizationPage embedded />
         </div>
@@ -197,8 +197,8 @@ export function WorkspacePage(): React.JSX.Element {
       )}
 
       {importedStats && (
-        <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-[360px] rounded-2xl border border-[#34343e] bg-[#15161b] p-5 shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+        <div className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div role="dialog" aria-modal="true" aria-label="Workspace imported" className="app-modal-panel w-[360px] rounded-xl border border-neutral-800/80 bg-[#141416] p-5">
             <div className="text-sm font-semibold text-neutral-100">Workspace imported</div>
             <p className="mt-3 text-sm leading-5 text-neutral-400">
               The workspace was imported successfully. Restart Polyhedron now to load it?
@@ -223,8 +223,9 @@ export function WorkspacePage(): React.JSX.Element {
               <button
                 type="button"
                 onClick={() => void window.api.window.relaunch()}
-                className="rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
+                className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
               >
+                <RotateCw size={13} aria-hidden="true" />
                 Restart now
               </button>
             </div>

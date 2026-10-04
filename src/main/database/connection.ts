@@ -20,11 +20,13 @@ interface DictionaryTextRow {
 
 let _db: AppDb | null = null
 let _sqlite: Database.Database | null = null
+let databaseGeneration = 0
 
 export function getDb(): AppDb {
   if (!_db) {
     const dbPath = databasePath()
     _sqlite = new Database(dbPath)
+    databaseGeneration++
     _sqlite.pragma('journal_mode = WAL')
     _sqlite.pragma('foreign_keys = ON')
     _db = drizzle(_sqlite, { schema })
@@ -40,6 +42,14 @@ export function closeDb(): void {
   _sqlite?.close()
   _sqlite = null
   _db = null
+}
+
+// Covers writes through this connection and commits made by worker connections.
+export function getDatabaseRevision(): { database: AppDb; revision: string } {
+  const database = getDb()
+  const changes = _sqlite!.prepare('SELECT total_changes() AS count').get() as { count: number }
+  const version = _sqlite!.pragma('data_version', { simple: true })
+  return { database, revision: `${databaseGeneration}:${changes.count}:${version}` }
 }
 
 export async function backupDatabase(outputPath: string): Promise<void> {

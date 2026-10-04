@@ -19,6 +19,9 @@ import {
   Code2,
 } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useSessionStructure } from '@/hooks/useSessionStructure'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
 import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
@@ -81,13 +84,17 @@ function wikiPath(category: ReferenceCategory, name?: string): string {
     : `/wiki/${names[category]}`
 }
 function normalize(value: string): string {
-  return normalizeSearchText(
-    value
-      .replace(/<[^>]*>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
+  const cached = normalizedSources.get(value)
+  if (cached !== undefined) return cached
+  const normalized = normalizeSearchText(
+    value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
   )
+  if (normalizedSources.size >= 50000) normalizedSources.clear()
+  normalizedSources.set(value, normalized)
+  return normalized
 }
+const normalizedSources = new Map<string, string>()
+const catalogRowKeys = new WeakMap(getReferenceCatalog().map((entry, index) => [entry, `${entry.category}:${entry.name}:${index}`] as const))
 function LocalTranslationInput({
   value,
   onCommit,
@@ -229,7 +236,7 @@ function GameDataTooltipButton({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/game-data-tooltip:translate-y-0 group-hover/game-data-tooltip:opacity-100 group-focus-visible/game-data-tooltip:translate-y-0 group-focus-visible/game-data-tooltip:opacity-100"
+        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/game-data-tooltip:translate-y-0 group-hover/game-data-tooltip:opacity-100 group-focus-visible/game-data-tooltip:translate-y-0 group-focus-visible/game-data-tooltip:opacity-100"
       >
         {tooltip}
       </span>
@@ -399,24 +406,22 @@ function TranslationField({
 function GameDataList({
   entries,
   current,
-  onSelect
+  onSelect,
+  rowsBySource
 }: {
   entries: ReferenceCatalogEntry[]
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
+  rowsBySource: Map<string, TranslationSessionEntry[]>
 }): React.JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
-  const session = useTranslationSession()
-  const rowsBySource = useMemo(() => {
-    const result = new Map<string, TranslationSessionEntry[]>()
-    for (const row of session.entries) {
-      const key = normalize(row.source)
-      const rows = result.get(key)
-      if (rows) rows.push(row)
-      else result.set(key, [row])
-    }
-    return result
-  }, [session.entries])
+  const virtualizer = useVirtualizer({
+    count: entries.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 56,
+    getItemKey: index => catalogRowKeys.get(entries[index]!)!,
+    overscan: 8
+  })
   const translatedKeys = useMemo(() => {
     const result = new Set<string>()
     for (const item of getReferenceCatalog()) {
@@ -451,23 +456,25 @@ function GameDataList({
   }, [entries])
   return (
     <div ref={parentRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
-      <div className="w-full">
-        {entries.map((entry) => {
+      <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
+        {virtualizer.getVirtualItems().map((item) => {
+          const entry = entries[item.index]!
           const ItemIcon = iconFor(entry.category)
           const key = `${entry.category}:${entry.name}`
           const translated = translatedKeys.has(key)
           const verified = verifiedKeys.has(key)
           return (
             <div
-              key={key}
-              className="w-full pb-1"
+              key={item.key}
+              className="absolute left-0 top-0 w-full pb-1"
+              style={{ height: 56, transform: `translateY(${item.start}px)` }}
             >
               <button
                 type="button"
                 onClick={() => onSelect(entry)}
                 className={cn(
-                  'game-data-list-row translation-special-filter-option flex min-h-[52px] w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left transition-colors focus:outline-none focus-visible:outline-none',
-                  current?.name === entry.name && current?.category === entry.category
+                  'game-data-list-row translation-special-filter-option flex h-[52px] w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left transition-colors focus:outline-none focus-visible:outline-none',
+                  current === entry
                     ? 'is-selected text-[var(--poly-accent)]'
                     : 'text-neutral-300'
                 )}
@@ -547,16 +554,6 @@ export function ReferencePage(): React.JSX.Element {
       setQuery('')
     }
   }, [searchParams, session.phase])
-  if (session.phase !== 'loaded')
-    return (
-      <div className="flex h-full items-center justify-center p-8 text-center">
-        <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
-          <Swords className="mx-auto mb-3" style={{ color: 'var(--poly-accent)' }} size={28} />
-          <h1 className="mb-2 text-lg font-semibold text-neutral-100">Game Data</h1>
-          <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
-        </div>
-      </div>
-    )
   const allEntries = useMemo(
     () =>
       getReferenceCatalog()
@@ -570,14 +567,18 @@ export function ReferencePage(): React.JSX.Element {
         ),
     [category]
   )
-  const uidBySource = useMemo(() => {
-    const map = new Map<string, string>()
-    for (const row of session.entries) {
+  const sourceEntries = useSessionStructure(session.entries)
+  const uidBySource = useRetainedMemo('game-data:uids', () => {
+    if (!showContentUid) return new Map<string, string>()
+    const map = new Map<string, string[]>()
+    for (const row of sourceEntries) {
       const key = normalize(row.source)
-      map.set(key, `${map.get(key) ?? ''} ${row.uid}`)
+      const uids = map.get(key)
+      if (uids) uids.push(row.uid)
+      else map.set(key, [row.uid])
     }
-    return map
-  }, [session.entries])
+    return new Map([...map].map(([source, uids]) => [source, ` ${uids.join(' ')}`]))
+  }, [sourceEntries, showContentUid])
   const searchableEntries = useMemo(
     () =>
       allEntries.map((entry) => ({
@@ -593,16 +594,20 @@ export function ReferencePage(): React.JSX.Element {
           .map((item) => item.entry)
       : allEntries
   }, [allEntries, matchCase, query, searchableEntries, wholeWord])
-  const rowsBySource = useMemo(() => {
-    const map = new Map<string, TranslationSessionEntry[]>()
-    for (const row of session.entries) {
+  const sourceMembership = useRetainedMemo('game-data:membership', () => {
+    const map = new Map<string, string[]>()
+    for (const row of sourceEntries) {
       const key = normalize(row.source)
       const rows = map.get(key)
-      if (rows) rows.push(row)
-      else map.set(key, [row])
+      if (rows) rows.push(row.rowId)
+      else map.set(key, [row.rowId])
     }
     return map
-  }, [session.entries])
+  }, [sourceEntries])
+  const rowsBySource = useRetainedMemo('game-data:rows', () => {
+    const current = new Map(session.entries.map(entry => [entry.rowId, entry]))
+    return new Map([...sourceMembership].map(([source, ids]) => [source, ids.map(id => current.get(id)!)]))
+  }, [sourceMembership, session.entries])
   const requestedSpell = searchParams.get('spell')?.trim()
   const requestedEntry = requestedSpell
     ? (getReferenceCatalog('Spell').find(
@@ -650,6 +655,15 @@ export function ReferencePage(): React.JSX.Element {
     const text = await navigator.clipboard.readText()
     if (text) session.updateEntry(rowId, text)
   }
+  if (session.phase !== 'loaded') return (
+    <div className="flex h-full items-center justify-center p-8 text-center">
+      <div className="rounded-xl border border-[#1f2329] bg-[#131518] p-8">
+        <Swords className="mx-auto mb-3" style={{ color: 'var(--poly-accent)' }} size={28} />
+        <h1 className="mb-2 text-lg font-semibold text-neutral-100">Game Data</h1>
+        <p className="text-sm text-neutral-500">Load a localization XML in Translate first.</p>
+      </div>
+    </div>
+  )
   return (
     <>
       {aiEntry && (
@@ -755,6 +769,7 @@ export function ReferencePage(): React.JSX.Element {
               entries={filtered}
               current={current}
               onSelect={setSelected}
+              rowsBySource={rowsBySource}
             />
           </aside>
           <main className="grid min-h-[680px] min-w-0 grid-rows-[minmax(260px,auto)_minmax(320px,1fr)] p-3 sm:min-h-[720px] sm:p-4 md:min-h-0 md:grid-rows-[minmax(300px,0.5fr)_minmax(0,0.5fr)]">

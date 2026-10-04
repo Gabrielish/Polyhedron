@@ -1,9 +1,10 @@
-import { CheckCircle2, CloudCog, CloudOff, Download, LoaderCircle, Upload, X } from 'lucide-react'
+import { CheckCircle2, CloudCog, CloudOff, Download, LoaderCircle, RotateCw, Upload, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
 import { useConfig } from '@/hooks/useConfig'
 import { getTermGlossaryStorageKey, loadTermGlossary } from '@/utils/termGlossary'
+import { calculateSessionFingerprint } from '@/utils/sessionFingerprint'
 
 type SyncResult = {
   direction: 'upload' | 'download'
@@ -35,30 +36,6 @@ function formatRemaining(milliseconds: number): string {
   return minutes > 0 ? `${minutes}m ${String(remainder).padStart(2, '0')}s` : `${remainder}s`
 }
 
-function fingerprint(
-  entries: Array<{
-    uid: string
-    target: string
-    genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
-    matchType: string
-    needsReview: boolean
-    reviewStatus?: string
-    history?: unknown
-  }>
-): string {
-  let hash = 2166136261
-  for (const entry of entries) {
-    // Keep this aligned with the fingerprint stored in the Drive workspace
-    // metadata. The remote sync document identifies the current translation
-    // content by UID and target text; review metadata is synced separately.
-    const value = `${entry.uid}\u0000${entry.target}`
-    for (let index = 0; index < value.length; index += 1) {
-      hash ^= value.charCodeAt(index)
-      hash = Math.imul(hash, 16777619)
-    }
-  }
-  return (hash >>> 0).toString(16)
-}
 
 export function CloudSyncMenu(): React.JSX.Element {
   const [open, setOpen] = useState(false)
@@ -111,23 +88,24 @@ export function CloudSyncMenu(): React.JSX.Element {
   const lastUploadedTranslatedKey = `${syncKey}.last-uploaded-translated`
   const globalLastUploadedKey = 'polyhedron.cloud-sync.last-uploaded'
   const globalLastDownloadedKey = 'polyhedron.cloud-sync.last-downloaded'
-  const currentFingerprint = useMemo(
-    () =>
-      fingerprint(
-        session.entries.map(
-          ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
-            uid,
-            target,
-            genderTargets,
-            matchType,
-            needsReview,
-            reviewStatus,
-            history
-          })
-        )
-      ),
-    [session.entries]
-  )
+  const [fingerprintResult, setFingerprintResult] = useState<{
+    entries: typeof session.entries | null
+    value: string
+  }>({ entries: null, value: '' })
+  const currentFingerprint = fingerprintResult.value
+  const fingerprintReady = fingerprintResult.entries === session.entries
+  useEffect(() => {
+    const entries = session.entries
+    const controller = new AbortController()
+    const timer = setTimeout(() => {
+      void calculateSessionFingerprint(entries, controller.signal).then(value => {
+        if (!controller.signal.aborted) setFingerprintResult({ entries, value })
+      }).catch(error => {
+        if (!controller.signal.aborted) console.error('Fingerprint calculation failed', error)
+      })
+    }, 120)
+    return () => { controller.abort(); clearTimeout(timer) }
+  }, [session.entries])
   const autoSyncIntervalMinutes = Number(config['cloud_auto_sync_interval'] ?? '0')
   const autoSyncEnabled = Number.isFinite(autoSyncIntervalMinutes) && autoSyncIntervalMinutes > 0
   const translatedCount = useMemo(
@@ -143,7 +121,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     return () => window.clearInterval(timer)
   }, [busy, busyStartedAt])
   autoSyncStateRef.current = {
-    busy,
+    busy: busy || !fingerprintReady,
     remoteChanged,
     autoSyncBlocked,
     savedFingerprint,
@@ -164,18 +142,19 @@ export function CloudSyncMenu(): React.JSX.Element {
       loadedOnce.current = false
       return
     }
-    if (loadedOnce.current) return
+    if (!fingerprintReady || loadedOnce.current) return
     loadedOnce.current = true
     if (localStorage.getItem(syncKey) !== 'download-pending') return
     // The imported workspace is now loaded; use the fingerprint of the actual
     // in-memory session rather than the pre-restart archive fingerprint.
     localStorage.setItem(syncKey, currentFingerprint)
     setSavedFingerprint(currentFingerprint)
-  }, [currentFingerprint, session.phase, syncKey])
+  }, [currentFingerprint, fingerprintReady, session.phase, syncKey])
 
   const remoteStampKey = `polyhedron.cloud-sync-remote.${syncKey}`
   const isSynced =
     session.phase === 'loaded' &&
+    fingerprintReady &&
     !remoteChanged &&
     savedFingerprint !== null &&
     savedFingerprint === currentFingerprint &&
@@ -204,7 +183,8 @@ export function CloudSyncMenu(): React.JSX.Element {
           // A remote change is only dangerous when this workspace also has
           // unsynced local edits. If local state is already synced, advance the
           // baseline instead of leaving auto-sync paused forever.
-          if (savedFingerprint !== null && savedFingerprint === currentFingerprint) {
+          const state = autoSyncStateRef.current
+          if (!state.busy && state.savedFingerprint !== null && state.savedFingerprint === state.currentFingerprint) {
             localStorage.setItem(remoteStampKey, stamp)
             setRemoteChanged(false)
           } else {
@@ -221,7 +201,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [busy, currentFingerprint, remoteStampKey, savedFingerprint, session.phase])
+  }, [busy, remoteStampKey, savedFingerprint !== null, session.phase])
 
   useEffect(() => {
     if (!autoSyncEnabled || session.phase !== 'loaded') {
@@ -347,8 +327,9 @@ export function CloudSyncMenu(): React.JSX.Element {
       // workspace archive may normalize its persisted payload, so comparing its
       // service-side fingerprint directly can leave a successful upload marked
       // as unsynced even though the current UI state was uploaded.
-      localStorage.setItem(syncKey, currentFingerprint)
-      setSavedFingerprint(currentFingerprint)
+      const uploadedFingerprint = result.stats.fingerprint
+      localStorage.setItem(syncKey, uploadedFingerprint)
+      setSavedFingerprint(uploadedFingerprint)
       setRemoteFingerprint(result.stats.fingerprint)
       const uploadedAt = result.modifiedTime ?? new Date().toISOString()
       localStorage.setItem(lastUploadedKey, uploadedAt)
@@ -457,10 +438,10 @@ export function CloudSyncMenu(): React.JSX.Element {
       </button>
 
       {open && !busy && (
-        <div className="pointer-events-auto absolute top-8 right-0 z-[200] inline-flex w-max max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-[#343941] bg-[#171a1f] p-1.5 shadow-xl">
+        <div className="pointer-events-auto absolute top-8 right-0 z-[200] inline-flex w-max max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-neutral-700 bg-[#131518] p-1.5 shadow-2xl">
           {autoSyncEnabled && (
             <div className="mb-1 flex items-start gap-2 rounded-md border-b border-[#2a2f37] px-2.5 py-2.5">
-              <CloudCog size={15} className="mt-0.5 shrink-0 text-violet-300" />
+              <CloudCog size={15} className="mt-0.5 shrink-0 text-amber-300" />
               <span className="min-w-0">
                 <span className="block text-xs font-medium text-neutral-200">Auto-sync active</span>
                 <span className="mt-0.5 block text-[10px] text-neutral-500">
@@ -480,7 +461,7 @@ export function CloudSyncMenu(): React.JSX.Element {
           <button
             type="button"
             onClick={() => void upload()}
-            className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-200 hover:bg-white/8"
+            className="flex w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-300 transition-colors hover:bg-neutral-800"
           >
             <Upload size={14} className="text-amber-300" />
             <span className="min-w-0">
@@ -493,7 +474,7 @@ export function CloudSyncMenu(): React.JSX.Element {
           <button
             type="button"
             onClick={() => void download()}
-            className="flex w-full items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-200 hover:bg-white/8"
+            className="flex w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-300 transition-colors hover:bg-neutral-800"
           >
             <Download size={14} className="text-amber-300" />
             <span className="min-w-0">
@@ -504,7 +485,7 @@ export function CloudSyncMenu(): React.JSX.Element {
             </span>
           </button>
           {autoSyncBlocked && (
-            <div className="mx-2 mt-1 rounded-md border border-amber-500/25 bg-amber-500/8 px-2.5 py-2 text-[10px] leading-4 text-amber-200/80">
+            <div className="app-message mx-2 mt-1 rounded-xl border px-2.5 py-2 text-[10px] leading-4" data-message-tone="warning" role="status">
               Automatic upload paused because this workspace has fewer translated entries than
               the last uploaded version.
             </div>
@@ -514,10 +495,10 @@ export function CloudSyncMenu(): React.JSX.Element {
 
       {syncResult && (
         <div
-          className="fixed inset-0 z-100 flex items-center justify-center bg-black/55"
+          className="app-modal-overlay fixed inset-0 z-100 flex items-center justify-center bg-black/55"
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
         >
-          <div className="w-[360px] overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+          <div role="dialog" aria-modal="true" aria-label="Cloud sync result" className="app-modal-panel w-[360px] overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]">
             <div className="flex items-start justify-between border-b border-[#2b2e36] px-4 py-3.5">
               <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
                 {syncResult.direction === 'download' ? (
@@ -558,8 +539,9 @@ export function CloudSyncMenu(): React.JSX.Element {
                   <button
                     type="button"
                     onClick={() => void window.api.window.relaunch()}
-                    className="rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
                   >
+                    <RotateCw size={13} aria-hidden="true" />
                     Restart now
                   </button>
                 </div>

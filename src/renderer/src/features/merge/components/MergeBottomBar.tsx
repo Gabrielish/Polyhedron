@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react'
+import { Loader2, Play } from 'lucide-react'
 import { btnBase, btnPrimary } from '@/features/translate/components/styles'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
@@ -82,7 +82,7 @@ export function MergeBottomBar({
             disabled={!ready || isRunning}
             onClick={onRun}
           >
-              {isRunning && <Loader2 size={13} className="animate-spin" />}
+            {isRunning ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} aria-hidden="true" />}
             {isRunning
               ? t('bottomBar.running', { ns: 'merge' })
               : t('actions.run', { ns: 'common' })}

@@ -1,4 +1,5 @@
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Check, Trash2 } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { ModalShell } from './ModalShell'
 
@@ -7,6 +8,7 @@ interface ConfirmDialogProps {
   title: string
   description: string
   confirmLabel: string
+  confirmIcon?: ReactNode
   cancelLabel?: string
   hideCancel?: boolean
   destructive?: boolean
@@ -19,6 +21,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  confirmIcon,
   cancelLabel,
   hideCancel = false,
   destructive = false,
@@ -51,10 +54,11 @@ export function ConfirmDialog({
             onClick={onConfirm}
             className={
               destructive
-                ? 'inline-flex h-8 cursor-pointer items-center rounded-md border border-red-500/40 bg-red-500/10 px-3 text-xs font-semibold text-red-200 transition-colors hover:bg-red-500/20'
-                : 'inline-flex h-8 cursor-pointer items-center rounded-md border border-amber-500 bg-amber-500 px-3 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400'
+                ? 'inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-red-500/40 bg-red-500/10 px-3 text-xs font-semibold text-red-200 transition-colors hover:bg-red-500/20'
+                : 'inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-3 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400'
             }
           >
+            {confirmIcon ?? (destructive ? <Trash2 size={13} aria-hidden="true" /> : <Check size={13} aria-hidden="true" />)}
             {confirmLabel}
           </button>
         </>

@@ -16,7 +16,7 @@ function FieldRow({
 }): React.JSX.Element {
   return (
     <div
-      className={`flex items-center justify-between gap-5 border-b border-neutral-800/70 py-3 first:pt-0 last:border-b-0 last:pb-0 ${
+      className={`flex items-center justify-between gap-5 py-3 first:pt-0 last:pb-0 ${
         disabled ? 'pointer-events-none opacity-45' : ''
       }`}
     >
@@ -40,8 +40,9 @@ export function SimilaritySettingsCard(): React.JSX.Element {
   return (
     <SettingsSectionCard
       title={t('similarity.title')}
+      contentTitle="Similar translations"
       subtitle={t('similarity.subtitle')}
-      icon={<BookOpen size={16} />}
+      icon={<BookOpen size={18} />}
     >
       <FieldRow title={t('similarity.enable')} description={t('similarity.enableDesc')}>
         <button

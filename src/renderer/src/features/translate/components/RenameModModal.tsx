@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react'
+import { Pencil, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '@/components/shared/ModalShell'
 import type { ModInfo } from '@/types'
@@ -62,8 +62,9 @@ export function RenameModModal({
           type="button"
           onClick={() => void submit()}
           disabled={submitting}
-          className="inline-flex h-8 items-center rounded-md bg-amber-500 px-3 text-xs font-semibold text-black transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-8 items-center gap-1.5 rounded-md bg-amber-500 px-3 text-xs font-semibold text-black transition-colors hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <Save size={13} aria-hidden="true" />
           Save
         </button>
       }

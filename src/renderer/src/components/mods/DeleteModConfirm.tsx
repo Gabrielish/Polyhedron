@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { ModalShell } from '@/components/shared/ModalShell'
@@ -74,8 +74,9 @@ export function DeleteModConfirm({
           type="button"
           onClick={handleConfirm}
           disabled={disabled}
-          className="accent-solid-button inline-flex h-8 cursor-pointer items-center rounded-md px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          className="accent-solid-button inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
         >
+          <Trash2 size={13} aria-hidden="true" />
           {t('delete.confirm')}
         </button>
       }
@@ -83,7 +84,7 @@ export function DeleteModConfirm({
       <div className="space-y-3">
         <p className="text-sm text-neutral-300">{t('delete.subject', { name: modName })}</p>
         {loadingPreview ? (
-          <div className="h-16 animate-pulse rounded bg-[#1f2329]" />
+          <div className="app-skeleton-block h-16 animate-pulse rounded" />
         ) : preview ? (
           <ul className="list-inside list-disc space-y-1 rounded border border-[#1f2329] bg-[#0f1114] p-3 text-sm text-neutral-400">
             <li>{t('delete.impactRows', { count: preview.dictionaryRows })}</li>

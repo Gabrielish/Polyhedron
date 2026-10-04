@@ -1,5 +1,4 @@
 import {
-  Database,
   Swords,
   WandSparkles,
   FolderKanban,
@@ -10,12 +9,11 @@ import {
   ListChecks,
   Settings
 } from 'lucide-react'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
-import { startTransition, useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
-import { useConfig } from '@/hooks/useConfig'
 import { useTranslationSession } from '@/context/TranslationSession'
 
 type NavItemConfig = { to: string; icon: React.ElementType; labelKey: string }
@@ -27,7 +25,6 @@ const NAV_GROUPS: NavGroupConfig[] = [
     icon: FolderKanban,
     items: [
       { to: '/translate', icon: Languages, labelKey: 'translate' },
-      { to: '/dictionary', icon: Database, labelKey: 'dictionary' },
       { to: '/consistency', icon: ListChecks, labelKey: 'consistency' }
     ]
   },
@@ -53,8 +50,23 @@ const BG3_REFERENCE_PATHS = new Set(['/dialogues', '/game-data', '/spells'])
 
 function NavItem({ to, icon: Icon, label }: NavItemConfig & { label: string }): React.JSX.Element {
   const navigate = useNavigate()
+  const location = useLocation()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 })
+
+  useEffect(() => {
+    setTooltipVisible(false)
+  }, [location.key])
+
+  useEffect(() => {
+    const hideTooltip = () => setTooltipVisible(false)
+    window.addEventListener('polyhedron:navigation-start', hideTooltip)
+    window.addEventListener('blur', hideTooltip)
+    return () => {
+      window.removeEventListener('polyhedron:navigation-start', hideTooltip)
+      window.removeEventListener('blur', hideTooltip)
+    }
+  }, [])
 
   const showTooltip = (
     event: React.MouseEvent<HTMLAnchorElement> | React.FocusEvent<HTMLAnchorElement>
@@ -65,6 +77,7 @@ function NavItem({ to, icon: Icon, label }: NavItemConfig & { label: string }): 
   }
 
   const navigateToItem = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    setTooltipVisible(false)
     if (
       event.defaultPrevented ||
       event.button !== 0 ||
@@ -91,7 +104,9 @@ function NavItem({ to, icon: Icon, label }: NavItemConfig & { label: string }): 
       onClick={navigateToItem}
       onMouseEnter={showTooltip}
       onMouseLeave={() => setTooltipVisible(false)}
-      onFocus={showTooltip}
+      onFocus={(event) => {
+        if (event.currentTarget.matches(':focus-visible')) showTooltip(event)
+      }}
       onBlur={() => setTooltipVisible(false)}
       className={({ isActive }) =>
         cn(
@@ -112,7 +127,7 @@ function NavItem({ to, icon: Icon, label }: NavItemConfig & { label: string }): 
         createPortal(
           <span
             role="tooltip"
-            className="pointer-events-none fixed z-[5000] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-100 shadow-2xl"
+            className="pointer-events-none fixed z-[5000] -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-100 shadow-2xl"
             style={{ top: tooltipPosition.top, left: tooltipPosition.left }}
           >
             {label}
@@ -150,9 +165,7 @@ function NavCapsule({
 
 export function Sidebar(): React.JSX.Element {
   const { t } = useAppTranslation('sidebar')
-  const { config } = useConfig()
   const { gameProfile, phase, modName } = useTranslationSession()
-  const showGlossary = config['show_glossary'] === 'true'
   const hasActiveProject = phase === 'loaded' && modName.trim().length > 0
   // Reference tools are meaningful only while a translation project is open.
   // Keep them out of the navigation on the setup screen, where no project has
@@ -164,7 +177,6 @@ export function Sidebar(): React.JSX.Element {
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter(
             (item) =>
-              (item.to !== '/dictionary' || showGlossary) &&
               (item.to !== '/consistency' || hasActiveProject) &&
               (showBg3Reference || !BG3_REFERENCE_PATHS.has(item.to))
           )

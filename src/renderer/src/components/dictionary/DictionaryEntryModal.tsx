@@ -114,7 +114,7 @@ export function DictionaryEntryModal({
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+              className="accent-solid-control inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Check size={13} />
               {saving ? t('actions.saving', { ns: 'common' }) : t('actions.save', { ns: 'common' })}

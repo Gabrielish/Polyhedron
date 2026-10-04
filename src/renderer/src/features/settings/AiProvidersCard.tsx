@@ -1,4 +1,4 @@
-import { Check, Eye, EyeOff, Sparkles } from 'lucide-react'
+import { BrainCircuit, Check, Eye, EyeOff, Languages } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { useAISettings } from '@/hooks/useAISettings'
@@ -10,13 +10,13 @@ import { SettingsSectionCard } from './SettingsSectionCard'
 const KEY_SAVE_DEBOUNCE_MS = 600
 
 interface ProviderRowProps {
-  meta: AiProviderMeta
-  active: boolean
+  meta: Pick<AiProviderMeta, 'name' | 'color' | 'mark' | 'keyConfigKey' | 'keyPlaceholder'> & { models?: string[] }
+  active?: boolean
   keyValue: string
-  model: string
-  onSelect: () => void
+  model?: string
+  onSelect?: () => void
   onSaveKey: (key: ConfigKey, value: string) => Promise<void>
-  onSaveModel: (value: string) => void
+  onSaveModel?: (value: string) => void
 }
 
 // One line per provider: radio (active AI) · badge + name/status · key input · model select.
@@ -79,7 +79,7 @@ function ProviderRow({
         active ? 'border-amber-500/60 bg-amber-500/5' : 'border-neutral-800 bg-[#0a0a0c]'
       }`}
     >
-      <button
+      {onSelect ? <button
         type="button"
         onClick={onSelect}
         title={t('providers.useThis')}
@@ -88,7 +88,7 @@ function ProviderRow({
         }`}
       >
         {active && <span className="h-2 w-2 rounded-full bg-amber-500" />}
-      </button>
+      </button> : <span aria-hidden="true" />}
 
       <div className="flex min-w-0 items-center gap-2.5">
         <span
@@ -108,11 +108,12 @@ function ProviderRow({
         </div>
       </div>
 
-      <div className="flex min-w-0 items-center gap-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 transition-colors focus-within:border-amber-500">
+      <div className={`provider-api-key-field flex min-w-0 items-center gap-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 transition-colors focus-within:border-amber-500 ${!onSaveModel ? 'col-span-2' : ''}`}>
         <input
           type={show ? 'text' : 'password'}
           value={draft}
-          placeholder={`${meta.name} API key`}
+          aria-label={`${meta.name} API key`}
+          placeholder={meta.keyPlaceholder}
           onChange={(e) => onKeyInput(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => {
@@ -131,11 +132,11 @@ function ProviderRow({
         </button>
       </div>
 
-      <ThemedSelect
-        value={model}
+      {onSaveModel && <ThemedSelect
+        value={model ?? ''}
         onChange={onSaveModel}
-        options={meta.models.map((m) => ({ value: m, label: m }))}
-      />
+        options={(meta.models ?? []).map((m) => ({ value: m, label: m }))}
+      />}
     </div>
   )
 }
@@ -151,8 +152,9 @@ export function AiProvidersCard(): React.JSX.Element {
   return (
     <SettingsSectionCard
       title={t('providers.title')}
+      contentTitle="AI providers"
       subtitle={t('providers.subtitle')}
-      icon={<Sparkles size={16} />}
+      icon={<BrainCircuit size={18} />}
     >
       <div className="flex flex-col gap-2">
         {AI_PROVIDERS.map((meta) => (
@@ -178,6 +180,32 @@ export function AiProvidersCard(): React.JSX.Element {
         </span>
         <span>{t('providers.autoSaved')}</span>
       </div>
+    </SettingsSectionCard>
+  )
+}
+
+export function MachineProvidersCard(): React.JSX.Element {
+  const { config, set } = useAISettings()
+
+  return (
+    <SettingsSectionCard
+      title="Machine translation"
+      contentTitle="Translation services"
+      subtitle="API keys for DeepL and Google Translate."
+      icon={<Languages size={18} />}
+    >
+        <div className="flex flex-col gap-2">
+          <ProviderRow
+            meta={{ name: 'DeepL', mark: 'DL', color: '#0f2b46', keyConfigKey: 'deepl_key', keyPlaceholder: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx' }}
+            keyValue={config['deepl_key'] ?? ''}
+            onSaveKey={set}
+          />
+          <ProviderRow
+            meta={{ name: 'Google Translate', mark: 'GT', color: '#4285f4', keyConfigKey: 'google_key', keyPlaceholder: 'AIza...' }}
+            keyValue={config['google_key'] ?? ''}
+            onSaveKey={set}
+          />
+        </div>
     </SettingsSectionCard>
   )
 }

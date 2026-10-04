@@ -1,4 +1,5 @@
 import React from 'react'
+import { GlossaryMark } from '@/components/shared/GlossaryMark'
 import type { TermGlossaryEntry } from './termGlossary'
 import { normalizeSearchText } from './search'
 
@@ -7,6 +8,7 @@ interface RenderSourceOptions {
   highlightQuery?: string
   searchHighlight?: 'underline' | 'select' | 'off'
   termGlossary?: TermGlossaryEntry[]
+  floatingGlossary?: boolean
   whitespaceHighlight?: boolean
 }
 
@@ -50,6 +52,7 @@ export function renderSource(
     highlightQuery = '',
     searchHighlight = 'select',
     termGlossary = [],
+    floatingGlossary = false,
     whitespaceHighlight = false
   }: RenderSourceOptions = {}
 ): React.ReactNode {
@@ -214,7 +217,7 @@ export function renderSource(
       }
       if (term && tooltipTerms.length > 0) {
         node = (
-          <span className="term-glossary-mark group/term relative inline text-neutral-100">
+          <GlossaryMark floating={floatingGlossary}>
             {node}
             <span className="bulk-status-menu term-glossary-tooltip absolute z-[5000] max-w-64 text-left text-xs leading-relaxed text-neutral-300 opacity-0 shadow-2xl transition-opacity duration-500 group-hover/term:opacity-100 group-hover/term:duration-150">
               <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-300/80">
@@ -245,7 +248,7 @@ export function renderSource(
                 )}
               </span>
             </span>
-          </span>
+          </GlossaryMark>
         )
       }
       if (isWhitespaceMatch) {

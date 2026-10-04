@@ -121,6 +121,7 @@ const api: AppApi = {
       uid?: string | null
     }): Promise<{ success: boolean }> => ipcRenderer.invoke('dictionary:upsert', entry),
 
+    revision: (): Promise<string> => ipcRenderer.invoke('dictionary:revision'),
     bulkUpsert: (
       entries: {
         language1: string

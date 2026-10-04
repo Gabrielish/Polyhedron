@@ -69,23 +69,17 @@ export function ModSelectionCard({
             <button
               type="button"
               onClick={onExistingMode}
-              className={cn(
-                'h-6 rounded-md px-3 text-xs cursor-pointer transition-all',
-                !isNewMod
-                  ? 'bg-[#1f2329] text-neutral-200'
-                  : 'bg-transparent text-neutral-500 hover:text-neutral-300'
-              )}
+              aria-pressed={!isNewMod}
+              className="project-mode-option h-6 rounded-md px-3 text-xs cursor-pointer"
             >
               {t('setup.modSelection.existing')}
             </button>
             <button
               type="button"
               onClick={onNewMode}
+              aria-pressed={isNewMod}
               className={cn(
-                'h-6 rounded-md px-3 text-xs cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40',
-                isNewMod
-                  ? 'bg-[#1f2329] text-neutral-200'
-                  : 'bg-transparent text-neutral-500 hover:text-neutral-300',
+                'project-mode-option h-6 rounded-md px-3 text-xs cursor-pointer',
                 shouldHighlightNewMode && 'ring-2 ring-amber-500/40'
               )}
             >
@@ -102,7 +96,7 @@ export function ModSelectionCard({
               <Search size={14} strokeWidth={2} />
             </span>
             <input
-              className="h-9.5 w-full rounded-md border border-[#1f2329] bg-[#0f1114] pl-9 pr-40 text-sm text-neutral-200 transition-[border-color,background-color,box-shadow] placeholder:text-neutral-600 hover:border-neutral-600 focus:border-amber-500 focus:outline-none focus:shadow-[0_0_0_3px_rgba(245,158,11,0.15)]"
+              className="project-search-input h-9.5 w-full rounded-md border border-[#1f2329] bg-[#0f1114] pl-9 pr-40 text-sm text-neutral-200 transition-[background-color] placeholder:text-neutral-600 focus:outline-none"
               placeholder={t('setup.modSelection.searchPlaceholder')}
               value={modSearch}
               onChange={(event) => onModSearchChange(event.target.value)}
@@ -157,7 +151,7 @@ export function ModSelectionCard({
               className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-neutral-400"
             />
             <input
-              className="h-9.5 w-full rounded-md border border-[#1f2329] bg-[#0f1114] pl-9 pr-40 text-sm text-neutral-200 transition-[border-color,background-color,box-shadow] placeholder:text-neutral-600 hover:border-neutral-600 focus:border-amber-500 focus:outline-none focus:shadow-[0_0_0_3px_rgba(245,158,11,0.15)]"
+              className="project-name-input h-9.5 w-full rounded-md border border-[#1f2329] bg-[#0f1114] pl-9 pr-40 text-sm text-neutral-200 transition-[background-color] placeholder:text-neutral-600 focus:outline-none"
               placeholder={t('setup.modSelection.newProjectPlaceholder')}
               value={newModName}
               onChange={(event) => onNewModNameChange(event.target.value)}
@@ -193,19 +187,17 @@ function ModeToggle({
       <button
         type="button"
         onClick={onExistingMode}
-        className={cn(
-          'h-6 rounded px-2.5 text-[11px] transition-all',
-          !isNewMod ? 'bg-[#1f2329] text-neutral-200' : 'text-neutral-500 hover:text-neutral-300'
-        )}
+        aria-pressed={!isNewMod}
+        className="project-mode-option h-6 rounded px-2.5 text-[11px]"
       >
         {t('setup.modSelection.existing')}
       </button>
       <button
         type="button"
         onClick={onNewMode}
+        aria-pressed={isNewMod}
         className={cn(
-          'h-6 rounded px-2.5 text-[11px] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40',
-          isNewMod ? 'bg-[#1f2329] text-neutral-200' : 'text-neutral-500 hover:text-neutral-300',
+          'project-mode-option h-6 rounded px-2.5 text-[11px]',
           shouldHighlightNewMode && 'ring-2 ring-amber-500/40'
         )}
       >
@@ -371,8 +363,9 @@ function ModOption({
             type="button"
             onClick={() => void confirmDelete()}
             disabled={deleting}
-            className="accent-solid-button inline-flex h-8 items-center rounded-md px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="accent-solid-button inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-semibold text-[color:var(--poly-accent-foreground)] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
+            <Trash2 size={13} aria-hidden="true" />
             {deleting ? 'Deleting…' : 'Delete'}
           </button>
         }

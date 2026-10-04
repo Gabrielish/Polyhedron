@@ -1,5 +1,5 @@
 import { Boxes } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { ExtractPage } from './ExtractPage'
 import { ManageModsPage } from './ManageModsPage'
@@ -17,8 +17,22 @@ const TOOLS: Array<{ id: ModTool; label: string }> = [
 
 export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
   const [activeTool, setActiveTool] = useState<ModTool>('manage')
+  const [selectionCount, setSelectionCount] = useState(0)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (selectionCount === 0) return
+    const frame = requestAnimationFrame(() => {
+      const target = embedded ? rootRef.current : contentRef.current?.lastElementChild
+      target?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [activeTool, embedded, selectionCount])
+
   return (
     <div
+      ref={rootRef}
       className={
         embedded
           ? 'mods-embedded flex min-h-0 flex-col text-neutral-200'
@@ -41,7 +55,10 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
             </div>
             <ThemedSelect
               value={activeTool || 'manage'}
-              onChange={(value) => setActiveTool(value as ModTool)}
+              onChange={(value) => {
+                setActiveTool(value as ModTool)
+                setSelectionCount(count => count + 1)
+              }}
               options={TOOLS.map(({ id, label }) => ({ value: id, label }))}
               placeholder="Manage projects"
               className="w-56 shrink-0"
@@ -58,7 +75,7 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
             : 'min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]'
         }
       >
-        <main className={embedded ? 'mods-page-main' : 'mods-page-main min-h-0 overflow-y-auto'}>
+        <main ref={contentRef} className={embedded ? 'mods-page-main' : 'mods-page-main min-h-0 overflow-y-auto'}>
           {activeTool === 'manage' && <ManageModsPage />}
           {activeTool === 'merge' && <MergeToolPage />}
           {activeTool === 'extract' && <ExtractPage />}

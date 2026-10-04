@@ -2,12 +2,14 @@ import { useCallback, useState } from 'react'
 import { Upload } from 'lucide-react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
+import { FileInputCard } from '@/features/translate/components/FileInputCard'
 
 interface DragDropProps {
   accept: string[]
   onFile: (path: string) => void
   label?: string
   className?: string
+  appearance?: 'default' | 'localization'
 }
 
 function isAccepted(name: string, accept: string[]): boolean {
@@ -15,7 +17,7 @@ function isAccepted(name: string, accept: string[]): boolean {
   return accept.includes(ext)
 }
 
-export function DragDrop({ accept, onFile, label, className }: DragDropProps): React.JSX.Element {
+export function DragDrop({ accept, onFile, label, className, appearance = 'default' }: DragDropProps): React.JSX.Element {
   const { t } = useAppTranslation('common')
   const [isDragging, setIsDragging] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -55,6 +57,26 @@ export function DragDrop({ accept, onFile, label, className }: DragDropProps): R
     const paths = await window.api.fs.openDialog({ filters })
     if (paths[0]) onFile(paths[0])
   }, [accept, onFile])
+
+  if (appearance === 'localization') {
+    return (
+      <div className={className}>
+        <FileInputCard
+          showHeader={false}
+          fileName={null}
+          acceptedExtensions={accept}
+          dropPrompt={label}
+          isDragging={isDragging}
+          onBrowse={handleBrowse}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClear={() => {}}
+        />
+        {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
+      </div>
+    )
+  }
 
   return (
     <div

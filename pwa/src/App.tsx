@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { TranslateTab } from './components/TranslateTab'
 import { DialogueNodesTab } from './components/DialogueNodesTab'
 import { GameDataTab } from './components/GameDataTab'
 import { downloadWorkspaceSync, requestDriveAccessToken, uploadWorkspaceSync } from './sync/googleDrive'
 import { emptyDocument, type WorkspaceSyncDocument } from './sync/workspaceSync'
+import { applyAppearance, normalizeAppearance, readAppearance } from './sync/appearance'
 
 const tabs = ['Translate', 'Dialogue Nodes', 'Game Data'] as const
 type Tab = (typeof tabs)[number]
@@ -18,6 +19,10 @@ export function App(): React.JSX.Element {
   const [hasWorkspace, setHasWorkspace] = useState(false)
   const [syncMessage, setSyncMessage] = useState('')
   const isConnected = driveToken !== null
+
+  useEffect(() => {
+    applyAppearance(normalizeAppearance(document.appearance) ?? readAppearance())
+  }, [document.appearance])
 
 
 

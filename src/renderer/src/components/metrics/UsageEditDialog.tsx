@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react'
+import { Pencil, Save } from 'lucide-react'
 import { useState } from 'react'
 import { ModalShell } from '@/components/shared/ModalShell'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
@@ -81,8 +81,9 @@ export function UsageEditDialog({
       <button
         type="button"
         onClick={handleSave}
-        className="rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-black hover:bg-amber-400 transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-black hover:bg-amber-400 transition-colors"
       >
+        <Save size={14} aria-hidden="true" />
         {t('usage.editDialog.save')}
       </button>
     </>

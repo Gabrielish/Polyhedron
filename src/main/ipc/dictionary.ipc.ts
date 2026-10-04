@@ -3,7 +3,9 @@ import path from 'node:path'
 import { ipcMain } from 'electron'
 import type { RepositoryRegistry } from '../database/repositories/registry'
 import { runImport } from '../services/import.service'
-import { findSimilar } from '../services/similarity.service'
+import { SimilarityIndex } from '../services/similarity.service'
+import { getDatabaseRevision } from '../database/connection'
+import { saveDictionaryEntries } from '../services/dictionary-save.service'
 import { csvCell } from '../utils/csv'
 import { readImportCsv } from '../utils/dictionaryCsv'
 
@@ -32,6 +34,10 @@ interface DictionaryMutationPayload {
 
 
 export function registerDictionaryHandlers(repos: RepositoryRegistry): void {
+  ipcMain.handle('dictionary:revision', () => getDatabaseRevision().revision)
+  const similarityCache = new Map<string, SimilarityIndex>()
+  let cachedDatabase: unknown
+  let cachedRevision = ''
   ipcMain.handle('dictionary:list', (_event, payload: DictionaryListPayload) => {
     const requestedPage = Math.max(1, payload.page || 1)
     const pageSize = Math.max(1, payload.pageSize || 1)
@@ -85,10 +91,10 @@ export function registerDictionaryHandlers(repos: RepositoryRegistry): void {
     return { success: true }
   })
 
-  ipcMain.handle('dictionary:bulkUpsert', (_event, entries: DictionaryMutationPayload[]) => {
+  ipcMain.handle('dictionary:bulkUpsert', async (_event, entries: DictionaryMutationPayload[]) => {
     if (entries.length === 0) return { count: 0 }
     persistMod(repos, entries[0].modName)
-    repos.dictionary.bulkUpsert(entries.map(toRepoPayload))
+    await saveDictionaryEntries(entries.map(toRepoPayload))
     return { count: entries.length }
   })
 
@@ -121,8 +127,20 @@ export function registerDictionaryHandlers(repos: RepositoryRegistry): void {
       _event,
       { text, lang1, lang2, limit }: { text: string; lang1: string; lang2: string; limit?: number }
     ) => {
-      const corpus = repos.dictionary.getAllForSimilarity(lang1, lang2)
-      return findSimilar(text, corpus, limit ?? 5)
+      const { database, revision } = getDatabaseRevision()
+      if (database !== cachedDatabase || revision !== cachedRevision) {
+        similarityCache.clear()
+        cachedDatabase = database
+        cachedRevision = revision
+      }
+      const key = JSON.stringify([lang1, lang2])
+      let index = similarityCache.get(key)
+      if (!index) {
+        index = new SimilarityIndex(repos.dictionary.getAllForSimilarity(lang1, lang2))
+        if (similarityCache.size >= 4) similarityCache.delete(similarityCache.keys().next().value!)
+        similarityCache.set(key, index)
+      }
+      return index.search(text, limit ?? 5)
     }
   )
 

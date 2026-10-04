@@ -110,7 +110,7 @@ export function TermGlossaryModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+      className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
@@ -119,7 +119,7 @@ export function TermGlossaryModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="term-glossary-title"
-        className="flex max-h-[min(720px,90vh)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]"
+        className="app-modal-panel flex max-h-[min(720px,90vh)] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
       >
         <div className="flex items-center gap-3 border-b border-[#2a2c34] px-5 py-4">
           {isRomanianTarget && (
@@ -134,7 +134,7 @@ export function TermGlossaryModal({
             </button>
           )}
           <div className="min-w-0 flex-1">
-            <h2 id="term-glossary-title" className="text-lg font-semibold text-neutral-100">
+            <h2 id="term-glossary-title" className="app-modal-title text-sm font-medium text-neutral-200">
               Term Glossary
             </h2>
             <p className="text-xs text-neutral-500">

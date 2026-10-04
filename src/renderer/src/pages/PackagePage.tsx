@@ -1,3 +1,4 @@
+import { PackagePlus, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { btnBase, btnPrimary } from '@/features/translate/components/styles'
@@ -91,6 +92,7 @@ export function PackagePage(): React.JSX.Element {
             disabled={running || !inputFolder || !outputPath}
             className={btnPrimary}
           >
+            {running ? <Loader2 size={13} className="animate-spin" /> : <PackagePlus size={13} aria-hidden="true" />}
             {running ? t('creating') : t('create')}
           </button>
         </div>

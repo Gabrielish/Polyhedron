@@ -70,7 +70,7 @@ export function MetricsPage({ embedded = false }: { embedded?: boolean }): React
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="bg-[#141416] border border-neutral-800/80 rounded-xl h-44 animate-pulse"
+                className="app-skeleton-card border border-neutral-800/80 rounded-xl h-44 animate-pulse"
               />
             ))}
           </div>

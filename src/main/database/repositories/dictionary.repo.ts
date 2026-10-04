@@ -1,4 +1,4 @@
-import { and, desc, eq, or, type SQL, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, isNull, or, type SQL, sql } from 'drizzle-orm'
 import type { drizzle } from 'drizzle-orm/better-sqlite3'
 import { dictionaryTextKey, normalizeDictionaryText } from '../../utils/dictionaryText'
 import { normalizeLangs } from '../../utils/languages'
@@ -385,6 +385,8 @@ export class DictionaryRepository {
     const first = rows[0]
     const [l1, l2, swapped] = normalizeLangs(first.sourceLang, first.targetLang)
     const normalizedMod = first.modName?.trim().toLowerCase() || null
+    const changedUids = rows.map(row => row.uid?.trim()).filter((uid): uid is string => Boolean(uid))
+    const changedSources = rows.map(row => dictionaryTextKey(row.sourceText))
     const existing = this.db
       .select()
       .from(dictionary)
@@ -394,7 +396,11 @@ export class DictionaryRepository {
           eq(dictionary.language2, l2),
           normalizedMod
             ? sql`lower(coalesce(${dictionary.modName}, '')) = ${normalizedMod}`
-            : sql`${dictionary.modName} is null`
+            : sql`${dictionary.modName} is null`,
+          rows.length < 200 ? or(
+            changedUids.length ? inArray(dictionary.uid, changedUids) : undefined,
+            and(or(isNull(dictionary.uid), eq(dictionary.uid, '')), inArray(swapped ? dictionary.textLanguage2Key : dictionary.textLanguage1Key, changedSources))
+          ) : undefined
         )
       )
       .all() as DictionaryEntry[]
@@ -415,6 +421,10 @@ export class DictionaryRepository {
         const match = (uid ? byUid.get(uid) : undefined) ?? bySourceWithoutUid.get(sourceKey)
 
         if (match) {
+          if (match.language1 === values.language1 && match.language2 === values.language2 &&
+              match.textLanguage1 === values.textLanguage1 && match.textLanguage2 === values.textLanguage2 &&
+              match.textLanguage1Key === values.textLanguage1Key && match.textLanguage2Key === values.textLanguage2Key &&
+              match.modName === values.modName && match.uid === values.uid) continue
           tx.update(dictionary)
             .set({ ...values, updatedAt: sql`(datetime('now'))` })
             .where(eq(dictionary.id, match.id))

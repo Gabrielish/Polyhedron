@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Languages } from 'lucide-react'
 import { ModalShell } from '@/components/shared/ModalShell'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -49,8 +49,9 @@ export function QuotaExceededDialog({
             <button
               type="button"
               onClick={onConfirmPartial}
-              className="inline-flex h-8 cursor-pointer items-center rounded-md border border-amber-500 bg-amber-500 px-3 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400"
+              className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-3 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400"
             >
+              <Languages size={13} aria-hidden="true" />
               {t('quotaModal.confirm')}
             </button>
           )}

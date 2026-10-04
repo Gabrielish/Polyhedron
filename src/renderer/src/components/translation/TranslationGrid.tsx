@@ -85,6 +85,7 @@ import {
   type ReferenceTag
 } from '@/data/gameReference'
 import { useConfig } from '@/hooks/useConfig'
+import type { TranslateEntryStats } from '@/features/translate/utils/entryStats'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
@@ -203,6 +204,7 @@ function loadTranslateViewState(): TranslateViewState {
 
 interface TranslationGridProps {
   entries: TranslationSessionEntry[]
+  entryStats: TranslateEntryStats
   onEntryChange: (rowId: string, target: string) => void
   onEntryManualEdit: (rowId: string) => void
   viewMode: 'stacked' | 'side'
@@ -336,7 +338,7 @@ function SearchFilterSelect({
       {tooltip && (
         <span
           role="tooltip"
-          className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-52 -translate-x-1/2 translate-y-[-2px] rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100"
+          className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-52 -translate-x-1/2 translate-y-[-2px] rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover:translate-y-0 group-hover:opacity-100"
         >
           {tooltip}
         </span>
@@ -376,7 +378,7 @@ function SearchToolbarToggle({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/search-toggle:translate-y-0 group-hover/search-toggle:opacity-100 group-focus-visible/search-toggle:translate-y-0 group-focus-visible/search-toggle:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/search-toggle:translate-y-0 group-hover/search-toggle:opacity-100 group-focus-visible/search-toggle:translate-y-0 group-focus-visible/search-toggle:opacity-100"
       >
         {tooltip}
       </span>
@@ -408,7 +410,7 @@ function TranslateActionTooltipButton({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/translate-tooltip:translate-y-0 group-hover/translate-tooltip:opacity-100 group-focus-visible/translate-tooltip:translate-y-0 group-focus-visible/translate-tooltip:opacity-100"
+        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/translate-tooltip:translate-y-0 group-hover/translate-tooltip:opacity-100 group-focus-visible/translate-tooltip:translate-y-0 group-focus-visible/translate-tooltip:opacity-100"
       >
         {tooltip}
       </span>
@@ -501,6 +503,7 @@ function ReferenceLinks({ links }: { links: ReferenceLink[] }) {
 
 export function TranslationGrid({
   entries,
+  entryStats,
   onEntryChange,
   onEntryManualEdit,
   viewMode,
@@ -761,21 +764,7 @@ export function TranslationGrid({
     )
   }
 
-  const counts = useMemo(() => {
-    let translated = 0
-    let untranslated = 0
-    let dictionary = 0
-    let tags = 0
-
-    for (const entry of entries) {
-      if (entry.target.trim()) translated += 1
-      else untranslated += 1
-      if (getCategory(entry) === 'dictionary') dictionary += 1
-      if (hasXmlTags(entry)) tags += 1
-    }
-
-    return { translated, untranslated, dictionary, tags }
-  }, [entries])
+  const counts = entryStats
 
   // Metadata is only relevant while a concrete speaker filter is active. Keep
   // the normal "All speakers" path independent from asynchronous metadata
@@ -783,6 +772,12 @@ export function TranslationGrid({
   const activeSpeakerMetadata = speakerFilter === 'all' ? null : dialogueNodeMetadata
 
   const filteredEntries = useMemo(() => {
+    // The default view is already ordered and includes every visible row.
+    // Reuse the array rather than test every predicate again on tab remount.
+    if (!effectiveSearch && deferredFilter === 'all' && deferredReferenceTag === 'all' &&
+        deferredDialogueFilters.length === 0 && !dialogueScope && speakerFilter === 'all' &&
+        reviewFilter === 'all' && edgeSpaceSortMode === 'default' &&
+        lengthSortMode === 'default' && sortMode === 'default') return entries
     const searchMatcher = effectiveSearch
       ? createEntrySearchMatcher(effectiveSearch, deferredExactMatch, deferredStartsWith, {
           matchCase: deferredMatchCase,
@@ -1022,7 +1017,10 @@ export function TranslationGrid({
     if (currentPage > totalPages) setCurrentPage(totalPages)
   }, [currentPage, totalPages])
 
-  const pageEntries = filteredEntries.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const pageEntries = useMemo(
+    () => filteredEntries.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [filteredEntries, currentPage, pageSize]
+  )
 
   const allEntryDialogueKey = useMemo(() => {
     if (speakerFilter === 'all') return ''
@@ -1124,6 +1122,9 @@ export function TranslationGrid({
   })
 
   const selectedStats = useMemo(() => {
+    if (session.selection.kind === 'explicit' && session.selection.uids.size === 0) {
+      return { selectedStrings: 0, selectedCharacters: 0 }
+    }
     const materialized = materializeSelectedEntries(session)
     return {
       selectedStrings: materialized.length,
@@ -1742,11 +1743,9 @@ export function TranslationGrid({
 
   const dialogueModal = dialogueKey && (
     <div
-      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
+      className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
     >
-      <div className="flex h-[88vh] max-h-[920px] w-full max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+      <div role="dialog" aria-modal="true" aria-label="Dialogue graph" className="app-modal-panel flex h-[88vh] max-h-[920px] w-full max-w-[1500px] flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]">
         <div className="flex shrink-0 items-center gap-3 border-b border-[#2a2c34] px-5 py-3">
           <GitBranch size={16} className="text-cyan-300" />
           <div className="min-w-0 flex-1">
@@ -2149,13 +2148,13 @@ export function TranslationGrid({
       {
         mode: 'brackets',
         label: 'Placeholders',
-        count: entries.filter(hasSquareBracketPlaceholder).length,
+        count: counts.brackets,
         dot: 'bg-cyan-400'
       },
       {
         mode: 'needs-review',
         label: t('grid.needsReview', { ns: 'translate' }),
-        count: entries.filter((entry) => entry.needsReview).length,
+        count: counts.needsReview,
         dot: 'bg-orange-400'
       }
     ],
@@ -2212,7 +2211,7 @@ export function TranslationGrid({
                 startFilterTransition(() => setFilter(item.mode))
               }}
               className={cn(
-                'translation-special-filter relative inline-flex h-7 items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-all',
+                'translation-special-filter relative inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-all',
                 isXmlTagFilter ? 'translation-special-filter-xml' : 'translation-special-filter-pl',
                 openSpecialFilter === item.mode && 'z-[1000]',
                 filter === item.mode
@@ -2930,8 +2929,8 @@ export function TranslationGrid({
                   data-index={virtualItem.index}
                   ref={sideVirtualizer.measureElement}
                   className={cn(
-                    'translate-entry-row group grid border-b border-[#1f2329] hover:bg-[#131518]/60 focus-within:bg-[#131518]',
-                    isRowSelected && 'bg-blue-950/10'
+                    'translate-entry-row group grid border-b border-[#1f2329] hover:bg-[#131518]/60',
+                    isRowSelected && 'translate-entry-selected'
                   )}
                   style={{
                     position: 'absolute',
@@ -3056,7 +3055,6 @@ export function TranslationGrid({
                           end: event.currentTarget.selectionEnd
                         })
                       }
-                      termGlossary={termGlossary}
                       highlightQuery={effectiveSearch}
                       searchHighlight={searchMatchDisplayMode}
                       onFocus={() => setEditingRowId(entry.rowId)}
@@ -3189,11 +3187,11 @@ export function TranslationGrid({
                 <div className="mx-auto max-w-275">
                   <div
                     className={cn(
-                      'translate-entry-card group grid cursor-default overflow-hidden rounded-xl border transition-[background-color,box-shadow] duration-120',
+                      'translate-entry-card group grid cursor-pointer overflow-hidden rounded-xl border transition-[background-color,box-shadow] duration-120',
                       'border-[#1f2329] bg-[#0f1114]',
                       'hover:border-[#2a2f37] hover:shadow-[0_4px_16px_rgba(0,0,0,0.18)]',
                       'focus-within:border-amber-500 focus-within:shadow-[0_0_0_3px_rgba(245,158,11,0.25),0_8px_24px_rgba(0,0,0,0.24)]',
-                      isRowSelected && 'border-blue-700/40 bg-blue-950/10'
+                      isRowSelected && 'translate-entry-selected'
                     )}
                     style={{ gridTemplateColumns: '56px 1fr' }}
                     onClick={() => focusEntry(entry.rowId)}
@@ -3387,7 +3385,6 @@ export function TranslationGrid({
                             end: event.currentTarget.selectionEnd
                           })
                         }
-                        termGlossary={termGlossary}
                         highlightQuery={effectiveSearch}
                         searchHighlight={searchMatchDisplayMode}
                         onFocus={() => setEditingRowId(entry.rowId)}

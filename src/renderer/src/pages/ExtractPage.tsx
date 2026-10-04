@@ -1,3 +1,4 @@
+import { FileArchive, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { DragDrop } from '@/components/shared/DragDrop'
@@ -59,7 +60,8 @@ export function ExtractPage(): React.JSX.Element {
             accept={['zip', 'pak']}
             onFile={setInputPath}
             label={t('dropLabel')}
-            className="!flex-row !items-center !justify-start !gap-3 !rounded-xl !border !border-dashed !border-[#2a2f37] !bg-[#0f1114] !p-2.5 [&>div]:flex-1 [&>div]:text-left [&>svg]:h-6 [&>svg]:w-6 [&>button]:ml-auto [&>button]:h-[30px]"
+            appearance="localization"
+            className="w-full"
           />
         </div>
 
@@ -88,6 +90,7 @@ export function ExtractPage(): React.JSX.Element {
             disabled={running || !inputPath || !outputPath || !sourceLang}
             className={btnPrimary}
           >
+            {running ? <Loader2 size={13} className="animate-spin" /> : <FileArchive size={13} aria-hidden="true" />}
             {running ? t('extracting') : t('extract')}
           </button>
         </div>

@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { renderSource } from '@/utils/renderSource'
-import type { TermGlossaryEntry } from '@/utils/termGlossary'
 
 interface HighlightedTextareaProps
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value'> {
@@ -10,7 +9,6 @@ interface HighlightedTextareaProps
   overlayClassName?: string
   highlightQuery?: string
   searchHighlight?: 'underline' | 'select' | 'off'
-  termGlossary?: TermGlossaryEntry[]
   autoGrow?: boolean
   focusRing?: boolean
   disableOverlay?: boolean
@@ -28,7 +26,6 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
       overlayClassName,
       highlightQuery,
       searchHighlight,
-      termGlossary,
       autoGrow = false,
       focusRing = true,
       disableOverlay = false,
@@ -89,7 +86,6 @@ export const HighlightedTextarea = forwardRef<HTMLTextAreaElement, HighlightedTe
               variant: 'editor',
               highlightQuery,
               searchHighlight,
-              termGlossary,
               whitespaceHighlight: true
             })
           ) : (

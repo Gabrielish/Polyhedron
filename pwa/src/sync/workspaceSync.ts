@@ -22,6 +22,7 @@ export type WorkspaceSyncDocument = {
   version: typeof WORKSPACE_SYNC_VERSION
   generatedAt: string
   fingerprint: string
+  appearance?: { accent: string; buttonTextColor: 'white' | 'black' }
   sessions: SyncSession[]
 }
 

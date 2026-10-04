@@ -123,21 +123,21 @@ export function CreatureGuideModal({
   return createPortal(
     // biome-ignore lint/a11y/noStaticElementInteractions: the backdrop closes the modal when clicked outside the dialog
     <div
-      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/65 px-4 py-5 backdrop-blur-sm"
+      className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/65 px-4 py-5 backdrop-blur-sm"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="creature-guide-title"
-        className="flex h-[min(800px,92vh)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.6)]"
+        className="app-modal-panel flex h-[min(800px,92vh)] w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
       >
         <div className="flex shrink-0 items-center gap-3 border-b border-[#2a2c34] px-5 py-4">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300">
+          <div className="shrink-0 text-amber-400">
             <PawPrint size={19} />
           </div>
           <div className="min-w-0 flex-1">
-            <h2 id="creature-guide-title" className="text-lg font-semibold text-neutral-100">
+            <h2 id="creature-guide-title" className="app-modal-title text-sm font-medium text-neutral-200">
               Creature Guide
             </h2>
             <p className="text-xs text-neutral-500">

@@ -24,8 +24,11 @@ export async function initI18n(): Promise<typeof i18n> {
   const allConfig = await window.api.config.getAll()
   if (isSupportedLanguage(allConfig.app_language)) {
     await i18n.changeLanguage(allConfig.app_language)
-  } else if (i18n.language !== defaultLanguage) {
-    await i18n.changeLanguage(defaultLanguage)
+  } else {
+    if (i18n.language !== defaultLanguage) await i18n.changeLanguage(defaultLanguage)
+    if (allConfig.app_language) {
+      await window.api.config.set({ key: 'app_language', value: defaultLanguage })
+    }
   }
 
   return i18n

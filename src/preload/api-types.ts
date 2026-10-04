@@ -360,6 +360,7 @@ export type DictionaryImportProgressUpdate =
   | { phase: 'writing'; processed: number; total: number }
 
 export interface DictionaryApi {
+  revision(): Promise<string>
   list(params: DictionaryListParams): Promise<DictionaryListResult>
   getAll(params: { lang1: string; lang2: string }): Promise<DictionaryEntry[]>
   search(params: { text: string; lang1: string; lang2: string }): Promise<DictionaryEntry[]>

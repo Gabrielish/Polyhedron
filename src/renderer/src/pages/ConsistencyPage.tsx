@@ -12,6 +12,7 @@ import {
   X
 } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
 import { useNavigate } from 'react-router-dom'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslationSession, type TranslationSessionEntry } from '@/context/TranslationSession'
@@ -19,6 +20,7 @@ import { normalizeSearchText } from '@/utils/search'
 import { getSpeakerForDialogue } from '@/utils/speakerMetadata'
 import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { cn } from '@/lib/utils'
 
 type ReviewFilter = 'all' | 'untranslated' | 'not-verified' | 'suspicious'
@@ -90,6 +92,7 @@ export function ConsistencyPage(): React.JSX.Element {
   const [minOccurrences, setMinOccurrences] = useState(1)
   const [expandedSource, setExpandedSource] = useState<string | null>(null)
   const [selectedVariants, setSelectedVariants] = useState<Set<string>>(new Set())
+  const [pendingVariant, setPendingVariant] = useState<{ group: ConsistencyGroup; variant: Variant } | null>(null)
   const [ignoredIssues, setIgnoredIssues] = useState<Set<string>>(
     () =>
       new Set(
@@ -105,7 +108,16 @@ export function ConsistencyPage(): React.JSX.Element {
         string
       >
   )
-  const groups = useMemo<ConsistencyGroup[]>(() => {
+  const groups = useRetainedMemo<ConsistencyGroup[]>('consistency:groups', () => {
+    const normalized = new Map<string, string>()
+    const normalizeOnce = (value: string) => {
+      let key = normalized.get(value)
+      if (key === undefined) {
+        key = normalizeFormatting(value)
+        normalized.set(value, key)
+      }
+      return key
+    }
     const grouped = new Map<
       string,
       {
@@ -120,17 +132,17 @@ export function ConsistencyPage(): React.JSX.Element {
     for (const entry of session.entries) {
       const source = entry.source.trim()
       if (!source) continue
-      const key = normalizeSource(source)
+      const key = normalizeOnce(source)
       const group = grouped.get(key) ?? {
         source,
         variants: new Map(),
         total: 0,
         latest: 0,
         category: categoryFor(entry),
-        speaker: getSpeakerForDialogue(source)?.name ?? null
+        speaker: null
       }
       const value = entry.target.trim()
-      const normalizedValue = normalizeFormatting(value)
+      const normalizedValue = normalizeOnce(value)
       const variantKey = normalizedValue || '__untranslated__'
       const existing = group.variants.get(variantKey)
       const changedAt = entry.history?.at(-1)?.changedAt ?? 0
@@ -157,6 +169,7 @@ export function ConsistencyPage(): React.JSX.Element {
       )
       .map((group) => ({
         ...group,
+        speaker: getSpeakerForDialogue(group.source)?.name ?? null,
         variants: [...group.variants.values()].sort((a, b) => b.count - a.count)
       }))
       .sort((a, b) => b.total - a.total || a.source.localeCompare(b.source))
@@ -208,10 +221,10 @@ export function ConsistencyPage(): React.JSX.Element {
                 ? b.total * b.variants.length - a.total * a.variants.length
                 : b.total - a.total
         ),
-    [groups, query, matchCase, matchWholeWord, reviewFilter, sortMode, minOccurrences]
+    [groups, query, matchCase, matchWholeWord, reviewFilter, sortMode, minOccurrences, ignoredIssues]
   )
-  const suspiciousCount = useMemo(
-    () =>
+  const suspiciousCount = useRetainedMemo(
+    'consistency:suspicious', () =>
       groups.reduce(
         (sum, group) =>
           sum + group.variants.filter((variant) => isSuspicious(group, variant)).length,
@@ -232,10 +245,12 @@ export function ConsistencyPage(): React.JSX.Element {
     navigate('/translate')
   }
   const applyVariant = (group: ConsistencyGroup, variant: Variant) => {
-    if (
-      !window.confirm(`Apply “${variant.value}” to all ${group.total} occurrences of this source?`)
-    )
-      return
+    setPendingVariant({ group, variant })
+  }
+  const confirmApplyVariant = () => {
+    if (!pendingVariant) return
+    const { group, variant } = pendingVariant
+    setPendingVariant(null)
     for (const entry of group.variants.flatMap((item) => item.entries))
       if (entry.target !== variant.value) {
         session.updateEntry(entry.rowId, variant.value)
@@ -301,6 +316,14 @@ export function ConsistencyPage(): React.JSX.Element {
     )
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
+      <ConfirmDialog
+        open={pendingVariant !== null}
+        title="Apply translation variant"
+        description={pendingVariant ? `Apply “${pendingVariant.variant.value}” to all ${pendingVariant.group.total} occurrences of this source?` : ''}
+        confirmLabel="Apply"
+        onConfirm={confirmApplyVariant}
+        onClose={() => setPendingVariant(null)}
+      />
       <header className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] bg-[#0f1114] px-6 py-4">
         <ListChecks className="text-amber-500" size={20} />
         <div>

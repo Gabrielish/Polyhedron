@@ -5,7 +5,6 @@ import { TranslationSessionProvider } from './context/TranslationSession'
 import { ThemeProvider } from './context/ThemeContext'
 import { DialogueNodesPage } from './pages/DialogueNodesPage'
 import { WorkspacePage } from './pages/WorkspacePage'
-import { DictionaryPage } from './pages/DictionaryPage'
 import { ConsistencyPage } from './pages/ConsistencyPage'
 import { EntryEditPage } from './pages/EntryEditPage'
 import { ReferencePage } from './pages/ReferencePage'
@@ -17,7 +16,7 @@ import { SpellsPage } from './pages/SpellsPage'
 function App(): React.JSX.Element {
   return (
     <HashRouter>
-      <Toaster position="bottom-right" theme="dark" richColors />
+      <Toaster position="bottom-right" theme="dark" />
       <UpdateNotifier />
       <Routes>
         <Route
@@ -34,7 +33,7 @@ function App(): React.JSX.Element {
             <Route path="/translate" element={<TranslatePage />} />
             <Route path="/translate/entry/:uid" element={<EntryEditPage />} />
           </Route>
-          <Route path="/dictionary" element={<DictionaryPage />} />
+          <Route path="/dictionary" element={<Navigate to="/translate" replace />} />
           <Route path="/consistency" element={<ConsistencyPage />} />
           <Route path="/dialogues" element={<DialogueNodesPage />} />
           <Route path="/game-data" element={<ReferencePage />} />

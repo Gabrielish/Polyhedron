@@ -72,8 +72,8 @@ export function XmlSelectionModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className="flex max-h-[82vh] w-full max-w-250 flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]">
+    <div className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-label={t('xmlSelection.title', { ns: 'translate' })} className="app-modal-panel flex max-h-[82vh] w-full max-w-250 flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]">
         <div className="flex h-12 shrink-0 items-center gap-3 border-b border-[#2a2c34] px-5">
           <Package size={15} className="text-amber-400" />
           <div className="flex-1 min-w-0">

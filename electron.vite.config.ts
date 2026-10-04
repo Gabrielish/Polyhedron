@@ -18,7 +18,9 @@ export default defineConfig({
           'merge.worker': resolve('src/main/workers/merge.worker.ts'),
           'translate.worker': resolve('src/main/workers/translate.worker.ts'),
           'xml-load.worker': resolve('src/main/workers/xml-load.worker.ts'),
-          'import.worker': resolve('src/main/workers/import.worker.ts')
+          'import.worker': resolve('src/main/workers/import.worker.ts'),
+          'file-task.worker': resolve('src/main/workers/file-task.worker.ts'),
+          'dictionary-save.worker': resolve('src/main/workers/dictionary-save.worker.ts')
         }
       }
     }

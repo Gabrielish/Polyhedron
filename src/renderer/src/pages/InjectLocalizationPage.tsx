@@ -1,4 +1,4 @@
-import { Apple, CheckCircle2, HardDriveDownload, Monitor } from 'lucide-react'
+import { Apple, HardDriveDownload, Loader2, Monitor } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
@@ -12,7 +12,6 @@ export function InjectLocalizationPage({
 }): React.JSX.Element {
   const session = useTranslationSession()
   const [running, setRunning] = useState<TargetPlatform | null>(null)
-  const [result, setResult] = useState<string | null>(null)
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
   const isBg3Profile = session.gameProfile === 'bg3'
 
@@ -27,20 +26,14 @@ export function InjectLocalizationPage({
     }
 
     setRunning(platform)
-    setResult(null)
     try {
-      const response = await window.api.mod.injectLocalizationPak({
+      await window.api.mod.injectLocalizationPak({
         platform,
         entries: session.entries
       })
-      const backupMessage = response.backupCreated
-        ? 'English.pak was backed up as EnglishOld.pak.bak.'
-        : 'EnglishOld.pak.bak already existed, so the existing backup was preserved.'
-      setResult(`${response.pakPath} — ${backupMessage}`)
       toast.success('English.pak injected successfully.')
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      setResult(message)
       toast.error(message)
     } finally {
       setRunning(null)
@@ -86,8 +79,9 @@ export function InjectLocalizationPage({
                   onClick={() => {
                     if (!isMacOS) void inject('windows')
                   }}
-                  className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
+                  {running === 'windows' ? <Loader2 size={13} className="animate-spin" /> : <HardDriveDownload size={13} aria-hidden="true" />}
                   {running === 'windows'
                     ? 'Injecting…'
                     : isMacOS
@@ -112,8 +106,9 @@ export function InjectLocalizationPage({
                   onClick={() => {
                     if (isMacOS) void inject('macos')
                   }}
-                  className="accent-solid-control mt-5 inline-flex cursor-pointer rounded-md border border-amber-500 bg-amber-500 px-4 py-2 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
+                  {running === 'macos' ? <Loader2 size={13} className="animate-spin" /> : <HardDriveDownload size={13} aria-hidden="true" />}
                   {running === 'macos'
                     ? 'Injecting…'
                     : isMacOS
@@ -125,12 +120,6 @@ export function InjectLocalizationPage({
           </>
         )}
 
-        {result && (
-          <div className="mt-5 flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs text-emerald-200">
-            <CheckCircle2 size={15} className="mt-0.5 shrink-0" />
-            <span className="break-all">{result}</span>
-          </div>
-        )}
       </div>
     </div>
   )

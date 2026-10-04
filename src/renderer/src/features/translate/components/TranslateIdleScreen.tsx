@@ -1,4 +1,4 @@
-import { File, Loader2 } from 'lucide-react'
+import { File, Loader2, SquarePen } from 'lucide-react'
 import { useEffect } from 'react'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
@@ -221,7 +221,7 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
                     disabled={!setup.ready || isLoading}
                     onClick={() => importFlow.openFile(setup.filePath, setup.ready)}
                   >
-                    {isLoading ? <Loader2 size={13} className="animate-spin" /> : null}
+                      {isLoading ? <Loader2 size={13} className="animate-spin" /> : <SquarePen size={13} aria-hidden="true" />}
                     {t('setup.openEditor', { ns: 'translate' })}
                   </button>
                 </div>
@@ -231,14 +231,14 @@ export function TranslateIdleScreen({ session }: TranslateIdleScreenProps): Reac
         </div>
 
         {isLoading && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0f1114]/80 backdrop-blur-[2px]">
-            <div className="flex w-full max-w-md flex-col gap-4 rounded-2xl border border-[#2a2f37] bg-[#131518] px-5 py-5 shadow-2xl">
+          <div className="app-modal-overlay absolute inset-0 z-20 flex items-center justify-center">
+            <div className="app-panel-surface flex w-full max-w-md flex-col gap-4 rounded-2xl border border-[#2a2f37] px-5 py-5">
               <div className="flex items-center gap-3">
                 <Loader2 size={18} className="animate-spin text-amber-400" />
                 <div className="text-sm font-semibold text-neutral-200">{loadingLabel}</div>
               </div>
               {loadingProgress?.phase === 'matching' && loadingProgress.total > 0 && (
-                <div className="h-2 rounded-full bg-[#1d2127]">
+                <div className="h-2 rounded-full bg-neutral-800">
                   <div
                     className="h-full rounded-full bg-amber-400/80 transition-[width] duration-200"
                     style={{

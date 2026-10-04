@@ -1,5 +1,5 @@
 import { Check, ChevronDown, Search, X } from 'lucide-react'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
@@ -16,6 +16,7 @@ interface MenuPosition {
   top: number
   left: number
   width: number
+  optionsMaxHeight: number
 }
 
 interface ThemedSelectProps {
@@ -66,6 +67,7 @@ export function ThemedSelect({
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const optionsRef = useRef<HTMLDivElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const listboxId = useId()
   const resolvedPlaceholder = placeholder ?? t('placeholders.select')
@@ -97,35 +99,50 @@ export function ThemedSelect({
     : visibleOptions.length
   const renderedOptions = visibleOptions.slice(virtualStart, virtualEnd)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return
 
     const updatePosition = () => {
       const rect = triggerRef.current?.getBoundingClientRect()
       if (!rect) return
 
-      const spaceBelow = window.innerHeight - rect.bottom - MENU_GAP
-      const spaceAbove = rect.top - MENU_GAP
-      const shouldOpenAbove = spaceBelow < MENU_MAX_HEIGHT && spaceAbove > spaceBelow
-      const height = Math.min(MENU_MAX_HEIGHT, shouldOpenAbove ? spaceAbove : spaceBelow)
-
-      setMenuPosition({
+      const options = optionsRef.current
+      const menu = menuRef.current
+      // Measure the real content: a two-option menu is much shorter than
+      // the scroll limit, and searchable menus also include a header.
+      const chromeHeight = menu && options ? menu.offsetHeight - options.offsetHeight : 2
+      const contentHeight = options ? Math.min(MENU_MAX_HEIGHT, options.scrollHeight) : MENU_MAX_HEIGHT
+      const desiredHeight = contentHeight + chromeHeight
+      const spaceBelow = Math.max(0, window.innerHeight - rect.bottom - MENU_GAP * 2)
+      const spaceAbove = Math.max(0, rect.top - MENU_GAP * 2)
+      const shouldOpenAbove = desiredHeight > spaceBelow && spaceAbove > spaceBelow
+      const availableHeight = shouldOpenAbove ? spaceAbove : spaceBelow
+      const height = Math.min(desiredHeight, availableHeight)
+      const width = Math.min(Math.max(rect.width, menuMinWidth ?? rect.width), window.innerWidth - MENU_GAP * 2)
+      const next: MenuPosition = {
         top: shouldOpenAbove
-          ? Math.max(MENU_GAP, rect.top - MENU_GAP - Math.max(180, height))
+          ? Math.max(MENU_GAP, rect.top - MENU_GAP - height)
           : rect.bottom + MENU_GAP,
-        left: rect.left,
-        width: Math.max(rect.width, menuMinWidth ?? rect.width)
-      })
+        left: Math.max(MENU_GAP, Math.min(rect.left, window.innerWidth - width - MENU_GAP)),
+        width,
+        optionsMaxHeight: Math.max(0, Math.min(MENU_MAX_HEIGHT, availableHeight - chromeHeight))
+      }
+      setMenuPosition(previous => previous && previous.top === next.top && previous.left === next.left &&
+        previous.width === next.width && previous.optionsMaxHeight === next.optionsMaxHeight ? previous : next)
     }
 
     updatePosition()
     window.addEventListener('resize', updatePosition)
     window.addEventListener('scroll', updatePosition, true)
+    const observer = new ResizeObserver(updatePosition)
+    if (menuRef.current) observer.observe(menuRef.current)
+    if (triggerRef.current) observer.observe(triggerRef.current)
     return () => {
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition, true)
+      observer.disconnect()
     }
-  }, [menuMinWidth, open])
+  }, [menuMinWidth, open, Boolean(menuPosition), visibleOptions.length, query, searchable, virtualized])
 
   useEffect(() => {
     if (!open) return
@@ -210,9 +227,13 @@ export function ThemedSelect({
             )}
 
             <div
+              ref={optionsRef}
               className="themed-select-options max-h-60 overflow-x-hidden overflow-y-auto py-1 pl-1 pr-1"
               onScroll={(event) => setOptionScrollTop(event.currentTarget.scrollTop)}
-              style={virtualized ? { height: 240 } : undefined}
+              style={{
+                maxHeight: menuPosition.optionsMaxHeight,
+                ...(virtualized ? { height: Math.min(MENU_MAX_HEIGHT, visibleOptions.length * 32 + 8) } : {})
+              }}
             >
               {visibleOptions.length > 0 ? (
                 <div

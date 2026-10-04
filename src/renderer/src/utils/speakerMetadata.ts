@@ -61,13 +61,16 @@ export function getKnownSpeakers(): SpeakerMetadata[] {
   return [...new Map(SPEAKERS.map(([, speaker]) => [speaker.name, speaker])).values()]
 }
 
+const SPEAKER_TOKENS = SPEAKERS.map(([pattern, speaker]) => [
+  new RegExp(`(?:^|[_-])${pattern.source}(?=$|[_-])`, 'i'), speaker
+] as const)
+
 export function getSpeakerForDialogue(dialogue: string): SpeakerMetadata | null {
-  const matches = SPEAKERS.filter(([pattern]) => {
+  const matches = SPEAKER_TOKENS.filter(([pattern]) => {
     // A name embedded in e.g. `ProtectedAstarion` identifies the subject of a
     // reaction, not necessarily the speaker. Only accept delimited dialogue
     // identifier tokens (`ORI_Astarion_...`, `Astarion_InParty`, etc.).
-    const token = new RegExp(`(?:^|[_-])${pattern.source}(?=$|[_-])`, 'i')
-    return token.test(dialogue)
+    return pattern.test(dialogue)
   }).map(([, speaker]) => speaker)
   const unique = [...new Map(matches.map((speaker) => [speaker.name, speaker])).values()]
   return unique.length === 1 ? unique[0] : null

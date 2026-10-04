@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { ACCENT_FAVORITES_STORAGE_KEY, parseAccentFavorites } from '@/utils/accentFavorites'
 
 export type ThemeId = 'liquid-glass'
 
@@ -7,8 +8,7 @@ export const THEMES: Array<{ id: ThemeId; name: string; description: string; swa
     {
       id: 'liquid-glass',
       name: 'Liquid Glass (Dark)',
-      description:
-        'A dark translucent interface with soft blur, glass surfaces and a customizable accent color.',
+      description: 'Dark glass with a custom accent.',
       swatches: ['#8c52ff', '#0a0d12']
     }
   ]
@@ -18,6 +18,8 @@ interface ThemeContextValue {
   setTheme: (theme: ThemeId) => void
   accent: string
   setAccent: (accent: string) => void
+  accentFavorites: Array<string | null>
+  setAccentFavorites: (favorites: Array<string | null>) => void
   accentForeground: 'white' | 'black'
   setAccentForeground: (foreground: 'white' | 'black') => void
 }
@@ -74,6 +76,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
       ? 'black'
       : 'white'
   )
+  const [accentFavorites, setAccentFavoritesState] = useState(() =>
+    parseAccentFavorites(window.localStorage.getItem(ACCENT_FAVORITES_STORAGE_KEY))
+  )
   // localStorage keeps the renderer fast, while the config table is the durable
   // profile store used by packaged builds and workspace backups. Read it once
   // on startup so a rebuilt app cannot silently fall back to the default red.
@@ -83,6 +88,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
       .then((config) => {
         if (config.theme_id === 'liquid-glass') setThemeState('liquid-glass')
         if (config.theme_accent) setAccentState(normalizeAccent(config.theme_accent))
+        if (config.theme_accent_favorites) {
+          setAccentFavoritesState(parseAccentFavorites(config.theme_accent_favorites))
+        }
         if (
           config.theme_accent_foreground === 'black' ||
           config.theme_accent_foreground === 'white'
@@ -92,6 +100,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
       })
       .catch(() => undefined)
   }, [])
+
+  useEffect(() => {
+    window.localStorage.setItem(ACCENT_FAVORITES_STORAGE_KEY, JSON.stringify(accentFavorites))
+  }, [accentFavorites])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -121,6 +133,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         void window.api.config.set({ key: 'theme_id', value: nextTheme })
       },
       accent,
+      accentFavorites,
+      setAccentFavorites: (favorites) => {
+        const normalized = parseAccentFavorites(JSON.stringify(favorites))
+        setAccentFavoritesState(normalized)
+        void window.api.config.set({ key: 'theme_accent_favorites', value: JSON.stringify(normalized) })
+      },
       setAccent: (nextAccent) => {
         const normalized = normalizeAccent(nextAccent)
         setAccentState(normalized)
@@ -132,7 +150,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         void window.api.config.set({ key: 'theme_accent_foreground', value: nextForeground })
       }
     }),
-    [accent, accentForeground, theme]
+    [accent, accentFavorites, accentForeground, theme]
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

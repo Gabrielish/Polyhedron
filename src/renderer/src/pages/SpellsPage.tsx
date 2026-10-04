@@ -23,7 +23,19 @@ import {
   X,
   Zap
 } from 'lucide-react'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
+import { DeferredSpellCard } from '@/components/shared/DeferredSpellCard'
+import { createSourceResolver } from '@/utils/sourceResolver'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import spellsData from '@/data/spells.json'
@@ -45,6 +57,7 @@ import { btnGhostIcon } from '@/features/translate/components/styles'
 
 type GameEntry = ReturnType<typeof getReferenceCatalog>[number]
 type DisplayEntry = GameEntry & { displayKind?: EntryKind; wikiUrl?: string }
+const EMPTY_WIKI_CONDITIONS: DisplayEntry[] = []
 type WikiVariant = { name: string; description: string }
 type EntryKind = 'spell' | 'action' | 'bonus' | 'ritual' | 'monster' | 'condition'
 type SpellsViewMemory = {
@@ -123,24 +136,85 @@ function SpellTooltipButton({
   children
 }: {
   tooltip: string
-  onClick: () => void
+  onClick?: () => void
   className: string
   children: React.ReactNode
 }): React.JSX.Element {
+  const anchor = useRef<HTMLButtonElement>(null)
+  const popup = useRef<HTMLSpanElement>(null)
+  const tooltipId = useId()
+  const [open, setOpen] = useState(false)
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
+
+  useLayoutEffect(() => {
+    if (!open || !anchor.current || !popup.current) return
+    const a = anchor.current.getBoundingClientRect()
+    const p = popup.current.getBoundingClientRect()
+    const margin = 8
+    setPosition({
+      top:
+        a.top - p.height - margin >= margin
+          ? a.top - p.height - margin
+          : Math.min(a.bottom + margin, innerHeight - p.height - margin),
+      left: Math.max(
+        margin,
+        Math.min(a.left + (a.width - p.width) / 2, innerWidth - p.width - margin)
+      )
+    })
+  }, [open, tooltip])
+
+  useEffect(() => {
+    if (!open) return
+    const hide = () => setOpen(false)
+    window.addEventListener('scroll', hide, true)
+    window.addEventListener('resize', hide)
+    window.addEventListener('blur', hide)
+    return () => {
+      window.removeEventListener('scroll', hide, true)
+      window.removeEventListener('resize', hide)
+      window.removeEventListener('blur', hide)
+    }
+  }, [open])
+
+  const show = () => {
+    setPosition(null)
+    setOpen(true)
+  }
   return (
     <button
+      ref={anchor}
       type="button"
       aria-label={tooltip}
+      aria-describedby={open ? tooltipId : undefined}
       onClick={onClick}
+      onMouseEnter={show}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={show}
+      onBlur={() => setOpen(false)}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') setOpen(false)
+      }}
       className={`group/spell-tooltip relative z-20 hover:z-50 focus:z-50 focus:outline-none ${className}`}
     >
       {children}
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/spell-tooltip:translate-y-0 group-hover/spell-tooltip:opacity-100 group-focus-visible/spell-tooltip:translate-y-0 group-focus-visible/spell-tooltip:opacity-100"
-      >
-        {tooltip}
-      </span>
+      {open &&
+        createPortal(
+          <span
+            ref={popup}
+            id={tooltipId}
+            role="tooltip"
+            className="pointer-events-none fixed z-[10000] w-max max-w-56 rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 shadow-2xl"
+            style={{
+              top: position?.top ?? 0,
+              left: position?.left ?? 0,
+              visibility: position ? 'visible' : 'hidden',
+              maxWidth: 'calc(100vw - 16px)'
+            }}
+          >
+            {tooltip}
+          </span>,
+          document.body
+        )}
     </button>
   )
 }
@@ -261,7 +335,16 @@ function SpellSearchInput({
         className="spells-search-input min-w-0 flex-1 border-0 bg-transparent text-xs text-neutral-200 outline-none placeholder:text-neutral-600 focus:border-0 focus:outline-none focus:ring-0"
       />
       {value && (
-        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setValue(''); setPending(true) }} aria-label="Clear search" className="relative z-10 shrink-0 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200">
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            setValue('')
+            setPending(true)
+          }}
+          aria-label="Clear search"
+          className="relative z-10 shrink-0 cursor-pointer text-neutral-500 transition-colors hover:text-neutral-200"
+        >
           <X size={13} />
         </button>
       )}
@@ -438,7 +521,8 @@ function LoadedSpellsPage({
   const [view, setView] = useState<'cards' | 'list'>(viewMemory.view ?? 'cards')
   const [statusFilter, setStatusFilter] = useState<'all' | ReviewStatus>(viewMemory.status ?? 'all')
   const [editingSpell] = useState<string | null>(null)
-  const [editDialogSpell, setEditDialogSpell] = useState<string | null>(null)
+  const [selectedSpellKey, setSelectedSpellKey] = useState<string | null>(null)
+  const [showSpellWiki, setShowSpellWiki] = useState(false)
   const [expandedVariants, setExpandedVariants] = useState<Set<string>>(new Set())
   const [expandedConditions, setExpandedConditions] = useState<Set<string>>(new Set())
   const [collapsedGroups, setCollapsedGroups] = useState<Set<EntryKind>>(new Set())
@@ -448,7 +532,8 @@ function LoadedSpellsPage({
   const [wikiSpellVariants, setWikiSpellVariants] = useState<Record<string, WikiVariant[]>>({})
   const [wikiSpellDescriptions, setWikiSpellDescriptions] = useState<Record<string, string>>({})
   const [loadingWikiVariants, setLoadingWikiVariants] = useState<Set<string>>(new Set())
-  const [wikiConditionEntries, setWikiConditionEntries] = useState<DisplayEntry[]>([])
+  const [wikiConditionEntries, setWikiConditionEntries] =
+    useState<DisplayEntry[]>(EMPTY_WIKI_CONDITIONS)
   const [wikiCatalogRequested, setWikiCatalogRequested] = useState(false)
   const [showSpellUid, setShowSpellUid] = useState(false)
   const [showSpellSuggestions, setShowSpellSuggestions] = useState(false)
@@ -468,7 +553,7 @@ function LoadedSpellsPage({
     loadTermGlossary(termGlossaryKey)
   )
   const renderSource = useCallback(
-    (value: string) => renderSourceBase(value, { termGlossary }),
+    (value: string) => renderSourceBase(value, { termGlossary, floatingGlossary: true }),
     [termGlossary]
   )
 
@@ -501,13 +586,13 @@ function LoadedSpellsPage({
   }
 
   useEffect(() => {
-    if (!editDialogSpell) return
+    if (!selectedSpellKey) return
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setEditDialogSpell(null)
+      if (event.key === 'Escape') setSelectedSpellKey(null)
     }
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
-  }, [editDialogSpell])
+  }, [selectedSpellKey])
 
   useEffect(() => {
     if (!wikiCatalogRequested) return
@@ -648,21 +733,34 @@ function LoadedSpellsPage({
     )
   }, [kind, query, sort, statusFilter, view])
 
-  const matchingEntries = useMemo(() => {
+  const sourceIndex = useRetainedMemo('spells:matching', () => {
     const bySource = new Map<string, typeof session.entries>()
+    const fallbackSources = new Map<string, typeof session.entries>()
+    const normalizedSources = new Map<string, string>()
     for (const entry of session.entries) {
-      const key = normalize(entry.source)
+      let key = normalizedSources.get(entry.source)
+      if (key === undefined) {
+        key = normalize(entry.source)
+        normalizedSources.set(entry.source, key)
+      }
+      if (!fallbackSources.has(key)) fallbackSources.set(key, [entry])
       if (!key) continue
       const current = bySource.get(key) ?? []
       current.push(entry)
       bySource.set(key, current)
     }
-    return bySource
+    return { bySource, fallbackSources }
   }, [session.entries])
+  const matchingEntries = sourceIndex.bySource
+  const resolveSource = useRetainedMemo(
+    'spells:resolver',
+    () => createSourceResolver(matchingEntries, normalize, sourceIndex.fallbackSources),
+    [sourceIndex]
+  )
 
-  const statusCatalog = useMemo(() => getReferenceCatalog('Status'), [])
-  const spellCatalog = useMemo(() => getReferenceCatalog('Spell'), [])
-  const referenceCatalog = useMemo(() => {
+  const statusCatalog = useRetainedMemo('spells:statuses', () => getReferenceCatalog('Status'), [])
+  const spellCatalog = useRetainedMemo('spells:catalog', () => getReferenceCatalog('Spell'), [])
+  const referenceCatalog = useRetainedMemo('spells:reference-catalog', () => {
     const localConditions = statusCatalog
       .filter((entry) => entry.id && entry.description.trim())
       .map((entry) => ({ ...entry, displayKind: 'condition' as const }))
@@ -682,7 +780,7 @@ function LoadedSpellsPage({
     return [...spellCatalog, ...conditions.values()]
   }, [spellCatalog, statusCatalog, wikiConditionEntries])
 
-  const variantsBySpellName = useMemo(() => {
+  const variantsBySpellName = useRetainedMemo('spells:variants', () => {
     const byName = new Map<string, GameEntry[]>()
     const spellEntries = spellCatalog.filter(
       (entry) => entry.id && entry.description.trim() && !/%%%/.test(entry.name + entry.description)
@@ -701,17 +799,31 @@ function LoadedSpellsPage({
         byName.set(baseName, current)
       }
     }
+    // All prefixes matter: "A: B: C" is a variant of both "A" and "A: B".
+    // Preserve catalog order and duplicates from the old full-catalog filter.
+    const direct = new Map<string, GameEntry[]>()
+    for (const variant of spellEntries) {
+      const name = normalize(variant.name)
+      for (
+        let separator = name.indexOf(':');
+        separator >= 0;
+        separator = name.indexOf(':', separator + 1)
+      ) {
+        const prefix = name.slice(0, separator)
+        const list = direct.get(prefix)
+        if (list) list.push(variant)
+        else direct.set(prefix, [variant])
+      }
+    }
     for (const entry of spellEntries) {
-      const baseName = normalize(entry.name)
-      const directVariants = spellEntries.filter((variant) =>
-        normalize(variant.name).startsWith(`${baseName}:`)
-      )
-      if (directVariants.length > 0) byName.set(baseName, directVariants)
+      const name = normalize(entry.name)
+      const variants = direct.get(name)
+      if (variants?.length) byName.set(name, variants)
     }
     return byName
   }, [spellCatalog])
 
-  const completionByEntryKey = useMemo(() => {
+  const completionByEntryKey = useRetainedMemo('spells:completion', () => {
     const result = new Map<string, boolean>()
     for (const entry of referenceCatalog) {
       const nameMatches = matchingEntries.get(normalize(entry.name)) ?? []
@@ -729,7 +841,7 @@ function LoadedSpellsPage({
     (entry: GameEntry): boolean => completionByEntryKey.get(entry.id ?? entry.name) ?? false,
     [completionByEntryKey]
   )
-  const statusIndex = useMemo(() => {
+  const statusIndex = useRetainedMemo('spells:status-index', () => {
     const byName = new Map<string, GameEntry>()
     for (const entry of statusCatalog) byName.set(normalize(entry.name), entry)
     const byToken = new Map<string, GameEntry>()
@@ -744,12 +856,13 @@ function LoadedSpellsPage({
     }
     return { byName, byToken }
   }, [referenceCatalog, statusCatalog])
-  const iconByName = useMemo(() => {
+  const iconByName = useRetainedMemo('spells:icons', () => {
     const map = new Map<string, string>()
     for (const spell of spellsData) map.set(normalize(spell.name), spell.icon)
     return map
   }, [])
-  const searchableCatalog = useMemo(
+  const searchableCatalog = useRetainedMemo(
+    'spells:searchable',
     () =>
       referenceCatalog.map((entry) => {
         const name = normalize(entry.name)
@@ -770,7 +883,7 @@ function LoadedSpellsPage({
       }),
     [referenceCatalog]
   )
-  const sourceMatchInfo = useMemo(() => {
+  const sourceMatchInfo = useRetainedMemo('spells:source-info', () => {
     const result = new Map<string, { translated: boolean; reviewStatus?: ReviewStatus }>()
     for (const [key, entries] of matchingEntries) {
       result.set(key, {
@@ -862,6 +975,841 @@ function LoadedSpellsPage({
     }
     return stats
   }, [isEntryComplete, sorted])
+
+  const selectedSpell = referenceCatalog.find(
+    (spell) => (spell.id ?? spell.name) === selectedSpellKey
+  )
+
+  const renderSpellCard = (spell: DisplayEntry, panelOnly = false): React.JSX.Element => {
+    const description = spell.description
+    const wikiVariants = wikiSpellVariants[spell.name]
+    const normalizedSpellName = normalize(spell.name)
+    const fallbackVariants = variantsBySpellName.get(normalizedSpellName) ?? []
+    const variantSources = (
+      fallbackVariants.length > 0 ? fallbackVariants : (wikiVariants ?? [])
+    ) as Array<GameEntry | WikiVariant>
+    const variants = variantSources.map((entry) => ({
+      ...entry,
+      cleanName: entry.name.replace(/\*+$/, ''),
+      translated:
+        matchingEntries.get(normalize(entry.name))?.find((item) => item.target.trim())?.target ??
+        '',
+      translatedDescription:
+        matchingEntries.get(normalize(entry.description))?.find((item) => item.target.trim())
+          ?.target ?? ''
+    }))
+    const conditionTokens = [
+      ...[
+        ...description.matchAll(/<lstag\b[^>]*tooltip=["']([^"']+)["'][^>]*>([\s\S]*?)<\/lstag>/gi)
+      ].map((match) => ({
+        token: match[1],
+        label: match[2].replace(/<[^>]*>/g, '').trim()
+      })),
+      ...(spell.conditions ?? [])
+        .filter((token) => statusIndex.byToken.has(normalize(token)))
+        .map((token) => ({ token, label: token })),
+      ...(wikiConditions[spell.name] ?? []).map((token) => ({
+        token,
+        label: token
+      }))
+    ].filter(
+      ({ token, label }) =>
+        label !== token ||
+        statusIndex.byName.has(normalize(label)) ||
+        statusIndex.byToken.has(normalize(token))
+    )
+    const wikiConditionsLoaded = Object.prototype.hasOwnProperty.call(wikiConditions, spell.name)
+    const conditions = conditionTokens
+      .map(({ token, label }) => {
+        const status =
+          statusIndex.byName.get(normalize(label)) ??
+          statusIndex.byName.get(normalize(token)) ??
+          statusIndex.byToken.get(normalize(token))
+        if (status && /%%%/.test(status.name + status.description)) return null
+        const resolvedStatus =
+          status ??
+          ({
+            name: label || token,
+            description: '',
+            category: 'Status' as const,
+            id: token,
+            conditions: [],
+            hasUnresolvedFields: true
+          } satisfies GameEntry)
+        const statusNameMatches = matchingEntries.get(normalize(resolvedStatus.name)) ?? []
+        const statusDescriptionMatches =
+          matchingEntries.get(normalize(resolvedStatus.description)) ?? []
+        return {
+          ...resolvedStatus,
+          translatedName: statusNameMatches.find((entry) => entry.target.trim())?.target ?? '',
+          translatedDescription:
+            statusDescriptionMatches.find((entry) => entry.target.trim())?.target ?? ''
+        }
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+      .filter(
+        (entry, index, all) =>
+          all.findIndex((item) => normalize(item.name) === normalize(entry.name)) === index
+      )
+    const hasResolvableGameCondition = (spell.conditions ?? []).some((token) =>
+      statusIndex.byToken.has(normalize(token))
+    )
+    const hasPotentialConditions =
+      conditions.length > 0 || (!wikiConditionsLoaded && hasResolvableGameCondition)
+    const nameMatches = matchingEntries.get(normalize(spell.name)) ?? []
+    const descriptionMatches = matchingEntries.get(normalize(description)) ?? []
+    const nameEntry = resolveSource(spell.name)
+    const descriptionEntry = resolveSource(description)
+    const resolveEntry = (source: string, matches: typeof session.entries) =>
+      matches[0] ?? resolveSource(source)
+    const rawDescriptionSource = descriptionEntry?.source ?? description
+    const wikiDescription = wikiSpellDescriptions[spell.name]
+    const displayDescription = isMarkupOnlyDescription(rawDescriptionSource)
+      ? wikiDescription || description
+      : rawDescriptionSource
+    const descriptionSourceLabel =
+      isMarkupOnlyDescription(rawDescriptionSource) && wikiDescription
+        ? 'Description · Wiki · EN'
+        : 'Description · Source · EN'
+    const translatedName =
+      nameMatches.find((entry) => entry.target.trim())?.target ?? nameEntry?.target ?? ''
+    const translatedDescription =
+      descriptionMatches.find((entry) => entry.target.trim())?.target ??
+      descriptionEntry?.target ??
+      ''
+    const isTranslated = translatedName.trim() !== '' && translatedDescription.trim() !== ''
+    const currentStatus =
+      nameEntry?.reviewStatus ??
+      descriptionEntry?.reviewStatus ??
+      (isTranslated ? 'verified' : 'untranslated')
+    const setStatus = (status: ReviewStatus) => {
+      if (nameEntry) session.setReviewStatus(nameEntry.rowId, status)
+      if (descriptionEntry && descriptionEntry.rowId !== nameEntry?.rowId) {
+        session.setReviewStatus(descriptionEntry.rowId, status)
+      }
+    }
+    const matches = nameMatches.length
+    const variantsOpen = expandedVariants.has(spell.id ?? spell.name)
+    const conditionsOpen = expandedConditions.has(spell.id ?? spell.name)
+    const icon = iconByName.get(normalize(spell.name))
+    const spellKey = spell.id ?? spell.name
+
+    if (panelOnly)
+      return (
+        <div
+          role="region"
+          key={spellKey}
+          aria-label={`${spell.name} translation editor`}
+          className="spells-edit-panel relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
+        >
+          <div className="flex flex-wrap items-center gap-3 border-b border-neutral-800/50 px-4 py-3">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/25">
+                <WikiIcon
+                  name={spell.name}
+                  localIcon={icon}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <h2 className="truncate text-base font-semibold text-neutral-100">{spell.name}</h2>
+            </div>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                aria-pressed={showSpellWiki}
+                onClick={() => setShowSpellWiki((current) => !current)}
+                className="inline-flex items-center gap-1 rounded-lg border border-neutral-700 px-2 py-1.5 text-xs text-neutral-300"
+              >
+                <BookText size={13} />
+                {showSpellWiki ? 'Editor' : 'Wiki'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSpellUid((current) => !current)}
+                className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellUid ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
+              >
+                <Hash size={13} /> UID
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSpellSuggestions((current) => !current)
+                  loadSpellSuggestions()
+                }}
+                className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellSuggestions ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
+              >
+                <Lightbulb size={13} />
+                {spellSuggestionsLoading ? 'Loading…' : 'Suggestions'}
+              </button>
+
+              <button
+                type="button"
+                title="Close (Esc)"
+                aria-label="Close spell editor"
+                onClick={() => setSelectedSpellKey(null)}
+                className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col">
+            {showSpellWiki ? (
+              <div className="min-h-0 flex-1 bg-black/20">
+                <StyledWebview
+                  title={`${spell.name} on BG3 Wiki`}
+                  src={`https://bg3.wiki/wiki/${encodeURIComponent(spell.name.replace(/\s+/g, '_'))}`}
+                  allowpopups
+                  className="h-full min-h-0 w-full border-0"
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    display: 'flex'
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="polyhedron-scroll min-h-0 flex-1 space-y-3 overflow-y-auto p-5 pb-28">
+                <section className="space-y-2">
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                      Title · Source · EN
+                    </span>
+                    <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-200">
+                      {nameEntry?.source ?? spell.name}
+                      {showSpellUid && nameEntry?.uid && (
+                        <span className="ml-2 text-[10px] text-neutral-500">{nameEntry.uid}</span>
+                      )}
+                    </div>
+                  </div>
+                  <label className="block space-y-2">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                      Title · Translation · RO
+                    </span>
+                    <input
+                      defaultValue={translatedName}
+                      placeholder="Translation..."
+                      disabled={!nameEntry}
+                      onBlur={(event) =>
+                        nameEntry && session.updateEntry(nameEntry.rowId, event.target.value)
+                      }
+                      className="block w-full rounded-lg border border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 text-sm text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                    {showSpellSuggestions && nameEntry?.uid && spellSuggestions[nameEntry.uid] && (
+                      <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                        {[spellSuggestions[nameEntry.uid].one, spellSuggestions[nameEntry.uid].two]
+                          .filter(Boolean)
+                          .map((suggestion, index) => (
+                            <div key={`${nameEntry.uid}-title-suggestion-${index}`}>
+                              {renderSourceBase(suggestion)}
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </label>
+                </section>
+                <section className="space-y-2 border-t border-[#2a2f37] pt-3">
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                      {descriptionSourceLabel}
+                    </span>
+                    <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-300">
+                      {renderSource(displayDescription || 'No English description available.')}
+                      {showSpellUid && descriptionEntry?.uid && (
+                        <span className="ml-2 text-[10px] text-neutral-500">
+                          {descriptionEntry.uid}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <label className="block space-y-2">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                      Description · Translation · RO
+                    </span>
+                    <HighlightedTextarea
+                      value={translatedDescription}
+                      placeholder="Translation..."
+                      onBlur={(event) =>
+                        descriptionEntry &&
+                        session.updateEntry(descriptionEntry.rowId, event.target.value)
+                      }
+                      rows={1}
+                      autoGrow
+                      containerClassName="spells-edit-translation border-[#2a2f37] bg-[#0c0d0f]"
+                      className="text-sm leading-5 !text-neutral-200"
+                    />
+                    {showSpellSuggestions &&
+                      descriptionEntry?.uid &&
+                      spellSuggestions[descriptionEntry.uid] && (
+                        <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                          {[
+                            spellSuggestions[descriptionEntry.uid].one,
+                            spellSuggestions[descriptionEntry.uid].two
+                          ]
+                            .filter(Boolean)
+                            .map((suggestion, index) => (
+                              <div key={`${descriptionEntry.uid}-description-suggestion-${index}`}>
+                                {renderSourceBase(suggestion)}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                  </label>
+                </section>
+                {variants.length > 0 && (
+                  <div className="space-y-2 border-t border-[#2a2f37] pt-3">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                      Variations
+                    </h3>
+                    {variants.map((variant) => {
+                      const variantNameEntry = resolveEntry(
+                        variant.name,
+                        matchingEntries.get(normalize(variant.name)) ?? []
+                      )
+                      const variantDescriptionEntry = resolveEntry(
+                        variant.description,
+                        matchingEntries.get(normalize(variant.description)) ?? []
+                      )
+                      return (
+                        <div
+                          key={variant.name}
+                          className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
+                        >
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Title · Source · EN
+                            </span>
+                            <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
+                              {renderSource(variantNameEntry?.source ?? variant.cleanName)}
+                              {showSpellUid && variantNameEntry?.uid && (
+                                <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                  {variantNameEntry.uid}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <label className="block space-y-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Title · Translation · RO
+                            </span>
+                            <input
+                              defaultValue={variant.translated}
+                              placeholder="Translation..."
+                              disabled={!variantNameEntry}
+                              onBlur={(event) =>
+                                variantNameEntry &&
+                                session.updateEntry(variantNameEntry.rowId, event.target.value)
+                              }
+                              className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                            {showSpellSuggestions &&
+                              variantNameEntry?.uid &&
+                              spellSuggestions[variantNameEntry.uid] && (
+                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                  {[
+                                    spellSuggestions[variantNameEntry.uid].one,
+                                    spellSuggestions[variantNameEntry.uid].two
+                                  ]
+                                    .filter(Boolean)
+                                    .map((suggestion, index) => (
+                                      <div
+                                        key={`${variantNameEntry.uid}-title-suggestion-${index}`}
+                                      >
+                                        {renderSourceBase(suggestion)}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </label>
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Description · Source · EN
+                            </span>
+                            <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
+                              {renderSource(
+                                variantDescriptionEntry?.source ??
+                                  (variant.description || 'No English description available.')
+                              )}
+                              {showSpellUid && variantDescriptionEntry?.uid && (
+                                <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                  {variantDescriptionEntry.uid}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <label className="block space-y-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Description · Translation · RO
+                            </span>
+                            <HighlightedTextarea
+                              value={variant.translatedDescription}
+                              placeholder="Translation..."
+                              onBlur={(event) =>
+                                variantDescriptionEntry &&
+                                session.updateEntry(
+                                  variantDescriptionEntry.rowId,
+                                  event.target.value
+                                )
+                              }
+                              rows={1}
+                              autoGrow
+                              containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
+                              className="text-xs leading-4 !text-neutral-200"
+                            />
+                            {showSpellSuggestions &&
+                              variantDescriptionEntry?.uid &&
+                              spellSuggestions[variantDescriptionEntry.uid] && (
+                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                  {[
+                                    spellSuggestions[variantDescriptionEntry.uid].one,
+                                    spellSuggestions[variantDescriptionEntry.uid].two
+                                  ]
+                                    .filter(Boolean)
+                                    .map((suggestion, index) => (
+                                      <div
+                                        key={`${variantDescriptionEntry.uid}-description-suggestion-${index}`}
+                                      >
+                                        {renderSourceBase(suggestion)}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </label>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                {conditions.length > 0 && (
+                  <div className="space-y-2 border-t border-[#2a2f37] pt-3">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                      Conditions
+                    </h3>
+                    {conditions.map((condition) => {
+                      const conditionNameEntry = resolveEntry(
+                        condition.name,
+                        matchingEntries.get(normalize(condition.name)) ?? []
+                      )
+                      const conditionDescriptionEntry = resolveEntry(
+                        condition.description,
+                        matchingEntries.get(normalize(condition.description)) ?? []
+                      )
+                      return (
+                        <div
+                          key={condition.name}
+                          className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
+                        >
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Title · Source · EN
+                            </span>
+                            <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
+                              {renderSource(conditionNameEntry?.source ?? condition.name)}
+                              {showSpellUid && conditionNameEntry?.uid && (
+                                <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                  {conditionNameEntry.uid}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <label className="block space-y-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Title · Translation · RO
+                            </span>
+                            <input
+                              defaultValue={condition.translatedName}
+                              placeholder="Translation..."
+                              disabled={!conditionNameEntry}
+                              onBlur={(event) =>
+                                conditionNameEntry &&
+                                session.updateEntry(conditionNameEntry.rowId, event.target.value)
+                              }
+                              className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                            {showSpellSuggestions &&
+                              conditionNameEntry?.uid &&
+                              spellSuggestions[conditionNameEntry.uid] && (
+                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                  {[
+                                    spellSuggestions[conditionNameEntry.uid].one,
+                                    spellSuggestions[conditionNameEntry.uid].two
+                                  ]
+                                    .filter(Boolean)
+                                    .map((suggestion, index) => (
+                                      <div
+                                        key={`${conditionNameEntry.uid}-title-suggestion-${index}`}
+                                      >
+                                        {renderSourceBase(suggestion)}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </label>
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Description · Source · EN
+                            </span>
+                            <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
+                              {renderSource(
+                                conditionDescriptionEntry?.source ??
+                                  (condition.description || 'No English description available.')
+                              )}
+                              {showSpellUid && conditionDescriptionEntry?.uid && (
+                                <span className="ml-2 text-[10px] font-normal text-neutral-500">
+                                  {conditionDescriptionEntry.uid}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <label className="block space-y-2">
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                              Description · Translation · RO
+                            </span>
+                            <HighlightedTextarea
+                              value={condition.translatedDescription}
+                              placeholder="Translation..."
+                              onBlur={(event) =>
+                                conditionDescriptionEntry &&
+                                session.updateEntry(
+                                  conditionDescriptionEntry.rowId,
+                                  event.target.value
+                                )
+                              }
+                              rows={1}
+                              autoGrow
+                              containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
+                              className="text-xs leading-4 !text-neutral-200"
+                            />
+                            {showSpellSuggestions &&
+                              conditionDescriptionEntry?.uid &&
+                              spellSuggestions[conditionDescriptionEntry.uid] && (
+                                <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
+                                  {[
+                                    spellSuggestions[conditionDescriptionEntry.uid].one,
+                                    spellSuggestions[conditionDescriptionEntry.uid].two
+                                  ]
+                                    .filter(Boolean)
+                                    .map((suggestion, index) => (
+                                      <div
+                                        key={`${conditionDescriptionEntry.uid}-description-suggestion-${index}`}
+                                      >
+                                        {renderSourceBase(suggestion)}
+                                      </div>
+                                    ))}
+                                </div>
+                              )}
+                          </label>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )
+    return (
+      <article
+        style={isTranslated ? { borderColor: '#34d399' } : undefined}
+        className={`spell-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416] p-3 transition-colors ${isTranslated ? 'spell-card-complete' : ''}`}
+      >
+        <div className="flex min-w-0 gap-3">
+          <div className="shrink-0">
+            <div className="spell-icon-frame relative h-14 w-14 overflow-hidden rounded-lg border border-amber-500/25 bg-[#0c0d0f]">
+              <WikiIcon
+                name={spell.name}
+                localIcon={icon}
+                className="h-full w-full object-contain"
+              />
+              {isTranslated && (
+                <CircleCheck
+                  size={16}
+                  strokeWidth={2.5}
+                  className="absolute left-1 top-1 z-10 rounded-full bg-[#10151a] text-emerald-400 drop-shadow-[0_0_4px_rgba(52,211,153,0.65)]"
+                  aria-label="Complete"
+                />
+              )}
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="break-words text-sm font-semibold text-neutral-100 [overflow-wrap:anywhere]">
+                  {renderSource(nameEntry?.source ?? spell.name)}
+                </h3>
+                {editingSpell === spellKey && nameEntry ? (
+                  <input
+                    defaultValue={translatedName}
+                    placeholder="Translation..."
+                    onBlur={(event) => session.updateEntry(nameEntry.rowId, event.target.value)}
+                    className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-2 py-1 text-xs font-normal text-amber-200 outline-none focus:border-amber-500/60"
+                  />
+                ) : translatedName ? (
+                  <div className="mt-0.5 flex items-center gap-1 text-xs font-normal text-neutral-300">
+                    <CornerDownRight size={12} className="shrink-0 opacity-70" />
+                    <span className="break-words [overflow-wrap:anywhere]">{translatedName}</span>
+                  </div>
+                ) : null}
+              </div>
+              <div className="flex max-w-full shrink-0 items-start gap-1">
+                <SpellTooltipButton
+                  tooltip={matches ? `${matches} matches` : 'Not linked'}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-500 hover:border-red-400/45 hover:text-neutral-200"
+                >
+                  <span className="font-mono text-[10px] font-semibold">{matches}</span>
+                </SpellTooltipButton>
+                <SpellTooltipButton
+                  tooltip="Open in Game Data"
+                  onClick={() => navigate(`/game-data?spell=${encodeURIComponent(spell.name)}`)}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-400 hover:border-red-400/45 hover:text-neutral-200"
+                >
+                  <ArrowRight size={12} className="shrink-0" />
+                </SpellTooltipButton>
+                <SpellTooltipButton
+                  tooltip="Edit spell"
+                  onClick={() => {
+                    void loadWikiVariants(spell.name)
+                    setShowSpellWiki(false)
+                    setSelectedSpellKey(spellKey)
+                  }}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-400 transition-colors hover:border-red-400/45 hover:text-neutral-200"
+                >
+                  <Pencil size={12} />
+                </SpellTooltipButton>
+              </div>
+            </div>
+            <p className="mt-1 break-words text-xs leading-4 text-neutral-400 [overflow-wrap:anywhere]">
+              {renderSource(displayDescription || 'No English description available.')}
+            </p>
+            {editingSpell === spellKey && descriptionEntry ? (
+              <HighlightedTextarea
+                value={translatedDescription}
+                placeholder="Translation..."
+                onBlur={(event) => session.updateEntry(descriptionEntry.rowId, event.target.value)}
+                rows={3}
+                autoGrow
+                containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
+                className="text-xs leading-4"
+              />
+            ) : translatedDescription ? (
+              <div className="mt-1 flex items-start gap-1 text-xs leading-4 text-neutral-300/90">
+                <CornerDownRight size={12} className="mt-0.5 shrink-0 opacity-70" />
+                <span className="break-words [overflow-wrap:anywhere]">
+                  {renderSourceBase(translatedDescription)}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        </div>
+        {variants.length > 0 && (
+          <div className="mt-3 border-t border-[#1f2329] pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                void loadWikiVariants(spell.name)
+                setExpandedVariants((current) => {
+                  const next = new Set(current)
+                  const key = spell.id ?? spell.name
+                  if (next.has(key)) next.delete(key)
+                  else next.add(key)
+                  return next
+                })
+              }}
+              className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-600 hover:text-amber-200"
+              aria-expanded={variantsOpen}
+            >
+              <ChevronDown
+                size={13}
+                className={`transition-transform ${variantsOpen ? 'rotate-180' : ''}`}
+              />
+              Variations ({variants.length})
+            </button>
+            {variantsOpen && (
+              <div className="min-w-0 space-y-1.5">
+                {variants.map((variant) => {
+                  const variantNameEntry = resolveEntry(
+                    variant.name,
+                    matchingEntries.get(normalize(variant.name)) ?? []
+                  )
+                  const variantDescriptionEntry = resolveEntry(
+                    variant.description,
+                    matchingEntries.get(normalize(variant.description)) ?? []
+                  )
+                  return (
+                    <div
+                      key={variant.name}
+                      className="flex min-w-0 items-start gap-2 overflow-hidden rounded border border-[#2a2f37] bg-[#0f1114] px-2 py-1.5 text-[10px] text-neutral-400"
+                    >
+                      <div className="spell-icon-frame h-7 w-7 shrink-0 overflow-hidden rounded border border-amber-500/20 bg-[#0c0d0f]">
+                        <WikiIcon
+                          name={variant.cleanName}
+                          localIcon={icon}
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="break-words font-medium text-neutral-200 [overflow-wrap:anywhere]">
+                          {variant.cleanName}
+                          {editingSpell === spellKey && variantNameEntry ? (
+                            <input
+                              defaultValue={variant.translated}
+                              placeholder="Translation..."
+                              onBlur={(event) =>
+                                session.updateEntry(variantNameEntry.rowId, event.target.value)
+                              }
+                              className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-1.5 py-1 text-[10px] font-normal text-amber-200 outline-none focus:border-amber-500/60"
+                            />
+                          ) : (
+                            variant.translated && (
+                              <span className="ml-1 font-normal text-neutral-300">
+                                — {variant.translated}
+                              </span>
+                            )
+                          )}
+                        </div>
+                        <div className="mt-0.5 break-words text-neutral-500 [overflow-wrap:anywhere]">
+                          {renderSource(variant.description || 'No English description available.')}
+                        </div>
+                        {editingSpell === spellKey && variantDescriptionEntry ? (
+                          <HighlightedTextarea
+                            value={variant.translatedDescription}
+                            placeholder="Translation..."
+                            onBlur={(event) =>
+                              session.updateEntry(variantDescriptionEntry.rowId, event.target.value)
+                            }
+                            rows={2}
+                            autoGrow
+                            containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
+                            className="px-1.5 text-[10px] leading-4"
+                          />
+                        ) : (
+                          variant.translatedDescription && (
+                            <div className="mt-0.5 text-neutral-300/85">
+                              {renderSourceBase(variant.translatedDescription)}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+        {hasPotentialConditions && (
+          <div className="mt-3 border-t border-[#1f2329] pt-2">
+            <button
+              type="button"
+              onClick={() => (
+                setWikiCatalogRequested(true),
+                loadWikiConditions(spell.name),
+                setExpandedConditions((current) => {
+                  const next = new Set(current)
+                  const key = spell.id ?? spell.name
+                  if (next.has(key)) next.delete(key)
+                  else next.add(key)
+                  return next
+                })
+              )}
+              className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-600 hover:text-amber-200"
+              aria-expanded={conditionsOpen}
+            >
+              <ChevronDown
+                size={13}
+                className={`transition-transform ${conditionsOpen ? 'rotate-180' : ''}`}
+              />
+              Conditions (
+              {loadingWikiConditions.has(spell.name) ||
+              (!wikiConditionsLoaded &&
+                conditions.length === 0 &&
+                (spell.conditions?.length ?? 0) > 0)
+                ? '…'
+                : conditions.length}
+              )
+            </button>
+            {conditionsOpen && (
+              <div className="space-y-1.5">
+                {conditions.map((condition) => {
+                  const conditionNameEntry = resolveEntry(
+                    condition.name,
+                    matchingEntries.get(normalize(condition.name)) ?? []
+                  )
+                  const conditionDescriptionEntry = resolveEntry(
+                    condition.description,
+                    matchingEntries.get(normalize(condition.description)) ?? []
+                  )
+                  return (
+                    <div
+                      key={condition.name}
+                      className="min-w-0 overflow-hidden rounded border border-[#2a2f37] bg-[#0f1114] px-2 py-1.5 text-[10px]"
+                    >
+                      <div className="break-words font-medium text-amber-200 [overflow-wrap:anywhere]">
+                        {condition.name}
+                        {editingSpell === spellKey && conditionNameEntry ? (
+                          <input
+                            defaultValue={condition.translatedName}
+                            onBlur={(event) =>
+                              session.updateEntry(conditionNameEntry.rowId, event.target.value)
+                            }
+                            className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-1.5 py-1 text-[10px] font-normal text-amber-200 outline-none focus:border-amber-500/60"
+                          />
+                        ) : condition.translatedName ? (
+                          <span className="ml-1 font-normal text-neutral-300/85">
+                            — {condition.translatedName}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="mt-0.5 break-words text-neutral-500 [overflow-wrap:anywhere]">
+                        {renderSource(condition.description)}
+                      </div>
+                      {editingSpell === spellKey && conditionDescriptionEntry ? (
+                        <HighlightedTextarea
+                          value={condition.translatedDescription}
+                          placeholder="Translation..."
+                          onBlur={(event) =>
+                            session.updateEntry(conditionDescriptionEntry.rowId, event.target.value)
+                          }
+                          rows={2}
+                          autoGrow
+                          containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
+                          className="px-1.5 text-[10px] leading-4"
+                        />
+                      ) : condition.translatedDescription ? (
+                        <div className="mt-0.5 text-neutral-300/85">
+                          {renderSourceBase(condition.translatedDescription)}
+                        </div>
+                      ) : null}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="mt-auto flex flex-wrap items-center gap-1 border-t border-[#1f2329] pt-3">
+          {[...reviewStatusOptions].map((option) => {
+            const Icon = option.icon
+            return (
+              <SpellTooltipButton
+                key={option.value}
+                tooltip={option.title}
+                onClick={() => setStatus(option.value)}
+                className={`inline-flex h-6 w-6 items-center justify-center rounded border transition-colors ${currentStatus === option.value ? option.active : option.idle}`}
+              >
+                <Icon size={13} />
+              </SpellTooltipButton>
+            )
+          })}
+          <span className="ml-auto inline-flex max-w-full items-center gap-1 rounded border border-amber-500/25 bg-amber-500/8 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">
+            <EntryIcon entry={spell} />
+            <span className="whitespace-nowrap">{entryLabel(spell)}</span>
+          </span>
+        </div>
+      </article>
+    )
+  }
 
   return (
     <>
@@ -956,7 +1904,7 @@ function LoadedSpellsPage({
               ) : (
                 <ChevronsDownUp size={14} />
               )}
-              <span className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/spells-collapse:translate-y-0 group-hover/spells-collapse:opacity-100 group-focus-visible/spells-collapse:translate-y-0 group-focus-visible/spells-collapse:opacity-100">
+              <span className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/spells-collapse:translate-y-0 group-hover/spells-collapse:opacity-100 group-focus-visible/spells-collapse:translate-y-0 group-focus-visible/spells-collapse:opacity-100">
                 {collapsedGroups.size || collapsedLevels.size ? 'Expand all' : 'Collapse all'}
               </span>
             </button>
@@ -988,1071 +1936,116 @@ function LoadedSpellsPage({
             />
           </div>
         </div>
-        <div className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="w-full space-y-7">
-            {grouped.map(([group, spells]) => (
-              <section key={group}>
-                {(() => {
-                  const completed = spells.filter(isEntryComplete).length
-                  return (
-                    <div className="mb-3 flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setCollapsedGroups((current) => {
-                            const next = new Set(current)
-                            if (next.has(group)) next.delete(group)
-                            else next.add(group)
-                            return next
-                          })
-                        }
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-200 hover:text-amber-100"
-                        aria-expanded={!collapsedGroups.has(group)}
-                      >
-                        <ChevronDown
-                          size={14}
-                          className={`transition-transform ${collapsedGroups.has(group) ? '-rotate-90' : ''}`}
-                        />
-                        {kindLabel[group]}
-                      </button>
-                      <span className="rounded-full border border-amber-500/20 bg-amber-500/8 px-2 py-0.5 font-mono text-[10px] text-amber-300">
-                        {spells.length}
-                      </span>
-                      <span className="text-[10px] text-neutral-600">
-                        {completed}/{spells.length} complete
-                      </span>
-                      <div className="h-px flex-1 bg-[#1f2329]" />
-                    </div>
-                  )
-                })()}
-                {!collapsedGroups.has(group) && (
-                  <div
-                    className={
-                      view === 'cards'
-                        ? 'grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
-                        : 'grid grid-cols-1 gap-3'
-                    }
-                  >
-                    {spells.map((spell, index) => {
-                      const description = spell.description
-                      const previous = spells[index - 1]
-                      const levelKey = `${group}:${spell.level || 'other'}`
-                      const showLevelHeader =
-                        group === 'spell' && (index === 0 || previous?.level !== spell.level)
-                      const wikiVariants = wikiSpellVariants[spell.name]
-                      const normalizedSpellName = normalize(spell.name)
-                      const fallbackVariants = variantsBySpellName.get(normalizedSpellName) ?? []
-                      const variantSources = (
-                        fallbackVariants.length > 0 ? fallbackVariants : (wikiVariants ?? [])
-                      ) as Array<GameEntry | WikiVariant>
-                      const variants = variantSources.map((entry) => ({
-                        ...entry,
-                        cleanName: entry.name.replace(/\*+$/, ''),
-                        translated:
-                          matchingEntries
-                            .get(normalize(entry.name))
-                            ?.find((item) => item.target.trim())?.target ?? '',
-                        translatedDescription:
-                          matchingEntries
-                            .get(normalize(entry.description))
-                            ?.find((item) => item.target.trim())?.target ?? ''
-                      }))
-                      const conditionTokens = [
-                        ...[
-                          ...description.matchAll(
-                            /<lstag\b[^>]*tooltip=["']([^"']+)["'][^>]*>([\s\S]*?)<\/lstag>/gi
-                          )
-                        ].map((match) => ({
-                          token: match[1],
-                          label: match[2].replace(/<[^>]*>/g, '').trim()
-                        })),
-                        ...(spell.conditions ?? [])
-                          .filter((token) => statusIndex.byToken.has(normalize(token)))
-                          .map((token) => ({ token, label: token })),
-                        ...(wikiConditions[spell.name] ?? []).map((token) => ({
-                          token,
-                          label: token
-                        }))
-                      ].filter(
-                        ({ token, label }) =>
-                          label !== token ||
-                          statusIndex.byName.has(normalize(label)) ||
-                          statusIndex.byToken.has(normalize(token))
-                      )
-                      const wikiConditionsLoaded = Object.prototype.hasOwnProperty.call(
-                        wikiConditions,
-                        spell.name
-                      )
-                      const conditions = conditionTokens
-                        .map(({ token, label }) => {
-                          const status =
-                            statusIndex.byName.get(normalize(label)) ??
-                            statusIndex.byName.get(normalize(token)) ??
-                            statusIndex.byToken.get(normalize(token))
-                          if (status && /%%%/.test(status.name + status.description)) return null
-                          const resolvedStatus =
-                            status ??
-                            ({
-                              name: label || token,
-                              description: '',
-                              category: 'Status' as const,
-                              id: token,
-                              conditions: [],
-                              hasUnresolvedFields: true
-                            } satisfies GameEntry)
-                          const statusNameMatches =
-                            matchingEntries.get(normalize(resolvedStatus.name)) ?? []
-                          const statusDescriptionMatches =
-                            matchingEntries.get(normalize(resolvedStatus.description)) ?? []
-                          return {
-                            ...resolvedStatus,
-                            translatedName:
-                              statusNameMatches.find((entry) => entry.target.trim())?.target ?? '',
-                            translatedDescription:
-                              statusDescriptionMatches.find((entry) => entry.target.trim())
-                                ?.target ?? ''
+        <div
+          className={`spells-workbench min-h-0 flex-1 ${selectedSpell ? 'spells-workbench-editing' : ''}`}
+        >
+          <div className="spells-catalog polyhedron-scroll min-h-0 overflow-y-auto p-4 sm:p-6">
+            <div className="w-full space-y-7">
+              {grouped.map(([group, spells]) => (
+                <section key={group}>
+                  {(() => {
+                    const completed = spells.filter(isEntryComplete).length
+                    return (
+                      <div className="mb-3 flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCollapsedGroups((current) => {
+                              const next = new Set(current)
+                              if (next.has(group)) next.delete(group)
+                              else next.add(group)
+                              return next
+                            })
                           }
-                        })
-                        .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-                        .filter(
-                          (entry, index, all) =>
-                            all.findIndex(
-                              (item) => normalize(item.name) === normalize(entry.name)
-                            ) === index
-                        )
-                      const hasResolvableGameCondition = (spell.conditions ?? []).some((token) =>
-                        statusIndex.byToken.has(normalize(token))
-                      )
-                      const hasPotentialConditions =
-                        conditions.length > 0 ||
-                        (!wikiConditionsLoaded && hasResolvableGameCondition)
-                      const nameMatches = matchingEntries.get(normalize(spell.name)) ?? []
-                      const descriptionMatches = matchingEntries.get(normalize(description)) ?? []
-                      const resolveEntry = (source: string, matches: typeof session.entries) =>
-                        matches[0] ??
-                        session.entries.find((entry) => {
-                          const candidate = normalize(entry.source)
-                          const target = normalize(source)
-                          return (
-                            candidate === target ||
-                            candidate.includes(target) ||
-                            target.includes(candidate)
-                          )
-                        })
-                      const nameEntry = resolveEntry(spell.name, nameMatches)
-                      const descriptionEntry = resolveEntry(description, descriptionMatches)
-                      const rawDescriptionSource = descriptionEntry?.source ?? description
-                      const wikiDescription = wikiSpellDescriptions[spell.name]
-                      const displayDescription = isMarkupOnlyDescription(rawDescriptionSource)
-                        ? wikiDescription || description
-                        : rawDescriptionSource
-                      const descriptionSourceLabel =
-                        isMarkupOnlyDescription(rawDescriptionSource) && wikiDescription
-                          ? 'Description · Wiki · EN'
-                          : 'Description · Source · EN'
-                      const translatedName =
-                        nameMatches.find((entry) => entry.target.trim())?.target ??
-                        nameEntry?.target ??
-                        ''
-                      const translatedDescription =
-                        descriptionMatches.find((entry) => entry.target.trim())?.target ??
-                        descriptionEntry?.target ??
-                        ''
-                      const isTranslated =
-                        translatedName.trim() !== '' && translatedDescription.trim() !== ''
-                      const currentStatus =
-                        nameEntry?.reviewStatus ??
-                        descriptionEntry?.reviewStatus ??
-                        (isTranslated ? 'verified' : 'untranslated')
-                      const setStatus = (status: ReviewStatus) => {
-                        if (nameEntry) session.setReviewStatus(nameEntry.rowId, status)
-                        if (descriptionEntry && descriptionEntry.rowId !== nameEntry?.rowId) {
-                          session.setReviewStatus(descriptionEntry.rowId, status)
-                        }
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-200 hover:text-amber-100"
+                          aria-expanded={!collapsedGroups.has(group)}
+                        >
+                          <ChevronDown
+                            size={14}
+                            className={`transition-transform ${collapsedGroups.has(group) ? '-rotate-90' : ''}`}
+                          />
+                          {kindLabel[group]}
+                        </button>
+                        <span className="rounded-full border border-amber-500/20 bg-amber-500/8 px-2 py-0.5 font-mono text-[10px] text-amber-300">
+                          {spells.length}
+                        </span>
+                        <span className="text-[10px] text-neutral-600">
+                          {completed}/{spells.length} complete
+                        </span>
+                        <div className="h-px flex-1 bg-[#1f2329]" />
+                      </div>
+                    )
+                  })()}
+                  {!collapsedGroups.has(group) && (
+                    <div
+                      className={
+                        view === 'cards'
+                          ? selectedSpell
+                            ? 'spells-card-grid grid grid-cols-1 gap-3 sm:grid-cols-2'
+                            : 'spells-card-grid grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+                          : 'grid grid-cols-1 gap-3'
                       }
-                      const matches = nameMatches.length
-                      const variantsOpen = expandedVariants.has(spell.id ?? spell.name)
-                      const conditionsOpen = expandedConditions.has(spell.id ?? spell.name)
-                      const icon = iconByName.get(normalize(spell.name))
-                      const spellKey = spell.id ?? spell.name
-                      return (
-                        <Fragment key={`${spell.id}-${spell.name}`}>
-                          {showLevelHeader && (
-                            <div className="col-span-full flex items-center gap-3 pt-2 first:pt-0">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setCollapsedLevels((current) => {
-                                    const next = new Set(current)
-                                    if (next.has(levelKey)) next.delete(levelKey)
-                                    else next.add(levelKey)
-                                    return next
-                                  })
-                                }
-                                className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 hover:text-amber-100"
-                                aria-expanded={!collapsedLevels.has(levelKey)}
-                              >
-                                <ChevronDown
-                                  size={13}
-                                  className={`transition-transform ${collapsedLevels.has(levelKey) ? '-rotate-90' : ''}`}
-                                />
-                                {spellLevelLabel(spell)}
-                              </button>
-                              <span className="rounded-full border border-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] text-amber-300/80">
-                                {levelStats.get(levelKey)?.total ?? 0}
-                              </span>
-                              <span className="text-[10px] text-neutral-600">
-                                {levelStats.get(levelKey)?.completed ?? 0}/
-                                {levelStats.get(levelKey)?.total ?? 0} complete
-                              </span>
-                              <div className="h-px flex-1 bg-amber-500/15" />
-                            </div>
-                          )}
-                          {!collapsedLevels.has(levelKey) && (
-                            <article
-                              style={isTranslated ? { borderColor: '#34d399' } : undefined}
-                              className={`spell-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-xl border p-3 transition-colors ${isTranslated ? 'spell-card-complete' : 'border-[#252a31] bg-[#131518] hover:border-amber-500/35'}`}
-                            >
-                              <div className="flex min-w-0 gap-3">
-                                <div className="shrink-0">
-                                  <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-amber-500/25 bg-[#0c0d0f]">
-                                    <WikiIcon
-                                      name={spell.name}
-                                      localIcon={icon}
-                                      className="h-full w-full object-contain"
-                                    />
-                                    {isTranslated && (
-                                      <CircleCheck
-                                        size={16}
-                                        strokeWidth={2.5}
-                                        className="absolute left-1 top-1 z-10 rounded-full bg-[#10151a] text-emerald-400 drop-shadow-[0_0_4px_rgba(52,211,153,0.65)]"
-                                        aria-label="Complete"
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex min-w-0 flex-wrap items-start justify-between gap-2">
-                                    <div className="min-w-0 flex-1">
-                                      <h3 className="break-words text-sm font-semibold text-neutral-100 [overflow-wrap:anywhere]">
-                                        {renderSource(nameEntry?.source ?? spell.name)}
-                                      </h3>
-                                      {editingSpell === spellKey && nameEntry ? (
-                                        <input
-                                          defaultValue={translatedName}
-                                          placeholder="Translation..."
-                                          onBlur={(event) =>
-                                            session.updateEntry(nameEntry.rowId, event.target.value)
-                                          }
-                                          className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-2 py-1 text-xs font-normal text-amber-200 outline-none focus:border-amber-500/60"
-                                        />
-                                      ) : translatedName ? (
-                                        <div className="mt-0.5 flex items-center gap-1 text-xs font-normal text-neutral-300">
-                                          <CornerDownRight
-                                            size={12}
-                                            className="shrink-0 opacity-70"
-                                          />
-                                          <span className="break-words [overflow-wrap:anywhere]">
-                                            {translatedName}
-                                          </span>
-                                        </div>
-                                      ) : null}
-                                    </div>
-                                    <div className="flex max-w-full shrink-0 items-start gap-1">
-                                      <button
-                                        type="button"
-                                        title={matches ? `${matches} matches` : 'Not linked'}
-                                        aria-label={matches ? `${matches} matches` : 'Not linked'}
-                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-500 hover:border-red-400/45 hover:text-neutral-200"
-                                      >
-                                        <span className="font-mono text-[10px] font-semibold">
-                                          {matches}
-                                        </span>
-                                      </button>
-                                      <button
-                                        type="button"
-                                        title="Open in Game Data"
-                                        aria-label="Open in Game Data"
-                                        onClick={() =>
-                                          navigate(
-                                            `/game-data?spell=${encodeURIComponent(spell.name)}`
-                                          )
-                                        }
-                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-400 hover:border-red-400/45 hover:text-neutral-200"
-                                      >
-                                        <ArrowRight size={12} className="shrink-0" />
-                                      </button>
-                                      <button
-                                        type="button"
-                                        title="Edit spell"
-                                        aria-label="Edit spell"
-                                        onClick={() => {
-                                          void loadWikiVariants(spell.name)
-                                          setEditDialogSpell(spellKey)
-                                        }}
-                                        className="inline-flex h-6 w-6 items-center justify-center rounded border border-[#2a2f37] text-neutral-400 transition-colors hover:border-red-400/45 hover:text-neutral-200"
-                                      >
-                                        <Pencil size={12} />
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <p className="mt-1 break-words text-xs leading-4 text-neutral-400 [overflow-wrap:anywhere]">
-                                    {renderSource(
-                                      displayDescription || 'No English description available.'
-                                    )}
-                                  </p>
-                                  {editingSpell === spellKey && descriptionEntry ? (
-                                    <HighlightedTextarea
-                                      value={translatedDescription}
-                                      placeholder="Translation..."
-                                      onBlur={(event) =>
-                                        session.updateEntry(
-                                          descriptionEntry.rowId,
-                                          event.target.value
-                                        )
-                                      }
-                                      rows={3}
-                                      autoGrow
-                                      containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
-                                      className="text-xs leading-4"
-                                    />
-                                  ) : translatedDescription ? (
-                                    <div className="mt-1 flex items-start gap-1 text-xs leading-4 text-neutral-300/90">
-                                      <CornerDownRight
-                                        size={12}
-                                        className="mt-0.5 shrink-0 opacity-70"
-                                      />
-                                      <span className="break-words [overflow-wrap:anywhere]">
-                                        {renderSource(translatedDescription)}
-                                      </span>
-                                    </div>
-                                  ) : null}
-                                </div>
-                              </div>
-                              {variants.length > 0 && (
-                                <div className="mt-3 border-t border-[#1f2329] pt-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      void loadWikiVariants(spell.name)
-                                      setExpandedVariants((current) => {
-                                        const next = new Set(current)
-                                        const key = spell.id ?? spell.name
-                                        if (next.has(key)) next.delete(key)
-                                        else next.add(key)
-                                        return next
-                                      })
-                                    }}
-                                    className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-600 hover:text-amber-200"
-                                    aria-expanded={variantsOpen}
-                                  >
-                                    <ChevronDown
-                                      size={13}
-                                      className={`transition-transform ${variantsOpen ? 'rotate-180' : ''}`}
-                                    />
-                                    Variations ({variants.length})
-                                  </button>
-                                  {variantsOpen && (
-                                    <div className="min-w-0 space-y-1.5">
-                                      {variants.map((variant) => {
-                                        const variantNameEntry = resolveEntry(
-                                          variant.name,
-                                          matchingEntries.get(normalize(variant.name)) ?? []
-                                        )
-                                        const variantDescriptionEntry = resolveEntry(
-                                          variant.description,
-                                          matchingEntries.get(normalize(variant.description)) ?? []
-                                        )
-                                        return (
-                                          <div
-                                            key={variant.name}
-                                            className="flex min-w-0 items-start gap-2 overflow-hidden rounded border border-[#2a2f37] bg-[#0f1114] px-2 py-1.5 text-[10px] text-neutral-400"
-                                          >
-                                            <div className="h-7 w-7 shrink-0 overflow-hidden rounded border border-amber-500/20 bg-[#0c0d0f]">
-                                              <WikiIcon
-                                                name={variant.cleanName}
-                                                localIcon={icon}
-                                                className="h-full w-full object-contain"
-                                              />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                              <div className="break-words font-medium text-neutral-200 [overflow-wrap:anywhere]">
-                                                {variant.cleanName}
-                                                {editingSpell === spellKey && variantNameEntry ? (
-                                                  <input
-                                                    defaultValue={variant.translated}
-                                                    placeholder="Translation..."
-                                                    onBlur={(event) =>
-                                                      session.updateEntry(
-                                                        variantNameEntry.rowId,
-                                                        event.target.value
-                                                      )
-                                                    }
-                                                    className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-1.5 py-1 text-[10px] font-normal text-amber-200 outline-none focus:border-amber-500/60"
-                                                  />
-                                                ) : (
-                                                  variant.translated && (
-                                                    <span className="ml-1 font-normal text-neutral-300">
-                                                      — {variant.translated}
-                                                    </span>
-                                                  )
-                                                )}
-                                              </div>
-                                              <div className="mt-0.5 break-words text-neutral-500 [overflow-wrap:anywhere]">
-                                                {renderSource(
-                                                  variant.description ||
-                                                    'No English description available.'
-                                                )}
-                                              </div>
-                                              {editingSpell === spellKey &&
-                                              variantDescriptionEntry ? (
-                                                <HighlightedTextarea
-                                                  value={variant.translatedDescription}
-                                                  placeholder="Translation..."
-                                                  onBlur={(event) =>
-                                                    session.updateEntry(
-                                                      variantDescriptionEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  rows={2}
-                                                  autoGrow
-                                                  containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
-                                                  className="px-1.5 text-[10px] leading-4"
-                                                />
-                                              ) : (
-                                                variant.translatedDescription && (
-                                                  <div className="mt-0.5 text-neutral-300/85">
-                                                    {renderSource(variant.translatedDescription)}
-                                                  </div>
-                                                )
-                                              )}
-                                            </div>
-                                          </div>
-                                        )
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              {hasPotentialConditions && (
-                                <div className="mt-3 border-t border-[#1f2329] pt-2">
-                                  <button
-                                    type="button"
-                                    onClick={() => (
-                                      setWikiCatalogRequested(true),
-                                      loadWikiConditions(spell.name),
-                                      setExpandedConditions((current) => {
-                                        const next = new Set(current)
-                                        const key = spell.id ?? spell.name
-                                        if (next.has(key)) next.delete(key)
-                                        else next.add(key)
-                                        return next
-                                      })
-                                    )}
-                                    className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-neutral-600 hover:text-amber-200"
-                                    aria-expanded={conditionsOpen}
-                                  >
-                                    <ChevronDown
-                                      size={13}
-                                      className={`transition-transform ${conditionsOpen ? 'rotate-180' : ''}`}
-                                    />
-                                    Conditions (
-                                    {loadingWikiConditions.has(spell.name) ||
-                                    (!wikiConditionsLoaded &&
-                                      conditions.length === 0 &&
-                                      (spell.conditions?.length ?? 0) > 0)
-                                      ? '…'
-                                      : conditions.length}
-                                    )
-                                  </button>
-                                  {conditionsOpen && (
-                                    <div className="space-y-1.5">
-                                      {conditions.map((condition) => {
-                                        const conditionNameEntry = resolveEntry(
-                                          condition.name,
-                                          matchingEntries.get(normalize(condition.name)) ?? []
-                                        )
-                                        const conditionDescriptionEntry = resolveEntry(
-                                          condition.description,
-                                          matchingEntries.get(normalize(condition.description)) ??
-                                            []
-                                        )
-                                        return (
-                                          <div
-                                            key={condition.name}
-                                            className="min-w-0 overflow-hidden rounded border border-[#2a2f37] bg-[#0f1114] px-2 py-1.5 text-[10px]"
-                                          >
-                                            <div className="break-words font-medium text-amber-200 [overflow-wrap:anywhere]">
-                                              {condition.name}
-                                              {editingSpell === spellKey && conditionNameEntry ? (
-                                                <input
-                                                  defaultValue={condition.translatedName}
-                                                  onBlur={(event) =>
-                                                    session.updateEntry(
-                                                      conditionNameEntry.rowId,
-                                                      event.target.value
-                                                    )
-                                                  }
-                                                  className="mt-1 block w-full rounded border border-amber-500/25 bg-[#0c0d0f] px-1.5 py-1 text-[10px] font-normal text-amber-200 outline-none focus:border-amber-500/60"
-                                                />
-                                              ) : condition.translatedName ? (
-                                                <span className="ml-1 font-normal text-neutral-300/85">
-                                                  — {condition.translatedName}
-                                                </span>
-                                              ) : null}
-                                            </div>
-                                            <div className="mt-0.5 break-words text-neutral-500 [overflow-wrap:anywhere]">
-                                              {renderSource(condition.description)}
-                                            </div>
-                                            {editingSpell === spellKey &&
-                                            conditionDescriptionEntry ? (
-                                              <HighlightedTextarea
-                                                value={condition.translatedDescription}
-                                                placeholder="Translation..."
-                                                onBlur={(event) =>
-                                                  session.updateEntry(
-                                                    conditionDescriptionEntry.rowId,
-                                                    event.target.value
-                                                  )
-                                                }
-                                                rows={2}
-                                                autoGrow
-                                                containerClassName="mt-1 border-[#2a2f37] bg-[#0c0d0f] spells-edit-translation"
-                                                className="px-1.5 text-[10px] leading-4"
-                                              />
-                                            ) : condition.translatedDescription ? (
-                                              <div className="mt-0.5 text-neutral-300/85">
-                                                {renderSource(condition.translatedDescription)}
-                                              </div>
-                                            ) : null}
-                                          </div>
-                                        )
-                                      })}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                              <div className="mt-auto flex flex-wrap items-center gap-1 border-t border-[#1f2329] pt-3">
-                                {[...reviewStatusOptions].map((option) => {
-                                  const Icon = option.icon
-                                  return (
-                                    <SpellTooltipButton
-                                      key={option.value}
-                                      tooltip={option.title}
-                                      onClick={() => setStatus(option.value)}
-                                      className={`inline-flex h-6 w-6 items-center justify-center rounded border transition-colors ${currentStatus === option.value ? option.active : option.idle}`}
-                                    >
-                                      <Icon size={13} />
-                                    </SpellTooltipButton>
-                                  )
-                                })}
-                                <span
-                                  title={entryLabel(spell)}
-                                  className="ml-auto inline-flex max-w-full items-center gap-1 rounded border border-amber-500/25 bg-amber-500/8 px-1.5 py-0.5 text-[10px] font-medium text-amber-300"
+                    >
+                      {spells.map((spell, index) => {
+                        const previous = spells[index - 1]
+                        const levelKey = `${group}:${spell.level || 'other'}`
+                        const showLevelHeader =
+                          group === 'spell' && (index === 0 || previous?.level !== spell.level)
+                        return (
+                          <Fragment key={`${spell.id}-${spell.name}`}>
+                            {showLevelHeader && (
+                              <div className="col-span-full flex items-center gap-3 pt-2 first:pt-0">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setCollapsedLevels((current) => {
+                                      const next = new Set(current)
+                                      if (next.has(levelKey)) next.delete(levelKey)
+                                      else next.add(levelKey)
+                                      return next
+                                    })
+                                  }
+                                  className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 hover:text-amber-100"
+                                  aria-expanded={!collapsedLevels.has(levelKey)}
                                 >
-                                  <EntryIcon entry={spell} />
-                                  <span className="whitespace-nowrap">{entryLabel(spell)}</span>
+                                  <ChevronDown
+                                    size={13}
+                                    className={`transition-transform ${collapsedLevels.has(levelKey) ? '-rotate-90' : ''}`}
+                                  />
+                                  {spellLevelLabel(spell)}
+                                </button>
+                                <span className="rounded-full border border-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] text-amber-300/80">
+                                  {levelStats.get(levelKey)?.total ?? 0}
                                 </span>
+                                <span className="text-[10px] text-neutral-600">
+                                  {levelStats.get(levelKey)?.completed ?? 0}/
+                                  {levelStats.get(levelKey)?.total ?? 0} complete
+                                </span>
+                                <div className="h-px flex-1 bg-amber-500/15" />
                               </div>
-                              {editDialogSpell === spellKey &&
-                                createPortal(
-                                  <div
-                                    className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-                                    onMouseDown={(event) => {
-                                      if (event.target === event.currentTarget)
-                                        setEditDialogSpell(null)
-                                    }}
-                                  >
-                                    <div
-                                      role="dialog"
-                                      aria-modal="true"
-                                      aria-label={`${spell.name} translation editor`}
-                                      className="spells-edit-dialog relative flex min-h-[60vh] max-h-[90vh] w-[80vw] max-w-[80vw] flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]"
-                                    >
-                                      <div className="flex items-center gap-3 border-b border-[#2a2f37] px-4 py-3">
-                                        <div className="flex min-w-0 items-center gap-2.5">
-                                          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-black/25">
-                                            <WikiIcon
-                                              name={spell.name}
-                                              localIcon={icon}
-                                              className="h-full w-full object-contain"
-                                            />
-                                          </div>
-                                          <h2 className="truncate text-base font-semibold text-neutral-100">
-                                            {spell.name}
-                                          </h2>
-                                        </div>
-                                        <div className="ml-auto flex shrink-0 items-center gap-2">
-                                          <button
-                                            type="button"
-                                            onClick={() => setShowSpellUid((current) => !current)}
-                                            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellUid ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
-                                          >
-                                            <Hash size={13} /> UID
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => {
-                                              setShowSpellSuggestions((current) => !current)
-                                              loadSpellSuggestions()
-                                            }}
-                                            className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-colors ${showSpellSuggestions ? 'border-red-400/50 bg-red-500/10 text-red-200' : 'border-[#2a2f37] text-neutral-400 hover:text-neutral-100'}`}
-                                          >
-                                            <Lightbulb size={13} />
-                                            {spellSuggestionsLoading ? 'Loading…' : 'Suggestions'}
-                                          </button>
-                                          <button
-                                            type="button"
-                                            onClick={() => setEditDialogSpell(null)}
-                                            className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200 hover:bg-red-500/20"
-                                          >
-                                            Done
-                                          </button>
-                                          <button
-                                            type="button"
-                                            title="Close (Esc)"
-                                            aria-label="Close edit dialog"
-                                            onClick={() => setEditDialogSpell(null)}
-                                            className="cursor-pointer rounded-lg border border-[#34343e] p-2 text-neutral-400 transition hover:text-white"
-                                          >
-                                            <X size={18} />
-                                          </button>
-                                        </div>
-                                      </div>
-                                      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[minmax(0,55fr)_minmax(0,35fr)]">
-                                        <div className="min-h-[240px] border-b border-[#2a2f37] bg-black/20 lg:min-h-0 lg:border-b-0 lg:border-r">
-                                          <StyledWebview
-                                            title={`${spell.name} on BG3 Wiki`}
-                                            src={`https://bg3.wiki/wiki/${encodeURIComponent(spell.name.replace(/\s+/g, '_'))}`}
-                                            allowpopups
-                                            className="h-full min-h-[240px] w-full border-0 lg:min-h-0"
-                                            style={{
-                                              height: '100%',
-                                              width: '100%',
-                                              display: 'flex'
-                                            }}
-                                          />
-                                        </div>
-                                        <div className="min-h-0 space-y-3 overflow-y-auto p-5">
-                                          <section className="space-y-2">
-                                            <div className="space-y-1.5">
-                                              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                Title · Source · EN
-                                              </span>
-                                              <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-200">
-                                                {nameEntry?.source ?? spell.name}
-                                                {showSpellUid && nameEntry?.uid && (
-                                                  <span className="ml-2 text-[10px] text-neutral-500">
-                                                    {nameEntry.uid}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </div>
-                                            <label className="block space-y-2">
-                                              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                Title · Translation · RO
-                                              </span>
-                                              <input
-                                                defaultValue={translatedName}
-                                                placeholder="Translation..."
-                                                disabled={!nameEntry}
-                                                onBlur={(event) =>
-                                                  nameEntry &&
-                                                  session.updateEntry(
-                                                    nameEntry.rowId,
-                                                    event.target.value
-                                                  )
-                                                }
-                                                className="block w-full rounded-lg border border-[#2a2f37] bg-[#0c0d0f] px-3 py-2 text-sm text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                              />
-                                              {showSpellSuggestions &&
-                                                nameEntry?.uid &&
-                                                spellSuggestions[nameEntry.uid] && (
-                                                  <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                    {[
-                                                      spellSuggestions[nameEntry.uid].one,
-                                                      spellSuggestions[nameEntry.uid].two
-                                                    ]
-                                                      .filter(Boolean)
-                                                      .map((suggestion, index) => (
-                                                        <div
-                                                          key={`${nameEntry.uid}-title-suggestion-${index}`}
-                                                        >
-                                                          {renderSource(suggestion)}
-                                                        </div>
-                                                      ))}
-                                                  </div>
-                                                )}
-                                            </label>
-                                          </section>
-                                          <section className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                            <div className="space-y-1.5">
-                                              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                {descriptionSourceLabel}
-                                              </span>
-                                              <div className="spells-edit-source translation-source-text text-sm leading-5 text-neutral-300">
-                                                {renderSource(
-                                                  displayDescription ||
-                                                    'No English description available.'
-                                                )}
-                                                {showSpellUid && descriptionEntry?.uid && (
-                                                  <span className="ml-2 text-[10px] text-neutral-500">
-                                                    {descriptionEntry.uid}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </div>
-                                            <label className="block space-y-2">
-                                              <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                Description · Translation · RO
-                                              </span>
-                                              <HighlightedTextarea
-                                                value={translatedDescription}
-                                                placeholder="Translation..."
-                                                onBlur={(event) =>
-                                                  descriptionEntry &&
-                                                  session.updateEntry(
-                                                    descriptionEntry.rowId,
-                                                    event.target.value
-                                                  )
-                                                }
-                                                rows={1}
-                                                autoGrow
-                                                containerClassName="spells-edit-translation border-[#2a2f37] bg-[#0c0d0f]"
-                                                className="text-sm leading-5 !text-neutral-200"
-                                              />
-                                              {showSpellSuggestions &&
-                                                descriptionEntry?.uid &&
-                                                spellSuggestions[descriptionEntry.uid] && (
-                                                  <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                    {[
-                                                      spellSuggestions[descriptionEntry.uid].one,
-                                                      spellSuggestions[descriptionEntry.uid].two
-                                                    ]
-                                                      .filter(Boolean)
-                                                      .map((suggestion, index) => (
-                                                        <div
-                                                          key={`${descriptionEntry.uid}-description-suggestion-${index}`}
-                                                        >
-                                                          {renderSource(suggestion)}
-                                                        </div>
-                                                      ))}
-                                                  </div>
-                                                )}
-                                            </label>
-                                          </section>
-                                          {variants.length > 0 && (
-                                            <div className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                                Variations
-                                              </h3>
-                                              {variants.map((variant) => {
-                                                const variantNameEntry = resolveEntry(
-                                                  variant.name,
-                                                  matchingEntries.get(normalize(variant.name)) ?? []
-                                                )
-                                                const variantDescriptionEntry = resolveEntry(
-                                                  variant.description,
-                                                  matchingEntries.get(
-                                                    normalize(variant.description)
-                                                  ) ?? []
-                                                )
-                                                return (
-                                                  <div
-                                                    key={variant.name}
-                                                    className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
-                                                  >
-                                                    <div className="space-y-1">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Title · Source · EN
-                                                      </span>
-                                                      <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
-                                                        {renderSource(
-                                                          variantNameEntry?.source ??
-                                                            variant.cleanName
-                                                        )}
-                                                        {showSpellUid && variantNameEntry?.uid && (
-                                                          <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                            {variantNameEntry.uid}
-                                                          </span>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                    <label className="block space-y-2">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Title · Translation · RO
-                                                      </span>
-                                                      <input
-                                                        defaultValue={variant.translated}
-                                                        placeholder="Translation..."
-                                                        disabled={!variantNameEntry}
-                                                        onBlur={(event) =>
-                                                          variantNameEntry &&
-                                                          session.updateEntry(
-                                                            variantNameEntry.rowId,
-                                                            event.target.value
-                                                          )
-                                                        }
-                                                        className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                                      />
-                                                      {showSpellSuggestions &&
-                                                        variantNameEntry?.uid &&
-                                                        spellSuggestions[variantNameEntry.uid] && (
-                                                          <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                            {[
-                                                              spellSuggestions[variantNameEntry.uid]
-                                                                .one,
-                                                              spellSuggestions[variantNameEntry.uid]
-                                                                .two
-                                                            ]
-                                                              .filter(Boolean)
-                                                              .map((suggestion, index) => (
-                                                                <div
-                                                                  key={`${variantNameEntry.uid}-title-suggestion-${index}`}
-                                                                >
-                                                                  {renderSource(suggestion)}
-                                                                </div>
-                                                              ))}
-                                                          </div>
-                                                        )}
-                                                    </label>
-                                                    <div className="space-y-1">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Description · Source · EN
-                                                      </span>
-                                                      <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
-                                                        {renderSource(
-                                                          variantDescriptionEntry?.source ??
-                                                            (variant.description ||
-                                                              'No English description available.')
-                                                        )}
-                                                        {showSpellUid &&
-                                                          variantDescriptionEntry?.uid && (
-                                                            <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                              {variantDescriptionEntry.uid}
-                                                            </span>
-                                                          )}
-                                                      </div>
-                                                    </div>
-                                                    <label className="block space-y-2">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Description · Translation · RO
-                                                      </span>
-                                                      <HighlightedTextarea
-                                                        value={variant.translatedDescription}
-                                                        placeholder="Translation..."
-                                                        onBlur={(event) =>
-                                                          variantDescriptionEntry &&
-                                                          session.updateEntry(
-                                                            variantDescriptionEntry.rowId,
-                                                            event.target.value
-                                                          )
-                                                        }
-                                                        rows={1}
-                                                        autoGrow
-                                                        containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
-                                                        className="text-xs leading-4 !text-neutral-200"
-                                                      />
-                                                      {showSpellSuggestions &&
-                                                        variantDescriptionEntry?.uid &&
-                                                        spellSuggestions[
-                                                          variantDescriptionEntry.uid
-                                                        ] && (
-                                                          <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                            {[
-                                                              spellSuggestions[
-                                                                variantDescriptionEntry.uid
-                                                              ].one,
-                                                              spellSuggestions[
-                                                                variantDescriptionEntry.uid
-                                                              ].two
-                                                            ]
-                                                              .filter(Boolean)
-                                                              .map((suggestion, index) => (
-                                                                <div
-                                                                  key={`${variantDescriptionEntry.uid}-description-suggestion-${index}`}
-                                                                >
-                                                                  {renderSource(suggestion)}
-                                                                </div>
-                                                              ))}
-                                                          </div>
-                                                        )}
-                                                    </label>
-                                                  </div>
-                                                )
-                                              })}
-                                            </div>
-                                          )}
-                                          {conditions.length > 0 && (
-                                            <div className="space-y-2 border-t border-[#2a2f37] pt-3">
-                                              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                                                Conditions
-                                              </h3>
-                                              {conditions.map((condition) => {
-                                                const conditionNameEntry = resolveEntry(
-                                                  condition.name,
-                                                  matchingEntries.get(normalize(condition.name)) ??
-                                                    []
-                                                )
-                                                const conditionDescriptionEntry = resolveEntry(
-                                                  condition.description,
-                                                  matchingEntries.get(
-                                                    normalize(condition.description)
-                                                  ) ?? []
-                                                )
-                                                return (
-                                                  <div
-                                                    key={condition.name}
-                                                    className="space-y-2 rounded-lg border border-[#2a2f37] bg-[#0c0d0f] p-2.5"
-                                                  >
-                                                    <div className="space-y-1">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Title · Source · EN
-                                                      </span>
-                                                      <div className="spells-edit-source translation-source-text text-xs font-medium text-neutral-200">
-                                                        {renderSource(
-                                                          conditionNameEntry?.source ??
-                                                            condition.name
-                                                        )}
-                                                        {showSpellUid &&
-                                                          conditionNameEntry?.uid && (
-                                                            <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                              {conditionNameEntry.uid}
-                                                            </span>
-                                                          )}
-                                                      </div>
-                                                    </div>
-                                                    <label className="block space-y-2">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Title · Translation · RO
-                                                      </span>
-                                                      <input
-                                                        defaultValue={condition.translatedName}
-                                                        placeholder="Translation..."
-                                                        disabled={!conditionNameEntry}
-                                                        onBlur={(event) =>
-                                                          conditionNameEntry &&
-                                                          session.updateEntry(
-                                                            conditionNameEntry.rowId,
-                                                            event.target.value
-                                                          )
-                                                        }
-                                                        className="block w-full rounded border border-[#2a2f37] bg-[#11151b] px-2 py-1.5 text-xs text-neutral-200 outline-none focus:border-red-400/60 disabled:cursor-not-allowed disabled:opacity-50"
-                                                      />
-                                                      {showSpellSuggestions &&
-                                                        conditionNameEntry?.uid &&
-                                                        spellSuggestions[
-                                                          conditionNameEntry.uid
-                                                        ] && (
-                                                          <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                            {[
-                                                              spellSuggestions[
-                                                                conditionNameEntry.uid
-                                                              ].one,
-                                                              spellSuggestions[
-                                                                conditionNameEntry.uid
-                                                              ].two
-                                                            ]
-                                                              .filter(Boolean)
-                                                              .map((suggestion, index) => (
-                                                                <div
-                                                                  key={`${conditionNameEntry.uid}-title-suggestion-${index}`}
-                                                                >
-                                                                  {renderSource(suggestion)}
-                                                                </div>
-                                                              ))}
-                                                          </div>
-                                                        )}
-                                                    </label>
-                                                    <div className="space-y-1">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Description · Source · EN
-                                                      </span>
-                                                      <div className="spells-edit-source translation-source-text text-xs font-medium leading-5 text-neutral-200">
-                                                        {renderSource(
-                                                          conditionDescriptionEntry?.source ??
-                                                            (condition.description ||
-                                                              'No English description available.')
-                                                        )}
-                                                        {showSpellUid &&
-                                                          conditionDescriptionEntry?.uid && (
-                                                            <span className="ml-2 text-[10px] font-normal text-neutral-500">
-                                                              {conditionDescriptionEntry.uid}
-                                                            </span>
-                                                          )}
-                                                      </div>
-                                                    </div>
-                                                    <label className="block space-y-2">
-                                                      <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                                                        Description · Translation · RO
-                                                      </span>
-                                                      <HighlightedTextarea
-                                                        value={condition.translatedDescription}
-                                                        placeholder="Translation..."
-                                                        onBlur={(event) =>
-                                                          conditionDescriptionEntry &&
-                                                          session.updateEntry(
-                                                            conditionDescriptionEntry.rowId,
-                                                            event.target.value
-                                                          )
-                                                        }
-                                                        rows={1}
-                                                        autoGrow
-                                                        containerClassName="spells-edit-translation border-[#2a2f37] bg-[#11151b]"
-                                                        className="text-xs leading-4 !text-neutral-200"
-                                                      />
-                                                      {showSpellSuggestions &&
-                                                        conditionDescriptionEntry?.uid &&
-                                                        spellSuggestions[
-                                                          conditionDescriptionEntry.uid
-                                                        ] && (
-                                                          <div className="space-y-0.5 text-xs leading-5 text-neutral-500">
-                                                            {[
-                                                              spellSuggestions[
-                                                                conditionDescriptionEntry.uid
-                                                              ].one,
-                                                              spellSuggestions[
-                                                                conditionDescriptionEntry.uid
-                                                              ].two
-                                                            ]
-                                                              .filter(Boolean)
-                                                              .map((suggestion, index) => (
-                                                                <div
-                                                                  key={`${conditionDescriptionEntry.uid}-description-suggestion-${index}`}
-                                                                >
-                                                                  {renderSource(suggestion)}
-                                                                </div>
-                                                              ))}
-                                                          </div>
-                                                        )}
-                                                    </label>
-                                                  </div>
-                                                )
-                                              })}
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>,
-                                  document.body
-                                )}
-                            </article>
-                          )}
-                        </Fragment>
-                      )
-                    })}
-                  </div>
-                )}
-              </section>
-            ))}
-            {filtered.length === 0 && (
-              <div className="py-20 text-center text-sm text-neutral-500">
-                No spells match this search.
-              </div>
-            )}
+                            )}
+                            {!collapsedLevels.has(levelKey) && (
+                              <DeferredSpellCard>{() => renderSpellCard(spell)}</DeferredSpellCard>
+                            )}
+                          </Fragment>
+                        )
+                      })}
+                    </div>
+                  )}
+                </section>
+              ))}
+              {filtered.length === 0 && (
+                <div className="py-20 text-center text-sm text-neutral-500">
+                  No spells match this search.
+                </div>
+              )}
+            </div>
           </div>
+          {selectedSpell && (
+            <aside className="spells-editor-slot min-h-0 p-4 sm:p-6 lg:pl-0">
+              {renderSpellCard(selectedSpell, true)}
+            </aside>
+          )}
         </div>
       </div>
     </>

@@ -47,7 +47,7 @@ function ToggleButton({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-52 -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/search-toggle:translate-y-0 group-hover/search-toggle:opacity-100 group-focus-visible/search-toggle:translate-y-0 group-focus-visible/search-toggle:opacity-100"
+        className="pointer-events-none absolute left-1/2 top-[calc(100%+8px)] z-[100] w-max max-w-52 -translate-x-1/2 translate-y-[-2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/search-toggle:translate-y-0 group-hover/search-toggle:opacity-100 group-focus-visible/search-toggle:translate-y-0 group-focus-visible/search-toggle:opacity-100"
       >
         {label}
       </span>
@@ -86,7 +86,7 @@ export function TextSearchInput({
   return (
     <div
       className={cn(
-        'relative z-20 flex h-8 items-center gap-2 overflow-visible rounded-md border border-[#1f2329] bg-[#131518] px-3 transition-colors focus-within:border-neutral-600',
+        'text-search-input-shell relative z-20 flex h-8 items-center gap-2 overflow-visible rounded-md border border-[#1f2329] bg-[#131518] px-3 transition-colors focus-within:border-neutral-600',
         className
       )}
     >

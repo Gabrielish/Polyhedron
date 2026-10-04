@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Languages } from 'lucide-react'
 import { ModalShell } from '@/components/shared/ModalShell'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 
@@ -49,8 +49,9 @@ export function AlreadyTranslatedDialog({
             <button
               type="button"
               onClick={onProceedAll}
-              className="inline-flex h-9 cursor-pointer items-center whitespace-nowrap rounded-md border border-amber-500 bg-amber-500 px-4 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400"
+              className="inline-flex h-9 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-500 bg-amber-500 px-4 text-xs font-semibold text-neutral-950 transition-colors hover:border-amber-400 hover:bg-amber-400"
             >
+              <Languages size={13} aria-hidden="true" />
               {t('alreadyTranslatedDialog.proceedAll')}
             </button>
           </div>

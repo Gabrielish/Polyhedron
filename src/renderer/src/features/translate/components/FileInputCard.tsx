@@ -7,6 +7,7 @@ interface FileInputCardProps {
   showHeader?: boolean
   fileName: string | null
   acceptedExtensions?: string[]
+  dropPrompt?: string
   isDragging: boolean
   onBrowse: () => Promise<void>
   onDragOver: (event: React.DragEvent) => void
@@ -19,6 +20,7 @@ export function FileInputCard({
   showHeader = true,
   fileName,
   acceptedExtensions = ['xml', 'pak', 'zip'],
+  dropPrompt,
   isDragging,
   onBrowse,
   onDragOver,
@@ -70,7 +72,7 @@ export function FileInputCard({
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13px] font-medium text-neutral-300">
-                {t('setup.fileCard.dropPrompt', { ns: 'translate' })}
+                {dropPrompt ?? t('setup.fileCard.dropPrompt', { ns: 'translate' })}
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-[10px] text-neutral-600">
                 {acceptedExtensions.map((extension) => (

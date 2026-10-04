@@ -44,7 +44,7 @@ export function ModalShell({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+      className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose()
       }}
@@ -53,19 +53,19 @@ export function ModalShell({
         role="dialog"
         aria-modal="true"
         className={cn(
-          'w-full overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]',
+          'app-modal-panel w-full overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]',
           sizeClassName,
           panelClassName
         )}
       >
         <div className="flex items-start gap-3 border-b border-[#2a2c34] px-5 py-4">
           {icon && (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/12 text-amber-400">
+            <div className="mt-0.5 flex shrink-0 items-center justify-center text-amber-400">
               {icon}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold text-neutral-100">{title}</div>
+            <div className="app-modal-title text-sm font-medium text-neutral-200">{title}</div>
             {description && <div className="mt-1 text-xs text-neutral-500">{description}</div>}
           </div>
           <button

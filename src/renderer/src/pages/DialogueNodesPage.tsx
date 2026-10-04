@@ -22,6 +22,8 @@ import {
   X
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
+import { useSessionStructure } from '@/hooks/useSessionStructure'
 import { useLocation } from 'react-router-dom'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { TextSearchInput } from '@/components/shared/TextSearchInput'
@@ -53,6 +55,7 @@ import {
 import { renderSource } from '@/utils/renderSource'
 import { cn } from '@/lib/utils'
 import { btnGhostIcon } from '@/features/translate/components/styles'
+import { DialogueGraphSkeleton, DialogueNodeLoadingSkeleton } from '@/components/layout/RouteLoadingSkeleton'
 import { extractLarianTags, wrapSelectionWithTag, type TextSelection } from '@/utils/larianTags'
 
 const DIALOGUE_VIEW_STATE_KEY = 'polyhedron.dialogue-nodes.view'
@@ -460,7 +463,7 @@ function DialogueTooltipButton({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-[#3a3f47] bg-[#171a1f] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/dialogue-tooltip:translate-y-0 group-hover/dialogue-tooltip:opacity-100 group-focus-visible/dialogue-tooltip:translate-y-0 group-focus-visible/dialogue-tooltip:opacity-100"
+        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/dialogue-tooltip:translate-y-0 group-hover/dialogue-tooltip:opacity-100 group-focus-visible/dialogue-tooltip:translate-y-0 group-focus-visible/dialogue-tooltip:opacity-100"
       >
         {tooltip}
       </span>
@@ -572,10 +575,11 @@ export function DialogueNodesPage(): React.JSX.Element {
       // The glossary remains available for the current session if storage is unavailable.
     }
   }, [termGlossary, termGlossaryKey])
-  const dialogueCatalog = useMemo(() => {
+  const sourceEntries = useSessionStructure(session.entries)
+  const dialogueCatalog = useRetainedMemo('dialogues:catalog', () => {
     const index: DialogueEntryIndex = new Map()
     const choiceMap = new Map<string, Choice>()
-    for (const entry of session.entries)
+    for (const entry of sourceEntries)
       for (const group of getDialogueGroups(entry.source)) {
         let nodes = index.get(group.dialogue)
         if (!nodes) {
@@ -606,8 +610,17 @@ export function DialogueNodesPage(): React.JSX.Element {
         })
       }
     return { index, choices: [...choiceMap.values()] }
-  }, [session.entries])
-  const dialogueEntryIndex = dialogueCatalog.index
+  }, [sourceEntries])
+  const dialogueEntryIndex = useRetainedMemo('dialogues:rows', () => {
+    const current = new Map(session.entries.map(entry => [entry.rowId, entry]))
+    const index: DialogueEntryIndex = new Map()
+    for (const [dialogue, nodes] of dialogueCatalog.index) {
+      const updatedNodes = new Map<string, typeof session.entries>()
+      for (const [node, rows] of nodes) updatedNodes.set(node, rows.map(row => current.get(row.rowId)!))
+      index.set(dialogue, updatedNodes)
+    }
+    return index
+  }, [dialogueCatalog.index, session.entries])
   const choices = useMemo(() => {
     const allowed = new Set(ACTS.find((act) => act.label === activeAct)?.categories ?? [])
     return dialogueCatalog.choices
@@ -1094,9 +1107,9 @@ export function DialogueNodesPage(): React.JSX.Element {
                 </p>
               )}
             </div>
-            <div className="order-3 min-h-[420px] overflow-hidden border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0 lg:border-b-0">
+            <div className="order-3 min-h-[420px] overflow-hidden border-b border-[#1f2329] p-0 lg:order-none lg:min-h-0 lg:border-b-0">
               {selected ? (
-                <div className="flex h-full min-h-0 w-full flex-col rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                <div className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg border border-[#1f2329] bg-transparent p-0">
                   <div className="relative flex min-h-0 flex-1 w-full min-w-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
                     <StyledWebview
                       ref={graphWebviewRef}
@@ -1109,11 +1122,8 @@ export function DialogueNodesPage(): React.JSX.Element {
                       style={{ height: '100%', width: '100%', display: 'flex' }}
                     />
                     {graphLoading && (
-                      <div className="absolute inset-0 z-10 space-y-3 bg-[#0c0d0f] p-4" aria-label="Loading dialogue graph">
-                        <div className="h-4 w-2/5 animate-pulse rounded bg-[#1f2329]" />
-                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
-                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
-                        <div className="h-24 animate-pulse rounded-lg bg-[#131518]" />
+                      <div className="app-loading-skeleton absolute inset-0 z-10 motion-safe:animate-pulse" role="status" aria-label="Loading dialogue graph" aria-busy="true">
+                        <DialogueGraphSkeleton />
                       </div>
                     )}
                   </div>
@@ -1434,10 +1444,8 @@ export function DialogueNodesPage(): React.JSX.Element {
               </div>
             )}
             {nodeNavigationLoading && selected && (
-              <div className="absolute inset-0 z-20 space-y-3 bg-[#0c0d0f] p-3 sm:p-5" aria-label="Loading dialogue node">
-                <div className="h-20 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
-                <div className="h-28 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
-                <div className="h-24 animate-pulse rounded-lg border border-[#1f2329] bg-[#131518]" />
+              <div className="app-loading-skeleton absolute inset-0 z-20 overflow-hidden p-3 motion-safe:animate-pulse sm:p-5" role="status" aria-label="Loading dialogue node" aria-busy="true">
+                <DialogueNodeLoadingSkeleton />
               </div>
             )}
           </section>
@@ -1445,7 +1453,7 @@ export function DialogueNodesPage(): React.JSX.Element {
       </div>
       {nodeExportOpen && selected && (
         <div
-          className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
+          className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setNodeExportOpen(false)
           }}
@@ -1454,7 +1462,7 @@ export function DialogueNodesPage(): React.JSX.Element {
             role="dialog"
             aria-modal="true"
             aria-labelledby="dialogue-node-export-title"
-            className="flex max-h-[min(780px,90vh)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#34343e] bg-[#15161b] shadow-[0_25px_80px_rgba(0,0,0,0.55)]"
+            className="app-modal-panel flex max-h-[min(780px,90vh)] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
           >
             <div className="flex items-center gap-3 border-b border-[#2a2c34] px-5 py-4">
               <button

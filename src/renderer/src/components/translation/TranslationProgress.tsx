@@ -1,4 +1,5 @@
 import { ProgressBar } from '@/components/shared/ProgressBar'
+import { AppMessage } from '@/components/shared/AppMessage'
 import type { TranslationRow } from '@/hooks/useTranslation'
 
 interface TranslationProgressProps {
@@ -20,12 +21,12 @@ export function TranslationProgress({
     <div className="flex flex-col gap-3">
       <ProgressBar current={current} total={total} />
 
-      {error && <p className="rounded-md bg-red-950 px-3 py-2 text-sm text-red-400">{error}</p>}
+      {error && <AppMessage tone="error">{error}</AppMessage>}
 
       {outputPath && (
-        <p className="rounded-md bg-green-950 px-3 py-2 text-sm text-green-400">
+        <AppMessage tone="success">
           Done - {outputPath}
-        </p>
+        </AppMessage>
       )}
 
       {rows.length > 0 && (

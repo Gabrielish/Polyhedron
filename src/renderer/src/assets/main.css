@@ -1,5 +1,148 @@
 @import "tailwindcss";
 
+/* Settings panels and all custom dialogs share these theme-aware surfaces.
+   Dialogs may be portalled to body, outside the main page's theme selectors. */
+:root {
+  --app-panel-bg: #141416;
+  --app-panel-border: rgb(38 38 38 / 80%);
+  --app-panel-divider: rgb(38 38 38 / 50%);
+  --app-panel-radius: 0.75rem;
+  --app-panel-shadow: none;
+  --app-panel-filter: none;
+  --app-modal-input-bg: #0f1013;
+  --app-modal-input-border: #262626;
+  --app-modal-inset-bg: #0a0a0c;
+}
+html[data-theme]:not([data-theme="classic"]) {
+  --app-panel-bg: color-mix(in srgb, var(--color-background-soft) 80%, var(--color-background));
+  --app-panel-border: color-mix(in srgb, var(--color-amber-500) 6%, #2a2f37);
+  --app-modal-input-bg: var(--app-panel-bg);
+  --app-modal-input-border: var(--app-panel-border);
+  --app-modal-inset-bg: color-mix(in srgb, var(--color-background) 78%, black);
+}
+html[data-theme="liquid-glass"]:root {
+  --app-panel-bg: #101010;
+  --app-panel-border: #292929;
+  --app-panel-shadow: inset 0 1px 0 rgb(255 255 255 / 7%), 0 12px 30px rgb(0 0 0 / 18%);
+  --app-panel-filter: blur(18px) saturate(125%);
+  --app-modal-input-bg: #101010;
+  --app-modal-input-border: #292929;
+  --app-modal-inset-bg: #090909;
+}
+html[data-theme="polyhedron-green"], html[data-theme="duolingo-dark"] {
+  --app-panel-radius: 0.65rem;
+}
+.app-panel-surface, .app-modal-panel {
+  background: var(--app-panel-bg) !important;
+  border-color: var(--app-panel-border) !important;
+  border-radius: var(--app-panel-radius) !important;
+  box-shadow: var(--app-panel-shadow) !important;
+  -webkit-backdrop-filter: var(--app-panel-filter) !important;
+  backdrop-filter: var(--app-panel-filter) !important;
+}
+.app-modal-overlay {
+  background: rgb(0 0 0 / 60%) !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.app-modal-panel .app-modal-title,
+.app-modal-panel > div:first-child h2 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+.app-modal-panel :is([class~="border-[#34343e]"], [class~="border-[#2c2e37]"],
+    [class~="border-[#4a4d58]"], [class~="border-[#1f2329]"], [class~="border-[#2a2f37]"]) {
+  border-color: var(--app-panel-border) !important;
+}
+.app-modal-panel :is([class~="border-[#2a2c34]"], [class~="border-[#2b2e36]"]) {
+  border-color: var(--app-panel-divider) !important;
+}
+.app-modal-panel :is([class~="bg-[#15161b]"], [class~="bg-[#101115]"]) {
+  background: var(--app-panel-bg) !important;
+}
+.app-modal-panel :is([class~="bg-[#1b1c21]"], [class~="bg-[#111216]"],
+    [class~="bg-[#121318]"], [class~="bg-[#0c0d0f]"], [class~="bg-[#0a0a0c]"],
+    [class~="bg-[#0f1013]"], [class~="bg-[#0f1114]"], [class~="bg-[#131518]"]) {
+  background: var(--app-modal-inset-bg) !important;
+}
+.app-modal-panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), textarea, select),
+.app-modal-panel .highlighted-textarea-shell {
+  background: var(--app-modal-input-bg) !important;
+  border-color: var(--app-modal-input-border) !important;
+}
+.app-modal-panel :is(input, textarea, select):focus,
+.app-modal-panel .highlighted-textarea-shell:focus-within {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%) !important;
+  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+/* Highlighted editors paint text in an overlay; the textarea stays transparent. */
+.app-modal-panel .highlighted-textarea-shell textarea {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.app-modal-panel button:not(:disabled):not([aria-disabled="true"]) {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.app-modal-panel button:not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):not([class*="bg-amber-"]):not(.accent-solid-button):not(.accent-solid-control):not([class*="bg-red-"]):not([aria-pressed="true"]):hover {
+  background-color: #181818 !important;
+  border-color: #454545 !important;
+  color: #fff;
+  box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+.app-modal-panel button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) {
+  background-color: var(--poly-accent, var(--color-amber-500)) !important;
+  border-color: var(--poly-accent, var(--color-amber-500)) !important;
+  color: var(--poly-accent-foreground, #fff) !important;
+}
+.app-modal-panel button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):hover {
+  filter: brightness(1.08);
+}
+html[data-theme="liquid-glass"] .app-modal-panel button:not(:disabled) {
+  border-radius: 10px;
+}
+html[data-theme="liquid-glass"] .app-modal-panel button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) {
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgb(var(--poly-accent-rgb, 237 28 36) / 18%), inset 0 1px 0 rgb(255 255 255 / 18%);
+}
+html[data-theme="liquid-glass"] .app-modal-panel button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):hover {
+  background-color: var(--color-amber-400) !important;
+  border-color: var(--color-amber-400) !important;
+  box-shadow: 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 32%);
+  filter: none;
+}
+.app-modal-panel button:is(:disabled, [aria-disabled="true"], .cursor-not-allowed):hover {
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Interactive controls share one cursor policy throughout the desktop app,
+   including dropdown menus and dialogs rendered outside the page container. */
+:is(button, a[href], select, summary, [role="button"], [role="switch"],
+    [role="checkbox"], [role="radio"], [role="tab"], [role="option"],
+    [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"],
+    input[type="button"], input[type="submit"], input[type="reset"],
+    input[type="checkbox"], input[type="radio"], input[type="range"],
+    input[type="color"], input[type="file"], label[for],
+    label:has(input[type="checkbox"], input[type="radio"])):not(:disabled):not([aria-disabled="true"]):not([aria-disabled="true"] *):not(label:has(input:disabled)):not(.cursor-not-allowed):not(.cursor-grab):not(.cursor-grabbing) {
+  cursor: pointer !important;
+}
+
+:is(button, select, input, textarea, [role="button"], [role="switch"],
+    [role="checkbox"], [role="radio"], [role="tab"], [role="option"],
+    [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], a[href]):is(:disabled, [aria-disabled="true"], .cursor-not-allowed),
+[aria-disabled="true"] :is(button, select, input, [role="button"], [role="switch"], [role="option"], [role="menuitem"]),
+label:has(input:disabled) {
+  cursor: not-allowed !important;
+}
+
+textarea:not(:disabled),
+input:not(:disabled):is(:not([type]), [type="text"], [type="search"], [type="email"], [type="password"], [type="url"], [type="tel"], [type="number"]),
+[contenteditable="true"] {
+  cursor: text;
+}
+
 @font-face {
   font-family: "Cascadia Code";
   src: url("./fonts/Cascadia.ttf") format("truetype");
@@ -79,6 +222,18 @@
 .manage-mod-search-input:focus,
 .manage-mod-search-input:focus-visible {
   border: 0 !important;
+}
+
+/* Keep project search/name borders steady through hover, press and focus. */
+:is(.project-search-input, .project-name-input),
+:is(.project-search-input, .project-name-input):is(:hover, :active, :focus, :focus-visible) {
+  border-color: #1f2329 !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+html[data-theme="liquid-glass"] :is(.project-search-input, .project-name-input),
+html[data-theme="liquid-glass"] :is(.project-search-input, .project-name-input):is(:hover, :active, :focus, :focus-visible) {
+  border-color: #292929 !important;
 }
 
 /* Search toggles use the Save button's accent colour on hover without the
@@ -241,8 +396,12 @@ html[data-theme] .app-content-shell aside button.translation-special-filter-opti
   contain-intrinsic-size: 320px 300px;
 }
 
-/* Search toolbar toggles must stay icon-only. Theme-wide button hover rules
-   otherwise add a dark capsule back on top of the component styles. */
+/* All shared search inputs use Translate's icon-only toggle interaction.
+   Theme-wide hover rules must not add a dark capsule or glow in other tabs. */
+.text-search-input-shell .translation-toolbar-toggle,
+.text-search-input-shell .translation-toolbar-toggle:hover,
+.text-search-input-shell .translation-toolbar-toggle:focus,
+.text-search-input-shell .translation-toolbar-toggle:focus-visible,
 .translation-search-bar .translation-toolbar-toggle,
 .translation-search-bar .translation-toolbar-toggle:hover,
 .translation-search-bar .translation-toolbar-toggle:focus,
@@ -1082,6 +1241,10 @@ html[data-theme="liquid-glass"] .app-content-shell main select:focus {
   border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%);
   box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
 }
+html[data-theme="liquid-glass"] .app-content-shell main input.settings-default-input,
+html[data-theme="liquid-glass"] .app-content-shell main input.settings-accent-input {
+  background-color: #101010;
+}
 html[data-theme="liquid-glass"] .app-content-shell [class~="text-neutral-500"] {
   color: #777777;
 }
@@ -1403,6 +1566,14 @@ html[data-theme="liquid-glass"] .app-content-shell main button.bulk-status-optio
     0 0 0 1px rgb(255 255 255 / 6%),
     0 0 8px rgb(255 255 255 / 6%) !important;
 }
+/* XML/PL are compound div controls, so they must explicitly inherit the
+   same Liquid Glass hover as the ordinary All/Translated status buttons. */
+html[data-theme="liquid-glass"] .translation-special-filter:hover {
+  border-color: #454545 !important;
+  background-color: #181818 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+}
 
 html[data-theme] .translation-special-filter-option.is-selected,
 html[data-theme] .translation-special-filter-option.is-selected:hover {
@@ -1434,13 +1605,32 @@ html[data-theme] .translation-special-filter-option:not(.is-selected):hover {
   border-radius: 14px;
   padding: 10px 12px;
   white-space: normal;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.term-glossary-mark:hover > .term-glossary-tooltip {
+  visibility: visible;
   pointer-events: auto;
+}
+
+.floating-glossary-tooltip > .term-glossary-tooltip {
+  position: static !important;
+  display: block;
+  visibility: inherit !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+.floating-glossary-tooltip > .term-glossary-tooltip::before,
+.floating-glossary-tooltip > .term-glossary-tooltip::after {
+  display: none;
 }
 
 .term-glossary-mark {
   text-decoration-line: underline;
   text-decoration-style: dotted;
-  text-decoration-color: #c084fc;
+  text-decoration-color: var(--color-amber-400, #c4b5fd);
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
 }
@@ -3616,8 +3806,49 @@ html[data-theme="liquid-glass"] .accent-solid-button {
   color: var(--poly-accent-foreground, #fff) !important;
   box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 22%);
 }
-html[data-theme="liquid-glass"] .accent-solid-button:hover {
-  filter: brightness(0.86);
+
+/* Match Translate SAVE's one-pixel press on solid accent actions, including
+   portal dialogs. Switches keep their own interaction and positioning. */
+button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not(:disabled):not([aria-disabled="true"]):not([class~="cursor-not-allowed"]):not([role="switch"]):active {
+  transform: translateY(1px) !important;
+}
+
+/* Disabled actions must also override existing active:translate utilities
+   and older theme-specific press rules. */
+button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):is(:disabled, [aria-disabled="true"], [class~="cursor-not-allowed"]) {
+  background-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  border-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  color: var(--poly-accent-foreground, #fff) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):is(:disabled, [aria-disabled="true"], [class~="cursor-not-allowed"]):active {
+  transform: none !important;
+  translate: none !important;
+}
+
+/* Keep the chosen theme visually selected rather than turning gray on hover. */
+.settings-page-shell button.settings-theme-option[aria-pressed="true"],
+.settings-page-shell button.settings-theme-option[aria-pressed="true"]:hover {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 10%) !important;
+  border-color: color-mix(in srgb, var(--color-amber-400) 70%, transparent) !important;
+}
+.settings-page-shell button.settings-theme-option[aria-pressed="true"]:hover {
+  box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+}
+
+/* Selected accent-tinted controls keep their own tint on hover. Exact class
+   tokens intentionally exclude hover-only backgrounds and solid actions. */
+button[class~="bg-amber-500/5"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-500) 5%, transparent); }
+button[class~="bg-amber-500/10"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-500) 10%, transparent); }
+button[class~="bg-amber-500/12"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-500) 12%, transparent); }
+button[class~="bg-amber-500/15"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-500) 15%, transparent); }
+button[class~="bg-amber-500/20"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-500) 20%, transparent); }
+button[class~="bg-amber-400/5"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-400) 5%, transparent); }
+button[class~="bg-amber-400/10"] { --selected-accent-surface: color-mix(in srgb, var(--color-amber-400) 10%, transparent); }
+html[data-theme] button:is([class~="bg-amber-500/5"], [class~="bg-amber-500/10"], [class~="bg-amber-500/12"], [class~="bg-amber-500/15"], [class~="bg-amber-500/20"], [class~="bg-amber-400/5"], [class~="bg-amber-400/10"]):not(:disabled):not([aria-disabled="true"]):hover {
+  background-color: var(--selected-accent-surface) !important;
+  box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
 }
 
 /* Glossary mobile stacked rows: source and target become two readable card sections. */
@@ -3793,13 +4024,25 @@ html[data-theme="liquid-glass"] .accent-solid-button:hover {
 }
 
 /* Shared page-header rhythm: icon/title/subtitle on the left, actions on the right. */
+/* Undo, Redo and Term Glossary share an icon-only hover, without a button box. */
+.editor-header-actions button.editor-header-floating-icon,
+.editor-header-actions button.editor-header-floating-icon:hover {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.editor-header-actions button.editor-header-floating-icon:hover {
+  color: #eeeeee !important;
+}
+
 .app-page-header {
   min-width: 0;
 }
 .app-page-header > * {
   min-width: 0;
 }
-.app-page-header h1 {
+.app-page-header h1,
+.app-page-header #settings-ai-heading {
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.15;
@@ -3841,7 +4084,8 @@ html[data-theme] .app-page-header > svg.lucide-list-checks {
   .app-page-header > div:first-child {
     min-width: 0;
   }
-  .app-page-header h1 {
+  .app-page-header h1,
+  .app-page-header #settings-ai-heading {
     font-size: 1.05rem;
   }
   .app-page-header .editor-header-language-block h1 {
@@ -3878,31 +4122,7 @@ html[data-theme] .app-page-header > svg.lucide-list-checks {
 
 /* Spells is a dense catalog: let the browser skip layout/paint work for cards
    that are outside the scroll viewport while keeping the existing grid. */
-.spells-page .spell-card,
-.spells-edit-dialog {
-  isolation: isolate;
-  background: linear-gradient(145deg, rgb(20 20 22 / 96%), rgb(15 16 18 / 96%));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
-}
-
-.spells-page .spell-card::before,
-.spells-edit-dialog::before {
-  content: "";
-  position: absolute;
-  inset: 0 18% auto;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(var(--poly-accent-rgb, 237 28 36) / 42%),
-    transparent
-  );
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.spells-page .spell-card > *,
-.spells-edit-dialog > * {
+.spells-page .spell-card > * {
   position: relative;
   z-index: 1;
 }
@@ -3913,32 +4133,6 @@ html[data-theme] .app-page-header > svg.lucide-list-checks {
   contain-intrinsic-size: 260px;
 }
 
-html[data-theme="liquid-glass"] .spells-page .spell-card {
-  border-color: rgb(255 255 255 / 12%);
-  background: linear-gradient(135deg, rgb(255 255 255 / 7%), transparent 46%), rgb(18 22 29 / 52%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 8%),
-    0 12px 28px rgb(0 0 0 / 16%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  backdrop-filter: blur(16px) saturate(120%);
-}
-
-html[data-theme="liquid-glass"] .spells-page .spell-card:hover {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 42%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 11%),
-    0 16px 34px rgb(0 0 0 / 22%),
-    0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 8%);
-}
-
-.spells-page .spell-card.spell-card-complete {
-  border-color: rgb(52 211 153 / 62%);
-  background-color: rgb(18 22 29 / 52%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 8%),
-    0 12px 28px rgb(0 0 0 / 16%),
-    0 0 18px rgb(52 211 153 / 8%);
-}
 .spells-page .spell-card.spell-card-complete::after {
   content: "";
   position: absolute;
@@ -3950,41 +4144,13 @@ html[data-theme="liquid-glass"] .spells-page .spell-card:hover {
   box-shadow: 0 0 12px rgb(52 211 153 / 35%);
   pointer-events: none;
 }
-.spells-page .spell-card.spell-card-complete:hover {
-  border-color: rgb(52 211 153 / 86%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 11%),
-    0 16px 34px rgb(0 0 0 / 22%),
-    0 0 24px rgb(52 211 153 / 14%);
+/* Use the same surface utilities as Settings cards, including theme overrides.
+   Translation completion remains a status border, not a separate surface. */
+.spells-page .spell-card {
+  isolation: isolate;
 }
-
-/* Spell cards share the Term Glossary modal surface: a calm solid panel,
-   restrained border and no decorative glow competing with the content. */
-.spells-page .spell-card,
-.spells-page .spell-card.spell-card-complete,
-html[data-theme="liquid-glass"] .spells-page .spell-card {
-  border-radius: 1rem !important;
-  border-color: #34343e;
-  background: #0f1114 !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3%) !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-
-.spells-page .spell-card:hover,
-.spells-page .spell-card.spell-card-complete:hover,
-html[data-theme="liquid-glass"] .spells-page .spell-card:hover {
-  border-color: #4a4c58;
-  background: #131518 !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 5%) !important;
-}
-
 .spells-page .spell-card.spell-card-complete {
-  border-color: #34d399;
-}
-
-.spells-page .spell-card.spell-card-complete:hover {
-  border-color: #6ee7b7;
+  border-color: #34d399 !important;
 }
 
 .spells-page .spell-card::before,
@@ -3992,70 +4158,47 @@ html[data-theme="liquid-glass"] .spells-page .spell-card:hover {
   display: none;
 }
 
-.spells-page .spell-card .relative.h-14.w-14 {
-  border-color: #34343e !important;
-  background: #0f1013 !important;
+.spells-page .spell-card .spell-icon-frame {
+  border-color: #292929 !important;
+  background: #090909 !important;
 }
 
-/* Match the exact themed surface used by the Spells header (#0f1114).
-   Non-classic themes transform that utility through this shared color-mix. */
-html[data-theme]:not([data-theme="classic"]) .spells-page .spell-card {
-  background: color-mix(
-    in srgb,
-    var(--color-background-soft) 80%,
-    var(--color-background)
-  ) !important;
+.spells-workbench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
 }
-
-html[data-theme="liquid-glass"] .spells-edit-dialog {
-  border-color: rgb(255 255 255 / 12%);
-  background: linear-gradient(135deg, rgb(255 255 255 / 7%), transparent 46%), rgb(18 22 29 / 68%);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 8%),
-    0 12px 28px rgb(0 0 0 / 24%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
-  backdrop-filter: blur(16px) saturate(120%);
+.spells-workbench-editing {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
-
-html[data-theme="liquid-glass"] .spells-edit-dialog input,
-html[data-theme="liquid-glass"] .spells-edit-dialog textarea {
-  border-color: rgb(255 255 255 / 13%) !important;
-  background: rgb(255 255 255 / 4%) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+@media (min-width: 1024px) {
+  .spells-workbench-editing {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+  }
 }
-
-html[data-theme="liquid-glass"] .spells-edit-dialog input:focus,
-html[data-theme="liquid-glass"] .spells-edit-dialog textarea:focus {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 48%) !important;
-  background: rgb(255 255 255 / 6%) !important;
-}
-
-html[data-theme="liquid-glass"] .spells-edit-dialog .spells-edit-source {
+.spells-edit-panel .spells-edit-source {
   border: 0 !important;
   background: transparent !important;
   box-shadow: none;
   padding: 0;
-}
-
-.spells-edit-dialog .spells-edit-source {
   font-family: "Cascadia Code";
 }
 
-.spells-edit-dialog .spells-edit-translation,
-.spells-edit-dialog .spells-edit-translation textarea {
+.spells-edit-panel .spells-edit-translation,
+.spells-edit-panel .spells-edit-translation textarea {
   min-height: 0 !important;
 }
 
-.spells-edit-dialog .spells-edit-translation textarea {
+.spells-edit-panel .spells-edit-translation textarea {
   height: auto;
   max-height: 18rem;
   overflow-y: auto !important;
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
-html[data-theme="liquid-glass"] .spells-edit-dialog [class~="bg-[#0c0d0f]"],
-html[data-theme="liquid-glass"] .spells-edit-dialog [class~="bg-[#11151b]"] {
-  background: rgb(255 255 255 / 3%) !important;
+html[data-theme="liquid-glass"] .spells-edit-panel [class~="bg-[#11151b]"] {
+  background: #090909 !important;
 }
 
 /* Spells uses the Polyhedron neutral/red palette; keep the old amber utility
@@ -4087,9 +4230,6 @@ html[data-theme="liquid-glass"] .spells-edit-dialog [class~="bg-[#11151b]"] {
   background-color: var(--poly-accent, #ed1c24) !important;
   border-color: var(--poly-accent, #ed1c24) !important;
   color: var(--poly-accent-foreground, #fff) !important;
-}
-.spells-page .accent-solid-button:hover {
-  filter: brightness(1.08);
 }
 
 .dialogue-export-label {
@@ -4129,6 +4269,16 @@ html[data-theme="liquid-glass"] .spells-edit-dialog [class~="bg-[#11151b]"] {
 
 .translate-entry-row:focus-within {
   box-shadow: none !important;
+}
+
+/* Translate strings use the same accent-tinted surface they had before. */
+html[data-theme] .translate-entry-row:hover,
+html[data-theme] .translate-entry-card:hover {
+  background-color: color-mix(in srgb, var(--color-amber-500) 10%, var(--color-background-soft)) !important;
+}
+html[data-theme] .translate-entry-selected {
+  background-color: color-mix(in srgb, var(--color-amber-500) 10%, var(--color-background-soft)) !important;
+  border-color: color-mix(in srgb, var(--poly-accent) 40%, var(--app-panel-border)) !important;
 }
 
 /* Translate keeps its original horizontal focus marker on the editor field. */
@@ -4265,27 +4415,26 @@ html.polyhedron-scrollbars-auto-hide .polyhedron-scrollbars-visible::-webkit-scr
   background: #6b7280;
 }
 
-/* Loading skeletons follow the selected accent instead of the old default
-   violet palette on every route, including Settings. */
+/* Legacy loading placeholders use neutral graphite, never a fixed accent. */
 html .animate-pulse [class~="bg-[#6d45d8]/50"] {
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 50%) !important;
+  background-color: #333333 !important;
 }
 
 html .animate-pulse [class~="bg-[#6d45d8]/45"] {
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 45%) !important;
+  background-color: #333333 !important;
 }
 
 html .animate-pulse [class~="bg-[#241b3b]"] {
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 14%) !important;
+  background-color: #262626 !important;
 }
 
 html .animate-pulse [class~="border-[#6d45d8]/40"],
 html .animate-pulse [class~="border-[#241b3b]"] {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 28%) !important;
+  border-color: #292929 !important;
 }
 
 html .animate-pulse [class~="bg-[#151122]"] {
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 8%) !important;
+  background-color: #181818 !important;
 }
 
 /* Also cover the darker accent shades used by older route skeletons. */
@@ -4295,7 +4444,7 @@ html .animate-pulse [class~="bg-[#201b32]"],
 html .animate-pulse [class~="bg-[#2b2119]"],
 html .animate-pulse [class~="bg-[#2b1d25]"],
 html .animate-pulse [class~="bg-[#2b2a1d]"] {
-  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+  background-color: #262626 !important;
 }
 .whitespace-selection-highlight {
   background-color: color-mix(in srgb, var(--color-amber-500, #ed1c24) 34%, transparent);
@@ -4336,4 +4485,185 @@ html body button.titlebar-close-button:hover svg,
 html body button.titlebar-close-button:focus-visible svg {
   color: #ffffff !important;
   stroke: #ffffff !important;
+}
+
+/* One SAVE-style hover for solid accent actions, including body portals.
+   Exact class tokens deliberately exclude tinted selections and switches. */
+/* PAK / Export / SAVE use Lucide's 24px viewbox and 2-unit stroke.
+   Keep every solid action icon at that size, including loading spinners;
+   scope to direct button icons so card headings and switches stay untouched. */
+button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) > svg.lucide {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  stroke-width: 2;
+}
+html:root[data-theme] button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) {
+  background-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  border-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  color: var(--poly-accent-foreground, #fff) !important;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+html:root[data-theme] button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):hover {
+  background-color: var(--color-amber-400, #ff454c) !important;
+  border-color: var(--color-amber-400, #ff454c) !important;
+  box-shadow: var(--solid-accent-hover-shadow, 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%)) !important;
+  filter: none !important;
+}
+html:root[data-theme="liquid-glass"] {
+  --solid-accent-hover-shadow: 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 32%);
+}
+/* Existing/New is a quiet segmented selector, not a gray filled action. */
+html:root[data-theme] button.project-mode-option {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: #858585 !important;
+  box-shadow: none;
+  transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+html:root[data-theme] button.project-mode-option[aria-pressed="true"] {
+  background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+  color: var(--color-amber-400, #ff454c) !important;
+  box-shadow: inset 0 0 0 1px rgb(var(--poly-accent-rgb, 237 28 36) / 22%);
+}
+html:root[data-theme] button.project-mode-option:not(:disabled):hover {
+  color: var(--color-amber-400, #ff454c) !important;
+  box-shadow: 0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 16%);
+}
+html:root[data-theme] button.project-mode-option[aria-pressed="true"]:not(:disabled):hover {
+  box-shadow: inset 0 0 0 1px rgb(var(--poly-accent-rgb, 237 28 36) / 22%),
+    0 0 14px rgb(var(--poly-accent-rgb, 237 28 36) / 16%);
+}
+html:root[data-theme] button.project-mode-option:focus-visible {
+  outline: 2px solid var(--color-amber-400, #ff454c);
+  outline-offset: 2px;
+}
+
+/* Every route, embedded graph, deferred card and modal placeholder shares
+   neutral surfaces. Loading blocks stay graphite regardless of the accent. */
+html:root .app-loading-skeleton {
+  background-color: var(--color-background, #050505) !important;
+}
+html:root .app-loading-skeleton [class*="bg-[#"]:not(.app-skeleton-block):not(.app-loading-skeleton),
+html:root .app-skeleton-card {
+  background-color: var(--app-panel-bg) !important;
+  border-color: var(--app-panel-border) !important;
+}
+html:root .app-loading-skeleton [class*="border-"] {
+  border-color: var(--app-panel-border) !important;
+}
+html:root .app-loading-skeleton [class~="bg-[#1f2329]"] {
+  background-color: var(--app-panel-border) !important;
+}
+html:root .app-skeleton-block {
+  background-color: #262626 !important;
+  border-color: var(--app-panel-border) !important;
+}
+html:root .app-skeleton-block.app-skeleton-action {
+  background-color: #333333 !important;
+}
+
+/* Legacy blue-gray utility surfaces now use Liquid Glass's neutral palette.
+   Exact tokens leave semantic blue statuses, theme accents and skeletons alone. */
+html:root[data-theme="liquid-glass"] :is(
+  [class~="bg-[#1f2329]"], [class~="bg-[#181b1f]"], [class~="bg-[#1c1f24]"],
+  [class~="bg-[#181c21]"], [class~="bg-[#20242a]"], [class~="bg-[#1d2127]"],
+  [class~="bg-[#2a2f37]"], [class~="bg-[#242830]"], [class~="bg-[#273238]"]
+):not(.app-skeleton-block):not(.app-loading-skeleton *):not(.app-loading-skeleton) {
+  background-color: #181818 !important;
+}
+html:root[data-theme="liquid-glass"] :is(
+  [class~="bg-[#131518]"], [class~="bg-[#0f1114]"], [class~="bg-[#141416]"],
+  [class~="bg-[#0f1013]"], [class~="bg-[#11151b]"], [class~="bg-[#101115]"],
+  [class~="bg-[#15161b]"], [class~="bg-[#111216]"], [class~="bg-[#121318]"],
+  [class~="bg-[#101214]"], [class~="bg-[#10151a]"]
+):not(.app-skeleton-block):not(.app-loading-skeleton *):not(.app-loading-skeleton):not(.app-modal-panel *) {
+  background-color: var(--app-panel-bg) !important;
+}
+html:root[data-theme="liquid-glass"] :is(
+  [class~="bg-[#0c0d0f]"], [class~="bg-[#0a0a0c]"]
+):not(.app-skeleton-block):not(.app-loading-skeleton *):not(.app-loading-skeleton):not(.app-modal-panel *) {
+  background-color: #090909 !important;
+}
+html:root[data-theme="liquid-glass"] :is(
+  [class~="hover:bg-[#1f2329]"], [class~="hover:bg-[#181b1f]"],
+  [class~="hover:bg-[#1c1f24]"]
+):not(.app-loading-skeleton *):not(.sidebar-shell *):hover {
+  background-color: #181818 !important;
+}
+html:root[data-theme="liquid-glass"] [class~="focus-visible:bg-[#181b1f]"]:focus-visible {
+  background-color: #181818 !important;
+}
+
+/* Let active icons glow across the nav/footer seam when the dock fits.
+   Very narrow viewports retain horizontal scrolling instead of overflowing. */
+@media (min-width: 360px) {
+  html[data-theme="liquid-glass"] .sidebar-nav {
+    overflow: visible;
+  }
+}
+
+/* API key inputs and visibility icons are one surface, not nested fields.
+   Override page-wide input/button fills at rest, focus and hover alike. */
+html[data-theme] .provider-api-key-field > :is(input, button),
+html[data-theme] .provider-api-key-field > :is(input, button):is(:hover, :focus, :focus-visible, :active) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html[data-theme] .provider-api-key-field > button:focus-visible {
+  outline: 2px solid var(--color-amber-400, #ff454c);
+  outline-offset: 2px;
+}
+
+/* Inline feedback uses neutral cards; temporary toasts use the selected
+   accent fill and the user's solid-button foreground color. */
+.app-message,
+[data-sonner-toast][data-styled="true"] {
+  --message-accent: var(--poly-accent, var(--color-amber-500, #ed1c24));
+  background: var(--app-panel-bg, #101010) !important;
+  color: #e5e5e5 !important;
+  border: 1px solid var(--app-panel-border, #292929) !important;
+  border-radius: 12px !important;
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--message-accent) 55%, transparent),
+    inset 0 1px 0 rgb(255 255 255 / 5%), 0 8px 24px rgb(0 0 0 / 16%) !important;
+}
+.app-message[data-message-tone="error"] {
+  --message-accent: #f87171;
+}
+.app-message[data-message-tone="warning"] {
+  --message-accent: #fbbf24;
+}
+.app-message > svg {
+  color: var(--message-accent) !important;
+}
+[data-sonner-toast][data-styled="true"] {
+  background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  color: var(--poly-accent-foreground, #101010) !important;
+  border-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 15%), 0 8px 24px rgb(0 0 0 / 24%) !important;
+}
+[data-sonner-toast][data-styled="true"] [data-icon] {
+  color: var(--poly-accent-foreground, #101010) !important;
+}
+[data-sonner-toast][data-styled="true"] [data-title] {
+  color: var(--poly-accent-foreground, #101010) !important;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+[data-sonner-toast][data-styled="true"] [data-description] {
+  color: var(--poly-accent-foreground, #101010) !important;
+  opacity: 0.8;
+  overflow-wrap: anywhere;
+}
+[data-sonner-toast][data-styled="true"] [data-button] {
+  background: var(--poly-accent-foreground, #101010) !important;
+  color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+}
+[data-sonner-toast][data-styled="true"] [data-cancel],
+[data-sonner-toast][data-styled="true"] [data-close-button] {
+  background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
+  color: var(--poly-accent-foreground, #101010) !important;
+  border-color: color-mix(in srgb, var(--poly-accent-foreground, #101010) 30%, transparent) !important;
 }

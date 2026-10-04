@@ -26,6 +26,8 @@
     "nothingToSave": "No translation to save",
     "savedCount": "{{count}} translations saved to the database",
     "sessionSaved": "Session saved",
+    "sessionAndDatabaseSaved": "Session and reusable translations saved",
+    "sessionSavedDatabaseFailed": "Session saved, but reusable translations could not be saved.",
     "xmlExported": "XML exported successfully",
     "packageExported": "{{format}} exported successfully",
     "noValidXml": "No valid XML found",

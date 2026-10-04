@@ -49,8 +49,8 @@ function fillDailyGaps(
 }
 
 const CHART_TOOLTIP_STYLE = {
-  backgroundColor: '#131518',
-  border: '1px solid #1f2329',
+  backgroundColor: 'var(--app-panel-bg, #101010)',
+  border: '1px solid var(--app-panel-border, #292929)',
   borderRadius: 8,
   fontSize: 12,
   color: '#d4d4d8'
@@ -86,7 +86,7 @@ export function MetricsCharts({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="bg-[#141416] border border-neutral-800/80 rounded-xl h-48 animate-pulse"
+            className="app-skeleton-card border border-neutral-800/80 rounded-xl h-48 animate-pulse"
           />
         ))}
       </div>
@@ -106,7 +106,7 @@ export function MetricsCharts({
       <ChartCard title={t('charts.dailyChars.title')}>
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={filledDaily} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2329" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--app-panel-border, #292929)" />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 10, fill: '#71717a' }}
@@ -115,7 +115,7 @@ export function MetricsCharts({
               tickFormatter={(v: string) => v.slice(5)}
             />
             <YAxis tick={{ fontSize: 10, fill: '#71717a' }} tickLine={false} axisLine={false} />
-            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ stroke: '#1f2329' }} />
+            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ stroke: 'var(--app-panel-border, #292929)' }} />
             <Line
               type="monotone"
               dataKey="chars"
@@ -131,7 +131,7 @@ export function MetricsCharts({
       <ChartCard title={t('charts.dailyEntries.title')}>
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={filledDaily} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2329" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--app-panel-border, #292929)" />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 10, fill: '#71717a' }}
@@ -140,7 +140,7 @@ export function MetricsCharts({
               tickFormatter={(v: string) => v.slice(5)}
             />
             <YAxis tick={{ fontSize: 10, fill: '#71717a' }} tickLine={false} axisLine={false} />
-            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ stroke: '#1f2329' }} />
+            <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ stroke: 'var(--app-panel-border, #292929)' }} />
             <Line
               type="monotone"
               dataKey="entries"
@@ -161,7 +161,7 @@ export function MetricsCharts({
               margin={{ top: 4, right: 8, left: -16, bottom: 0 }}
               layout="vertical"
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2329" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--app-panel-border, #292929)" horizontal={false} />
               <XAxis
                 type="number"
                 tick={{ fontSize: 10, fill: '#71717a' }}
@@ -177,7 +177,7 @@ export function MetricsCharts({
                 width={100}
                 tickFormatter={(v: string | null) => v ?? '(unknown)'}
               />
-              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: '#1f2329' }} />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: '#181818' }} />
               <Bar dataKey="entries" fill="#f59e0b" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>

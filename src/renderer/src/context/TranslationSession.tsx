@@ -19,6 +19,7 @@ import { i18n } from '@/i18n'
 import type { TranslationHistoryEntry, XmlEntry, XmlLoadProgress } from '@/types'
 import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
 import type { GameProfileId } from '@/features/translate/gameProfiles'
+import { prepareSessionEntries } from '@/features/translate/utils/prepareSessionEntries'
 
 export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
@@ -543,8 +544,7 @@ export function TranslationSessionProvider({
 
   // The Translate screen is not always mounted (Game Data, Dialogue Nodes and
   // Spells can be the active tab), so keep the local session cache safe at the
-  // provider level as well. This complements the explicit Save button and the
-  // existing Translate-page handler.
+  // provider level. This is the single close handler for every editor tab.
   useEffect(() => {
     const saveOnClose = () => {
       const latest = sessionRef.current
@@ -553,8 +553,9 @@ export function TranslationSessionProvider({
       void window.api.session.save({
         key,
         entries: latest.entries.map(
-          ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+          ({ uid, source, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
             uid,
+            source,
             target,
             genderTargets,
             matchType,
@@ -611,40 +612,13 @@ export function TranslationSessionProvider({
       const unsub = window.api.xml.onLoadProgress((p) => {
         dispatch({ type: 'SET_LOADING_PROGRESS', progress: p })
       })
-      let entries: Awaited<ReturnType<typeof window.api.xml.load>>
+      let entries: TranslationSessionEntry[]
       try {
-        entries = await window.api.xml.load({
-          inputPath: storedPath,
-          sourceLang,
-          targetLang,
-          modName
-        })
-        const saved = await window.api.session.load({
-          key: `${storedPath}|${sourceLang}|${targetLang}`
-        })
-        if (saved) {
-          const savedByUid = new Map(saved.map((entry) => [entry.uid, entry]))
-          entries = entries.map((entry) => {
-            const previous = savedByUid.get(entry.uid)
-            return previous
-              ? {
-                  ...entry,
-                  target:
-                    previous.target.trim() || previous.needsReview ? previous.target : entry.target,
-                  matchType:
-                    previous.target.trim() || previous.matchType === 'manual'
-                      ? previous.matchType
-                      : entry.matchType,
-                  needsReview: previous.needsReview === true,
-                  reviewStatus:
-                    previous.reviewStatus ??
-                    (previous.target?.trim() ? 'needs-review' : 'untranslated'),
-                  genderTargets: previous.genderTargets ?? entry.genderTargets,
-                  history: previous.history ?? entry.history
-                }
-              : entry
-          })
-        }
+        const [loaded, saved] = await Promise.all([
+          window.api.xml.load({ inputPath: storedPath, sourceLang, targetLang, modName }),
+          window.api.session.load({ key: `${storedPath}|${sourceLang}|${targetLang}` })
+        ])
+        entries = prepareSessionEntries(loaded, saved)
       } finally {
         unsub()
       }
@@ -662,7 +636,7 @@ export function TranslationSessionProvider({
       }
       dispatch({
         type: 'SET_ENTRIES',
-        entries: entries.map((entry, index) => ({ ...entry, rowId: `row-${index}` }))
+        entries
       })
     },
     []

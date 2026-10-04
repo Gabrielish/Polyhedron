@@ -1,7 +1,9 @@
 {
   "title": "Settings",
-  "subtitle": "Manage your API keys, application preferences and default tools.",
+  "subtitle": "Manage cloud sync, updates, appearance and interface preferences.",
   "sections": {
+    "application": "Settings",
+    "aiTranslation": "AI and translation",
     "apiKeys": "API keys",
     "defaults": "Defaults",
     "language": "Application preferences",
@@ -20,8 +22,10 @@
     "divinePath": "Divine.exe path"
   },
   "descriptions": {
+    "application": "Manage cloud sync, updates, appearance and interface preferences.",
+    "aiTranslation": "Configure providers, API keys, prompts and similarity search, and view usage.",
     "divinePath": "Leave empty to use the system default.",
-    "showCounters": "Show the selected strings and character totals, plus character counts on each entry."
+    "showCounters": "Show string and character counts."
   },
   "placeholders": {
     "author": "Your name",

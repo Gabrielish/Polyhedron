@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BookText,
   Columns2,
-  Database,
   Languages,
   Loader2,
   Redo2,
@@ -32,7 +31,6 @@ interface EditorHeaderProps {
   verifiedCount: number
   onViewModeChange: (mode: 'side' | 'stacked') => void
   onSave: () => Promise<void>
-  onSaveToGlossary: () => Promise<void>
   onOpenTermGlossary: () => void
 }
 
@@ -49,7 +47,6 @@ export function EditorHeader({
   verifiedCount,
   onViewModeChange,
   onSave,
-  onSaveToGlossary,
   onOpenTermGlossary
 }: EditorHeaderProps): React.JSX.Element {
   const { t } = useAppTranslation(['translate', 'common'])
@@ -104,10 +101,10 @@ export function EditorHeader({
             </button>
           </div>
 
-          <button type="button" className={btnGhostIcon} title={t('editor.undo')} disabled>
+          <button type="button" className={cn(btnGhostIcon, 'editor-header-floating-icon')} title={t('editor.undo')} disabled>
             <Undo2 />
           </button>
-          <button type="button" className={btnGhostIcon} title={t('editor.redo')} disabled>
+          <button type="button" className={cn(btnGhostIcon, 'editor-header-floating-icon')} title={t('editor.redo')} disabled>
             <Redo2 />
           </button>
 
@@ -115,7 +112,7 @@ export function EditorHeader({
 
           <button
             type="button"
-            className={btnGhostIcon}
+            className={cn(btnGhostIcon, 'editor-header-floating-icon')}
             onClick={onOpenTermGlossary}
             title="Term Glossary"
             aria-label="Term Glossary"
@@ -124,21 +121,6 @@ export function EditorHeader({
           </button>
 
           <div className="w-px h-4.5 bg-[#1f2329] mx-1 shrink-0" />
-
-          <button
-            type="button"
-            className={cn(
-              btnPrimary,
-              'h-[30px] w-auto justify-center',
-              isSaving && 'opacity-60 cursor-not-allowed'
-            )}
-            onClick={onSaveToGlossary}
-            disabled={isSaving}
-            title="Save to Database"
-            aria-label="Save to Database"
-          >
-            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Database />}
-          </button>
 
           <button
             type="button"

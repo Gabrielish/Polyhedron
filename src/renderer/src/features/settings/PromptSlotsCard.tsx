@@ -185,8 +185,9 @@ export function PromptSlotsCard(): React.JSX.Element {
   return (
     <SettingsSectionCard
       title={t('slots.title')}
+      contentTitle="Translation instructions"
       subtitle={t('slots.subtitle')}
-      icon={<Layers size={16} />}
+      icon={<Layers size={18} />}
     >
       {/* slot bar */}
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
@@ -242,7 +243,7 @@ export function PromptSlotsCard(): React.JSX.Element {
       <VarChecklist prompt={draft} />
 
       {showVarsError && (
-        <div className="mt-3 flex items-start gap-2 rounded-lg border border-red-500/35 bg-red-500/10 px-3 py-2.5 text-sm text-red-300">
+        <div className="app-message mt-3 flex items-start gap-2 rounded-xl border px-3 py-2.5 text-sm" data-message-tone="error" role="alert">
           <AlertTriangle size={15} className="mt-0.5 shrink-0 text-red-400" />
           <div className="flex flex-col gap-0.5">
             <strong>{t('slots.cannotSave')}</strong>
@@ -264,7 +265,7 @@ export function PromptSlotsCard(): React.JSX.Element {
       )}
 
       {isLocked && (
-        <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/5 px-3 py-2.5 text-sm text-neutral-300">
+        <div className="app-message mt-3 flex items-start gap-2 rounded-xl border px-3 py-2.5 text-sm" data-message-tone="info" role="status">
           <Lock size={14} className="mt-0.5 shrink-0 text-amber-400" />
           <div>{t('slots.lockedNotice')}</div>
         </div>

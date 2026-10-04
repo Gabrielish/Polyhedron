@@ -17,7 +17,8 @@ import { registerModHandlers } from './ipc/mod.ipc'
 import { registerPromptSlotHandlers } from './ipc/prompt-slot.ipc'
 import { registerTranslationHandlers } from './ipc/translation.ipc'
 import { registerTranslationSuggestionHandlers } from './ipc/translation-suggestions.ipc'
-import { registerSessionHandlers } from './ipc/session.ipc'
+import { flushSessionSaves, registerSessionHandlers } from './ipc/session.ipc'
+import { flushDictionarySaves } from './services/dictionary-save.service'
 import { registerCloudHandlers } from './ipc/cloud.ipc'
 import { registerWindowHandlers, setupWindowEvents } from './ipc/window.ipc'
 import { registerWorkspaceHandlers } from './ipc/workspace.ipc'
@@ -49,6 +50,8 @@ function createWindow(): void {
     width: 1600,
     height: 900,
     show: false,
+    // Native fallback remains dark even before the renderer can paint.
+    backgroundColor: '#101010',
     // Keep the custom frameless title bar on Windows, but use native traffic-light
     // controls on macOS so the Windows-style buttons are not shown there.
     frame: process.platform !== 'darwin',
@@ -144,6 +147,16 @@ app.whenReady().then(() => {
 // macOS, where `window-all-closed` is not emitted until much later).
 app.on('before-quit', () => {
   closeDb()
+})
+
+let savesFlushed = false
+app.on('will-quit', (event) => {
+  if (savesFlushed) return
+  event.preventDefault()
+  void Promise.all([flushSessionSaves(), flushDictionarySaves()]).finally(() => {
+    savesFlushed = true
+    app.quit()
+  })
 })
 
 process.on('uncaughtException', (err) => {

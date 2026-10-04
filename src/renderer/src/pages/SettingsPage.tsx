@@ -1,32 +1,43 @@
 import {
+  BarChart2,
+  Bug,
   Check,
-  CheckCircle2,
   Cloud,
   Copy,
   Download,
+  FileText,
   FolderOpen,
   LoaderCircle,
   LogIn,
   LogOut,
   Mail,
+  Monitor,
   Palette,
   RefreshCw,
+  Save,
   Settings,
+  Sparkles,
   Trash2,
   UserRound
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
-import { AiProvidersCard } from '@/features/settings/AiProvidersCard'
+import { AppMessage } from '@/components/shared/AppMessage'
+import { PolyhedronMark } from '@/components/shared/PolyhedronMark'
+import { AiProvidersCard, MachineProvidersCard } from '@/features/settings/AiProvidersCard'
 import { PromptSlotsCard } from '@/features/settings/PromptSlotsCard'
 import { SimilaritySettingsCard } from '@/features/settings/SimilaritySettingsCard'
+import { SettingsSectionCard } from '@/features/settings/SettingsSectionCard'
 import { MetricsPage } from './MetricsPage'
-import { DEFAULT_ACCENT, RED_ACCENT, THEMES, useTheme } from '@/context/ThemeContext'
+import { THEMES, useTheme } from '@/context/ThemeContext'
+import { AccentColorControl } from '@/features/settings/AccentColorControl'
+import { btnPrimary } from '@/features/translate/components/styles'
 import { useConfig } from '@/hooks/useConfig'
+import { SettingsLoadingSkeleton } from '@/components/layout/RouteLoadingSkeleton'
 import { i18n } from '@/i18n'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
-import { defaultLanguage, languageLabels, supportedLanguages } from '@/i18n/languages'
+import { defaultLanguage, isSupportedLanguage, languageLabels, supportedLanguages } from '@/i18n/languages'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { ConfigKey } from '@/types'
 import type { UpdateState } from '../../../preload/api-types'
@@ -34,6 +45,7 @@ import type { UpdateState } from '../../../preload/api-types'
 interface SettingFieldProps {
   label: string
   description?: string
+  compact?: boolean
   configKey: ConfigKey
   value: string
   onSave: (key: ConfigKey, value: string) => Promise<void>
@@ -62,6 +74,7 @@ function formatCloudDate(value: string | null): string {
 function SettingField({
   label,
   description,
+  compact = false,
   configKey,
   value,
   onSave,
@@ -82,13 +95,15 @@ function SettingField({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between">
-        <label className="text-sm font-medium text-neutral-300">{label}</label>
-        {description && <span className="text-xs text-neutral-500">{description}</span>}
+    <div className={compact ? 'flex min-w-0 flex-wrap items-center justify-between gap-3' : 'flex flex-col gap-2'}>
+      <div className={compact ? 'min-w-0 flex-1' : 'flex items-baseline justify-between'}>
+        <label htmlFor={`setting-${configKey}`} className={`${compact ? 'block text-neutral-200' : 'text-neutral-300'} text-sm font-medium`}>{label}</label>
+        {compact && description && <p className="mt-0.5 text-xs text-neutral-500">{description}</p>}
+        {!compact && description && <span className="text-xs text-neutral-500">{description}</span>}
       </div>
-      <div className="flex gap-2">
+      <div className={compact ? 'relative w-48 max-w-full shrink-0' : 'flex gap-2'}>
         <input
+          id={`setting-${configKey}`}
           type={type}
           value={draft}
           onChange={(e) => {
@@ -96,12 +111,16 @@ function SettingField({
             setSaved(false)
           }}
           placeholder={placeholder}
-          className="flex-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2.5 text-sm text-neutral-200 placeholder-neutral-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 focus:outline-none transition-all"
+          className={`${compact ? 'settings-default-input h-9.5 w-full min-w-0 bg-[#0f1114] pl-3 pr-20' : 'flex-1 bg-[#0a0a0c] px-3 py-2.5'} rounded-md border border-neutral-800 text-sm text-neutral-200 placeholder-neutral-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 focus:outline-none transition-all`}
         />
         <button
+          type="button"
           onClick={handleSave}
-          className="rounded-md border border-neutral-700/50 bg-neutral-800 px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-neutral-700 transition-colors focus:outline-none"
+          className={compact
+            ? 'absolute right-1 top-1/2 -translate-y-1/2 inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-amber-400'
+            : 'rounded-md border border-neutral-700/50 bg-neutral-800 px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-neutral-700 transition-colors focus:outline-none'}
         >
+          {compact && (saved ? <Check size={14} /> : <Save size={14} />)}
           {saved ? savedLabel : saveLabel}
         </button>
       </div>
@@ -109,22 +128,23 @@ function SettingField({
   )
 }
 
-function SettingsCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SettingsCard({ title, children, className = '', bodyClassName = '' }: { title: string; children: React.ReactNode; className?: string; bodyClassName?: string }) {
   return (
-    <div className="bg-[#141416] border border-neutral-800/80 rounded-xl overflow-hidden">
+    <div className={`app-panel-surface flex min-w-0 flex-col bg-[#141416] border border-neutral-800/80 rounded-xl overflow-hidden ${className}`}>
       <div className="px-6 py-4 border-b border-neutral-800/50">
         <h2 className="text-sm font-medium text-neutral-200">{title}</h2>
       </div>
-      <div className="p-6">{children}</div>
+      <div className={`flex-1 p-6 ${bodyClassName}`}>{children}</div>
     </div>
   )
 }
 
 export function SettingsPage(): React.JSX.Element {
   const { config, loading, set } = useConfig()
-  const { theme, setTheme, accent, setAccent, accentForeground, setAccentForeground } = useTheme()
-  const [accentDraft, setAccentDraft] = useState(accent)
+  const { theme, setTheme, accent, accentForeground, setAccentForeground } = useTheme()
   const [logPath, setLogPath] = useState('')
+  const [previewClicks, setPreviewClicks] = useState(0)
+  const [appVersion, setAppVersion] = useState('')
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
   const [checkingForUpdates, setCheckingForUpdates] = useState(false)
   const [cloudAccount, setCloudAccount] = useState<CloudAccount | null>(null)
@@ -135,7 +155,12 @@ export function SettingsPage(): React.JSX.Element {
   const { t } = useAppTranslation(['settings', 'common', 'toasts'])
 
   useEffect(() => {
+    if (previewClicks === 10) toast.success('Debug logs enabled.')
+  }, [previewClicks])
+
+  useEffect(() => {
     window.api.log.getPath().then(setLogPath)
+    void window.api.app.getVersion().then(setAppVersion).catch(() => undefined)
     return window.api.update.onState(setUpdateState)
   }, [])
 
@@ -201,6 +226,7 @@ export function SettingsPage(): React.JSX.Element {
   }
 
   const handleLanguageChange = async (language: string) => {
+    if (!isSupportedLanguage(language)) return
     await set('app_language', language)
     await i18n.changeLanguage(language)
   }
@@ -215,50 +241,45 @@ export function SettingsPage(): React.JSX.Element {
         <div className="app-page-header mb-8 flex items-center gap-3">
           <Settings className="h-5 w-5 shrink-0 text-amber-500" />
           <div className="min-w-0">
-            <h1 className="text-2xl font-semibold text-neutral-100">{t('title')}</h1>
+            <h1 id="settings-application-heading" className="text-2xl font-semibold text-neutral-100">{t('title')}</h1>
             <p className="mt-1 text-sm text-neutral-500">{t('subtitle')}</p>
           </div>
         </div>
 
-        <SettingsCard title="Application updates">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <section className="space-y-6" aria-labelledby="settings-application-heading">
+        <div className="grid items-stretch gap-6 lg:grid-cols-2">
+        <SettingsCard title="Application updates" className="order-2" bodyClassName="flex flex-col">
+          <div className="flex flex-1 flex-col items-start gap-5">
             <div className="flex items-start gap-3">
-              <RefreshCw size={18} className="mt-0.5 text-amber-400" />
-              <div>
+              <RefreshCw size={18} className="mt-0.5 shrink-0 text-amber-400" />
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-neutral-200">Check for updates</p>
                 <p className="mt-1 text-xs text-neutral-500">
                   Manually check GitHub for a newer Polyhedron release.
                   {isMacOS ? ' macOS downloads are opened manually.' : ''}
                 </p>
-                {updateState?.status === 'checking' && (
-                  <p className="mt-2 text-xs text-neutral-400">Checking for updates…</p>
-                )}
-                {updateState?.status === 'not-available' && (
-                  <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
-                    <CheckCircle2 size={13} /> You are up to date.
-                  </p>
-                )}
-                {updateState?.status === 'available' && (
-                  <p className="mt-2 text-xs text-amber-300">
-                    Version {updateState.version} is available.
-                  </p>
-                )}
-                {updateState?.status === 'downloading' && (
-                  <p className="mt-2 text-xs text-neutral-400">
-                    Downloading… {Math.round(updateState.percent)}%
-                  </p>
-                )}
-                {updateState?.status === 'downloaded' && (
-                  <p className="mt-2 text-xs text-emerald-400">
-                    Version {updateState.version} is ready to install.
-                  </p>
-                )}
-                {updateState?.status === 'error' && (
-                  <p className="mt-2 max-w-xl text-xs text-red-300">{updateState.message}</p>
-                )}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex w-full flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-[#0f1114] p-4">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <PolyhedronMark className="h-9 w-9 shrink-0 text-amber-400" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-neutral-200">Polyhedron</p>
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Installed version: <span className="text-neutral-300">{appVersion || '—'}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={checkingForUpdates || updateState?.status === 'downloading'}
+                onClick={() => void handleCheckForUpdates()}
+                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
+              >
+                <RefreshCw size={14} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates
+              </button>
+            </div>
+            {(updateState?.status === 'available' || updateState?.status === 'downloaded') && <div className="flex flex-wrap gap-2">
               {updateState?.status === 'available' && (
                 <button
                   type="button"
@@ -277,37 +298,70 @@ export function SettingsPage(): React.JSX.Element {
                   <RefreshCw size={15} /> Restart to update
                 </button>
               )}
-              <button
-                type="button"
-                disabled={checkingForUpdates || updateState?.status === 'downloading'}
-                onClick={() => void handleCheckForUpdates()}
-                className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
-              >
-                <RefreshCw size={15} className={checkingForUpdates ? 'animate-spin' : ''} /> Check
-                for updates
-              </button>
+            </div>}
+            <div role="status" className="mt-auto min-h-4 w-full text-[11px]">
+              {updateState?.status === 'checking' && (
+                <AppMessage>Checking for updates…</AppMessage>
+              )}
+              {updateState?.status === 'not-available' && (
+                <AppMessage tone="success">You are up to date.</AppMessage>
+              )}
+              {updateState?.status === 'available' && (
+                <AppMessage>Version {updateState.version} is available.</AppMessage>
+              )}
+              {updateState?.status === 'downloading' && (
+                <AppMessage>Downloading… {Math.round(updateState.percent)}%</AppMessage>
+              )}
+              {updateState?.status === 'downloaded' && (
+                <AppMessage tone="success">Version {updateState.version} is ready to install.</AppMessage>
+              )}
+              {updateState?.status === 'error' && (
+                <AppMessage tone="error">{updateState.message}</AppMessage>
+              )}
             </div>
           </div>
         </SettingsCard>
 
-        <SettingsCard title="Cloud sync">
-          <div className="space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-[#0f1013] p-4">
-              <div className="flex min-w-0 items-center gap-3">
+        <SettingsCard title="Cloud sync" className="order-1" bodyClassName="flex flex-col">
+          <div className="flex flex-1 flex-col gap-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-start gap-3">
+                <Cloud size={18} className="mt-0.5 shrink-0 text-amber-400" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-neutral-200">Automatic workspace upload</p>
+                  <p className="mt-1 text-xs text-neutral-500">Back up changes to Google Drive.</p>
+                </div>
+              </div>
+              <div className="w-36 shrink-0">
+                <ThemedSelect
+                  value={config['cloud_auto_sync_interval'] ?? '0'}
+                  onChange={(value) => void set('cloud_auto_sync_interval', value)}
+                  options={[
+                    { value: '0', label: 'Off' },
+                    { value: '10', label: 'Every 10 min' },
+                    { value: '30', label: 'Every 30 min' },
+                    { value: '60', label: 'Every hour' },
+                    { value: '120', label: 'Every 2 hours' }
+                  ]}
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-[#0f1114] p-4">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
                 {cloudAccount?.photoDataUrl ? (
-                  <img src={cloudAccount.photoDataUrl} alt="" className="h-9 w-9 rounded-full object-cover" />
+                  <img src={cloudAccount.photoDataUrl} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
                 ) : (
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/12 text-amber-400">
                     {cloudAccount?.connected ? <UserRound size={17} /> : <Cloud size={17} />}
                   </div>
                 )}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-neutral-200">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-neutral-200">
                     {cloudAccount?.connected ? cloudAccount.displayName || 'Google account' : 'Google Drive not connected'}
                   </p>
                   <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-neutral-500">
-                    {cloudAccount?.connected && <Mail size={12} />}
-                    {cloudAccount?.connected ? cloudAccount.emailAddress || 'Account connected' : 'Connect an account to enable cloud sync'}
+                    {cloudAccount?.connected && <Mail size={12} className="shrink-0" />}
+                    <span className="truncate">{cloudAccount?.connected ? cloudAccount.emailAddress || 'Account connected' : 'Connect an account to enable cloud sync'}</span>
                   </p>
                 </div>
               </div>
@@ -322,51 +376,29 @@ export function SettingsPage(): React.JSX.Element {
               </button>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-neutral-800 bg-[#0f1013] px-3 py-2.5">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Last upload</div>
-                <div className="mt-1 text-xs text-neutral-300">{formatCloudDate(lastCloudUpload)}</div>
-              </div>
-              <div className="rounded-lg border border-neutral-800 bg-[#0f1013] px-3 py-2.5">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">Last download</div>
-                <div className="mt-1 text-xs text-neutral-300">{formatCloudDate(lastCloudDownload)}</div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-neutral-800/70 pt-4">
-              <div className="flex items-start gap-3">
-                <Cloud size={18} className="mt-0.5 text-amber-400" />
-                <div>
-                  <p className="text-sm font-medium text-neutral-200">Automatic workspace upload</p>
-                  <p className="mt-1 max-w-xl text-xs text-neutral-500">
-                    Upload local changes to Google Drive in the background. Automatic uploads never
-                    open the upload dialog. If Drive has changed, syncing pauses until you review it.
-                  </p>
-                </div>
-              </div>
-              <div className="w-44 shrink-0">
-                <ThemedSelect
-                  value={config['cloud_auto_sync_interval'] ?? '0'}
-                  onChange={(value) => void set('cloud_auto_sync_interval', value)}
-                  options={[
-                    { value: '0', label: 'Off' },
-                    { value: '10', label: 'Every 10 minutes' },
-                    { value: '30', label: 'Every 30 minutes' },
-                    { value: '60', label: 'Every hour' },
-                    { value: '120', label: 'Every 2 hours' }
-                  ]}
-                />
-              </div>
+            <div className="mt-auto flex items-baseline justify-between gap-3 text-[11px]">
+              <p className="flex items-baseline gap-1 whitespace-nowrap">
+                <span className="text-amber-300">Last upload:</span>
+                <span className="text-neutral-300">{formatCloudDate(lastCloudUpload)}</span>
+              </p>
+              <p className="flex items-baseline gap-1 whitespace-nowrap">
+                <span className="text-amber-300">Last download:</span>
+                <span className="text-neutral-300">{formatCloudDate(lastCloudDownload)}</span>
+              </p>
             </div>
           </div>
         </SettingsCard>
+        </div>
 
         <SettingsCard title="Appearance">
-          <div className="mb-4 flex items-center gap-2 text-sm text-neutral-400">
-            <Palette size={16} className="text-amber-400" />
-            <span>
-              Choose an interface theme and customize the accent color used across the app.
-            </span>
+          <div className="mb-4 flex items-start gap-3">
+            <Palette size={18} className="mt-0.5 shrink-0 text-amber-400" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-neutral-200">Theme and accent</p>
+              <p className="mt-1 text-xs text-neutral-500">
+                Choose an interface theme and customize the accent color used across the app.
+              </p>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {THEMES.map((item) => {
@@ -377,7 +409,8 @@ export function SettingsPage(): React.JSX.Element {
                   type="button"
                   onClick={() => setTheme(item.id)}
                   aria-label={`${item.name} theme`}
-                  className={`relative rounded-lg border p-3 text-left transition-colors ${selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
+                  aria-pressed={selected}
+                  className={`settings-theme-option relative rounded-lg border p-3 text-left transition-colors ${selected ? 'border-amber-400/70 bg-amber-500/10' : 'border-neutral-800 bg-[#0f1114] hover:border-neutral-600'}`}
                 >
                   {selected && (
                     <Check size={14} className="absolute right-3 top-3 text-amber-400" />
@@ -394,7 +427,7 @@ export function SettingsPage(): React.JSX.Element {
                     ))}
                   </div>
                   <div className="text-sm font-medium text-neutral-200">{item.name}</div>
-                  <div className="mt-1 text-xs leading-5 text-neutral-500">{item.description}</div>
+                  <div className="mt-1 truncate text-xs leading-5 text-neutral-500">{item.description}</div>
                 </button>
               )
             })}
@@ -415,91 +448,49 @@ export function SettingsPage(): React.JSX.Element {
               </div>
             </div>
           </div>
-          <div className="mt-5 border-t border-neutral-800/60 pt-5">
+          <div className="mt-5 grid gap-6 lg:grid-cols-2">
+            <div className="min-w-0">
             <div className="flex items-baseline justify-between gap-3">
               <label htmlFor="accent-color" className="text-sm font-medium text-neutral-200">
                 Accent color
               </label>
-              <span className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">HEX</span>
             </div>
             <p className="mt-1 text-xs text-neutral-500">
               Choose the accent used for buttons, active states, borders and glow effects.
             </p>
-            <div className="mt-3 flex max-w-sm flex-wrap gap-2">
-              <input
-                id="accent-color"
-                type="text"
-                value={accentDraft}
-                maxLength={7}
-                placeholder="#8C52FF"
-                onChange={(event) => {
-                  const value = event.target.value.toUpperCase()
-                  setAccentDraft(value)
-                  if (/^#[0-9A-F]{6}$/.test(value)) setAccent(value)
-                }}
-                className="min-w-0 flex-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 py-2.5 font-mono text-sm text-neutral-200 placeholder-neutral-600 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20 focus:outline-none"
-              />
-              <input
-                aria-label="Pick accent color"
-                type="color"
-                value={/^#[0-9A-F]{6}$/.test(accentDraft) ? accentDraft : accent}
-                onChange={(event) => {
-                  const value = event.target.value.toUpperCase()
-                  setAccentDraft(value)
-                  setAccent(value)
-                }}
-                className="h-10 w-12 cursor-pointer rounded-md border border-neutral-800 bg-[#0a0a0c] p-1"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setAccentDraft(DEFAULT_ACCENT)
-                  setAccent(DEFAULT_ACCENT)
-                }}
-                className="rounded-md border border-neutral-800 px-3 py-2 text-xs font-medium text-neutral-300 transition-colors hover:border-neutral-600 hover:bg-neutral-900"
-              >
-                Reset default
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAccentDraft(RED_ACCENT)
-                  setAccent(RED_ACCENT)
-                }}
-                className="rounded-md border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 transition-colors hover:border-red-400/60 hover:bg-red-500/10"
-              >
-                Use red
-              </button>
+            <AccentColorControl />
             </div>
-            {accentDraft && !/^#[0-9A-F]{6}$/.test(accentDraft) && (
-              <p className="mt-2 text-xs text-red-300">
-                Enter a six-digit HEX value, for example #ED1C24.
-              </p>
-            )}
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="min-w-0">
               <div>
                 <p className="text-sm font-medium text-neutral-200">Button text color</p>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Choose the text color used on solid accent buttons. This is always manual.
+                  Choose the text color used on solid accent buttons.
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-2.5">
-                <span className="text-xs text-neutral-500">
-                  {accentForeground === 'white' ? 'White' : 'Black'}
-                </span>
+              <div className="mt-3 flex h-10 items-center gap-3" role="group" aria-label="Button text color">
+                {(['white', 'black'] as const).map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    title={color === 'white' ? 'White' : 'Black'}
+                    aria-label={color === 'white' ? 'White' : 'Black'}
+                    aria-pressed={accentForeground === color}
+                    onClick={() => setAccentForeground(color)}
+                    style={{ borderRadius: '50%', backgroundColor: color === 'white' ? '#FFFFFF' : '#000000' }}
+                    className={`h-8 w-8 shrink-0 cursor-pointer border transition-[transform,border-color] hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 ${
+                      accentForeground === color
+                        ? 'border-white ring-2 ring-neutral-200 ring-offset-4 ring-offset-[#101010]'
+                        : 'border-neutral-500'
+                    }`}
+                  />
+                ))}
                 <button
                   type="button"
-                  role="switch"
-                  aria-checked={accentForeground === 'black'}
-                  aria-label="Use black text on accent buttons"
-                  onClick={() =>
-                    setAccentForeground(accentForeground === 'white' ? 'black' : 'white')
-                  }
-                  className={`relative h-5.5 w-9.5 shrink-0 rounded-full border transition-colors ${accentForeground === 'black' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
+                  className={`${btnPrimary} settings-button-preview ml-auto !h-8 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400`}
+                  onClick={() => setPreviewClicks(count => Math.min(count + 1, 10))}
                 >
-                  <span
-                    className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${accentForeground === 'black' ? 'translate-x-4' : ''}`}
-                  />
+                  <FileText />
+                  PREVIEW
                 </button>
               </div>
             </div>
@@ -507,14 +498,37 @@ export function SettingsPage(): React.JSX.Element {
         </SettingsCard>
 
         <SettingsCard title={t('sections.interface')}>
-          <div className="divide-y divide-neutral-800/70">
-            <div className="flex items-center justify-between gap-5 py-3 first:pt-0">
+          <div className="mb-5 flex items-start gap-3">
+            <Monitor size={18} className="mt-0.5 shrink-0 text-amber-400" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-neutral-200">Interface preferences</p>
+              <p className="mt-1 text-xs text-neutral-500">Customize the language and editor display.</p>
+            </div>
+          </div>
+          <div className="grid items-start gap-x-6 gap-y-5 lg:grid-cols-2 lg:grid-rows-[repeat(4,auto)]">
+          <div className="grid min-w-0 gap-5 lg:row-span-4 lg:grid-rows-subgrid">
+            <div className="flex min-w-0 items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-neutral-200">{t('fields.appLanguage')}</p>
+                <p className="mt-0.5 text-xs text-neutral-500">
+                  Choose the interface language.
+                </p>
+              </div>
+              <div className="w-40 shrink-0">
+                <ThemedSelect
+                  value={isSupportedLanguage(config['app_language']) ? config['app_language'] : defaultLanguage}
+                  onChange={(value) => { void handleLanguageChange(value) }}
+                  options={supportedLanguages.map((language) => ({ value: language, label: languageLabels[language] }))}
+                />
+              </div>
+            </div>
+            <div className="flex min-w-0 items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">
                   String count on each page
                 </div>
                 <div className="mt-0.5 text-xs text-neutral-500">
-                  Choose how many translation and database entries are shown at once.
+                  Set the number of strings per page.
                 </div>
               </div>
               <div className="w-40 shrink-0">
@@ -530,28 +544,7 @@ export function SettingsPage(): React.JSX.Element {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between gap-5 py-3">
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-neutral-200">Show Database tab</div>
-                <div className="mt-0.5 text-xs text-neutral-500">
-                  Show the Database tab in the navigation bar.
-                </div>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={config['show_glossary'] === 'true'}
-                onClick={() =>
-                  void set('show_glossary', String(config['show_glossary'] !== 'true'))
-                }
-                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors ${config['show_glossary'] === 'true' ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${config['show_glossary'] === 'true' ? 'translate-x-4' : ''}`}
-                />
-              </button>
-            </div>
-            <div className="flex items-center justify-between gap-5 py-3">
+            <div className="flex min-w-0 items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">
                   {t('fields.showCounters')}
@@ -577,12 +570,11 @@ export function SettingsPage(): React.JSX.Element {
                 />
               </button>
             </div>
-            <div className="flex items-center justify-between gap-5 py-3 last:pb-0">
+            <div className="flex min-w-0 items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-sm font-medium text-neutral-200">Hide developer notes</div>
                 <div className="mt-0.5 text-xs text-neutral-500">
-                  Hide internal strings beginning with %%% or wrapped in | ... | from the editor and
-                  progress counters.
+                  Hide developer notes from the editor and counts.
                 </div>
               </div>
               <button
@@ -603,76 +595,11 @@ export function SettingsPage(): React.JSX.Element {
               </button>
             </div>
           </div>
-        </SettingsCard>
-        <AiProvidersCard />
-        <PromptSlotsCard />
-        <SimilaritySettingsCard />
-        <SettingsCard title="Metrics">
-          <MetricsPage embedded />
-        </SettingsCard>
-
-        <SettingsCard title={t('sections.apiKeys')}>
-          {/* OpenAI key hidden until supported
-          <SettingField
-            label="OpenAI API Key"
-            configKey="openai_key"
-            value={config['openai_key'] ?? ''}
-            onSave={set}
-            type="password"
-            placeholder="sk-..."
-          /> */}
-          <SettingField
-            label={t('fields.deeplKey')}
-            configKey="deepl_key"
-            value={config['deepl_key'] ?? ''}
-            onSave={set}
-            type="password"
-            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx"
-            saveLabel={t('buttons.save')}
-            savedLabel={t('buttons.saved')}
-            successMessage={t('settings.saved', {
-              ns: 'toasts',
-              label: t('fields.deeplKey')
-            })}
-          />
-          <SettingField
-            label={t('fields.googleKey')}
-            configKey="google_key"
-            value={config['google_key'] ?? ''}
-            onSave={set}
-            type="password"
-            placeholder="AIza..."
-            saveLabel={t('buttons.save')}
-            savedLabel={t('buttons.saved')}
-            successMessage={t('settings.saved', {
-              ns: 'toasts',
-              label: t('fields.googleKey')
-            })}
-          />
-        </SettingsCard>
-
-        <SettingsCard title={t('sections.language')}>
-          <div className="flex max-w-sm flex-col gap-2">
-            <label className="text-sm font-medium text-neutral-300">
-              {t('fields.appLanguage')}
-            </label>
-            <ThemedSelect
-              value={config['app_language'] || defaultLanguage}
-              onChange={(value) => {
-                void handleLanguageChange(value)
-              }}
-              options={supportedLanguages.map((language) => ({
-                value: language,
-                label: languageLabels[language]
-              }))}
-            />
-          </div>
-        </SettingsCard>
-
-        <SettingsCard title={t('sections.defaults')}>
-          <div className="space-y-5">
+          <div className="grid min-w-0 gap-5 lg:row-span-4 lg:grid-rows-subgrid">
             <SettingField
               label={t('fields.defaultAuthor')}
+              description="Author used for new translations."
+              compact
               configKey="author"
               value={config['author'] ?? ''}
               onSave={set}
@@ -686,6 +613,8 @@ export function SettingsPage(): React.JSX.Element {
             />
             <SettingField
               label={t('fields.defaultSourceLanguage')}
+              description="Default language to translate from."
+              compact
               configKey="last_source_lang"
               value={config['last_source_lang'] ?? ''}
               onSave={set}
@@ -699,6 +628,8 @@ export function SettingsPage(): React.JSX.Element {
             />
             <SettingField
               label={t('fields.defaultTargetLanguage')}
+              description="Default language to translate into."
+              compact
               configKey="last_target_lang"
               value={config['last_target_lang'] ?? ''}
               onSave={set}
@@ -711,26 +642,16 @@ export function SettingsPage(): React.JSX.Element {
               })}
             />
           </div>
+          </div>
         </SettingsCard>
 
-        <SettingsCard title={t('sections.tools')}>
-          <SettingField
-            label={t('fields.divinePath')}
-            description={t('descriptions.divinePath')}
-            configKey="divine_path"
-            value={config['divine_path'] ?? ''}
-            onSave={set}
-            placeholder={t('placeholders.divinePath')}
-            saveLabel={t('buttons.save')}
-            savedLabel={t('buttons.saved')}
-            successMessage={t('settings.saved', {
-              ns: 'toasts',
-              label: t('fields.divinePath')
-            })}
-          />
-        </SettingsCard>
-
-        <SettingsCard title={t('sections.debugLogs')}>
+        {previewClicks >= 10 && (
+        <SettingsSectionCard
+          title={t('sections.debugLogs')}
+          contentTitle="Diagnostics"
+          subtitle="View and manage application logs for troubleshooting."
+          icon={<Bug size={18} />}
+        >
           <div className="bg-[#0a0a0c] border border-neutral-800/80 rounded-md p-3 font-mono text-xs text-neutral-400 break-all">
             {logPath}
           </div>
@@ -760,20 +681,33 @@ export function SettingsPage(): React.JSX.Element {
               {t('actions.clear', { ns: 'common' })}
             </button>
           </div>
-        </SettingsCard>
+        </SettingsSectionCard>
+        )}
+        </section>
+
+        <section className="space-y-6 border-t border-[#1f2329] pt-4" aria-labelledby="settings-ai-heading">
+          <div className="app-page-header mb-8 flex items-center gap-3">
+            <Sparkles className="h-5 w-5 shrink-0 text-amber-500" />
+            <div className="min-w-0">
+              <h2 id="settings-ai-heading" className="text-2xl font-semibold text-neutral-100">{t('sections.aiTranslation')}</h2>
+              <p className="mt-1 text-sm text-neutral-500">{t('descriptions.aiTranslation')}</p>
+            </div>
+          </div>
+          <AiProvidersCard />
+          <MachineProvidersCard />
+          <PromptSlotsCard />
+          <SimilaritySettingsCard />
+          <SettingsSectionCard
+            title="Metrics"
+            contentTitle="Usage and activity"
+            subtitle="View provider usage and recent translation activity."
+            icon={<BarChart2 size={18} />}
+          >
+            <MetricsPage embedded />
+          </SettingsSectionCard>
+        </section>
 
         <div className="h-4" />
-      </div>
-    </div>
-  )
-}
-
-function SettingsLoadingSkeleton(): React.JSX.Element {
-  return (
-    <div className="flex min-h-full justify-center animate-pulse bg-[#0c0d0f] p-8">
-      <div className="w-full max-w-4xl space-y-6">
-        <div className="mb-8 flex items-center gap-3"><div className="h-6 w-6 rounded bg-[#6d45d8]/50" /><div className="space-y-2"><div className="h-7 w-28 rounded bg-[#20242a]" /><div className="h-3 w-80 rounded bg-[#181c21]" /></div></div>
-        {['w-36', 'w-24', 'w-20'].map((title, index) => <div key={index} className="overflow-hidden rounded-xl border border-[#1f2329] bg-[#131518]"><div className="border-b border-[#1f2329] px-6 py-5"><div className={`h-4 ${title} rounded bg-[#20242a]`} /></div><div className="space-y-5 p-6"><div className="h-4 w-3/5 rounded bg-[#181c21]" /><div className="h-20 rounded-xl bg-[#181c21]" /><div className="h-10 w-48 rounded-lg bg-[#181c21]" /></div></div>)}
       </div>
     </div>
   )

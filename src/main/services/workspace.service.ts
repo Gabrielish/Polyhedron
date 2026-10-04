@@ -6,7 +6,7 @@ import { app } from 'electron'
 import { backupDatabase, closeDb, getDb } from '../database/connection'
 import { config, mod } from '../database/schema'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
-import { createZip, extractZip } from './zip.service'
+import { runFileTask } from './file-task.service'
 import { databasePath, projectPath } from '../utils/app-paths'
 
 const WORKSPACE_VERSION = 1
@@ -60,7 +60,7 @@ function portableFileName(value: string | null): string {
   return path.basename(value.replaceAll('\\', '/'))
 }
 
-function copyCurrentSessions(destinationDir: string): void {
+async function copyCurrentSessions(destinationDir: string): Promise<void> {
   const sourceDir = projectPath('sessions')
   if (!fs.existsSync(sourceDir)) return
 
@@ -75,7 +75,7 @@ function copyCurrentSessions(destinationDir: string): void {
   const targetLang = settings.get('last_target_lang') || 'ro'
   const currentMods = getDb().select().from(mod).all()
 
-  fs.mkdirSync(destinationDir, { recursive: true })
+  await fs.promises.mkdir(destinationDir, { recursive: true })
   const copied = new Set<string>()
   for (const currentMod of currentMods) {
     if (!currentMod.lastFilePath) continue
@@ -84,7 +84,7 @@ function copyCurrentSessions(destinationDir: string): void {
     if (copied.has(fileName)) continue
     const sourcePath = path.join(sourceDir, fileName)
     if (!fs.existsSync(sourcePath)) continue
-    fs.copyFileSync(sourcePath, path.join(destinationDir, fileName))
+    await fs.promises.copyFile(sourcePath, path.join(destinationDir, fileName))
     copied.add(fileName)
   }
 }
@@ -115,17 +115,17 @@ function rewriteImportedPaths(dbPath: string): void {
 export async function exportWorkspace(outputPath: string): Promise<{ outputPath: string }> {
   const tempDir = createTempDir('polyhedron_workspace_export')
   try {
-    fs.mkdirSync(tempDir, { recursive: true })
+    await fs.promises.mkdir(tempDir, { recursive: true })
     await backupDatabase(path.join(tempDir, 'polyhedron.db'))
     const modsDir = projectPath('mods')
-    if (fs.existsSync(modsDir)) fs.cpSync(modsDir, path.join(tempDir, 'mods'), { recursive: true })
+    if (fs.existsSync(modsDir)) await fs.promises.cp(modsDir, path.join(tempDir, 'mods'), { recursive: true })
     const sessionsDir = projectPath('sessions')
-    if (fs.existsSync(sessionsDir)) copyCurrentSessions(path.join(tempDir, 'sessions'))
-    fs.writeFileSync(
+    if (fs.existsSync(sessionsDir)) await copyCurrentSessions(path.join(tempDir, 'sessions'))
+    await fs.promises.writeFile(
       path.join(tempDir, 'workspace.json'),
       JSON.stringify({ version: WORKSPACE_VERSION, createdAt: new Date().toISOString() }, null, 2)
     )
-    createZip(tempDir, outputPath)
+    await runFileTask({ kind: 'zip', sourceDir: tempDir, outputPath })
     return { outputPath }
   } finally {
     cleanupTempDir(tempDir)
@@ -140,7 +140,7 @@ export async function importWorkspace(
   const currentDbPath = databasePath()
   const backupPath = path.join(userData, `polyhedron.db.before-import-${Date.now()}`)
   try {
-    extractZip(inputPath, tempDir)
+    await runFileTask({ kind: 'extract', inputPath, destinationDir: tempDir })
     const importedDbPath = fs.existsSync(path.join(tempDir, 'polyhedron.db'))
       ? path.join(tempDir, 'polyhedron.db')
       : path.join(tempDir, 'icosa.db')

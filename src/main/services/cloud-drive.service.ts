@@ -146,6 +146,12 @@ function buildPwaSyncDocument() {
     version: 1 as const,
     generatedAt: new Date().toISOString(),
     fingerprint: (hash >>> 0).toString(16),
+    appearance: {
+      accent: /^#[0-9a-f]{6}$/i.test(settings.get('theme_accent') ?? '')
+        ? settings.get('theme_accent')!.toUpperCase()
+        : '#8C52FF',
+      buttonTextColor: settings.get('theme_accent_foreground') === 'black' ? 'black' as const : 'white' as const
+    },
     sessions
   }
 }

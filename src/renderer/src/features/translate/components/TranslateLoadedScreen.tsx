@@ -4,7 +4,8 @@ import { AlreadyTranslatedDialog } from '@/components/translation/AlreadyTransla
 import { BatchActionBar } from '@/components/translation/BatchActionBar'
 import { QuotaExceededDialog } from '@/components/translation/QuotaExceededDialog'
 import { TranslationGrid } from '@/components/translation/TranslationGrid'
-import { isDeveloperNote } from '@/context/TranslationSession'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
+import { analyzeTranslateEntries } from '../utils/entryStats'
 import { getProviderMeta } from '@/features/settings/aiProviders'
 import { useAISettings } from '@/hooks/useAISettings'
 import { useConfig } from '@/hooks/useConfig'
@@ -16,7 +17,7 @@ import {
   type TermGlossaryEntry
 } from '@/utils/termGlossary'
 import { useBatchTranslation } from '../hooks/useBatchTranslation'
-import { useDictionarySave } from '../hooks/useDictionarySave'
+import { DatabaseSaveError, saveTranslations } from '../utils/saveTranslations'
 import { useLoadedEditorShortcuts } from '../hooks/useLoadedEditorShortcuts'
 import { useTranslationExport } from '../hooks/useTranslationExport'
 import type { TranslationSession } from '../types'
@@ -50,22 +51,21 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
   )
   const sessionRef = useRef(session)
   sessionRef.current = session
-  const dictionarySave = useDictionarySave(session)
+  const [isSaving, setIsSaving] = useState(false)
+  const saveInProgress = useRef(false)
   const batch = useBatchTranslation(session)
   const exportFlow = useTranslationExport(session, languages)
   const { provider: aiProvider } = useAISettings()
   const { config } = useConfig()
   const hideDeveloperNotes = config['hide_developer_notes'] !== 'false'
-  const visibleEntries = hideDeveloperNotes
-    ? session.entries.filter((entry) => !isDeveloperNote(entry.source))
-    : session.entries
-
-  const translatedCount = visibleEntries.filter((entry) => entry.target.trim() !== '').length
+  const entryStats = useRetainedMemo('translate:entry-stats',
+    () => analyzeTranslateEntries(session.entries, hideDeveloperNotes),
+    [session.entries, hideDeveloperNotes])
+  const visibleEntries = entryStats.visibleEntries
+  const translatedCount = entryStats.translated
   const total = visibleEntries.length
   const pct = total > 0 ? (translatedCount / total) * 100 : 0
-  const verifiedCount = visibleEntries.filter(
-    (entry) => entry.target.trim() !== '' && entry.reviewStatus === 'verified'
-  ).length
+  const verifiedCount = entryStats.verified
   const fileName = session.inputPath
     ? (session.inputPath.split(/[\\/]/).pop() ?? session.modName)
     : session.modName || t('loaded.defaultFileName')
@@ -97,81 +97,24 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     [session]
   )
 
-  const handleSaveToDictionary = useCallback(async () => {
-    const confirmed = window.confirm(
-      'Save the current translations to the Database? This will update reusable database entries.'
-    )
-    if (confirmed) await dictionarySave.saveAll()
-  }, [dictionarySave.saveAll])
-
   const handleSaveSession = useCallback(async () => {
+    if (saveInProgress.current) return
+    saveInProgress.current = true
+    setIsSaving(true)
     try {
       await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
       const latest = sessionRef.current
-      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
-      await window.api.session.save({
-        key: sessionKey,
-        entries: latest.entries.map(
-          ({
-            uid,
-            source,
-            target,
-            genderTargets,
-            matchType,
-            needsReview,
-            reviewStatus,
-            history
-          }) => ({
-            uid,
-            source,
-            target,
-            genderTargets,
-            matchType,
-            needsReview,
-            reviewStatus,
-            history
-          })
-        )
-      })
-      toast.success(t('translate.sessionSaved', { ns: 'toasts' }))
+      const count = await saveTranslations(latest)
+      toast.success(t(count > 0 ? 'translate.sessionAndDatabaseSaved' : 'translate.sessionSaved', { ns: 'toasts' }))
     } catch (error) {
-      toast.error(String(error))
+      toast.error(error instanceof DatabaseSaveError
+        ? `${t('translate.sessionSavedDatabaseFailed', { ns: 'toasts' })} ${String(error.cause)}`
+        : String(error))
+    } finally {
+      saveInProgress.current = false
+      setIsSaving(false)
     }
   }, [t])
-
-  useEffect(() => {
-    const autosaveOnClose = () => {
-      const latest = sessionRef.current
-      if (latest.phase !== 'loaded' || latest.entries.length === 0) return
-      const sessionKey = `${latest.storedPath ?? latest.inputPath ?? latest.modName}|${latest.sourceLang}|${latest.targetLang}`
-      void window.api.session.save({
-        key: sessionKey,
-        entries: latest.entries.map(
-          ({
-            uid,
-            source,
-            target,
-            genderTargets,
-            matchType,
-            needsReview,
-            reviewStatus,
-            history
-          }) => ({
-            uid,
-            source,
-            target,
-            genderTargets,
-            matchType,
-            needsReview,
-            reviewStatus,
-            history
-          })
-        )
-      })
-    }
-    window.addEventListener('beforeunload', autosaveOnClose)
-    return () => window.removeEventListener('beforeunload', autosaveOnClose)
-  }, [])
 
   useLoadedEditorShortcuts({
     onSave: handleSaveSession,
@@ -185,7 +128,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
         session={session}
         fileName={fileName}
         viewMode={isCompactViewport ? 'stacked' : viewMode}
-        isSaving={dictionarySave.isSaving}
+        isSaving={isSaving}
         translatedCount={translatedCount}
         total={total}
         pct={pct}
@@ -194,13 +137,13 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
         batchTotal={batch.batchTotal}
         onViewModeChange={setViewMode}
         onSave={handleSaveSession}
-        onSaveToGlossary={handleSaveToDictionary}
         onOpenTermGlossary={() => setTermGlossaryOpen(true)}
       />
 
       <div className="flex-1 min-h-0">
         <TranslationGrid
           entries={visibleEntries}
+          entryStats={entryStats}
           onEntryChange={session.updateEntry}
           onEntryManualEdit={handleEntryManualEdit}
           termGlossary={termGlossary}
