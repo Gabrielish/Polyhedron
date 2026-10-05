@@ -166,9 +166,13 @@ export function SettingsPage(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    void window.api.cloud.account().then(setCloudAccount)
+    let active = true
+    const refresh = () => { void window.api.cloud.account().then(account => { if (active) setCloudAccount(account) }).catch(() => {}) }
+    refresh()
+    window.addEventListener('polyhedron:cloud-account-changed', refresh)
     setLastCloudUpload(localStorage.getItem('polyhedron.cloud-sync.last-uploaded'))
     setLastCloudDownload(localStorage.getItem('polyhedron.cloud-sync.last-downloaded'))
+    return () => { active = false; window.removeEventListener('polyhedron:cloud-account-changed', refresh) }
   }, [])
 
   const handleCloudAccount = async () => {
@@ -178,6 +182,7 @@ export function SettingsPage(): React.JSX.Element {
         ? await window.api.cloud.disconnect()
         : await window.api.cloud.connect()
       setCloudAccount(next)
+      window.dispatchEvent(new Event('polyhedron:cloud-account-changed'))
       toast.success(next.connected ? 'Google Drive connected.' : 'Google Drive disconnected.')
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Google Drive authentication failed.')
@@ -300,24 +305,24 @@ export function SettingsPage(): React.JSX.Element {
                 </button>
               )}
             </div>}
-            <div role="status" className="mt-auto min-h-4 w-full text-[11px]">
+            <div role="status" className="settings-update-feedback mt-auto flex min-h-5 w-full items-center text-[11px] leading-5">
               {updateState?.status === 'checking' && (
-                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Checking for updates…</AppMessage>
+                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Checking for updates…</AppMessage>
               )}
               {updateState?.status === 'not-available' && (
-                <AppMessage tone="success" className="app-message-plain border-0 bg-transparent p-0">You are up to date.</AppMessage>
+                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">You are up to date.</AppMessage>
               )}
               {updateState?.status === 'available' && (
-                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Version {updateState.version} is available.</AppMessage>
+                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is available.</AppMessage>
               )}
               {updateState?.status === 'downloading' && (
-                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Downloading… {Math.round(updateState.percent)}%</AppMessage>
+                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Downloading… {Math.round(updateState.percent)}%</AppMessage>
               )}
               {updateState?.status === 'downloaded' && (
-                <AppMessage tone="success" className="app-message-plain border-0 bg-transparent p-0">Version {updateState.version} is ready to install.</AppMessage>
+                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is ready to install.</AppMessage>
               )}
               {updateState?.status === 'error' && (
-                <AppMessage tone="error" className="app-message-plain border-0 bg-transparent p-0">{updateState.message}</AppMessage>
+                <AppMessage tone="error" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">{updateState.message}</AppMessage>
               )}
             </div>
           </div>
@@ -357,12 +362,12 @@ export function SettingsPage(): React.JSX.Element {
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-neutral-200">
-                    {cloudAccount?.connected ? cloudAccount.displayName || 'Google account' : 'Google Drive not connected'}
+                  <p className="break-words text-sm font-medium text-neutral-200">
+                    {cloudAccount?.connected ? cloudAccount.displayName || 'Google account' : 'Google Drive'}
                   </p>
-                  <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-neutral-500">
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-neutral-500">
                     {cloudAccount?.connected && <Mail size={12} className="shrink-0" />}
-                    <span className="truncate">{cloudAccount?.connected ? cloudAccount.emailAddress || 'Account connected' : 'Connect an account to enable cloud sync'}</span>
+                    <span className="break-words">{cloudAccount?.connected ? cloudAccount.emailAddress || 'Account connected' : 'Connect to sync your workspace.'}</span>
                   </p>
                 </div>
               </div>
@@ -373,11 +378,11 @@ export function SettingsPage(): React.JSX.Element {
                 className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
               >
                 {cloudAccountBusy ? <LoaderCircle size={14} className="animate-spin" /> : cloudAccount?.connected ? <LogOut size={14} /> : <LogIn size={14} />}
-                {cloudAccountBusy ? 'Connecting…' : cloudAccount?.connected ? 'Disconnect' : 'Connect Google Drive'}
+                {cloudAccountBusy ? 'Connecting…' : cloudAccount?.connected ? 'Disconnect' : 'Connect'}
               </button>
             </div>
 
-            <div className="mt-auto flex items-baseline justify-between gap-3 text-[11px]">
+            <div className="mt-auto flex min-h-5 items-center justify-between gap-3 text-[11px] leading-5">
               <p className="flex items-baseline gap-1 whitespace-nowrap">
                 <span className="text-amber-300">Last upload:</span>
                 <span className="text-neutral-300">{formatCloudDate(lastCloudUpload)}</span>

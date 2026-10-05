@@ -24,6 +24,11 @@ void WINAPI TestEntry(void) {
   WritePrivateProfileStringW(L"installer", L"pid", pid, request);
   WritePrivateProfileStringW(L"installer", L"command", L"ready", request);
   Sleep(300);
+  // The production native splash must exist before the frontend is visible.
+  if (!FindWindowW(L"PolyhedronSetupSplash", L"Polyhedron Setup")) ExitProcess(4);
+  WritePrivateProfileStringW(L"installer", L"command", L"visible", request);
+  Sleep(300);
+  if (FindWindowW(L"PolyhedronSetupSplash", L"Polyhedron Setup")) ExitProcess(5);
   if (lstrcmpW(mode, L"crash") == 0) ExitProcess(0);
   if (lstrcmpW(mode, L"cancel") == 0) {
     WritePrivateProfileStringW(L"installer", L"command", L"cancel", request);

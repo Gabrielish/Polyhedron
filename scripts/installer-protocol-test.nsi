@@ -5,6 +5,7 @@ RequestExecutionLevel user
 !include LogicLib.nsh
 !addplugindir /x86-unicode "${TEST_PLUGINS}"
 !define APP_EXECUTABLE_FILENAME "Polyhedron.exe"
+!define POLYHEDRON_UI_ARCHIVE "${APP_64}"
 !macro setInstallModePerUser
   SetShellVarContext current
 !macroend

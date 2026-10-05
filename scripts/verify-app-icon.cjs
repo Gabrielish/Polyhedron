@@ -1,4 +1,4 @@
-const { app, BrowserWindow, nativeTheme } = require('electron')
+const { app, BrowserWindow, nativeTheme, nativeImage, shell } = require('electron')
 const { createRequire } = require('node:module')
 const Module = require('node:module')
 const fs = require('node:fs/promises')
@@ -24,7 +24,7 @@ async function run() {
   service.filename = path.join(root, 'scripts', 'app-icon-test.cjs')
   service.paths = module.paths
   service._compile(bundle.outputFiles[0].text, service.filename)
-  const { updateAppIcon, createAppIconSvg } = service.exports
+  const { updateAppIcon, createAppIconSvg, savedWindowsAppIcon, applyWindowsAppIcon } = service.exports
   await app.whenReady()
   const window = new BrowserWindow({ show: false })
   await window.loadURL('data:text/html,' + encodeURIComponent(
@@ -104,8 +104,47 @@ async function run() {
   const dockCount = icons.length
   const platform = Object.getOwnPropertyDescriptor(process, 'platform')
   const windowSetIcon = window.setIcon
+  const windowSetAppDetails = window.setAppDetails
+  const windowIsVisible = window.isVisible
+  const windowSetSkipTaskbar = window.setSkipTaskbar
+  const readShortcut = shell.readShortcutLink
+  const writeShortcut = shell.writeShortcutLink
+  const originalDesktop = app.getPath('desktop')
+  const originalAppData = app.getPath('appData')
+  const testDesktop = path.join(output, 'desktop')
+  const testAppData = path.join(output, 'appData')
+  const shortcuts = new Map()
+  for (const filename of [
+    path.join(testDesktop, 'My Polyhedron.lnk'),
+    path.join(testAppData, 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Polyhedron.lnk'),
+    path.join(testAppData, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar', 'Polyhedron.lnk'),
+    path.join(testDesktop, 'Unrelated.lnk')
+  ]) {
+    await fs.mkdir(path.dirname(filename), { recursive: true })
+    await fs.writeFile(filename, 'test-only shortcut placeholder')
+    shortcuts.set(filename, { target: filename.includes('Unrelated') ? '/unrelated/application.exe' : process.execPath,
+      args: '--keep-my-arguments', cwd: output, description: 'Keep my description',
+      appUserModelId: filename.includes('Unrelated') ? 'unrelated.app' : 'com.polyhedron.bg3-mod-translator', icon: 'old.ico', iconIndex: 0 })
+  }
+  app.setPath('desktop', testDesktop)
+  app.setPath('appData', testAppData)
+  shell.readShortcutLink = filename => ({ ...shortcuts.get(filename) })
+  shell.writeShortcutLink = (filename, operation, details) => {
+    assert.equal(operation, 'update')
+    shortcuts.set(filename, { ...shortcuts.get(filename), ...details })
+    return true
+  }
+  const appDetails = []
+  const taskbarChanges = []
+  window.setAppDetails = details => appDetails.push(details)
+  window.isVisible = () => true
+  window.setSkipTaskbar = skip => taskbarChanges.push(skip)
   let taskbarIcon
-  window.setIcon = icon => { taskbarIcon = icon }
+  window.setIcon = icon => {
+    const ico = require('node:fs').readFileSync(icon)
+    const offset = ico.readUInt32LE(18)
+    taskbarIcon = nativeImage.createFromBuffer(ico.subarray(offset, offset + ico.readUInt32LE(14)))
+  }
   try {
     Object.defineProperty(process, 'platform', { ...platform, value: 'win32' })
     await updateAppIcon(window, '#A7F175')
@@ -117,9 +156,66 @@ async function run() {
     await updateAppIcon(window, '#A7F175', 'accent-dragon')
     assert.equal(nativePixel(128, 40)[3], 255, 'Windows inverted taskbar surface remains opaque')
     assert.equal(icons.length, dockCount, 'Windows path must not update Dock')
+    assert.equal(appDetails.length, 4, 'Relaunch metadata and shell identity set separately for both styles')
+    assert.notEqual(appDetails[0].appIconPath, appDetails[2].appIconPath, 'Different artwork uses different paths to avoid shell icon cache')
+    for (let index = 0; index < appDetails.length; index += 2) {
+      const details = appDetails[index]
+      assert.ok(!details.appId, 'Relaunch metadata is supplied before the grouping identity')
+      assert.equal(appDetails[index + 1].appId, 'com.polyhedron.bg3-mod-translator')
+      const ico = await fs.readFile(details.appIconPath)
+      assert.equal(ico.readUInt16LE(2), 1, 'ICO type')
+      const sizes = [256,16,20,24,32,40,48,64,96,128]
+      assert.equal(ico.readUInt16LE(4), sizes.length, 'ICO includes native Windows UI sizes')
+      assert.equal(ico.readUInt16LE(10), 1, 'ICO planes at the correct offset')
+      assert.equal(ico.readUInt16LE(12), 32, 'ICO bit depth at the correct offset')
+      let offset = 6 + sizes.length * 16
+      sizes.forEach((size, frame) => {
+        const entry = 6 + frame * 16
+        assert.equal(ico[entry], size === 256 ? 0 : size)
+        assert.equal(ico[entry + 1], size === 256 ? 0 : size)
+        assert.equal(ico.readUInt32LE(entry + 12), offset)
+        const length = ico.readUInt32LE(entry + 8)
+        const png = ico.subarray(offset, offset + length)
+        assert.deepEqual([...png.subarray(0, 8)], [137,80,78,71,13,10,26,10], 'Valid PNG frame')
+        assert.deepEqual(nativeImage.createFromBuffer(png).getSize(), {width:size,height:size}, 'Frame dimensions match directory')
+        offset += length
+      })
+      assert.equal(offset, ico.length, 'Every frame is present without trailing data')
+      assert.ok(details.relaunchCommand && details.relaunchDisplayName, 'Windows relaunch properties supplied together')
+    }
+    const saved = savedWindowsAppIcon()
+    assert.equal(saved, appDetails[2].appIconPath, 'Startup restores the hashed icon path, not the cached stable filename')
+    for (const [filename, details] of shortcuts) {
+      assert.equal(details.icon, filename.includes('Unrelated') ? 'old.ico' : saved, 'Only matching desktop/Start/taskbar shortcuts receive the new icon')
+      assert.equal(details.args, '--keep-my-arguments', 'Shortcut arguments are preserved')
+      assert.equal(details.cwd, output, 'Shortcut working directory is preserved')
+      assert.equal(details.description, 'Keep my description', 'Shortcut description is preserved')
+    }
+    await new Promise(resolve => setTimeout(resolve, 150))
+    assert.deepEqual(taskbarChanges, [true, true, false], 'Rapid live updates restore the button once without hiding the app window')
+    applyWindowsAppIcon(window, saved)
+    assert.equal(taskbarChanges.length, 3, 'Unchanged icon does not churn the taskbar button')
+    await updateAppIcon(window, '#A7F175', 'accent-dragon', 'black', true)
+    const refreshed = appDetails.at(-2).appIconPath
+    assert.notEqual(refreshed, saved, 'Explicit refresh bypasses the shell filename cache')
+    assert.equal(savedWindowsAppIcon(), saved, 'Refresh preserves the canonical startup icon')
+    assert.deepEqual(await fs.readFile(refreshed), await fs.readFile(saved), 'Refresh keeps the selected artwork unchanged')
+    await updateAppIcon(window, '#A7F175', 'accent-dragon', 'black', true)
+    assert.notEqual(appDetails.at(-2).appIconPath, refreshed, 'Repeated refresh requests get distinct shell cache keys')
+    assert.deepEqual(taskbarChanges.slice(-4), [true, false, true, false], 'Explicit refresh restores the taskbar button each time')
+    console.log('PASS: explicit Windows refresh, unique cache keys, persisted appearance unchanged')
+    await fs.writeFile(path.join(app.getPath('userData'), 'taskbar-icon.ico'), Buffer.alloc(22))
+    assert.equal(savedWindowsAppIcon(), null, 'Invalid legacy icon is not restored')
   } finally {
     Object.defineProperty(process, 'platform', platform)
     window.setIcon = windowSetIcon
+    window.setAppDetails = windowSetAppDetails
+    window.isVisible = windowIsVisible
+    window.setSkipTaskbar = windowSetSkipTaskbar
+    shell.readShortcutLink = readShortcut
+    shell.writeShortcutLink = writeShortcut
+    app.setPath('desktop', originalDesktop)
+    app.setPath('appData', originalAppData)
     nativeTheme.themeSource = themeSource
   }
   console.log('PASS: Windows icon dispatch (native taskbar requires Windows verification)')

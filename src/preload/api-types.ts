@@ -555,6 +555,7 @@ export interface PromptSlotApi {
 }
 
 export interface WindowApi {
+  refreshAppIcon(): Promise<void>
   minimize(): Promise<void>
   maximize(): Promise<void>
   close(): Promise<void>

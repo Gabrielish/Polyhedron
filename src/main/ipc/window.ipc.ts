@@ -1,7 +1,12 @@
 import { app, BrowserWindow, ipcMain, Notification } from 'electron'
 
 
-export function registerWindowHandlers(getWindow: () => BrowserWindow | null): void {
+export function registerWindowHandlers(getWindow: () => BrowserWindow | null, refreshAppIcon?: () => Promise<void>): void {
+  ipcMain.handle('window:refreshAppIcon', async () => {
+    if (process.platform !== 'win32') throw new Error('Taskbar icon refresh is only available on Windows.')
+    if (!refreshAppIcon) throw new Error('Taskbar icon refresh is unavailable.')
+    await refreshAppIcon()
+  })
   ipcMain.handle('window:minimize', () => {
     getWindow()?.minimize()
   })
@@ -17,7 +22,9 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null): v
     getWindow()?.close()
   })
 
-  ipcMain.handle('window:relaunch', () => {
+  ipcMain.handle('window:relaunch', async () => {
+    // Persist the latest selected artwork before the replacement process reads it.
+    if (process.platform === 'win32' && refreshAppIcon) await refreshAppIcon()
     app.relaunch({ execPath: process.execPath, args: process.argv.slice(1) })
     setTimeout(() => app.exit(0), 250)
   })

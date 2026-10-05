@@ -1,5 +1,6 @@
 appId: com.polyhedron.bg3-mod-translator
 productName: Polyhedron
+afterPack: scripts/prepare-installer-runtime.cjs
 copyright: Copyright © 2026 Gabrielish
 publish:
   provider: github

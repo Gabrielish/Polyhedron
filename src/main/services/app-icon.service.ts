@@ -1,25 +1,119 @@
-import { app, nativeImage, nativeTheme, type BrowserWindow } from 'electron'
-import { mkdir, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { app, nativeImage, nativeTheme, shell, type BrowserWindow } from 'electron'
+import { existsSync, readFileSync } from 'node:fs'
+import { mkdir, readdir, writeFile } from 'node:fs/promises'
+import { basename, join, resolve } from 'node:path'
+import { createHash, randomUUID } from 'node:crypto'
 import dragonSvg from '../../renderer/src/assets/dungeons-dragons.svg?raw'
 import { logError } from './log.service'
 
 const DEFAULT_ACCENT = '#8C52FF'
 const requests = new WeakMap<BrowserWindow, number>()
+const WINDOWS_APP_ID = 'com.polyhedron.bg3-mod-translator'
+const appliedWindowsIcons = new WeakMap<BrowserWindow, string>()
+const taskbarRefreshTimers = new WeakMap<BrowserWindow, ReturnType<typeof setTimeout>>()
+const windowsIconWrites = new WeakMap<BrowserWindow, Promise<void>>()
+
+function windowsIconFilename(ico: Buffer): string {
+  return `taskbar-icon-${createHash('sha256').update(ico).digest('hex').slice(0, 16)}.ico`
+}
+
+/** Reuse the content-addressed icon at startup, not the shell-cached stable path. */
+export function savedWindowsAppIcon(): string | null {
+  if (process.platform !== 'win32') return null
+  try {
+    const stablePath = join(app.getPath('userData'), 'taskbar-icon.ico')
+    const ico = readFileSync(stablePath)
+    // Older releases wrote a malformed directory entry. Do not restore it.
+    const count = ico.length >= 6 ? ico.readUInt16LE(4) : 0
+    const dataOffset = 6 + count * 16
+    if (count < 1 || ico.length < dataOffset + 8 || ico.readUInt16LE(2) !== 1 || ico.readUInt32LE(18) !== dataOffset) return null
+    const hashedPath = join(app.getPath('userData'), windowsIconFilename(ico))
+    return existsSync(hashedPath) ? hashedPath : stablePath
+  } catch {
+    return null
+  }
+}
+
+/** Set relaunch metadata before the AppUserModelID causes shell grouping. */
+export function applyWindowsAppIcon(window: BrowserWindow, iconPath: string, forceRefresh = false): void {
+  if (process.platform !== 'win32' || window.isDestroyed()) return
+  const previousPath = appliedWindowsIcons.get(window)
+  window.setIcon(iconPath)
+  window.setAppDetails({
+    appIconPath: iconPath, appIconIndex: 0,
+    relaunchCommand: `"${process.execPath}"`, relaunchDisplayName: 'Polyhedron'
+  })
+  window.setAppDetails({ appId: WINDOWS_APP_ID })
+  appliedWindowsIcons.set(window, iconPath)
+  if ((!forceRefresh && previousPath === iconPath) || !window.isVisible()) return
+
+  // Explorer can retain the old group image even after WM_SETICON and the
+  // relaunch properties change. Re-register the taskbar button, not the window:
+  // no hide/show, focus change, Explorer restart, or appearance-specific app ID.
+  const pending = taskbarRefreshTimers.get(window)
+  if (pending) clearTimeout(pending)
+  window.setSkipTaskbar(true)
+  taskbarRefreshTimers.set(window, setTimeout(() => {
+    taskbarRefreshTimers.delete(window)
+    if (!window.isDestroyed()) window.setSkipTaskbar(false)
+  }, forceRefresh ? 250 : 100))
+}
+
+async function updateWindowsShortcuts(iconPath: string, isCurrent: () => boolean): Promise<void> {
+  const appData = app.getPath('appData')
+  const roots = [
+    { path: app.getPath('desktop'), depth: 0 },
+    { path: join(appData, 'Microsoft', 'Windows', 'Start Menu', 'Programs'), depth: 3 },
+    { path: join(appData, 'Microsoft', 'Internet Explorer', 'Quick Launch', 'User Pinned', 'TaskBar'), depth: 0 }
+  ]
+  const executable = resolve(process.execPath).toLowerCase()
+  async function visit(directory: string, depth: number): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true }).catch(() => [])
+    for (const entry of entries) {
+      if (!isCurrent()) return
+      const shortcutPath = join(directory, entry.name)
+      if (entry.isDirectory() && depth > 0) { await visit(shortcutPath, depth - 1); continue }
+      if (!entry.isFile() || !entry.name.toLowerCase().endsWith('.lnk')) continue
+      let shortcut: Electron.ShortcutDetails
+      try { shortcut = shell.readShortcutLink(shortcutPath) } catch { continue }
+      // Never change another application's shortcut. Match the executable, or
+      // Polyhedron's explicit identity (also covers a stale installation path).
+      const belongsToApp = (resolve(shortcut.target).toLowerCase() === executable &&
+        (app.isPackaged || shortcut.appUserModelId === WINDOWS_APP_ID)) ||
+        (shortcut.appUserModelId === WINDOWS_APP_ID && basename(shortcut.target).toLowerCase() === 'polyhedron.exe')
+      if (!belongsToApp || (shortcut.icon === iconPath && shortcut.iconIndex === 0)) continue
+      try {
+        // Update only icon fields; preserve target, arguments, working directory,
+        // and pin identity. Electron also sends SHChangeNotify(SHCNE_UPDATEITEM).
+        if (!shell.writeShortcutLink(shortcutPath, 'update', { target: shortcut.target, icon: iconPath, iconIndex: 0 })) {
+          throw new Error('Could not update the Polyhedron shortcut icon')
+        }
+      } catch (error) { logError('app.icon.shortcut', error) }
+    }
+  }
+  for (const root of roots) await visit(root.path, root.depth)
+}
 
 function toIco(image: Electron.NativeImage): Buffer {
-  const png = image.toPNG()
-  const header = Buffer.alloc(22)
+  // Include exact taskbar/menu sizes so Windows needn't downsample a single
+  // 256px frame. Each frame is resized from the original 1024px raster.
+  const sizes = [256, 16, 20, 24, 32, 40, 48, 64, 96, 128]
+  const frames = sizes.map(size => image.resize({ width: size, height: size, quality: 'best' }).toPNG())
+  const header = Buffer.alloc(6 + sizes.length * 16)
   header.writeUInt16LE(0, 0)
   header.writeUInt16LE(1, 2)
-  header.writeUInt16LE(1, 4)
-  header[6] = 0
-  header[7] = 0
-  header.writeUInt16LE(1, 8)
-  header.writeUInt16LE(32, 10)
-  header.writeUInt32LE(png.length, 12)
-  header.writeUInt32LE(22, 16)
-  return Buffer.concat([header, png])
+  header.writeUInt16LE(sizes.length, 4)
+  let offset = header.length
+  sizes.forEach((size, index) => {
+    const entry = 6 + index * 16
+    header[entry] = header[entry + 1] = size === 256 ? 0 : size
+    header.writeUInt16LE(1, entry + 4)
+    header.writeUInt16LE(32, entry + 6)
+    header.writeUInt32LE(frames[index].length, entry + 8)
+    header.writeUInt32LE(offset, entry + 12)
+    offset += frames[index].length
+  })
+  return Buffer.concat([header, ...frames])
 }
 
 export function createAppIconSvg(accent: string, style = 'accent-background', foreground = 'black', targetPlatform = process.platform): string {
@@ -71,8 +165,8 @@ export function createAppIconSvg(accent: string, style = 'accent-background', fo
   </svg>`
 }
 
-/** Updates only the running app's OS icon; renderer branding is untouched. */
-export async function updateAppIcon(window: BrowserWindow, accent: string, style = 'accent-background', foreground = 'black'): Promise<void> {
+/** Updates the OS icon and matching Windows shortcuts; renderer branding is untouched. */
+export async function updateAppIcon(window: BrowserWindow, accent: string, style = 'accent-background', foreground = 'black', forceRefresh = false): Promise<void> {
   if (window.isDestroyed() || !['darwin', 'win32'].includes(process.platform)) return
   const request = (requests.get(window) ?? 0) + 1
   requests.set(window, request)
@@ -94,21 +188,37 @@ export async function updateAppIcon(window: BrowserWindow, accent: string, style
     if (icon.isEmpty()) throw new Error('Generated application icon is empty')
     if (process.platform === 'darwin') app.dock?.setIcon(icon)
     else {
-      // Windows taskbar HICONs are cached/rejected inconsistently at 1024px.
-      // Give the shell the same artwork at the native maximum icon size.
-      const taskbarIcon = icon.resize({ width: 256, height: 256 })
-      window.setIcon(taskbarIcon)
       // With an AppUserModelId Windows uses the relaunch icon for the taskbar
       // button and can ignore WM_SETICON. Refresh that path as well.
-      const iconPath = join(app.getPath('userData'), 'taskbar-icon.ico')
-      await mkdir(app.getPath('userData'), { recursive: true })
-      await writeFile(iconPath, toIco(taskbarIcon))
+      const ico = toIco(icon)
+      const canonicalPath = join(app.getPath('userData'), windowsIconFilename(ico))
+      // An explicit refresh must also bypass Explorer's filename-based cache,
+      // even when the selected artwork itself has not changed.
+      const iconPath = forceRefresh
+        ? canonicalPath.replace(/\.ico$/, `-refresh-${randomUUID()}.ico`)
+        : canonicalPath
+      // Serialize the persistent copy so rapid color/style clicks cannot leave
+      // an older image on disk after a newer one has already been applied.
+      const write = (windowsIconWrites.get(window) ?? Promise.resolve()).catch(() => {}).then(async () => {
+        if (window.isDestroyed() || requests.get(window) !== request) return
+        await mkdir(app.getPath('userData'), { recursive: true })
+        await writeFile(canonicalPath, ico)
+        if (forceRefresh) await writeFile(iconPath, ico)
+        if (window.isDestroyed() || requests.get(window) !== request) return
+        await writeFile(join(app.getPath('userData'), 'taskbar-icon.ico'), ico)
+      })
+      windowsIconWrites.set(window, write)
+      await write
       if (window.isDestroyed() || requests.get(window) !== request) return
-      window.setAppDetails({ appId: 'com.polyhedron.bg3-mod-translator', appIconPath: iconPath })
+      await updateWindowsShortcuts(iconPath, () => !window.isDestroyed() && requests.get(window) === request)
+      if (window.isDestroyed() || requests.get(window) !== request) return
+      applyWindowsAppIcon(window, iconPath, forceRefresh)
+      if (forceRefresh) await new Promise<void>(resolve => setTimeout(resolve, 300))
     }
   } catch (error) {
     if (!window.isDestroyed() && requests.get(window) === request) {
       logError('app.icon', error)
     }
+    if (forceRefresh) throw error
   }
 }

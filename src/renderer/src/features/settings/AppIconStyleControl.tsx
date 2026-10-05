@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
 import { useTheme, type AppIconStyle } from '@/context/ThemeContext'
+import { btnGhostIcon } from '@/features/translate/components/styles'
 import dragonSvg from '@/assets/dungeons-dragons.svg?raw'
 
 const dragonPath = dragonSvg.match(/<path\b[^>]*\bd="([^"]+)"/)?.[1]
@@ -9,6 +12,17 @@ export function AppIconStyleControl(): React.JSX.Element {
   const dragonForeground = accentForeground === 'black' ? '#101010' : '#FFFFFF'
   const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   const isMac = navigator.platform.toLowerCase().includes('mac')
+  const isWindows = navigator.platform.toLowerCase().startsWith('win')
+  const [refreshing, setRefreshing] = useState(false)
+  const refreshIcon = async (): Promise<void> => {
+    if (refreshing) return
+    setRefreshing(true)
+    try {
+      await window.api.window.relaunch()
+    } catch {
+      toast.error('Could not restart Polyhedron. Please close and reopen the app.')
+    } finally { setRefreshing(false) }
+  }
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const onChange = (): void => setDark(media.matches)
@@ -18,11 +32,11 @@ export function AppIconStyleControl(): React.JSX.Element {
   return (
     <div className="min-w-0">
       <p className="text-sm font-medium text-neutral-200">App icon</p>
-      <p className="mt-1 text-xs text-neutral-500">Accent background or dragon.</p>
+      <p className="mt-1 text-xs text-neutral-500">Choose an icon style.</p>
       <div className="mt-3 flex min-h-10 items-center gap-3" role="group" aria-label="Dock and taskbar icon style">
         {(['accent-background', 'accent-dragon'] as AppIconStyle[]).map((style) => {
           const inverted = style === 'accent-dragon'
-          const label = inverted ? 'Accent dragon · system background (dark on Windows)' : `Accent background · ${accentForeground === 'black' ? 'dark' : 'white'} dragon`
+          const label = inverted ? 'Dragon icon' : 'Filled icon'
           return (
             <button
               key={style}
@@ -44,6 +58,19 @@ export function AppIconStyleControl(): React.JSX.Element {
             </button>
           )
         })}
+        {isWindows && (
+          <button
+            type="button"
+            className={btnGhostIcon}
+            aria-label="Restart application"
+            title="Restart application"
+            disabled={refreshing}
+            aria-busy={refreshing}
+            onClick={() => void refreshIcon()}
+          >
+            <RefreshCw size={15} className={refreshing ? 'animate-spin' : ''} aria-hidden="true" />
+          </button>
+        )}
       </div>
     </div>
   )

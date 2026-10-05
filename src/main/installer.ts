@@ -83,5 +83,15 @@ export async function startInstaller(): Promise<void> {
   request('ready')
   if (process.env.ELECTRON_RENDERER_URL) await window.loadURL(`${process.env.ELECTRON_RENDERER_URL}/installer.html`)
   else await window.loadFile(join(__dirname, '../renderer/installer.html'))
-  if (!process.argv.includes('--installer-smoke')) window.show()
+  if (!process.argv.includes('--installer-smoke')) {
+    // A one-time foreground handoff from the native splash. Do not keep Setup
+    // above other applications after it has appeared.
+    if (process.platform === 'win32') window.setAlwaysOnTop(true)
+    window.show()
+    window.focus()
+    if (process.platform === 'win32') setTimeout(() => {
+      if (!window.isDestroyed()) window.setAlwaysOnTop(false)
+    }, 300)
+  }
+  request('visible')
 }

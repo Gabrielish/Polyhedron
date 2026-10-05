@@ -1,0 +1,40 @@
+const { app, BrowserWindow, protocol } = require('electron')
+const { createRequire } = require('node:module')
+const fs = require('node:fs/promises')
+const path = require('node:path')
+const os = require('node:os')
+
+async function run() {
+  const root = path.resolve(__dirname, '..')
+  app.setPath('userData', await fs.mkdtemp(path.join(os.tmpdir(), 'polyhedron-setup-feedback-')))
+  const { build } = createRequire(require.resolve('vite/package.json'))('esbuild')
+  const bundle = await build({ absWorkingDir: root, tsconfig: 'tsconfig.web.json', entryPoints: ['src/renderer/src/installer.tsx'], bundle: true, write: false, platform: 'browser', format: 'iife', jsx: 'automatic', loader: { '.css': 'empty' }, define: { 'process.env.NODE_ENV': '"production"' }, plugins: [{ name: 'raw-svg', setup(builder) { builder.onLoad({ filter: /\.svg$/ }, async args => ({ contents: await fs.readFile(args.path, 'utf8'), loader: 'text' })) } }] })
+  await app.whenReady()
+  protocol.handle('https', () => new Response('<div id="root"></div>', { headers: { 'content-type': 'text/html' } }))
+  const win = new BrowserWindow({ show: false, width: 720, height: 510, webPreferences: { backgroundThrottling: false } })
+  await win.loadURL('https://setup.test')
+  const evaluate = code => win.webContents.executeJavaScript(code, true)
+  await evaluate(`window.testState={state:'ready',target:'C:\\Programs\\Polyhedron',version:'test'};window.closedSetup=false;
+    window.installer={status:async()=>window.testState,install:async()=>{window.testState={...window.testState,state:'installing'}},close:async()=>{window.closedSetup=true},launch:async()=>{},minimize:async()=>{},browse:async()=>null};
+    window.testTime=0;Object.defineProperty(performance,'now',{value:()=>window.testTime});
+    const interval=window.setInterval.bind(window);window.setInterval=(callback,delay)=>delay===50?(window.progressTick=callback,123456789):interval(callback,delay);undefined`)
+  await evaluate(bundle.outputFiles[0].text)
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+  const check = async (name, code) => { await wait(100); if (!await evaluate(code)) throw new Error(name); console.log('PASS: ' + name) }
+  await wait(300)
+  await evaluate(`document.querySelector('footer button:last-child').click()`)
+  await wait(400)
+  await check('no numeric percentage or counts in progress section', `!/%|\\d+ \\/ \\d+/.test(document.querySelector('section').textContent)`)
+  await evaluate('window.testTime=13500;window.progressTick()')
+  await check('single-pass animation is halfway after 13.5 seconds', `document.querySelector('.h-full.rounded-full').style.width==='50%'`)
+  await evaluate('window.testTime=27000;window.progressTick()')
+  await check('animation reaches 100% after 27 seconds', `document.querySelector('.h-full.rounded-full').style.width==='100%'`)
+  await evaluate('window.testTime=35000;window.progressTick()')
+  await check('full bar stays full but does not fake completion', `document.querySelector('.h-full.rounded-full').style.width==='100%' && document.querySelector('footer button:last-child').disabled && !window.closedSetup`)
+  await check('copy explains preserved projects and manual close after completion', `document.querySelector('section').textContent.includes('Your existing projects and settings are kept. You can close Setup once installation is complete.') && !document.body.textContent.includes('automatically')`)
+  await evaluate(`window.testState={...window.testState,state:'done'}`)
+  await wait(400)
+  await check('completion leaves Setup open with manual Close/Open actions', `!window.closedSetup && document.querySelector('footer button').textContent==='Close' && document.querySelector('footer button:last-child').textContent.includes('Open Polyhedron') && !document.querySelector('footer button:last-child').disabled`)
+  win.destroy(); app.quit()
+}
+run().catch(error => { console.error(error); app.exit(1) })

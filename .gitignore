@@ -1,6 +1,7 @@
 node_modules
 node_modules.*
 dist
+build/setup-ui.7z
 out
 .DS_Store
 .eslintcache

@@ -40,6 +40,9 @@ async function run(){
   await win.loadURL('https://settings.test')
   const assets=path.join(root,'out/renderer/assets')
   await win.webContents.insertCSS(await fs.readFile(path.join(assets,(await fs.readdir(assets)).find(name=>name.endsWith('.css'))),'utf8'))
+  // Exercise current feedback styles without rebuilding the application assets.
+  const feedbackCss=await fs.readFile(path.join(root,'src/renderer/src/assets/main.css'),'utf8')
+  await win.webContents.insertCSS(feedbackCss.slice(feedbackCss.indexOf('/* Inline feedback uses neutral cards;')))
   await win.webContents.executeJavaScript(bundle.outputFiles[0].text)
   const evaluate=source=>win.webContents.executeJavaScript(source,true)
   const settle=()=>new Promise(resolve=>setTimeout(resolve,150))
@@ -91,6 +94,7 @@ async function run(){
   await check('section introductions precede Google and Polyhedron cards',`(()=>{const {cloud,updates}=window.cards();const find=(card,text)=>[...card.querySelectorAll('p')].find(p=>p.textContent===text).getBoundingClientRect();return find(cloud,'Automatic workspace upload').bottom<find(cloud,'Test account').top && find(updates,'Check for updates').bottom<find(updates,'Polyhedron').top})()`)
   await check('application identity card shows runtime version and logo',`(()=>{const {updates}=window.cards();return updates.textContent.includes('Installed version: 9.8.7-test') && updates.querySelector('svg[viewBox="0 0 12.21 10.26"]')})()`)
   await check('Check for updates sits beside Polyhedron within identity card',`(()=>{const {updates}=window.cards();const button=[...updates.querySelectorAll('button')].find(b=>b.textContent.includes('Check for updates'));const logo=button.parentElement.querySelector('svg[viewBox="0 0 12.21 10.26"]');if(!logo)return false;const b=button.getBoundingClientRect(),l=logo.getBoundingClientRect();return l.right<b.left && Math.abs((l.top+l.bottom-b.top-b.bottom)/2)<1})()`)
+  await evaluate(`window.initialFooterCards=Object.fromEntries(Object.entries(window.cards()).map(([key,card])=>[key,{top:card.getBoundingClientRect().top,height:card.getBoundingClientRect().height}]));undefined`)
   for(const [state,text] of [
     [{status:'checking'},'Checking for updates…'],
     [{status:'not-available',version:'1.0.0'},'You are up to date.'],
@@ -101,6 +105,30 @@ async function run(){
   ]){
     await evaluate('window.emitUpdate('+JSON.stringify(state)+')')
     await check('update status '+state.status+' appears in aligned footer',`(()=>{const {cloud,updates}=window.cards();const status=updates.querySelector('[role="status"]');const dates=[...cloud.querySelectorAll('p')].find(p=>p.textContent.startsWith('Last upload:'));return status.textContent.includes(${JSON.stringify(text)}) && Math.abs(status.getBoundingClientRect().bottom-dates.getBoundingClientRect().bottom)<2})()`)
+    await check('actual text baselines and typography match for '+state.status,`(()=>{
+      const {cloud,updates}=window.cards();const message=updates.querySelector('[role="status"] .app-message > div');
+      const bounds=element=>{const range=document.createRange();range.selectNodeContents(element);return range.getBoundingClientRect()};
+      const m=bounds(message),style=getComputedStyle(message);
+      return [...cloud.querySelectorAll('p')].filter(p=>/^Last (upload|download):/.test(p.textContent)).every(row=>
+        [...row.children].every(span=>{const r=bounds(span),s=getComputedStyle(span);return Math.abs(r.top-m.top)<0.5 && Math.abs(r.bottom-m.bottom)<0.5 && s.fontSize===style.fontSize && s.lineHeight===style.lineHeight})
+      );
+    })()`)
+    await check('update icon is vertically centered against text for '+state.status,`(()=>{
+      const message=window.cards().updates.querySelector('[role="status"] .app-message');
+      const icon=message.querySelector('svg').getBoundingClientRect(),text=message.querySelector('div').getBoundingClientRect();
+      return Math.abs((icon.top+icon.bottom-text.top-text.bottom)/2)<0.5;
+    })()`)
+    await check('update icon matches Last download color for '+state.status,`(()=>{
+      const {cloud,updates}=window.cards();const label=[...cloud.querySelectorAll('span')].find(span=>span.textContent==='Last download:');
+      const icon=updates.querySelector('[role="status"] .app-message > svg');
+      return getComputedStyle(icon).color===getComputedStyle(label).color;
+    })()`)
+    if(['checking','not-available'].includes(state.status)){
+      await check('update status '+state.status+' does not move or resize either card',`Object.entries(window.cards()).every(([key,card])=>{const r=card.getBoundingClientRect(),initial=window.initialFooterCards[key];return Math.abs(r.top-initial.top)<0.5 && Math.abs(r.height-initial.height)<0.5})`)
+    }
+  }
+  if(process.argv.includes('--footer-only')){
+    win.destroy();app.quit();return
   }
   for(const width of [800,480]){
     win.setContentSize(width,900)

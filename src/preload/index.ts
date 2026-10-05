@@ -396,6 +396,7 @@ const api: AppApi = {
     maximize: (): Promise<void> => ipcRenderer.invoke('window:maximize'),
     close: (): Promise<void> => ipcRenderer.invoke('window:close'),
     relaunch: (): Promise<void> => ipcRenderer.invoke('window:relaunch'),
+    refreshAppIcon: (): Promise<void> => ipcRenderer.invoke('window:refreshAppIcon'),
     isMaximized: (): Promise<boolean> => ipcRenderer.invoke('window:isMaximized'),
     notifySyncComplete: (payload: {
       direction: 'upload' | 'download'

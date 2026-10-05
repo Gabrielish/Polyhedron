@@ -34,10 +34,10 @@ function Installer(): React.JSX.Element {
     if (status?.state !== 'installing') { setVisualProgress(0); return }
     const started = performance.now()
     const timer = window.setInterval(() => {
-      // One continuous pass: approach the end over roughly the observed
-      // installation duration, then wait at 99% for NSIS to confirm completion.
+      // Cosmetic, single-pass animation. Only NSIS can confirm completion and
+      // enable opening the app, even if the animation has reached its end.
       const elapsed = performance.now() - started
-      setVisualProgress(Math.min(99, Math.round((elapsed / 26000) * 99)))
+      setVisualProgress(Math.min(100, (elapsed / 27000) * 100))
     }, 50)
     return () => window.clearInterval(timer)
   }, [status?.state])
@@ -61,22 +61,22 @@ function Installer(): React.JSX.Element {
       <div className="flex items-center gap-4">
         <div className="app-panel-surface flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-neutral-800"><PolyhedronMark className="h-11 w-11 text-amber-500"/></div>
         <div><h1 className="text-xl font-semibold tracking-tight">{done ? 'Ready to translate' : failed ? 'Installation interrupted' : installing ? 'Installing Polyhedron' : 'Welcome to Polyhedron'}</h1>
-          <p className="mt-1 text-sm text-neutral-400">{done ? 'Polyhedron is installed and ready to open.' : installing ? 'Setting up your translation workspace.' : 'Your workspace for Baldur’s Gate 3 translations.'}</p></div>
+          <p className="mt-1 text-sm text-neutral-400">{done ? 'Polyhedron is installed and ready to open.' : installing ? 'Setting up your translation workspace.' : 'Your workspace for game translations.'}</p></div>
       </div>
       <section className="app-panel-surface flex-1 overflow-hidden rounded-xl border border-neutral-800">
         <div className="flex items-center gap-2 border-b border-neutral-800 px-5 py-3 text-sm font-medium"><FolderOpen size={16} className="text-amber-500"/>{done ? 'Installation complete' : installing ? 'Installation progress' : 'Installation folder'}</div>
         <div className="space-y-4 p-5">
           {installing ? <>
             <div className="flex items-center justify-between text-sm"><span>Installing application files</span><span className="text-neutral-500">Please wait</span></div>
-            <ProgressBar current={visualProgress} total={100} showCounts={false} percentageOnRight tone="accent"/>
-            <p className="text-xs leading-relaxed text-neutral-500">Your existing projects and settings are kept. Setup will close automatically only when you finish.</p>
+            <ProgressBar current={visualProgress} total={100} showCounts={false} showPercentage={false} tone="accent"/>
+            <p className="text-xs leading-relaxed text-neutral-500">Your existing projects and settings are kept. You can close Setup once installation is complete.</p>
           </> : done ? <>
             <div className="flex items-center gap-2 text-sm"><Check size={18} className="text-amber-500"/>Successfully installed</div>
             <p className="break-all text-xs text-neutral-400">{status?.target}</p>
           </> : <>
             <p className="text-xs text-neutral-400">Install for your Windows account. Choose where to keep the application.</p>
             <div className="flex items-center gap-2">
-              <input aria-label="Installation folder" value={target} disabled={busy || failed || !status} onChange={(event) => setTarget(event.target.value)} className="settings-default-input h-9 min-w-0 flex-1 rounded-md border border-neutral-800 bg-[#0f1114] px-3 text-xs text-neutral-200 outline-none transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20"/>
+              <input aria-label="Installation folder" value={target} disabled={busy || failed || !status} onChange={(event) => setTarget(event.target.value)} className="settings-default-input h-[30px] min-w-0 flex-1 rounded-md border border-neutral-800 bg-[#0f1114] px-3 text-xs text-neutral-200 outline-none transition-all focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20"/>
               <button className={btnBase} disabled={busy || failed || !status} onClick={() => void run(async () => { const folder = await window.installer.browse(); if (folder) setTarget(folder) })}><FolderOpen size={14}/>Browse</button>
             </div>
             <div className="flex items-center gap-2 text-xs text-neutral-500"><ShieldCheck size={15}/>Existing projects and settings are preserved.</div>

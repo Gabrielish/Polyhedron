@@ -4661,6 +4661,9 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
 .app-message > svg {
   color: var(--message-accent) !important;
 }
+.settings-update-feedback .app-message > svg {
+  color: var(--color-amber-300) !important;
+}
 [data-sonner-toast][data-styled="true"] {
   background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
   color: var(--poly-accent-foreground, #101010) !important;

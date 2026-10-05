@@ -1,4 +1,4 @@
-import { CheckCircle2, CloudCog, CloudOff, Download, LoaderCircle, RotateCw, Upload, X } from 'lucide-react'
+import { CheckCircle2, Cloud, CloudCog, CloudOff, Download, LoaderCircle, LogIn, RotateCw, Upload, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
@@ -39,6 +39,26 @@ function formatRemaining(milliseconds: number): string {
 
 export function CloudSyncMenu(): React.JSX.Element {
   const [open, setOpen] = useState(false)
+  const [connected, setConnected] = useState(false)
+  const [connecting, setConnecting] = useState(false)
+  useEffect(() => {
+    let active = true
+    const refresh = () => { void window.api.cloud.account().then(account => { if (active) setConnected(account.connected) }).catch(() => {}) }
+    refresh()
+    window.addEventListener('polyhedron:cloud-account-changed', refresh)
+    return () => { active = false; window.removeEventListener('polyhedron:cloud-account-changed', refresh) }
+  }, [open])
+  const connect = async () => {
+    setConnecting(true)
+    try {
+      const account = await window.api.cloud.connect()
+      setConnected(account.connected)
+      window.dispatchEvent(new Event('polyhedron:cloud-account-changed'))
+      if (account.connected) toast.success('Google Drive connected.')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Google Drive authentication failed.')
+    } finally { setConnecting(false) }
+  }
   const [busy, setBusy] = useState(false)
   const [busyAction, setBusyAction] = useState<'upload' | 'download' | null>(null)
   const [busyStartedAt, setBusyStartedAt] = useState<number | null>(null)
@@ -162,7 +182,7 @@ export function CloudSyncMenu(): React.JSX.Element {
     remoteFingerprint === currentFingerprint
 
   useEffect(() => {
-    if (session.phase !== 'loaded') return
+    if (!connected || session.phase !== 'loaded') return
     // Do not trigger Google's interactive auth just because a session is open;
     // polling starts only after this session has already been synced once.
     if (!localStorage.getItem(syncKey)) return
@@ -201,10 +221,10 @@ export function CloudSyncMenu(): React.JSX.Element {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [busy, remoteStampKey, savedFingerprint !== null, session.phase])
+  }, [busy, connected, remoteStampKey, savedFingerprint !== null, session.phase])
 
   useEffect(() => {
-    if (!autoSyncEnabled || session.phase !== 'loaded') {
+    if (!connected || !autoSyncEnabled || session.phase !== 'loaded') {
       setAutoSyncNextAt(null)
       return
     }
@@ -244,7 +264,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       void uploadRef.current?.(false, true)
     }, 1000)
     return () => window.clearInterval(timer)
-  }, [autoSyncEnabled, autoSyncIntervalMinutes, session.phase])
+  }, [connected, autoSyncEnabled, autoSyncIntervalMinutes, session.phase])
 
   async function saveCurrentSession(): Promise<void> {
     await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
@@ -415,6 +435,8 @@ export function CloudSyncMenu(): React.JSX.Element {
       >
         {busy ? (
           <LoaderCircle size={13} className="animate-spin" />
+        ) : !connected ? (
+          <Cloud size={13} />
         ) : isSynced ? (
           <CheckCircle2 size={13} />
         ) : (
@@ -426,7 +448,7 @@ export function CloudSyncMenu(): React.JSX.Element {
             : busyAction === 'download'
               ? 'Downloading…'
               : 'Syncing…'
-          : isSynced
+          : !connected ? 'Google Drive' : isSynced
             ? 'Synced'
             : 'Not synced'}
         {busy && <span className="ml-auto font-mono text-[10px] tabular-nums opacity-75">{formatElapsed(busyElapsed)}</span>}
@@ -439,6 +461,11 @@ export function CloudSyncMenu(): React.JSX.Element {
 
       {open && !busy && (
         <div className="pointer-events-auto absolute top-8 right-0 z-[200] inline-flex w-max max-w-[calc(100vw-2rem)] flex-col rounded-lg border border-neutral-700 bg-[#131518] p-1.5 shadow-2xl">
+          {!connected ? <button type="button" disabled={connecting} onClick={() => void connect()}
+            className="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800 disabled:opacity-60">
+            {connecting ? <LoaderCircle size={14} className="animate-spin text-amber-300"/> : <LogIn size={14} className="text-amber-300"/>}
+            {connecting ? 'Connecting…' : 'Connect Google Drive'}
+          </button> : <>
           {autoSyncEnabled && (
             <div className="mb-1 flex items-start gap-2 rounded-md border-b border-[#2a2f37] px-2.5 py-2.5">
               <CloudCog size={15} className="mt-0.5 shrink-0 text-amber-300" />
@@ -490,6 +517,7 @@ export function CloudSyncMenu(): React.JSX.Element {
               the last uploaded version.
             </div>
           )}
+          </>}
         </div>
       )}
 

@@ -1,6 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
-import { existsSync } from 'node:fs'
 import { join } from 'path'
 import { eq } from 'drizzle-orm'
 import iconWin from '../../build/icon.ico?asset'
@@ -31,7 +30,7 @@ import { logError } from './services/log.service'
 import { createUsageService } from './services/usage.service'
 import { checkForUpdates, registerUpdateService } from './services/update.service'
 import { migrateLegacyUserData } from './services/user-data-migration.service'
-import { updateAppIcon } from './services/app-icon.service'
+import { applyWindowsAppIcon, savedWindowsAppIcon, updateAppIcon } from './services/app-icon.service'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -49,19 +48,20 @@ function getWindow(): BrowserWindow | null {
   return mainWindow
 }
 
-function refreshAppIcon(): void {
-  if (!mainWindow || mainWindow.isDestroyed() || mainWindow.webContents.isLoadingMainFrame()) return
+async function refreshAppIcon(forceRefresh = false): Promise<void> {
+  if (!mainWindow || mainWindow.isDestroyed() || mainWindow.webContents.isLoadingMainFrame()) {
+    if (forceRefresh) throw new Error('The application is still loading. Please try again.')
+    return
+  }
   const db = getDb()
   const accent = db.select().from(config).where(eq(config.key, 'theme_accent')).get()?.value
   const style = db.select().from(config).where(eq(config.key, 'theme_app_icon_style')).get()?.value
   const foreground = db.select().from(config).where(eq(config.key, 'theme_accent_foreground')).get()?.value
-  void updateAppIcon(mainWindow, accent ?? '#8C52FF', style ?? 'accent-background', foreground === 'black' ? 'black' : 'white')
+  await updateAppIcon(mainWindow, accent ?? '#8C52FF', style ?? 'accent-background', foreground === 'black' ? 'black' : 'white', forceRefresh)
 }
 
 function createWindow(): void {
-  const savedWindowsIcon = process.platform === 'win32'
-    ? join(app.getPath('userData'), 'taskbar-icon.ico')
-    : null
+  const savedWindowsIcon = savedWindowsAppIcon()
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 900,
@@ -73,7 +73,7 @@ function createWindow(): void {
     frame: process.platform !== 'darwin',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     autoHideMenuBar: true,
-    icon: savedWindowsIcon && existsSync(savedWindowsIcon) ? savedWindowsIcon : (process.platform === 'win32' ? iconWin : icon),
+    icon: savedWindowsIcon ?? (process.platform === 'win32' ? iconWin : icon),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -81,11 +81,11 @@ function createWindow(): void {
     }
   })
 
-  if (savedWindowsIcon && existsSync(savedWindowsIcon)) {
-    mainWindow.setAppDetails({ appId: 'com.polyhedron.bg3-mod-translator', appIconPath: savedWindowsIcon })
-  }
+  if (savedWindowsIcon) applyWindowsAppIcon(mainWindow, savedWindowsIcon)
 
-  mainWindow.webContents.on('did-finish-load', refreshAppIcon)
+  // did-finish-load can precede isLoadingMainFrame() becoming false, which
+  // made refreshAppIcon skip restoring the user's appearance on startup.
+  mainWindow.webContents.on('did-stop-loading', refreshAppIcon)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow!.show()
@@ -134,7 +134,7 @@ app.whenReady().then(() => {
 
   const usageService = createUsageService(repos)
 
-  registerWindowHandlers(getWindow)
+  registerWindowHandlers(getWindow, () => refreshAppIcon(true))
   registerTranslationHandlers(getWindow, repos, usageService)
   registerTranslationSuggestionHandlers()
   registerSessionHandlers()
