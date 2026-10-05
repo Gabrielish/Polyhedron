@@ -32,6 +32,7 @@ import { SettingsSectionCard } from '@/features/settings/SettingsSectionCard'
 import { MetricsPage } from './MetricsPage'
 import { THEMES, useTheme } from '@/context/ThemeContext'
 import { AccentColorControl } from '@/features/settings/AccentColorControl'
+import { AppIconStyleControl } from '@/features/settings/AppIconStyleControl'
 import { btnPrimary } from '@/features/translate/components/styles'
 import { useConfig } from '@/hooks/useConfig'
 import { SettingsLoadingSkeleton } from '@/components/layout/RouteLoadingSkeleton'
@@ -301,22 +302,22 @@ export function SettingsPage(): React.JSX.Element {
             </div>}
             <div role="status" className="mt-auto min-h-4 w-full text-[11px]">
               {updateState?.status === 'checking' && (
-                <AppMessage>Checking for updates…</AppMessage>
+                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Checking for updates…</AppMessage>
               )}
               {updateState?.status === 'not-available' && (
-                <AppMessage tone="success">You are up to date.</AppMessage>
+                <AppMessage tone="success" className="app-message-plain border-0 bg-transparent p-0">You are up to date.</AppMessage>
               )}
               {updateState?.status === 'available' && (
-                <AppMessage>Version {updateState.version} is available.</AppMessage>
+                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Version {updateState.version} is available.</AppMessage>
               )}
               {updateState?.status === 'downloading' && (
-                <AppMessage>Downloading… {Math.round(updateState.percent)}%</AppMessage>
+                <AppMessage className="app-message-plain border-0 bg-transparent p-0">Downloading… {Math.round(updateState.percent)}%</AppMessage>
               )}
               {updateState?.status === 'downloaded' && (
-                <AppMessage tone="success">Version {updateState.version} is ready to install.</AppMessage>
+                <AppMessage tone="success" className="app-message-plain border-0 bg-transparent p-0">Version {updateState.version} is ready to install.</AppMessage>
               )}
               {updateState?.status === 'error' && (
-                <AppMessage tone="error">{updateState.message}</AppMessage>
+                <AppMessage tone="error" className="app-message-plain border-0 bg-transparent p-0">{updateState.message}</AppMessage>
               )}
             </div>
           </div>
@@ -391,14 +392,22 @@ export function SettingsPage(): React.JSX.Element {
         </div>
 
         <SettingsCard title="Appearance">
-          <div className="mb-4 flex items-start gap-3">
+          <div className="mb-4 flex items-center gap-3">
             <Palette size={18} className="mt-0.5 shrink-0 text-amber-400" />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="text-sm font-medium text-neutral-200">Theme and accent</p>
               <p className="mt-1 text-xs text-neutral-500">
                 Choose an interface theme and customize the accent color used across the app.
               </p>
             </div>
+            <button
+              type="button"
+              className={`${btnPrimary} settings-button-preview !h-8 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400`}
+              onClick={() => setPreviewClicks(count => Math.min(count + 1, 10))}
+            >
+              <FileText />
+              PREVIEW
+            </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {THEMES.map((item) => {
@@ -456,18 +465,19 @@ export function SettingsPage(): React.JSX.Element {
               </label>
             </div>
             <p className="mt-1 text-xs text-neutral-500">
-              Choose the accent used for buttons, active states, borders and glow effects.
+              Accent for buttons, borders and highlights.
             </p>
             <AccentColorControl />
             </div>
+            <div className="grid min-w-0 gap-6 sm:grid-cols-2">
             <div className="min-w-0">
               <div>
                 <p className="text-sm font-medium text-neutral-200">Button text color</p>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Choose the text color used on solid accent buttons.
+                  Text on accent buttons.
                 </p>
               </div>
-              <div className="mt-3 flex h-10 items-center gap-3" role="group" aria-label="Button text color">
+              <div className="mt-3 flex min-h-10 flex-wrap items-center gap-3" role="group" aria-label="Button text color">
                 {(['white', 'black'] as const).map((color) => (
                   <button
                     key={color}
@@ -484,15 +494,9 @@ export function SettingsPage(): React.JSX.Element {
                     }`}
                   />
                 ))}
-                <button
-                  type="button"
-                  className={`${btnPrimary} settings-button-preview ml-auto !h-8 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400`}
-                  onClick={() => setPreviewClicks(count => Math.min(count + 1, 10))}
-                >
-                  <FileText />
-                  PREVIEW
-                </button>
               </div>
+            </div>
+            <AppIconStyleControl />
             </div>
           </div>
         </SettingsCard>

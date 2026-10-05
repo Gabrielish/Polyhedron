@@ -243,6 +243,7 @@ export type ConfigKey =
   | 'theme_id'
   | 'theme_accent'
   | 'theme_accent_foreground'
+  | 'theme_app_icon_style'
   | 'cloud_auto_sync_interval'
 
 export type UserErrorCode =

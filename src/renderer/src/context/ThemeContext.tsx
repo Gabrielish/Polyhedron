@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useStat
 import { ACCENT_FAVORITES_STORAGE_KEY, parseAccentFavorites } from '@/utils/accentFavorites'
 
 export type ThemeId = 'liquid-glass'
+export type AppIconStyle = 'accent-background' | 'accent-dragon'
 
 export const THEMES: Array<{ id: ThemeId; name: string; description: string; swatches: string[] }> =
   [
@@ -22,12 +23,15 @@ interface ThemeContextValue {
   setAccentFavorites: (favorites: Array<string | null>) => void
   accentForeground: 'white' | 'black'
   setAccentForeground: (foreground: 'white' | 'black') => void
+  appIconStyle: AppIconStyle
+  setAppIconStyle: (style: AppIconStyle) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 const STORAGE_KEY = 'polyhedron-theme'
 const ACCENT_STORAGE_KEY = 'polyhedron-accent'
 const ACCENT_FOREGROUND_STORAGE_KEY = 'polyhedron-accent-foreground'
+const APP_ICON_STYLE_STORAGE_KEY = 'polyhedron-app-icon-style'
 const LEGACY_ACCENT_STORAGE_KEY = 'icosa-accent'
 const LEGACY_ACCENT_FOREGROUND_STORAGE_KEY = 'icosa-accent-foreground'
 export const DEFAULT_ACCENT = '#8C52FF'
@@ -63,7 +67,7 @@ function readStorageValue(key: string, legacyKey: string): string | null {
   return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey)
 }
 
-function applyTheme(theme: ThemeId, accent: string, accentForeground: 'white' | 'black'): void {
+export function applyTheme(theme: ThemeId, accent: string, accentForeground: 'white' | 'black'): void {
   document.documentElement.dataset.theme = theme
   window.localStorage.setItem(STORAGE_KEY, theme)
   document.documentElement.style.setProperty('--poly-accent', accent)
@@ -88,6 +92,8 @@ function applyTheme(theme: ThemeId, accent: string, accentForeground: 'white' | 
 export async function initializeTheme(): Promise<void> {
   try {
     const config = await window.api.config.getAll()
+    window.localStorage.setItem(APP_ICON_STYLE_STORAGE_KEY,
+      config.theme_app_icon_style === 'accent-dragon' ? 'accent-dragon' : 'accent-background')
     if (config.theme_accent) {
       window.localStorage.setItem(ACCENT_STORAGE_KEY, normalizeAccent(config.theme_accent))
     }
@@ -113,6 +119,10 @@ export async function initializeTheme(): Promise<void> {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const [appIconStyle, setAppIconStyleState] = useState<AppIconStyle>(() =>
+    window.localStorage.getItem(APP_ICON_STYLE_STORAGE_KEY) === 'accent-dragon'
+      ? 'accent-dragon' : 'accent-background'
+  )
   const [theme, setThemeState] = useState<ThemeId>(readTheme)
   const [accent, setAccentState] = useState(() =>
     normalizeAccent(
@@ -156,12 +166,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }): Reac
         void window.api.config.set({ key: 'theme_accent', value: normalized })
       },
       accentForeground,
+      appIconStyle,
+      setAppIconStyle: (style) => {
+        setAppIconStyleState(style)
+        window.localStorage.setItem(APP_ICON_STYLE_STORAGE_KEY, style)
+        void window.api.config.set({ key: 'theme_app_icon_style', value: style })
+      },
       setAccentForeground: (nextForeground) => {
         setAccentForegroundState(nextForeground)
         void window.api.config.set({ key: 'theme_accent_foreground', value: nextForeground })
       }
     }),
-    [accent, accentFavorites, accentForeground, theme]
+    [accent, accentFavorites, accentForeground, appIconStyle, theme]
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

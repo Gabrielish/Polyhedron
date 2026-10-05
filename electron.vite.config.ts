@@ -15,6 +15,8 @@ export default defineConfig({
       rollupOptions: {
         input: {
           index: resolve('src/main/index.ts'),
+          application: resolve('src/main/application.ts'),
+          installer: resolve('src/main/installer.ts'),
           'merge.worker': resolve('src/main/workers/merge.worker.ts'),
           'translate.worker': resolve('src/main/workers/translate.worker.ts'),
           'xml-load.worker': resolve('src/main/workers/xml-load.worker.ts'),
@@ -25,8 +27,13 @@ export default defineConfig({
       }
     }
   },
-  preload: {},
+  preload: { build: { rollupOptions: { input: {
+    index: resolve('src/preload/index.ts'), installer: resolve('src/preload/installer.ts')
+  } } } },
   renderer: {
+    build: { rollupOptions: { input: {
+      index: resolve('src/renderer/index.html'), installer: resolve('src/renderer/installer.html')
+    } } },
     resolve: {
       alias: {
         '@renderer': resolve('src/renderer/src'),

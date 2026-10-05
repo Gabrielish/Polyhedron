@@ -4652,6 +4652,12 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
 .app-message[data-message-tone="warning"] {
   --message-accent: #fbbf24;
 }
+.app-message.app-message-plain {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
 .app-message > svg {
   color: var(--message-accent) !important;
 }

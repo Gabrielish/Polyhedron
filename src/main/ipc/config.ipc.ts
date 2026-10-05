@@ -3,7 +3,7 @@ import { eq, sql } from 'drizzle-orm'
 import { getDb } from '../database/connection'
 import { config } from '../database/schema'
 
-export function registerConfigHandlers(): void {
+export function registerConfigHandlers(onIconAppearanceChange?: () => void): void {
   ipcMain.handle('config:get', (_event, { key }: { key: string }) => {
     const db = getDb()
     const row = db.select().from(config).where(eq(config.key, key)).get() as
@@ -21,6 +21,7 @@ export function registerConfigHandlers(): void {
         set: { value: sql`excluded.value` }
       })
       .run()
+    if (key === 'theme_accent' || key === 'theme_app_icon_style' || key === 'theme_accent_foreground') onIconAppearanceChange?.()
     return { success: true }
   })
 

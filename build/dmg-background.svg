@@ -1,0 +1,26 @@
+<!-- Keep the installation layout at 680x330; extend only the backdrop for
+     Finder windows opened in an existing tab or resized on large displays. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="4096" height="2304" viewBox="0 0 4096 2304">
+  <defs>
+    <radialGradient id="glow" gradientUnits="userSpaceOnUse" cx="340" cy="0" r="700">
+      <stop stop-color="#A7F175" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#A7F175" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x2="0" y2="1">
+      <stop stop-color="#242922"/>
+      <stop offset="1" stop-color="#171917"/>
+    </linearGradient>
+  </defs>
+  <rect width="4096" height="2304" fill="#101010"/>
+  <rect width="4096" height="2304" fill="url(#glow)"/>
+  <g transform="translate(0 -110)" font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+    <rect x="91" y="151" width="166" height="170" rx="22" fill="url(#panel)" stroke="#FFFFFF" stroke-opacity="0.09"/>
+    <rect x="423" y="151" width="166" height="170" rx="22" fill="url(#panel)" stroke="#FFFFFF" stroke-opacity="0.09"/>
+    <!-- Finder uses dark icon labels for custom image backgrounds. -->
+    <rect x="105" y="277" width="138" height="28" rx="10" fill="#C0CBB9"/>
+    <rect x="437" y="277" width="138" height="28" rx="10" fill="#C0CBB9"/>
+    <path d="M302 226H377M360 210L377 226L360 242" fill="none" stroke="#A7F175" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="340" y="363" text-anchor="middle" font-size="15" font-weight="500" fill="#E4E7E1">Drag Polyhedron into Applications</text>
+    <text x="340" y="387" text-anchor="middle" font-size="12" fill="#8C9289">Then open it from your Applications folder.</text>
+  </g>
+</svg>

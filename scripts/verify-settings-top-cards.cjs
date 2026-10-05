@@ -21,11 +21,12 @@ async function run(){
       createRoot(document.getElementById('root')).render(<div className="app-content-shell"><main><SettingsPage/></main></div>);
     `},
     plugins:[{name:'isolated-settings-state',setup(builder){
+      builder.onLoad({filter:/\.svg$/},async args=>({contents:await fs.readFile(args.path,'utf8'),loader:'text'}))
       const mock=/^(?:@\/hooks\/useConfig|@\/context\/ThemeContext|@\/i18n\/useAppTranslation|@\/features\/settings\/(?:AiProvidersCard|PromptSlotsCard|SimilaritySettingsCard)|\.\/MetricsPage)$/
       builder.onResolve({filter:mock},args=>({path:args.path,namespace:'test'}))
       builder.onLoad({filter:/.*/,namespace:'test'},args=>{
         if(args.path.includes('useConfig'))return{contents:'export const useConfig=()=>({config:{},loading:false,set:async()=>{}})'}
-        if(args.path.includes('ThemeContext'))return{contents:`export const THEMES=[{id:'liquid-glass',name:'Liquid Glass (Dark)',description:'Dark glass with a custom accent.',swatches:['#8C52FF','#0a0d12']}];export const useTheme=()=>({theme:'liquid-glass',accent:'#8C52FF',accentForeground:'white',accentFavorites:['#8C52FF','#A7F175','#ED1C24',null,null],setTheme:()=>{},setAccent:()=>{},setAccentForeground:()=>{},setAccentFavorites:()=>{}});`}
+        if(args.path.includes('ThemeContext'))return{contents:`export const THEMES=[{id:'liquid-glass',name:'Liquid Glass (Dark)',description:'Dark glass with a custom accent.',swatches:['#8C52FF','#0a0d12']}];export const useTheme=()=>({theme:'liquid-glass',accent:'#8C52FF',accentForeground:'white',appIconStyle:'accent-background',setAppIconStyle:style=>{window.chosenIconStyle=style},accentFavorites:['#8C52FF','#A7F175','#ED1C24',null,null],setTheme:()=>{},setAccent:()=>{},setAccentForeground:()=>{},setAccentFavorites:()=>{}});`}
         if(args.path.includes('useAppTranslation'))return{contents:'export const useAppTranslation=()=>({t:key=>key})'}
         if(args.path.endsWith('/AiProvidersCard'))return{contents:'export const AiProvidersCard=()=>null;export const MachineProvidersCard=()=>null'}
         const name=args.path.split('/').pop();return{contents:'export const '+name+'=()=>null'}
@@ -66,6 +67,21 @@ async function run(){
   await evaluate(`window.colorSections=()=>{const accent=document.querySelector('label[for="accent-color"]').parentElement;const text=[...document.querySelectorAll('p')].find(p=>p.textContent==='Button text color').parentElement;return {accent,text}};undefined`)
   await check('accent and button text color occupy two columns on wide windows',`(()=>{const {accent,text}=window.colorSections();const a=accent.getBoundingClientRect(),t=text.getBoundingClientRect();return a.right<t.left && Math.abs(a.top-t.top)<1})()`)
   await check('accent favorites stay alongside the color inputs',`(()=>{const input=document.getElementById('accent-color').getBoundingClientRect(),favorites=document.querySelector('[aria-label="Favorite accent colors"]').getBoundingClientRect();return favorites.left>input.right && input.top<favorites.bottom && favorites.top<input.bottom})()`)
+  await check('icon styles share the text color row and show two dragon previews',`(()=>{const text=[...document.querySelectorAll('p')].find(p=>p.textContent==='Button text color'),icon=[...document.querySelectorAll('p')].find(p=>p.textContent==='App icon');const t=text.getBoundingClientRect(),i=icon.getBoundingClientRect();return t.right<i.left && Math.abs(t.top-i.top)<1 && document.querySelectorAll('[aria-label="Dock and taskbar icon style"] button svg path').length===2})()`)
+  await evaluate(`document.querySelectorAll('[aria-label="Dock and taskbar icon style"] button')[1].click()`)
+  await check('inverted icon control selects accent dragon',`window.chosenIconStyle==='accent-dragon'`)
+  await check('accent-background icon preview uses button text color while inverted preview keeps accent',`(()=>{const paths=document.querySelectorAll('[aria-label="Dock and taskbar icon style"] path');return paths[0].getAttribute('fill')==='#FFFFFF' && paths[1].getAttribute('fill')==='#8C52FF'})()`)
+  await check('Preview sits to the right of the Theme and accent introduction',`(()=>{const b=document.querySelector('.settings-button-preview'),p=[...b.parentElement.querySelectorAll('p')].find(p=>p.textContent==='Theme and accent');if(!p)return false;const x=b.getBoundingClientRect(),y=p.parentElement.getBoundingClientRect();return x.left>=y.right && Math.abs((x.top+x.bottom-y.top-y.bottom)/2)<1})()`)
+  const preview=path.join(app.getPath('userData'),'appearance.png')
+  await fs.writeFile(preview,(await win.webContents.capturePage()).toPNG())
+  console.log('Appearance preview: '+preview)
+  if(process.argv.includes('--appearance-only')){
+    for(const width of [900,480]){
+      win.setContentSize(width,900)
+      await check('appearance does not overflow at '+width+'px',`document.documentElement.scrollWidth<=innerWidth`)
+    }
+    win.destroy();app.quit();return
+  }
   await check('Cloud left, updates right, aligned top and equal heights',`(()=>{const {cloud,updates}=window.cards();const c=cloud.getBoundingClientRect(),u=updates.getBoundingClientRect();return c.left<u.left && Math.abs(c.top-u.top)<1 && Math.abs(u.height-c.height)<1 && c.right<u.left})()`)
   await check('automatic upload has description and dropdown to its right, with dates below',`(()=>{const {cloud}=window.cards();const title=[...cloud.querySelectorAll('p')].find(p=>p.textContent==='Automatic workspace upload');const description=title.nextElementSibling;const t=title.getBoundingClientRect(),d=description.getBoundingClientRect(),s=cloud.querySelector('[aria-haspopup="listbox"]').getBoundingClientRect();const dates=[...cloud.querySelectorAll('p')].find(p=>p.textContent.startsWith('Last upload:')).getBoundingClientRect();return s.left>t.right && description.textContent==='Back up changes to Google Drive.' && d.top>=t.bottom && dates.top>Math.max(d.bottom,s.bottom)})()`)
   await check('Disconnect sits alongside account instead of below',`(()=>{const {cloud}=window.cards();const button=[...cloud.querySelectorAll('button')].find(b=>b.textContent.includes('Disconnect'));const profile=button.parentElement.firstElementChild;const b=button.getBoundingClientRect(),p=profile.getBoundingClientRect();return p.right<=b.left && Math.abs((p.top+p.bottom-b.top-b.bottom)/2)<1})()`)

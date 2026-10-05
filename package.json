@@ -2,7 +2,7 @@
   "name": "polyhedron",
   "version": "1.0.0",
   "private": true,
-  "description": "Polyhedron \u2014 desktop translator for Baldur's Gate 3 mod localization.",
+  "description": "Polyhedron \u2014 desktop translator for Baldur's Gate 3 localization.",
   "main": "./out/main/index.js",
   "author": {
     "name": "Gabrielish",
@@ -17,6 +17,9 @@
     "url": "https://github.com/Gabrielish/Polyhedron/issues"
   },
   "scripts": {
+    "build:installer-icons": "electron scripts/build-installer-icons.cjs",
+    "build:installer-artwork": "electron scripts/build-installer-artwork.cjs",
+    "build:installer-theme": "node scripts/build-installer-theme.cjs",
     "build:dialog-index": "node scripts/build-dialog-index.mjs",
     "format": "biome format --write .",
     "lint": "biome check .",
@@ -28,7 +31,7 @@
     "build": "npm run build:dialog-index && npm run build:reference-index && npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
-    "build:win": "npm run build && electron-builder --win",
+    "build:win": "npm run build && electron-builder --win && electron-builder install-app-deps",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
     "db:studio": "drizzle-kit studio",

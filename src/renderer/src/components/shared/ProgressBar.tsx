@@ -4,23 +4,25 @@ interface ProgressBarProps {
   current: number
   total: number
   className?: string
+  indeterminate?: boolean
+  showCounts?: boolean
+  percentageOnRight?: boolean
+  tone?: 'default' | 'accent'
 }
 
-export function ProgressBar({ current, total, className }: ProgressBarProps): React.JSX.Element {
+export function ProgressBar({ current, total, className, indeterminate = false, showCounts = true, percentageOnRight = false, tone = 'default' }: ProgressBarProps): React.JSX.Element {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0
 
   return (
     <div className={cn('flex flex-col gap-1', className)}>
-      <div className="flex justify-between text-xs text-neutral-400">
+      {!indeterminate && <div className={cn('flex text-xs text-neutral-400', percentageOnRight ? 'justify-end' : 'justify-between')}>
         <span>{pct}%</span>
-        <span>
-          {current} / {total}
-        </span>
-      </div>
+        {showCounts && <span>{current} / {total}</span>}
+      </div>}
       <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-800">
         <div
-          className="h-full rounded-full bg-blue-500 transition-all duration-200"
-          style={{ width: `${pct}%` }}
+          className={indeterminate ? 'setup-progress h-full rounded-full bg-amber-500' : cn('h-full rounded-full transition-all duration-200', tone === 'accent' ? 'bg-amber-500' : 'bg-blue-500')}
+          style={{ width: indeterminate ? '33.333%' : `${pct}%` }}
         />
       </div>
     </div>

@@ -1,0 +1,5 @@
+.setup-shell { background: #050505; user-select: none; }
+.setup-title { -webkit-app-region: drag; background: #101010; }
+.setup-no-drag { -webkit-app-region: no-drag; }
+.setup-shell input { user-select: text; }
+.setup-shell button:disabled { opacity: .4; cursor: default; transform: none; }

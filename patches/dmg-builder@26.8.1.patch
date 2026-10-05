@@ -1,0 +1,25 @@
+diff --git a/out/dmgUtil.js b/out/dmgUtil.js
+--- a/out/dmgUtil.js
++++ b/out/dmgUtil.js
+@@ -165,6 +165,21 @@ async function customizeDmg({ appPath, artifactPath, volumeName, specification, pack
+         const size = await getImageSizeUsingSips(settings.background);
+         settings.window = { position: { x: 400, y: Math.round((1440 - size.height) / 2) }, size, ...settings.window };
+     }
++    // Respect explicit Finder window geometry even with an image background.
++    // An oversized backdrop should not force an oversized installer window.
++    if (specification.window != null) {
++        const window = specification.window;
++        settings.window = {
++            position: {
++                x: window.x ?? settings.window?.position?.x ?? 400,
++                y: window.y ?? settings.window?.position?.y ?? 100,
++            },
++            size: {
++                width: window.width ?? settings.window?.size?.width ?? 540,
++                height: window.height ?? settings.window?.size?.height ?? 300,
++            },
++        };
++    }
+     const settingsFile = await packager.getTempFile(".json");
+     await (0, fs_extra_1.writeFile)(settingsFile, JSON.stringify(settings, null, 2));
+     const dmgbuild = await getDmgVendorPath();
