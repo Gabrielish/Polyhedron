@@ -5,22 +5,13 @@ import { useTranslationSession } from '@/context/TranslationSession'
 import { useConfig } from '@/hooks/useConfig'
 import { getTermGlossaryStorageKey, loadTermGlossary } from '@/utils/termGlossary'
 import { calculateSessionFingerprint } from '@/utils/sessionFingerprint'
+import { formatSyncDate } from '@/utils/formatSyncDate'
 
 type SyncResult = {
   direction: 'upload' | 'download'
   translated: number
   total: number
   fingerprint: string
-}
-
-function formatSyncDate(value: string | null): string {
-  if (!value) return 'Never'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Never'
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'short',
-    timeStyle: 'short'
-  }).format(date)
 }
 
 function formatElapsed(seconds: number): string {
@@ -451,7 +442,7 @@ export function CloudSyncMenu(): React.JSX.Element {
           : !connected ? 'Google Drive' : isSynced
             ? 'Synced'
             : 'Not synced'}
-        {busy && <span className="ml-auto font-mono text-[10px] tabular-nums opacity-75">{formatElapsed(busyElapsed)}</span>}
+        {busy && <span className="ml-auto text-[10px] tabular-nums opacity-75">{formatElapsed(busyElapsed)}</span>}
         {busy && (
           <span className="cloud-sync-loading-track pointer-events-none absolute inset-x-0 bottom-0 h-0.5">
             <span className="cloud-sync-loading-bar block h-full w-1/3 rounded-full bg-current" />
@@ -473,7 +464,7 @@ export function CloudSyncMenu(): React.JSX.Element {
                 <span className="block text-xs font-medium text-neutral-200">Auto-sync active</span>
                 <span className="mt-0.5 block text-[10px] text-neutral-500">
                   Next sync in{' '}
-                  <span className="font-mono tabular-nums text-neutral-400">
+                  <span className="tabular-nums text-neutral-400">
                     {autoSyncNextAt === null ? '—' : formatRemaining(autoSyncNextAt - clock)}
                   </span>
                 </span>
@@ -494,7 +485,7 @@ export function CloudSyncMenu(): React.JSX.Element {
             <span className="min-w-0">
               <span className="block">Upload workspace</span>
               <span className="mt-0.5 block text-[10px] text-neutral-500">
-                Last uploaded: {formatSyncDate(lastUploadedAt)}
+                {formatSyncDate(lastUploadedAt)}
               </span>
             </span>
           </button>
@@ -507,7 +498,7 @@ export function CloudSyncMenu(): React.JSX.Element {
             <span className="min-w-0">
               <span className="block">Download workspace</span>
               <span className="mt-0.5 block text-[10px] text-neutral-500">
-                Last downloaded: {formatSyncDate(lastDownloadedAt)}
+                {formatSyncDate(lastDownloadedAt)}
               </span>
             </span>
           </button>

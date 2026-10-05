@@ -27,6 +27,7 @@ import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { AppMessage } from '@/components/shared/AppMessage'
 import { AppTooltip } from '@/components/shared/AppTooltip'
+import { formatSyncDate } from '@/utils/formatSyncDate'
 import { PolyhedronMark } from '@/components/shared/PolyhedronMark'
 import { AiProvidersCard, MachineProvidersCard } from '@/features/settings/AiProvidersCard'
 import { PromptSlotsCard } from '@/features/settings/PromptSlotsCard'
@@ -66,16 +67,6 @@ type CloudAccount = {
   emailAddress?: string
   photoLink?: string
   photoDataUrl?: string
-}
-
-function formatCloudDate(value: string | null): string {
-  if (!value) return 'Never'
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Never'
-  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date)
-  const month = new Intl.DateTimeFormat('en-GB', { month: 'short' }).format(date)
-  const weekday = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(date)
-  return `${time}, ${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
 }
 
 function SettingField({
@@ -402,12 +393,12 @@ export function SettingsPage(): React.JSX.Element {
               <p data-cloud-history="upload" className="flex items-center gap-3 whitespace-nowrap">
                 <span className="sr-only">Last upload:</span>
                 <AppTooltip label="Last upload"><CircleArrowUp size={18} className="shrink-0 text-amber-300" aria-hidden="true" /></AppTooltip>
-                <span className="text-neutral-300">{formatCloudDate(lastCloudUpload)}</span>
+                <span className="text-neutral-300">{formatSyncDate(lastCloudUpload)}</span>
               </p>
               <p data-cloud-history="download" className="flex items-center gap-3 whitespace-nowrap">
                 <span className="sr-only">Last download:</span>
                 <AppTooltip label="Last download"><CircleArrowDown size={18} className="shrink-0 text-amber-300" aria-hidden="true" /></AppTooltip>
-                <span className="text-neutral-300">{formatCloudDate(lastCloudDownload)}</span>
+                <span className="text-neutral-300">{formatSyncDate(lastCloudDownload)}</span>
               </p>
             </div>
           </div>
