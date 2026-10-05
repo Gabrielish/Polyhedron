@@ -41,7 +41,6 @@ export function AppIconStyleControl(): React.JSX.Element {
             <button
               key={style}
               type="button"
-              title={label}
               aria-label={label}
               aria-pressed={appIconStyle === style}
               onClick={() => setAppIconStyle(style)}
@@ -63,7 +62,6 @@ export function AppIconStyleControl(): React.JSX.Element {
             type="button"
             className={btnGhostIcon}
             aria-label="Restart application"
-            title="Restart application"
             disabled={refreshing}
             aria-busy={refreshing}
             onClick={() => void refreshIcon()}

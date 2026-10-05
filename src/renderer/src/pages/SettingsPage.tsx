@@ -2,6 +2,8 @@ import {
   BarChart2,
   Bug,
   Check,
+  CircleArrowDown,
+  CircleArrowUp,
   Cloud,
   Copy,
   Download,
@@ -20,10 +22,11 @@ import {
   Trash2,
   UserRound
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { AppMessage } from '@/components/shared/AppMessage'
+import { AppTooltip } from '@/components/shared/AppTooltip'
 import { PolyhedronMark } from '@/components/shared/PolyhedronMark'
 import { AiProvidersCard, MachineProvidersCard } from '@/features/settings/AiProvidersCard'
 import { PromptSlotsCard } from '@/features/settings/PromptSlotsCard'
@@ -69,7 +72,10 @@ function formatCloudDate(value: string | null): string {
   if (!value) return 'Never'
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return 'Never'
-  return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date)
+  const time = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(date)
+  const month = new Intl.DateTimeFormat('en-GB', { month: 'short' }).format(date)
+  const weekday = new Intl.DateTimeFormat('en-GB', { weekday: 'short' }).format(date)
+  return `${time}, ${weekday}, ${date.getDate()} ${month} ${date.getFullYear()}`
 }
 
 function SettingField({
@@ -148,6 +154,7 @@ export function SettingsPage(): React.JSX.Element {
   const [appVersion, setAppVersion] = useState('')
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
   const [checkingForUpdates, setCheckingForUpdates] = useState(false)
+  const manualUpdateCheck = useRef(false)
   const [cloudAccount, setCloudAccount] = useState<CloudAccount | null>(null)
   const [cloudAccountBusy, setCloudAccountBusy] = useState(false)
   const [lastCloudUpload, setLastCloudUpload] = useState<string | null>(null)
@@ -162,7 +169,12 @@ export function SettingsPage(): React.JSX.Element {
   useEffect(() => {
     window.api.log.getPath().then(setLogPath)
     void window.api.app.getVersion().then(setAppVersion).catch(() => undefined)
-    return window.api.update.onState(setUpdateState)
+    return window.api.update.onState(state => {
+      // Background startup checks must not populate this manual feedback row.
+      if (!manualUpdateCheck.current) return
+      setUpdateState(state)
+      if (state.status !== 'checking' && state.status !== 'downloading') manualUpdateCheck.current = false
+    })
   }, [])
 
   useEffect(() => {
@@ -192,16 +204,21 @@ export function SettingsPage(): React.JSX.Element {
   }
 
   const handleCheckForUpdates = async () => {
+    manualUpdateCheck.current = true
     setCheckingForUpdates(true)
     setUpdateState({ status: 'checking' })
     try {
       await window.api.update.check()
+    } catch (error) {
+      manualUpdateCheck.current = false
+      setUpdateState({ status: 'error', message: error instanceof Error ? error.message : 'Unable to check for updates.' })
     } finally {
       setCheckingForUpdates(false)
     }
   }
 
   const handleDownloadUpdate = async () => {
+    if (!isMacOS) manualUpdateCheck.current = true
     await window.api.update.download()
   }
 
@@ -256,13 +273,12 @@ export function SettingsPage(): React.JSX.Element {
         <div className="grid items-stretch gap-6 lg:grid-cols-2">
         <SettingsCard title="Application updates" className="order-2" bodyClassName="flex flex-col">
           <div className="flex flex-1 flex-col items-start gap-5">
-            <div className="flex items-start gap-3">
+            <div className="settings-top-card-intro flex items-start gap-3">
               <RefreshCw size={18} className="mt-0.5 shrink-0 text-amber-400" />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-neutral-200">Check for updates</p>
                 <p className="mt-1 text-xs text-neutral-500">
-                  Manually check GitHub for a newer Polyhedron release.
-                  {isMacOS ? ' macOS downloads are opened manually.' : ''}
+                  Check GitHub for a newer Polyhedron release.
                 </p>
               </div>
             </div>
@@ -305,7 +321,7 @@ export function SettingsPage(): React.JSX.Element {
                 </button>
               )}
             </div>}
-            <div role="status" className="settings-update-feedback mt-auto flex min-h-5 w-full items-center text-[11px] leading-5">
+            <div role="status" className="settings-update-feedback mt-auto flex min-h-5 w-full items-center text-[11px] leading-5 tracking-tight">
               {updateState?.status === 'checking' && (
                 <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Checking for updates…</AppMessage>
               )}
@@ -330,7 +346,7 @@ export function SettingsPage(): React.JSX.Element {
 
         <SettingsCard title="Cloud sync" className="order-1" bodyClassName="flex flex-col">
           <div className="flex flex-1 flex-col gap-5">
-            <div className="flex items-center justify-between gap-3">
+            <div className="settings-top-card-intro flex items-start justify-between gap-3">
               <div className="flex min-w-0 items-start gap-3">
                 <Cloud size={18} className="mt-0.5 shrink-0 text-amber-400" />
                 <div className="min-w-0">
@@ -382,13 +398,15 @@ export function SettingsPage(): React.JSX.Element {
               </button>
             </div>
 
-            <div className="mt-auto flex min-h-5 items-center justify-between gap-3 text-[11px] leading-5">
-              <p className="flex items-baseline gap-1 whitespace-nowrap">
-                <span className="text-amber-300">Last upload:</span>
+            <div className="mt-auto flex min-h-5 flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[11px] leading-5 tracking-tight">
+              <p data-cloud-history="upload" className="flex items-center gap-3 whitespace-nowrap">
+                <span className="sr-only">Last upload:</span>
+                <AppTooltip label="Last upload"><CircleArrowUp size={18} className="shrink-0 text-amber-300" aria-hidden="true" /></AppTooltip>
                 <span className="text-neutral-300">{formatCloudDate(lastCloudUpload)}</span>
               </p>
-              <p className="flex items-baseline gap-1 whitespace-nowrap">
-                <span className="text-amber-300">Last download:</span>
+              <p data-cloud-history="download" className="flex items-center gap-3 whitespace-nowrap">
+                <span className="sr-only">Last download:</span>
+                <AppTooltip label="Last download"><CircleArrowDown size={18} className="shrink-0 text-amber-300" aria-hidden="true" /></AppTooltip>
                 <span className="text-neutral-300">{formatCloudDate(lastCloudDownload)}</span>
               </p>
             </div>
@@ -405,14 +423,6 @@ export function SettingsPage(): React.JSX.Element {
                 Choose an interface theme and customize the accent color used across the app.
               </p>
             </div>
-            <button
-              type="button"
-              className={`${btnPrimary} settings-button-preview !h-8 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400`}
-              onClick={() => setPreviewClicks(count => Math.min(count + 1, 10))}
-            >
-              <FileText />
-              PREVIEW
-            </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {THEMES.map((item) => {
@@ -474,7 +484,7 @@ export function SettingsPage(): React.JSX.Element {
             </p>
             <AccentColorControl />
             </div>
-            <div className="grid min-w-0 gap-6 sm:grid-cols-2">
+            <div className="settings-icon-controls grid min-w-0 gap-4">
             <div className="min-w-0">
               <div>
                 <p className="text-sm font-medium text-neutral-200">Button text color</p>
@@ -487,7 +497,6 @@ export function SettingsPage(): React.JSX.Element {
                   <button
                     key={color}
                     type="button"
-                    title={color === 'white' ? 'White' : 'Black'}
                     aria-label={color === 'white' ? 'White' : 'Black'}
                     aria-pressed={accentForeground === color}
                     onClick={() => setAccentForeground(color)}
@@ -502,6 +511,16 @@ export function SettingsPage(): React.JSX.Element {
               </div>
             </div>
             <AppIconStyleControl />
+            <div className="flex min-h-10 items-center justify-end self-end">
+              <button
+                type="button"
+                className={`${btnPrimary} settings-button-preview !h-8 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400`}
+                onClick={() => setPreviewClicks(count => Math.min(count + 1, 10))}
+              >
+                <FileText />
+                PREVIEW
+              </button>
+            </div>
             </div>
           </div>
         </SettingsCard>

@@ -4636,6 +4636,16 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
 
 /* Inline feedback uses neutral cards; temporary toasts use the selected
    accent fill and the user's solid-button foreground color. */
+@media (min-width: 640px) {
+  .settings-icon-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+}
+@media (min-width: 1024px) {
+  .settings-top-card-intro {
+    min-height: 40px;
+  }
+}
 .app-message,
 [data-sonner-toast][data-styled="true"] {
   --message-accent: var(--poly-accent, var(--color-amber-500, #ed1c24));

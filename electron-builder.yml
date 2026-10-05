@@ -86,8 +86,8 @@ dmg:
   iconSize: 96
   iconTextSize: 12
   window:
-    x: 200
-    y: 200
+    x: 620
+    y: 435
     width: 680
     height: 330
   contents:

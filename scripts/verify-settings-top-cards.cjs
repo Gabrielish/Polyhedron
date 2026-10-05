@@ -14,7 +14,7 @@ async function run(){
     stdin:{resolveDir:root,loader:'jsx',contents:`
       import React from 'react';import {createRoot} from 'react-dom/client';
       import {SettingsPage} from './src/renderer/src/pages/SettingsPage';
-      window.api={app:{getVersion:async()=> '9.8.7-test'},log:{getPath:async()=>'/test/log'},update:{onState:callback=>{window.emitUpdate=callback;return ()=>{}}},cloud:{account:async()=>({connected:true,displayName:'Test account',emailAddress:'test@example.invalid'})}};
+      window.api={app:{getVersion:async()=> '9.8.7'},log:{getPath:async()=>'/test/log'},update:{check:async()=>{},onState:callback=>{window.emitUpdate=callback;return ()=>{}}},cloud:{account:async()=>({connected:true,displayName:'Test account',emailAddress:'test@example.invalid'})}};
       document.documentElement.dataset.theme='liquid-glass';
       localStorage.setItem('polyhedron.cloud-sync.last-uploaded','2026-10-02T20:50:00Z');
       localStorage.setItem('polyhedron.cloud-sync.last-downloaded','2026-10-02T19:36:00Z');
@@ -73,8 +73,13 @@ async function run(){
   await check('icon styles share the text color row and show two dragon previews',`(()=>{const text=[...document.querySelectorAll('p')].find(p=>p.textContent==='Button text color'),icon=[...document.querySelectorAll('p')].find(p=>p.textContent==='App icon');const t=text.getBoundingClientRect(),i=icon.getBoundingClientRect();return t.right<i.left && Math.abs(t.top-i.top)<1 && document.querySelectorAll('[aria-label="Dock and taskbar icon style"] button svg path').length===2})()`)
   await evaluate(`document.querySelectorAll('[aria-label="Dock and taskbar icon style"] button')[1].click()`)
   await check('inverted icon control selects accent dragon',`window.chosenIconStyle==='accent-dragon'`)
+  await check('Appearance has no native or custom tooltip triggers',`(()=>{const h=[...document.querySelectorAll('h2')].find(h=>h.textContent==='Appearance'),card=h.parentElement.parentElement;return !card.querySelector('[title],[role="tooltip"],[aria-describedby]') && [...card.querySelectorAll('button')].filter(b=>b.getAttribute('aria-pressed')!==null).every(b=>b.getAttribute('aria-label'))})()`)
   await check('accent-background icon preview uses button text color while inverted preview keeps accent',`(()=>{const paths=document.querySelectorAll('[aria-label="Dock and taskbar icon style"] path');return paths[0].getAttribute('fill')==='#FFFFFF' && paths[1].getAttribute('fill')==='#8C52FF'})()`)
-  await check('Preview sits to the right of the Theme and accent introduction',`(()=>{const b=document.querySelector('.settings-button-preview'),p=[...b.parentElement.querySelectorAll('p')].find(p=>p.textContent==='Theme and accent');if(!p)return false;const x=b.getBoundingClientRect(),y=p.parentElement.getBoundingClientRect();return x.left>=y.right && Math.abs((x.top+x.bottom-y.top-y.bottom)/2)<1})()`)
+  await check('Preview occupies third column aligned with both circle control rows',`(()=>{
+    const b=document.querySelector('.settings-button-preview'),text=document.querySelector('[aria-label="Button text color"]'),icon=document.querySelector('[aria-label="Dock and taskbar icon style"]');
+    const x=b.getBoundingClientRect(),t=text.getBoundingClientRect(),i=icon.getBoundingClientRect();
+    return b.closest('.settings-icon-controls').children.length===3 && x.left>=i.right && t.right<=i.left && Math.abs((x.top+x.bottom-i.top-i.bottom)/2)<1 && Math.abs((x.top+x.bottom-t.top-t.bottom)/2)<1;
+  })()`)
   const preview=path.join(app.getPath('userData'),'appearance.png')
   await fs.writeFile(preview,(await win.webContents.capturePage()).toPNG())
   console.log('Appearance preview: '+preview)
@@ -86,15 +91,42 @@ async function run(){
     win.destroy();app.quit();return
   }
   await check('Cloud left, updates right, aligned top and equal heights',`(()=>{const {cloud,updates}=window.cards();const c=cloud.getBoundingClientRect(),u=updates.getBoundingClientRect();return c.left<u.left && Math.abs(c.top-u.top)<1 && Math.abs(u.height-c.height)<1 && c.right<u.left})()`)
+  await check('inner account cards share top and bottom edges',`(()=>{const {cloud,updates}=window.cards();const c=cloud.querySelector('.rounded-lg').getBoundingClientRect(),u=updates.querySelector('.rounded-lg').getBoundingClientRect();return Math.abs(c.top-u.top)<0.5 && Math.abs(c.bottom-u.bottom)<0.5})()`)
+  await check('introductions have no extra blank height before identity cards',`Object.values(window.cards()).every(card=>{const description=card.querySelector('.settings-top-card-intro p:last-child').getBoundingClientRect(),identity=card.querySelector('.rounded-lg').getBoundingClientRect();return Math.abs(identity.top-description.bottom-20)<0.5})`)
+  await check('dates use local 24-hour time, weekday, day/month and year without AM/PM',`(()=>{const {cloud}=window.cards();const values=[...cloud.querySelectorAll('p')].filter(p=>/^Last (upload|download):/.test(p.textContent)).map(p=>p.lastElementChild.textContent);return values.every(value=>/^(?:[01]\\d|2[0-3]):[0-5]\\d, (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \\d{1,2} [A-Z][a-z]{2,3} 2026$/.test(value))})()`)
   await check('automatic upload has description and dropdown to its right, with dates below',`(()=>{const {cloud}=window.cards();const title=[...cloud.querySelectorAll('p')].find(p=>p.textContent==='Automatic workspace upload');const description=title.nextElementSibling;const t=title.getBoundingClientRect(),d=description.getBoundingClientRect(),s=cloud.querySelector('[aria-haspopup="listbox"]').getBoundingClientRect();const dates=[...cloud.querySelectorAll('p')].find(p=>p.textContent.startsWith('Last upload:')).getBoundingClientRect();return s.left>t.right && description.textContent==='Back up changes to Google Drive.' && d.top>=t.bottom && dates.top>Math.max(d.bottom,s.bottom)})()`)
   await check('Disconnect sits alongside account instead of below',`(()=>{const {cloud}=window.cards();const button=[...cloud.querySelectorAll('button')].find(b=>b.textContent.includes('Disconnect'));const profile=button.parentElement.firstElementChild;const b=button.getBoundingClientRect(),p=profile.getBoundingClientRect();return p.right<=b.left && Math.abs((p.top+p.bottom-b.top-b.bottom)/2)<1})()`)
   await check('card content does not overflow horizontally',`(()=>{const {cloud,updates}=window.cards();return [cloud,updates].every(card=>card.scrollWidth<=card.clientWidth+2) && document.documentElement.scrollWidth<=innerWidth})()`)
   await check('upload and download dates share one row',`(()=>{const {cloud}=window.cards();const rows=[...cloud.querySelectorAll('p')].filter(p=>p.textContent.startsWith('Last upload:')||p.textContent.startsWith('Last download:'));const [u,d]=rows.map(p=>p.getBoundingClientRect());return rows.length===2 && Math.abs(u.top-d.top)<1 && u.right<d.left})()`)
+  await check('cloud history has centered 18px circle arrows and hidden accessible labels',`(()=>{
+    const cloud=window.cards().cloud;
+    return ['Last upload','Last download'].every(title=>{
+      const row=cloud.querySelector('[data-cloud-history="'+(title==='Last upload'?'upload':'download')+'"]'),icon=row.querySelector('svg'),label=row.querySelector('.sr-only'),date=row.lastElementChild;
+      const i=icon.getBoundingClientRect(),d=date.getBoundingClientRect();
+      return label.textContent===title+':' && getComputedStyle(label).position==='absolute' && icon.getAttribute('aria-hidden')==='true' && i.width===18 && i.height===18 && Math.abs((i.top+i.bottom-d.top-d.bottom)/2)<0.5;
+    });
+  })()`)
   await check('cloud and update actions remain present',`(()=>{const {cloud,updates}=window.cards();return cloud.textContent.includes('Disconnect') && cloud.querySelector('[aria-haspopup="listbox"]') && updates.textContent.includes('Check')})()`)
+  for(const kind of ['upload','download']){
+    await evaluate(`window.historyHint=window.cards().cloud.querySelector('[data-cloud-history="${kind}"] [tabindex="0"]');window.historyHint.dispatchEvent(new MouseEvent('mouseover',{bubbles:true}))`)
+    await check('custom Last '+kind+' tooltip appears on hover without native title',`(()=>{const hint=document.querySelector('[role="tooltip"]');return hint?.textContent==='Last ${kind}' && getComputedStyle(hint).position==='fixed' && !window.historyHint.closest('[title]')})()`)
+    await evaluate(`window.historyHint.dispatchEvent(new MouseEvent('mouseout',{bubbles:true,relatedTarget:document.body}))`)
+    await check('Last '+kind+' tooltip dismisses on mouse leave',`!document.querySelector('[role="tooltip"]')`)
+    await evaluate(`window.historyHint.dispatchEvent(new FocusEvent('focusin',{bubbles:true}))`)
+    await check('Last '+kind+' tooltip supports keyboard focus',`document.querySelector('[role="tooltip"]')?.id===window.historyHint.getAttribute('aria-describedby')`)
+    await evaluate(`window.historyHint.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));window.historyHint.dispatchEvent(new FocusEvent('focusout',{bubbles:true}))`)
+    await check('Last '+kind+' tooltip dismisses on Escape',`!document.querySelector('[role="tooltip"]')`)
+  }
   await check('section introductions precede Google and Polyhedron cards',`(()=>{const {cloud,updates}=window.cards();const find=(card,text)=>[...card.querySelectorAll('p')].find(p=>p.textContent===text).getBoundingClientRect();return find(cloud,'Automatic workspace upload').bottom<find(cloud,'Test account').top && find(updates,'Check for updates').bottom<find(updates,'Polyhedron').top})()`)
-  await check('application identity card shows runtime version and logo',`(()=>{const {updates}=window.cards();return updates.textContent.includes('Installed version: 9.8.7-test') && updates.querySelector('svg[viewBox="0 0 12.21 10.26"]')})()`)
+  await check('application identity card shows runtime version and logo',`(()=>{const {updates}=window.cards();return updates.textContent.includes('Installed version: 9.8.7') && updates.querySelector('svg[viewBox="0 0 12.21 10.26"]')})()`)
   await check('Check for updates sits beside Polyhedron within identity card',`(()=>{const {updates}=window.cards();const button=[...updates.querySelectorAll('button')].find(b=>b.textContent.includes('Check for updates'));const logo=button.parentElement.querySelector('svg[viewBox="0 0 12.21 10.26"]');if(!logo)return false;const b=button.getBoundingClientRect(),l=logo.getBoundingClientRect();return l.right<b.left && Math.abs((l.top+l.bottom-b.top-b.bottom)/2)<1})()`)
   await evaluate(`window.initialFooterCards=Object.fromEntries(Object.entries(window.cards()).map(([key,card])=>[key,{top:card.getBoundingClientRect().top,height:card.getBoundingClientRect().height}]));undefined`)
+  for(const status of ['checking','not-available','available','error']){
+    await evaluate('window.emitUpdate('+JSON.stringify({status,version:'2.0.0',message:'Background error'})+')')
+    await check('background '+status+' does not populate manual update feedback',`window.cards().updates.querySelector('.settings-update-feedback').textContent.trim()===''`)
+  }
+  await evaluate(`[...window.cards().updates.querySelectorAll('button')].find(button=>button.textContent.includes('Check for updates')).click()`)
+  await check('manual button shows checking feedback',`window.cards().updates.querySelector('.settings-update-feedback').textContent.includes('Checking for updates')`)
   for(const [state,text] of [
     [{status:'checking'},'Checking for updates…'],
     [{status:'not-available',version:'1.0.0'},'You are up to date.'],
@@ -103,6 +135,8 @@ async function run(){
     [{status:'downloaded',version:'2.0.0'},'Version 2.0.0 is ready to install.'],
     [{status:'error',message:'Test network error'},'Test network error']
   ]){
+    await evaluate(`[...window.cards().updates.querySelectorAll('button')].find(button=>button.textContent.includes('Check for updates')).click()`)
+    await settle()
     await evaluate('window.emitUpdate('+JSON.stringify(state)+')')
     await check('update status '+state.status+' appears in aligned footer',`(()=>{const {cloud,updates}=window.cards();const status=updates.querySelector('[role="status"]');const dates=[...cloud.querySelectorAll('p')].find(p=>p.textContent.startsWith('Last upload:'));return status.textContent.includes(${JSON.stringify(text)}) && Math.abs(status.getBoundingClientRect().bottom-dates.getBoundingClientRect().bottom)<2})()`)
     await check('actual text baselines and typography match for '+state.status,`(()=>{
@@ -110,7 +144,7 @@ async function run(){
       const bounds=element=>{const range=document.createRange();range.selectNodeContents(element);return range.getBoundingClientRect()};
       const m=bounds(message),style=getComputedStyle(message);
       return [...cloud.querySelectorAll('p')].filter(p=>/^Last (upload|download):/.test(p.textContent)).every(row=>
-        [...row.children].every(span=>{const r=bounds(span),s=getComputedStyle(span);return Math.abs(r.top-m.top)<0.5 && Math.abs(r.bottom-m.bottom)<0.5 && s.fontSize===style.fontSize && s.lineHeight===style.lineHeight})
+        [row.lastElementChild].every(span=>{const r=bounds(span),s=getComputedStyle(span);return Math.abs(r.top-m.top)<0.5 && Math.abs(r.bottom-m.bottom)<0.5 && s.fontSize===style.fontSize && s.lineHeight===style.lineHeight})
       );
     })()`)
     await check('update icon is vertically centered against text for '+state.status,`(()=>{
@@ -119,7 +153,7 @@ async function run(){
       return Math.abs((icon.top+icon.bottom-text.top-text.bottom)/2)<0.5;
     })()`)
     await check('update icon matches Last download color for '+state.status,`(()=>{
-      const {cloud,updates}=window.cards();const label=[...cloud.querySelectorAll('span')].find(span=>span.textContent==='Last download:');
+      const {cloud,updates}=window.cards();const label=cloud.querySelector('[data-cloud-history="download"] svg');
       const icon=updates.querySelector('[role="status"] .app-message > svg');
       return getComputedStyle(icon).color===getComputedStyle(label).color;
     })()`)
@@ -127,6 +161,8 @@ async function run(){
       await check('update status '+state.status+' does not move or resize either card',`Object.entries(window.cards()).every(([key,card])=>{const r=card.getBoundingClientRect(),initial=window.initialFooterCards[key];return Math.abs(r.top-initial.top)<0.5 && Math.abs(r.height-initial.height)<0.5})`)
     }
   }
+  await evaluate(`window.emitUpdate({status:'not-available',version:'1.0.0'})`)
+  await check('later background result does not replace a completed manual check',`window.cards().updates.querySelector('.settings-update-feedback').textContent.includes('Test network error')`)
   if(process.argv.includes('--footer-only')){
     win.destroy();app.quit();return
   }

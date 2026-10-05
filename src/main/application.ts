@@ -31,6 +31,7 @@ import { createUsageService } from './services/usage.service'
 import { checkForUpdates, registerUpdateService } from './services/update.service'
 import { migrateLegacyUserData } from './services/user-data-migration.service'
 import { applyWindowsAppIcon, savedWindowsAppIcon, updateAppIcon } from './services/app-icon.service'
+import { ejectMacInstallationImages } from './services/mac-install-image.service'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -89,6 +90,11 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow!.show()
+  })
+  mainWindow.once('ready-to-show', () => {
+    // Let startup finish before inspecting the installation image. The service
+    // only runs for the packaged macOS copy installed in Applications.
+    setTimeout(() => void ejectMacInstallationImages(), 2000)
   })
 
   setupWindowEvents(mainWindow)

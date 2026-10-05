@@ -48,7 +48,6 @@ export function AccentColorControl(): React.JSX.Element {
           <button
             type="button" aria-pressed={highlighted === index}
             aria-label={color ? `Favorite color ${index + 1}: ${color}` : `Save current color to favorite ${index + 1}`}
-            title={index < 3 ? `Default color: ${color}` : color ? `Favorite ${index + 1}: ${color} · Right-click to clear` : 'Save current color'}
             onContextMenu={(event) => {
               event.preventDefault()
               if (index < 3) return
