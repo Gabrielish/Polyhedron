@@ -1,5 +1,5 @@
 import type { WorkspaceSyncDocument } from './workspaceSync'
-import { isWorkspaceSyncDocument } from './workspaceSync'
+import { parseWorkspaceSyncDocument } from './workspaceSync'
 
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
 const FILE_NAME = 'polyhedron-workspace-sync.json'
@@ -10,22 +10,36 @@ declare global {
   interface Window { google?: { accounts: { oauth2: { initTokenClient: (options: { client_id: string; scope: string; callback: (response: { access_token?: string; error?: string }) => void; error_callback?: (error: { type: string }) => void }) => TokenClient } } } }
 }
 
-function loadGoogleScript(): Promise<void> {
+export function loadGoogleScript(): Promise<void> {
   if (window.google?.accounts?.oauth2) return Promise.resolve()
   if (scriptPromise) return scriptPromise
   scriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script')
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
-    script.onload = () => resolve()
-    script.onerror = () => { scriptPromise = null; script.remove(); reject(new Error('Google Identity Services could not be loaded. Please try again.')) }
+    const timeout = window.setTimeout(() => fail(), 15000)
+    function fail(): void {
+      window.clearTimeout(timeout)
+      script.onload = script.onerror = null
+      scriptPromise = null
+      script.remove()
+      reject(new Error('Google Identity Services could not be loaded. Please try again.'))
+    }
+    script.onload = () => {
+      window.clearTimeout(timeout)
+      if (!window.google?.accounts?.oauth2) { fail(); return }
+      resolve()
+    }
+    script.onerror = fail
     document.head.appendChild(script)
   })
   return scriptPromise
 }
 
-export async function requestDriveAccessToken(clientId: string, prompt = 'consent'): Promise<string> {
-  await loadGoogleScript()
+export function requestDriveAccessToken(clientId: string, prompt = 'consent'): Promise<string> {
+  // With the SDK preloaded, requestAccessToken runs in the original click,
+  // rather than after an async script load that can lose user activation.
+  if (!window.google?.accounts?.oauth2) return loadGoogleScript().then(() => requestDriveAccessToken(clientId, prompt))
   return new Promise((resolve, reject) => {
     let settled = false
     const finish = (callback: () => void) => {
@@ -48,9 +62,8 @@ export async function requestDriveAccessToken(clientId: string, prompt = 'consen
       return
     }
     client.requestAccessToken({ prompt })
-    // Safari can occasionally leave a silent GIS request pending. Let the caller
-    // recover with an interactive request rather than waiting forever.
-    if (prompt === '') window.setTimeout(() => finish(() => reject(new Error('Silent Google authorization timed out.'))), 4000)
+    // prompt='' can still show Google's account/consent UI. Do not time it out
+    // and launch another popup while the user is completing the first request.
   })
 }
 
@@ -86,6 +99,5 @@ export async function downloadWorkspaceSync(token: string): Promise<WorkspaceSyn
   const response = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, { headers: { Authorization: `Bearer ${token}` } })
   if (!response.ok) throw new Error(`Google Drive download failed (${response.status}).`)
   const parsed: unknown = await response.json()
-  if (!isWorkspaceSyncDocument(parsed)) throw new Error('The cloud file is not a supported Polyhedron sync document.')
-  return parsed
+  return parseWorkspaceSyncDocument(parsed)
 }

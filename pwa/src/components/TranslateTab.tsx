@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
-import { isWorkspaceSyncDocument } from '../sync/workspaceSync'
+import { parseWorkspaceSyncDocument } from '../sync/workspaceSync'
 import { TranslationActions } from './TranslationActions'
 import { Check, Search } from 'lucide-react'
 
@@ -63,8 +63,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0 }: {
 
   async function importDocument(file: File): Promise<void> {
     try {
-      const parsed: unknown = JSON.parse(await file.text())
-      if (!isWorkspaceSyncDocument(parsed)) throw new Error('This file is not a supported workspace sync document.')
+      const parsed = parseWorkspaceSyncDocument(JSON.parse(await file.text()))
       onDocumentChange(parsed)
       setPage(1)
       setMessage(`Loaded ${parsed.sessions.length} session${parsed.sessions.length === 1 ? '' : 's'} from ${file.name}.`)

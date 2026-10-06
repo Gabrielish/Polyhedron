@@ -38,6 +38,7 @@ type CloudTermGlossaryDocument = {
 
 type PwaSyncEntry = {
   uid: string
+  source: string
   target: string
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
@@ -48,6 +49,7 @@ type PwaSyncEntry = {
 
 type SavedSessionEntry = {
   uid?: string
+  source?: string
   target?: string
   genderTargets?: PwaSyncEntry['genderTargets']
   matchType?: PwaSyncEntry['matchType']
@@ -98,15 +100,23 @@ function buildPwaSyncDocument() {
       }
     }
 
-    // Session JSON already contains the complete UID/translation snapshot. Avoid
-    // reparsing the source XML on every upload; only fall back to XML when a
-    // session cache is missing or incomplete.
+    // Reuse cached source text where available. Older sessions only saved UID
+    // and translation, so fill their sources from the localization file.
+    let sourceByUid: Map<string, string> | undefined
+    const resolveSource = (saved: SavedSessionEntry): string => {
+      if (typeof saved.source === 'string') return saved.source
+      if (!sourceByUid) {
+        sourceByUid = new Map(parseLocalizationXml(row.lastFilePath!).map(entry => [entry.contentuid, entry.text]))
+      }
+      return sourceByUid.get(saved.uid ?? '') ?? ''
+    }
     const sourceEntries = savedEntries
       ? savedEntries
       : (() => {
           try {
             return parseLocalizationXml(row.lastFilePath!).map((xmlEntry) => ({
               uid: xmlEntry.contentuid,
+              source: xmlEntry.text,
               target: '',
               matchType: 'none' as const,
               needsReview: false
@@ -118,6 +128,7 @@ function buildPwaSyncDocument() {
     const entries = sourceEntries.map((saved) => {
       const entry: PwaSyncEntry = {
         uid: saved.uid ?? '',
+        source: resolveSource(saved),
         target: saved.target ?? '',
         genderTargets: saved.genderTargets,
         matchType: saved.matchType ?? 'none',
@@ -125,7 +136,7 @@ function buildPwaSyncDocument() {
         reviewStatus: saved.reviewStatus,
         history: saved.history
       }
-      const value = `${entry.uid}\u0000${entry.target}`
+      const value = `${entry.uid}\u0000${entry.source}\u0000${entry.target}`
       for (let index = 0; index < value.length; index += 1) {
         hash ^= value.charCodeAt(index)
         hash = Math.imul(hash, 16777619)

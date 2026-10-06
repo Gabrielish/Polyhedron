@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowDownAZ, ArrowDownUp, ArrowDownWideNarrow, ArrowRight, ArrowRightToLine, BookOpen, CaseSensitive, Check, ChevronRight, Cloud, Code2 as Github, Download, Equal, FileCode2, FolderSync, GitBranch, Hash, Highlighter, Languages, ListChecks, Menu, Monitor, Replace, Search, ShieldCheck, Smartphone, Sparkles, SquareDashed, Swords, WandSparkles, WholeWord, X } from 'lucide-react'
 import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
-import { beginDriveConnection } from './sync/driveConnection'
+import { beginDriveConnection, prepareDriveConnection } from './sync/driveConnection'
 import { Coffee, Heart } from 'lucide-react'
 import './landing.css'
 
@@ -38,6 +38,7 @@ const tools = [
 ] as const
 
 export function LandingPage(): React.JSX.Element {
+  useEffect(() => { void prepareDriveConnection().catch(() => {}) }, [])
   const [menu, setMenu] = useState(false)
   const menuButton = useRef<HTMLButtonElement>(null)
   const [workspace, setWorkspace] = useState(0)

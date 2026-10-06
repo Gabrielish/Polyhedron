@@ -49,6 +49,8 @@ button { font: inherit; }
 .companion-empty h2 { font-size:14px; }
 .companion-empty p { color:#8e9587; font-size:12px; line-height:1.7; margin:7px 0 0; }
 .companion-spin { animation:companion-spin 1s linear infinite; }
+.companion-source-warning { display:flex; align-items:flex-start; gap:9px; margin:0 0 18px; color:#d6dcbf; line-height:1.7; }
+.companion-source-warning svg { flex-shrink:0; margin-top:2px; }
 @keyframes companion-spin { to { transform:rotate(360deg); } }
 .companion-shell :is(a,button):focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
 @media(max-width:620px) { .companion-shell { padding-inline:18px; } .companion-shell .app-header { flex-direction:row; min-height:72px; gap:10px; } .companion-shell .brand-name { font-size:19px; } .companion-shell .brand-platform { display:none; } .companion-intro { padding-top:32px; } .companion-drive { flex-wrap:wrap; padding:20px; gap:12px; } .companion-drive-actions { flex:1 1 100%; } .companion-drive-actions button { flex:1; } .companion-empty { flex-wrap:wrap; padding:20px; } .companion-empty>div { min-width:200px; } .companion-empty button { width:100%; } .companion-shell .tab { padding:9px 10px; font-size:11px; } }
