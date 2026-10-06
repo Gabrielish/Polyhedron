@@ -3,13 +3,15 @@ import { Cloud, Download, Languages, GitBranch, Swords, Upload, CircleCheck, Cir
 import { TranslateTab } from './components/TranslateTab'
 import { DialogueNodesTab } from './components/DialogueNodesTab'
 import { GameDataTab } from './components/GameDataTab'
+import { SpellsTab } from './components/SpellsTab'
+import { WandSparkles } from 'lucide-react'
 import { WorkspaceErrorBoundary } from './components/WorkspaceErrorBoundary'
 import { downloadWorkspaceSync, uploadWorkspaceSync } from './sync/googleDrive'
 import { beginDriveConnection, pendingDriveConnection, prepareDriveConnection } from './sync/driveConnection'
 import { emptyDocument, type WorkspaceSyncDocument } from './sync/workspaceSync'
 import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
 
-const tabs = [{ name: 'Translate', icon: Languages }, { name: 'Dialogue Nodes', icon: GitBranch }, { name: 'Game Data', icon: Swords }] as const
+const tabs = [{ name: 'Translate', icon: Languages }, { name: 'Dialogue Nodes', icon: GitBranch }, { name: 'Game Data', icon: Swords }, { name: 'Spells', icon: WandSparkles }] as const
 type Tab = (typeof tabs)[number]['name']
 const dragonPath = dragonSvg.match(/<path\b[^>]*\bd="([^"]+)"/)?.[1]
 
@@ -72,6 +74,6 @@ export function App(): React.JSX.Element {
     <nav className="tabs" aria-label="Companion tabs">{tabs.map(item => <button key={item.name} type="button" className={tab === item.name ? 'tab active' : 'tab'} onClick={() => setTab(item.name)}><item.icon size={16} />{item.name}</button>)}</nav>
     {!hasWorkspace && <div className="companion-empty"><FolderOpen size={22} /><div><h2>No workspace loaded</h2><p>Download your synced workspace above, or import a workspace-sync.json exported from the desktop app.</p></div><button type="button" className="secondary-button" disabled={busy !== null} onClick={() => { setTab('Translate'); setImportSignal(value => value + 1) }}>Import file</button></div>}
     {missingSources > 0 && <p className="sync-status companion-source-warning" role="status"><CircleAlert size={16} />This older sync file is missing source text for {missingSources.toLocaleString()} {missingSources === 1 ? 'string' : 'strings'}. Translations are kept. Upload your workspace again from an updated desktop app to restore the source text.</p>}
-    <WorkspaceErrorBoundary key={`${tab}:${document.generatedAt}`} onReset={() => { setDocument(emptyDocument()); report('Workspace view reset. Your cloud file has not been changed.') }}><div hidden={!hasWorkspace}>{tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} importSignal={importSignal} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : <GameDataTab document={document} onDocumentChange={setDocument} />}</div></WorkspaceErrorBoundary>
+    <WorkspaceErrorBoundary key={`${tab}:${document.sessions.map(session => session.id).join('|')}`} onReset={() => { setDocument(emptyDocument()); report('Workspace view reset. Your cloud file has not been changed.') }}><div hidden={!hasWorkspace && tab !== 'Spells'}>{tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} importSignal={importSignal} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : tab === 'Spells' ? <SpellsTab document={document} onDocumentChange={setDocument} /> : <GameDataTab document={document} onDocumentChange={setDocument} />}</div></WorkspaceErrorBoundary>
   </main>
 }
