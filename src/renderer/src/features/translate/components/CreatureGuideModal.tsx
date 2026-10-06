@@ -14,6 +14,7 @@ import {
   creatureGuideTypes
 } from '@/data/creatureGuide'
 import { normalizeSearchText } from '@/utils/search'
+import { creaturePortraits } from '@/data/creaturePortraits'
 import type { TermGlossaryEntry } from '@/utils/termGlossary'
 
 interface CreatureGuideModalProps {
@@ -79,7 +80,7 @@ export function CreatureGuideModal({
     creatureGuideTypes.find((type) => type.id === selectedTypeId) ?? creatureGuideTypes[0]
   const selectedEntry =
     selectedType.children.find((entry) => entry.id === selectedEntryId) ?? selectedType
-  const selectedImage = imageOverrides[selectedEntry.id]
+  const selectedImage = imageOverrides[selectedEntry.id] || creaturePortraits[selectedEntry.id]
 
   useEffect(() => {
     if (!open) return
@@ -228,6 +229,7 @@ export function CreatureGuideModal({
                 <div className="grid gap-2 sm:grid-cols-2">
                   {selectedType.children.map((entry, index) => {
                     const saved = findSavedTranslation(entry, termGlossary)
+                    const image = imageOverrides[entry.id] || creaturePortraits[entry.id]
                     return (
                       <Fragment key={entry.id}>
                         {entry.group && selectedType.children[index - 1]?.group !== entry.group && (
@@ -245,8 +247,8 @@ export function CreatureGuideModal({
                           onClick={(event) => event.stopPropagation()}
                           title="Choose image"
                         >
-                          {imageOverrides[entry.id] ? (
-                            <img src={imageOverrides[entry.id]} alt="" className="h-full w-full object-cover" />
+                          {image ? (
+                            <img src={image} alt="" className="h-full w-full object-cover" />
                           ) : (
                             <span className="flex h-full w-full items-center justify-center text-[9px] text-neutral-600">Add image</span>
                           )}
