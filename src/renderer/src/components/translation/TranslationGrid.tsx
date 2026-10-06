@@ -50,6 +50,7 @@ import {
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslationSuggestionAvailability } from '@/hooks/useTranslationSuggestionAvailability'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { StyledWebview } from '@/components/shared/StyledWebview'
 import { TextSearchInput } from '@/components/shared/TextSearchInput'
@@ -690,6 +691,7 @@ export function TranslationGrid({
   const [showLiveGraph, setShowLiveGraph] = useState(true)
   const [onlineNodeMeta, setOnlineNodeMeta] = useState<Record<string, OnlineNodeMeta>>({})
   const [showTranslationSuggestions, setShowTranslationSuggestions] = useState(false)
+  const hasAvailableSuggestions = useTranslationSuggestionAvailability()
   const [translationSuggestions, setTranslationSuggestions] = useState<
     Awaited<ReturnType<typeof window.api.translationSuggestions.load>>
   >({})
@@ -750,9 +752,19 @@ export function TranslationGrid({
   }), [showTranslationSuggestions])
 
   const handleSuggestionsToggle = (checked: boolean): void => {
+    if (checked && !hasAvailableSuggestions) return
     setShowTranslationSuggestions(checked)
     if (checked && !translationSuggestionsLoaded && !translationSuggestionsLoading) reloadSuggestions()
   }
+
+  useEffect(() => {
+    if (hasAvailableSuggestions) return
+    ++suggestionRequestRef.current
+    setShowTranslationSuggestions(false)
+    setTranslationSuggestions({})
+    setTranslationSuggestionsLoaded(false)
+    setTranslationSuggestionsLoading(false)
+  }, [hasAvailableSuggestions])
 
   const renderTranslationSuggestions = (
     entry: TranslationSessionEntry
@@ -2600,13 +2612,13 @@ export function TranslationGrid({
           >
             <Highlighter size={14} />
           </SearchToolbarToggle>
-          <SearchToolbarToggle
+          {hasAvailableSuggestions && <SearchToolbarToggle
             active={showTranslationSuggestions}
             tooltip="Show translation suggestions"
             onClick={() => handleSuggestionsToggle(!showTranslationSuggestions)}
           >
             <Sparkles size={14} className={translationSuggestionsLoading ? 'animate-pulse' : ''} />
-          </SearchToolbarToggle>
+          </SearchToolbarToggle>}
         </div>
 
         <SearchFilterSelect
