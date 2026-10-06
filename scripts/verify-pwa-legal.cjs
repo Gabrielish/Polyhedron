@@ -18,10 +18,14 @@ for (const page of ['privacy', 'terms']) {
     if (link.startsWith('#')) {
       assert.ok(html.includes(`id="${link.slice(1)}"`), `Missing section ${link}`)
     } else {
-      const target = path.resolve(path.dirname(file), link)
+      const target = path.resolve(path.dirname(file), link.split(/[?#]/)[0])
       assert.ok(fs.existsSync(target), `Missing local asset ${link}`)
     }
   }
+  assert.match(html, /class="lp-header"/)
+  assert.match(html, /class="lp-nav-connect" href="\.\.\/#app"/)
+  assert.match(html, /class="lp-footer lp-wrap"/)
+  assert.match(html, /A little more context\. A better choice of words\./)
 }
 const privacy = fs.readFileSync(path.join(publicRoot, 'privacy/index.html'), 'utf8')
 assert.match(privacy, /auth\/drive\.file/)
@@ -47,13 +51,15 @@ if (process.argv.includes('--visual')) {
         const win = new BrowserWindow({ show: false, width, height, webPreferences: { offscreen: true, backgroundThrottling: false } })
         await win.loadFile(path.join(publicRoot, page, 'index.html'))
         await win.webContents.executeJavaScript('document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true)))))')
-        const layout = await win.webContents.executeJavaScript(`({overflow:document.documentElement.scrollWidth>innerWidth,background:getComputedStyle(document.body).backgroundColor,accent:getComputedStyle(document.querySelector('h1 span')).color,logo:document.querySelector('.brand img').naturalWidth})`)
+        const layout = await win.webContents.executeJavaScript(`({overflow:document.documentElement.scrollWidth>innerWidth,background:getComputedStyle(document.body).backgroundColor,accent:getComputedStyle(document.querySelector('h1 span')).color,logo:document.querySelector('.lp-brand img').naturalWidth})`)
         assert.equal(layout.overflow, false, `${page} ${label} overflows`)
         assert.equal(layout.background, 'rgb(8, 8, 8)')
         assert.equal(layout.accent, 'rgb(167, 241, 117)')
         assert.ok(layout.logo > 0)
         assert.equal(await win.webContents.executeJavaScript(`getComputedStyle(document.querySelector('.hero'),'::before').content`), 'none')
-        assert.ok(await win.webContents.executeJavaScript(`getComputedStyle(document.body).backgroundImage.includes('radial-gradient')`))
+        assert.equal(await win.webContents.executeJavaScript(`getComputedStyle(document.body).backgroundImage`), 'none')
+        assert.equal(await win.webContents.executeJavaScript(`getComputedStyle(document.querySelector('.hero')).backgroundImage`), 'none')
+        assert.equal(await win.webContents.executeJavaScript(`(()=>{const r=document.querySelector('.lp-nav-connect').getBoundingClientRect();return r.width>0&&r.right<=innerWidth})()`), true)
         const screenshot = path.join(temp, `${page}-${label}.png`)
         fs.writeFileSync(screenshot, (await win.webContents.capturePage()).toPNG())
         console.log(`Preview: ${screenshot}`)
