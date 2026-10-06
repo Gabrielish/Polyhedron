@@ -44,5 +44,12 @@ for (const size of [32, 64, 180, 192, 512]) {
   assert.equal(icon.readUInt32BE(16), size)
   assert.equal(icon.readUInt32BE(20), size)
 }
-assert.deepEqual(manifest.icons.map(icon => icon.src), ['icons/polyhedron-192.png', 'icons/polyhedron-512.png'])
+assert.match(index, /rel="apple-touch-icon" sizes="180x180" href="\.\/icons\/polyhedron-home-v2-180.png"/)
+for (const size of [180,192,512]) {
+  const icon = fs.readFileSync(path.join(root, `pwa/public/icons/polyhedron-home-v2-${size}.png`))
+  assert.equal(icon.readUInt32BE(16), size)
+  assert.equal(icon.readUInt32BE(20), size)
+}
+assert.deepEqual(manifest.icons.map(icon => icon.src), ['icons/polyhedron-home-v2-192.png', 'icons/polyhedron-home-v2-512.png'])
+assert(manifest.icons.every(icon => icon.purpose === 'any maskable'))
 console.log('PASS: landing CTAs, mobile menu, seven workspace tabs, twelve search/editing explanations, real screenshots, correct Pages asset paths and companion manifest')
