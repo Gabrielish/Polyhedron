@@ -44,9 +44,9 @@ for (const size of [32, 64, 180, 192, 512]) {
   assert.equal(icon.readUInt32BE(16), size)
   assert.equal(icon.readUInt32BE(20), size)
 }
-assert.match(index, /rel="apple-touch-icon" sizes="180x180" href="\.\/icons\/polyhedron-home-v2-180.png"/)
+assert.match(index, /rel="apple-touch-icon" sizes="180x180" href="\.\/icons\/polyhedron-home-v3-180.png"/)
 for (const size of [180,192,512]) {
-  const icon = fs.readFileSync(path.join(root, `pwa/public/icons/polyhedron-home-v2-${size}.png`))
+  const icon = fs.readFileSync(path.join(root, `pwa/public/icons/polyhedron-home-${size === 180 ? 'v3' : 'v2'}-${size}.png`))
   assert.equal(icon.readUInt32BE(16), size)
   assert.equal(icon.readUInt32BE(20), size)
 }
