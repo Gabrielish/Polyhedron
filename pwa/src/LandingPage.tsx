@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowDownAZ, ArrowDownUp, ArrowDownWideNarrow, ArrowRight, ArrowRightToLine, BookOpen, CaseSensitive, Check, ChevronRight, Cloud, Code2 as Github, Download, Equal, FileCode2, FolderSync, GitBranch, Hash, Highlighter, Languages, ListChecks, Menu, Monitor, Replace, Search, ShieldCheck, Smartphone, Sparkles, SquareDashed, Swords, WandSparkles, WholeWord, X } from 'lucide-react'
 import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
 import { beginDriveConnection, prepareDriveConnection } from './sync/driveConnection'
-import { Coffee, Heart } from 'lucide-react'
+import { Apple, Coffee, Heart } from 'lucide-react'
 import './landing.css'
 
 const repo = 'https://github.com/Gabrielish/Polyhedron'
@@ -35,6 +35,15 @@ const tools = [
   { name: 'Match highlighting', icon: Highlighter, description: 'Underline or select search matches so you can spot the relevant text immediately.' },
   { name: 'Translation suggestions', icon: Sparkles, description: 'Bring up translation suggestions to compare existing wording as you work.' },
   { name: 'Find and replace', icon: Replace, description: 'Enter the text to find and its replacement. Replace the first match or all matches, with dedicated undo and redo controls for replacement edits.' }
+] as const
+
+const extraQuestions = [
+  ['Which games can I translate?', 'Polyhedron supports Baldur’s Gate 3, Divinity: Original Sin and Divinity: Original Sin 2. Available reference tools differ by game.'],
+  ['Is this a finished language pack?', 'No. Polyhedron is a tool for creating and editing translations. Downloading the application does not install a translated version of a game.'],
+  ['Do I need a Google account?', 'Not for local desktop editing. Google Drive is optional and is used to back up or synchronize work with the browser companion.'],
+  ['Are AI tools required, and are API keys included?', 'No. You can translate manually. AI and machine translation are optional, require your own provider credentials, and may incur charges from that provider.'],
+  ['How do I back up my work?', 'Export a .pws workspace from the desktop Workspace tab and keep an independent copy. Back up the original game localization files before replacing them with your translation.'],
+  ['Which Mac build is available?', 'The macOS download is a DMG for Apple Silicon Macs. It is not a native Intel Mac build.']
 ] as const
 
 export function LandingPage(): React.JSX.Element {
@@ -100,11 +109,13 @@ export function LandingPage(): React.JSX.Element {
     <main id="main">
       <section className="lp-hero lp-wrap" aria-labelledby="hero-heading">
         <div className="lp-hero-glow" aria-hidden="true" /><Dragon className="lp-hero-dragon" />
+        <div className="lp-hero-copy">
         <p className="lp-eyebrow"><span /> BUILT FOR GAME TRANSLATION</p>
         <h1 id="hero-heading">Every word.<br /><em>In your world.</em></h1>
         <p className="lp-hero-description">Meet Polyhedron. A focused workspace for translating games — with the context, clarity and control every line deserves.</p>
         <div className="lp-actions"><a className="lp-button lp-primary" href="#app"><Cloud size={18} />Connect<ArrowRight size={17} /></a><a className="lp-button lp-secondary" href="#download"><Download size={18} />Download</a></div>
         <div className="lp-platforms"><span><Monitor size={14} /> Windows & macOS</span><span><Smartphone size={14} /> Web companion</span><span><Github size={14} /> Open development</span></div>
+        </div>
         <div className="lp-hero-preview"><img src={asset('translate')} width={1920} height={1170} alt="Polyhedron desktop translation editor, with English source text, Romanian translations, search tools and review actions" fetchPriority="high" /></div>
         <a className="lp-scroll-link" href="#workspace">A closer look <ArrowDown size={15} /></a>
       </section>
@@ -143,7 +154,7 @@ export function LandingPage(): React.JSX.Element {
         <div><p className="lp-eyebrow">03 / PICK UP WHERE YOU LEFT OFF</p><h2 id="companion-heading">Your workspace.<br /><span>Within reach.</span></h2><p className="lp-body-copy">Connect Google Drive in the web companion to download your synced workspace, edit translations and upload changes back. Or import an exported workspace file.</p><p className="lp-body-copy lp-muted">Desktop is the full workspace. The companion brings Translate, Dialogue Nodes and Game Data to your browser.</p><a className="lp-button lp-primary" href="#app"><Cloud size={18} />Connect<ArrowRight size={17} /></a></div>
       </section>
       <section className="lp-section lp-wrap" id="download" aria-labelledby="download-heading"><div className="lp-download-heading"><p className="lp-eyebrow">04 / MAKE IT YOUR WORKSPACE</p><h2 id="download-heading">Ready for your<br /><span>next translation?</span></h2><p>Get Polyhedron for desktop, or connect from your browser.</p>{release && <span className="lp-release">Latest release · {release.version}</span>}</div>
-        <div className="lp-download-grid"><a href={release?.windows ?? `${repo}/releases`} className="lp-download-card"><Monitor size={28} /><h3>Windows</h3><p>x64 · Setup installer</p><span>Download <Download size={17} /></span></a><a href={release?.mac ?? `${repo}/releases`} className="lp-download-card"><Monitor size={28} /><h3>macOS</h3><p>Apple Silicon · DMG</p><span>Download <Download size={17} /></span></a><a href="#app" className="lp-download-card lp-download-web"><Cloud size={28} /><h3>Web companion</h3><p>Continue in your browser</p><span>Connect <ArrowRight size={17} /></span></a></div>
+        <div className="lp-download-grid"><a href={release?.windows ?? `${repo}/releases`} className="lp-download-card"><Monitor size={28} /><h3>Windows</h3><p>x64 · Setup installer</p><span>Download <Download size={17} /></span></a><a href={release?.mac ?? `${repo}/releases`} className="lp-download-card"><Apple size={28} /><h3>macOS</h3><p>Apple Silicon · DMG</p><span>Download <Download size={17} /></span></a><a href="#app" className="lp-download-card lp-download-web"><Cloud size={28} /><h3>Web companion</h3><p>Continue in your browser</p><span>Connect <ArrowRight size={17} /></span></a></div>
         <p className="lp-download-note">Desktop downloads are hosted on GitHub Releases. No release available? <a href={`${repo}/releases`}>Check the release page.</a></p>
       </section>
       <section className="lp-wrap lp-support" id="support" aria-labelledby="support-heading">
@@ -151,7 +162,7 @@ export function LandingPage(): React.JSX.Element {
         <div className="lp-support-copy"><p className="lp-eyebrow">A LITTLE SUPPORT GOES A LONG WAY</p><h2 id="support-heading">Support the project.</h2><p>If Polyhedron helps your translations, you can support my work through Patreon or buy me a coffee on Ko-fi. Entirely optional, always appreciated.</p></div>
         <div className="lp-support-actions"><a className="lp-button lp-primary" href="https://www.patreon.com/Gabrielish/posts/baldurs-gate-3-166380267?utm_medium=clipboard_copy&amp;utm_source=copyLink&amp;utm_campaign=postshare_creator&amp;utm_content=join_link" target="_blank" rel="noopener noreferrer"><Heart size={17} />Patreon<ArrowRight size={16} /></a><a className="lp-button lp-secondary" href="https://ko-fi.com/gabrielish" target="_blank" rel="noopener noreferrer"><Coffee size={17} />Buy me a coffee<ArrowRight size={16} /></a></div>
       </section>
-      <section className="lp-wrap lp-faq" aria-label="Questions"><h2>A few things to know.</h2><details><summary>What does Connect open?</summary><p>Connect starts Google sign-in and opens the Polyhedron web companion, where you can download your synced workspace. You can also import a workspace file. Visiting this presentation page does not connect Google Drive.</p></details><details><summary>Does the companion replace the desktop app?</summary><p>No. Desktop provides the full set of editing, project and reference tools. The browser companion is a smaller workspace for continuing your translations.</p></details><details><summary>Are all reference tabs available for every game?</summary><p>Reference views depend on the selected game and available data. The screenshots on this page show a Baldur’s Gate 3 workspace.</p></details></section>
+      <section className="lp-wrap lp-faq" aria-label="Questions"><h2>A few things to know.</h2><details><summary>What does Connect open?</summary><p>Connect starts Google sign-in and opens the Polyhedron web companion, where you can download your synced workspace. You can also import a workspace file. Visiting this presentation page does not connect Google Drive.</p></details><details><summary>Does the companion replace the desktop app?</summary><p>No. Desktop provides the full set of editing, project and reference tools. The browser companion is a smaller workspace for continuing your translations.</p></details><details><summary>Are all reference tabs available for every game?</summary><p>Reference views depend on the selected game and available data. The screenshots on this page show a Baldur’s Gate 3 workspace.</p></details>{extraQuestions.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
     </main>
     <footer className="lp-footer lp-wrap"><div><a href="#top" className="lp-brand"><Dragon /><span>Polyhedron</span></a><p>A little more context. A better choice of words.</p></div><div><a href={`${import.meta.env.BASE_URL}privacy/`}>Privacy Policy</a><a href={`${import.meta.env.BASE_URL}terms/`}>Terms of Service</a><a href={repo} target="_blank" rel="noopener noreferrer">GitHub <Github size={15} /></a><a href={`${repo}/issues`} target="_blank" rel="noopener noreferrer">Feedback <ArrowRight size={15} /></a><a href="#app">Open companion <ArrowRight size={15} /></a></div><p className="lp-credits">An independent project by Gabrielish. Game names, artwork and reference content belong to their respective owners. Reference views shown: <a href="https://bg3.wiki/">bg3.wiki</a> and <a href="https://bg3.game-script.com/">BG3 Dialogue Explorer</a>.</p></footer>
     {zoom && <div className="lp-lightbox" role="dialog" aria-modal="true" aria-label={`${current.name} screenshot`} onClick={event => { if (event.target === event.currentTarget) closeZoom() }}><button ref={zoomClose} onClick={closeZoom} onKeyDown={event => { if (event.key === 'Tab') event.preventDefault() }} aria-label="Close screenshot"><X size={24} /></button><img src={asset(current.image)} alt={`Full-size Polyhedron ${current.name} screenshot`} /></div>}

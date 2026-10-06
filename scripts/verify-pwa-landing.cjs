@@ -13,6 +13,9 @@ const result = { exports: {} }
 new Function('module', 'exports', 'require', bundle)(result, result.exports, require)
 const html = result.exports
 assert.match(html, /href="#app"/)
+assert.match(html, /class="lp-hero-copy"/)
+assert.match(html, /lucide-apple/)
+assert.equal((html.match(/<details>/g) || []).length, 9)
 assert.match(html, /href="#download"/)
 assert.match(html, /id="support"/)
 assert.match(html, /href="https:\/\/www\.patreon\.com\/Gabrielish\/posts\/baldurs-gate-3-166380267\?/)
