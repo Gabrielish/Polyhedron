@@ -32,9 +32,33 @@ app.whenReady().then(async () => {
     })()`)
     assert.equal(positions.overflow, false)
     assert.equal(label === 'desktop' ? positions.sideBySide : positions.stacked, true)
+    const faq = await win.webContents.executeJavaScript(`(async()=>{
+      const button=document.querySelector('.lp-faq-toggle');
+      if(!button)throw Error('FAQ toggle missing');
+      const visible=()=>[...document.querySelectorAll('.lp-faq details')].filter(el=>el.getClientRects().length).length;
+      const frame=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      const initial=visible();button.click();await frame();
+      const expanded=visible(),more=button.getAttribute('aria-expanded')==='true'&&button.textContent.includes('Show less');
+      button.click();await frame();
+      return {initial,expanded,collapsed:visible(),more,less:button.getAttribute('aria-expanded')==='false'&&button.textContent.includes('Show more')};
+    })()`)
+    assert.deepEqual(faq, {initial:3,expanded:9,collapsed:3,more:true,less:true})
+    await win.webContents.executeJavaScript('scrollTo(0,0)')
+    const connect = await win.webContents.executeJavaScript(`(()=>{
+      const link=document.querySelector('.lp-header .lp-nav-connect');
+      const box=link.getBoundingClientRect();return {x:Math.round(box.x+box.width/2),y:Math.round(box.y+box.height/2)};
+    })()`)
+    win.webContents.sendInputEvent({type:'mouseMove',...connect})
+    await new Promise(resolve=>setTimeout(resolve,300))
+    const hover = await win.webContents.executeJavaScript(`(()=>{
+      const link=document.querySelector('.lp-header .lp-nav-connect');
+      return {glow:getComputedStyle(link).boxShadow!=='none',arrow:getComputedStyle(link.querySelector('svg')).transform!=='none'};
+    })()`)
+    assert.deepEqual(hover,{glow:true,arrow:true})
+    win.webContents.sendInputEvent({type:'mouseMove',x:0,y:0})
     const screenshot = path.join(temp, `hero-${label}.png`)
     fs.writeFileSync(screenshot, (await win.webContents.capturePage()).toPNG())
-    console.log(`PASS: ${label} hero placement, no horizontal overflow; preview ${screenshot}`)
+    console.log(`PASS: ${label} hero, FAQ show more/less and Connect hover; preview ${screenshot}`)
     win.destroy()
   }
   app.quit()

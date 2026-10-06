@@ -122,6 +122,12 @@
 .lp-faq details { border-bottom:1px solid #252e1e; padding:18px 0; }
 .lp-faq summary { cursor:pointer; color:#bac5b0; font-size:13px; }
 .lp-faq details p { color:#859479; font-size:12px; line-height:1.9; margin:15px 0 0; }
+.lp-faq-toggle { display:flex; align-items:center; gap:10px; margin:24px auto 0; padding:10px 16px; border:1px solid #39482e; border-radius:7px; background:transparent; color:var(--site-accent); font:inherit; font-size:13px; cursor:pointer; transition:background-color .2s,border-color .2s; }
+.lp-faq-toggle:hover { background:rgb(167 241 117 / 8%); border-color:var(--site-accent); }
+.lp-faq-toggle:focus-visible { outline:2px solid var(--site-accent); outline-offset:4px; }
+.lp-faq-toggle svg { transition:transform .2s; }
+.lp-faq-toggle[aria-expanded="true"] svg { transform:rotate(180deg); }
+@media(prefers-reduced-motion:reduce) { .lp-faq-toggle,.lp-faq-toggle svg { transition:none; } }
 .lp-footer { display:grid; grid-template-columns:1fr auto; gap:24px; padding:40px 0 28px; border-top:1px solid #27321e; }
 .lp-footer>div>p { color:#758368; font-size:11px; margin-top:14px; }
 .lp-footer>div:nth-child(2) { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:16px 22px; align-items:center; max-width:580px; }

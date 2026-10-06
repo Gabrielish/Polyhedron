@@ -49,6 +49,7 @@ const extraQuestions = [
 export function LandingPage(): React.JSX.Element {
   useEffect(() => { void prepareDriveConnection().catch(() => {}) }, [])
   const [menu, setMenu] = useState(false)
+  const [moreQuestions, setMoreQuestions] = useState(false)
   const menuButton = useRef<HTMLButtonElement>(null)
   const [workspace, setWorkspace] = useState(0)
   const [tool, setTool] = useState(0)
@@ -162,7 +163,18 @@ export function LandingPage(): React.JSX.Element {
         <div className="lp-support-copy"><p className="lp-eyebrow">A LITTLE SUPPORT GOES A LONG WAY</p><h2 id="support-heading">Support the project.</h2><p>If Polyhedron helps your translations, you can support my work through Patreon or buy me a coffee on Ko-fi. Entirely optional, always appreciated.</p></div>
         <div className="lp-support-actions"><a className="lp-button lp-primary" href="https://www.patreon.com/Gabrielish/posts/baldurs-gate-3-166380267?utm_medium=clipboard_copy&amp;utm_source=copyLink&amp;utm_campaign=postshare_creator&amp;utm_content=join_link" target="_blank" rel="noopener noreferrer"><Heart size={17} />Patreon<ArrowRight size={16} /></a><a className="lp-button lp-secondary" href="https://ko-fi.com/gabrielish" target="_blank" rel="noopener noreferrer"><Coffee size={17} />Buy me a coffee<ArrowRight size={16} /></a></div>
       </section>
-      <section className="lp-wrap lp-faq" aria-label="Questions"><h2>A few things to know.</h2><details><summary>What does Connect open?</summary><p>Connect starts Google sign-in and opens the Polyhedron web companion, where you can download your synced workspace. You can also import a workspace file. Visiting this presentation page does not connect Google Drive.</p></details><details><summary>Does the companion replace the desktop app?</summary><p>No. Desktop provides the full set of editing, project and reference tools. The browser companion is a smaller workspace for continuing your translations.</p></details><details><summary>Are all reference tabs available for every game?</summary><p>Reference views depend on the selected game and available data. The screenshots on this page show a Baldur’s Gate 3 workspace.</p></details>{extraQuestions.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</section>
+      <section className="lp-wrap lp-faq" aria-label="Questions">
+        <h2>A few things to know.</h2>
+        <details><summary>What does Connect open?</summary><p>Connect starts Google sign-in and opens the Polyhedron web companion, where you can download your synced workspace. You can also import a workspace file. Visiting this presentation page does not connect Google Drive.</p></details>
+        <details><summary>Does the companion replace the desktop app?</summary><p>No. Desktop provides the full set of editing, project and reference tools. The browser companion is a smaller workspace for continuing your translations.</p></details>
+        <details><summary>Are all reference tabs available for every game?</summary><p>Reference views depend on the selected game and available data. The screenshots on this page show a Baldur’s Gate 3 workspace.</p></details>
+        <div id="extra-questions" hidden={!moreQuestions}>
+          {extraQuestions.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}
+        </div>
+        <button className="lp-faq-toggle" type="button" aria-expanded={moreQuestions} aria-controls="extra-questions" onClick={() => setMoreQuestions(value => !value)}>
+          {moreQuestions ? 'Show less' : 'Show more'}<ArrowDown size={16} aria-hidden="true" />
+        </button>
+      </section>
     </main>
     <footer className="lp-footer lp-wrap"><div><a href="#top" className="lp-brand"><Dragon /><span>Polyhedron</span></a><p>A little more context. A better choice of words.</p></div><div><a href={`${import.meta.env.BASE_URL}privacy/`}>Privacy Policy</a><a href={`${import.meta.env.BASE_URL}terms/`}>Terms of Service</a><a href={repo} target="_blank" rel="noopener noreferrer">GitHub <Github size={15} /></a><a href={`${repo}/issues`} target="_blank" rel="noopener noreferrer">Feedback <ArrowRight size={15} /></a><a href="#app">Open companion <ArrowRight size={15} /></a></div><p className="lp-credits">An independent project by Gabrielish. Game names, artwork and reference content belong to their respective owners. Reference views shown: <a href="https://bg3.wiki/">bg3.wiki</a> and <a href="https://bg3.game-script.com/">BG3 Dialogue Explorer</a>.</p></footer>
     {zoom && <div className="lp-lightbox" role="dialog" aria-modal="true" aria-label={`${current.name} screenshot`} onClick={event => { if (event.target === event.currentTarget) closeZoom() }}><button ref={zoomClose} onClick={closeZoom} onKeyDown={event => { if (event.key === 'Tab') event.preventDefault() }} aria-label="Close screenshot"><X size={24} /></button><img src={asset(current.image)} alt={`Full-size Polyhedron ${current.name} screenshot`} /></div>}
