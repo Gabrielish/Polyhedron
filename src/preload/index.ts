@@ -333,8 +333,12 @@ const api: AppApi = {
   },
 
   translationSuggestions: {
-    load: (): Promise<Record<string, { one: string; two: string }>> =>
-      ipcRenderer.invoke('translation-suggestions:load')
+    load: () => ipcRenderer.invoke('translation-suggestions:load'),
+    list: () => ipcRenderer.invoke('translation-suggestions:list'),
+    add: () => ipcRenderer.invoke('translation-suggestions:add'),
+    setEnabled: (params) => ipcRenderer.invoke('translation-suggestions:set-enabled', params),
+    remove: (params) => ipcRenderer.invoke('translation-suggestions:remove', params),
+    onChanged: (cb) => on('translation-suggestions:changed', cb)
   },
 
   merge: {

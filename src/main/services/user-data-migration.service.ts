@@ -25,10 +25,16 @@ export function migrateLegacyUserData(): void {
     path.join(legacyRoot, 'google-drive-credentials.json'),
     path.join(currentRoot, 'google-drive-credentials.json')
   )
-  copyIfMissing(
-    path.join(legacyRoot, 'google-drive-token.json'),
-    path.join(currentRoot, 'google-drive-token.json')
-  )
+  const tokenMigrationMarker = path.join(currentRoot, '.google-drive-token-migrated')
+  if (!fs.existsSync(tokenMigrationMarker)) {
+    if (!fs.existsSync(path.join(currentRoot, 'google-drive-token.secure.json'))) copyIfMissing(
+      path.join(legacyRoot, 'google-drive-token.json'),
+      path.join(currentRoot, 'google-drive-token.json')
+    )
+    // Disconnect must remain disconnected: never resurrect a token from the
+    // old profile on a later startup after the encrypted token was removed.
+    fs.writeFileSync(tokenMigrationMarker, '1', { mode: 0o600 })
+  }
 
   // Session/mod files used by the app live in the legacy nested directory.
   copyTreeIfMissing(path.join(legacyRoot, 'icosa'), projectDataPath(currentRoot))

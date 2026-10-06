@@ -6,6 +6,7 @@ import { useAppTranslation } from '@/i18n/useAppTranslation'
 import type { AiProviderId, ConfigKey } from '@/types'
 import { AI_PROVIDERS, type AiProviderMeta, getProviderMeta } from './aiProviders'
 import { SettingsSectionCard } from './SettingsSectionCard'
+import { STORED_SECRET_MARKER } from '../../../../shared/secret-config'
 
 const KEY_SAVE_DEBOUNCE_MS = 600
 
@@ -56,7 +57,10 @@ function ProviderRow({
   const onKeyInput = (value: string): void => {
     setDraft(value)
     if (timerRef.current) window.clearTimeout(timerRef.current)
-    timerRef.current = window.setTimeout(() => persist(value), KEY_SAVE_DEBOUNCE_MS)
+    timerRef.current = window.setTimeout(() => {
+      timerRef.current = null
+      persist(value)
+    }, KEY_SAVE_DEBOUNCE_MS)
   }
 
   const flush = (): void => {
@@ -111,9 +115,9 @@ function ProviderRow({
       <div className={`provider-api-key-field flex min-w-0 items-center gap-1 rounded-md border border-neutral-800 bg-[#0a0a0c] px-3 transition-colors focus-within:border-amber-500 ${!onSaveModel ? 'col-span-2' : ''}`}>
         <input
           type={show ? 'text' : 'password'}
-          value={draft}
+          value={draft === STORED_SECRET_MARKER ? '' : draft}
           aria-label={`${meta.name} API key`}
-          placeholder={meta.keyPlaceholder}
+          placeholder={draft === STORED_SECRET_MARKER ? 'Saved securely — enter a new key to replace' : meta.keyPlaceholder}
           onChange={(e) => onKeyInput(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => {
@@ -124,6 +128,7 @@ function ProviderRow({
         />
         <button
           type="button"
+          disabled={draft === STORED_SECRET_MARKER}
           onClick={() => setShow((s) => !s)}
           className="cursor-pointer text-neutral-500 transition-colors hover:text-neutral-300"
           title={show ? t('providers.hideKey') : t('providers.showKey')}

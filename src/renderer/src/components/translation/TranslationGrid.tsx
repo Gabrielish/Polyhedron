@@ -691,10 +691,11 @@ export function TranslationGrid({
   const [onlineNodeMeta, setOnlineNodeMeta] = useState<Record<string, OnlineNodeMeta>>({})
   const [showTranslationSuggestions, setShowTranslationSuggestions] = useState(false)
   const [translationSuggestions, setTranslationSuggestions] = useState<
-    Record<string, { one: string; two: string }>
+    Awaited<ReturnType<typeof window.api.translationSuggestions.load>>
   >({})
   const [translationSuggestionsLoading, setTranslationSuggestionsLoading] = useState(false)
   const [translationSuggestionsLoaded, setTranslationSuggestionsLoaded] = useState(false)
+  const suggestionRequestRef = useRef(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const textareaRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const tagSelections = useRef<Map<string, TextSelection>>(new Map())
@@ -724,21 +725,33 @@ export function TranslationGrid({
     return () => window.removeEventListener('keydown', handleEscape)
   }, [dialogueKey])
 
-  const handleSuggestionsToggle = (checked: boolean): void => {
-    setShowTranslationSuggestions(checked)
-    if (!checked || translationSuggestionsLoaded || translationSuggestionsLoading) return
-
+  const reloadSuggestions = (): void => {
+    const request = ++suggestionRequestRef.current
     setTranslationSuggestionsLoading(true)
     void window.api.translationSuggestions
       .load()
       .then((suggestions) => {
+        if (request !== suggestionRequestRef.current) return
         setTranslationSuggestions(suggestions)
         setTranslationSuggestionsLoaded(true)
       })
       .catch(() => {
-        toast.error('Nu s-au putut încărca sugestiile din traducere1.xml și traducere2.xml.')
+        if (request === suggestionRequestRef.current) toast.error('Could not load translation suggestions.')
       })
-      .finally(() => setTranslationSuggestionsLoading(false))
+      .finally(() => { if (request === suggestionRequestRef.current) setTranslationSuggestionsLoading(false) })
+  }
+
+  useEffect(() => window.api.translationSuggestions.onChanged(() => {
+    ++suggestionRequestRef.current
+    setTranslationSuggestions({})
+    setTranslationSuggestionsLoaded(false)
+    setTranslationSuggestionsLoading(false)
+    if (showTranslationSuggestions) reloadSuggestions()
+  }), [showTranslationSuggestions])
+
+  const handleSuggestionsToggle = (checked: boolean): void => {
+    setShowTranslationSuggestions(checked)
+    if (checked && !translationSuggestionsLoaded && !translationSuggestionsLoading) reloadSuggestions()
   }
 
   const renderTranslationSuggestions = (
@@ -750,10 +763,11 @@ export function TranslationGrid({
 
     return (
       <div className="mt-1 space-y-0.5 text-[12px] leading-[1.5] text-neutral-600">
-        {[pair.one, pair.two].map((text, index) =>
+        {pair.items.map(({ text, sourceName }, index) =>
           text ? (
             <div
               key={`${entry.uid}-suggestion-${index}`}
+              title={sourceName}
               className="min-w-0 wrap-break-word whitespace-pre-wrap"
             >
               {renderSource(text, { highlightQuery: '' })}

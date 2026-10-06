@@ -34,6 +34,8 @@ import { runTranslatePipeline, type TranslatePipelineParams } from '../services/
 import type { UsageService } from '../services/usage.service'
 import { decodeEntities } from '../services/xml-entities.service'
 import { getActiveWindow } from '../utils/window'
+import { decryptSecret } from '../services/secret-storage.service'
+import { isSecretConfigKey, STORED_SECRET_MARKER } from '../../shared/secret-config'
 
 export type { TranslationProvider }
 
@@ -126,6 +128,9 @@ export function registerTranslationHandlers(
           similarity: resolved.similarity
         }
       } else {
+        if (payload.provider !== 'manual' && (!payload.apiKey || payload.apiKey === STORED_SECRET_MARKER)) {
+          payload = { ...payload, apiKey: requireStoredApiKey(payload.provider) }
+        }
         requirePayloadApiKey(payload)
       }
     } catch (err) {
@@ -389,7 +394,7 @@ function readConfigValue(key: ConfigKey): string | null {
   const row = db.select().from(config).where(eq(config.key, key)).get() as
     | { key: string; value: string | null }
     | undefined
-  const value = row?.value?.trim() ?? ''
+  const value = isSecretConfigKey(key) ? decryptSecret(row?.value ?? '').trim() : row?.value?.trim() ?? ''
   return value.length > 0 ? value : null
 }
 
@@ -651,7 +656,7 @@ function readApiKey(provider: 'openai' | 'deepl' | 'google'): string | null {
   const row = db.select().from(config).where(eq(config.key, key)).get() as
     | { key: string; value: string | null }
     | undefined
-  const value = row?.value?.trim() ?? ''
+  const value = decryptSecret(row?.value ?? '').trim()
   return value.length > 0 ? value : null
 }
 

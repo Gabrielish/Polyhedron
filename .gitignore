@@ -12,6 +12,7 @@ PLANNING.md
 .env.local
 .env
 *.md
+!SECURITY.md
 data/
 *.txt
 *.xml
@@ -20,5 +21,7 @@ design/
 
 # Local Google Drive OAuth credentials
 tools/google-drive/google-drive-credentials.json
+build/google-drive/
+**/google-drive-token*.json
 
 pwa/.env.save

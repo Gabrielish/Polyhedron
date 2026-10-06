@@ -8,6 +8,9 @@ import { config, mod } from '../database/schema'
 import { cleanupTempDir, createTempDir } from '../utils/tempDir'
 import { runFileTask } from './file-task.service'
 import { databasePath, projectPath } from '../utils/app-paths'
+import { sanitizeWorkspaceDatabase, restoreLocalSecrets } from './workspace-security.service'
+import { isSensitiveConfigKey } from '../../shared/secret-config'
+import { listSuggestionSources, suggestionSourcesDirectory } from './translation-suggestions.service'
 
 const WORKSPACE_VERSION = 1
 
@@ -117,10 +120,13 @@ export async function exportWorkspace(outputPath: string): Promise<{ outputPath:
   try {
     await fs.promises.mkdir(tempDir, { recursive: true })
     await backupDatabase(path.join(tempDir, 'polyhedron.db'))
+    sanitizeWorkspaceDatabase(path.join(tempDir, 'polyhedron.db'))
     const modsDir = projectPath('mods')
     if (fs.existsSync(modsDir)) await fs.promises.cp(modsDir, path.join(tempDir, 'mods'), { recursive: true })
     const sessionsDir = projectPath('sessions')
     if (fs.existsSync(sessionsDir)) await copyCurrentSessions(path.join(tempDir, 'sessions'))
+      listSuggestionSources()
+      await fs.promises.cp(suggestionSourcesDirectory(), path.join(tempDir, 'translation-suggestion-sources'), { recursive: true })
     await fs.promises.writeFile(
       path.join(tempDir, 'workspace.json'),
       JSON.stringify({ version: WORKSPACE_VERSION, createdAt: new Date().toISOString() }, null, 2)
@@ -146,6 +152,11 @@ export async function importWorkspace(
       : path.join(tempDir, 'icosa.db')
     if (!fs.existsSync(importedDbPath))
       throw new Error('Invalid workspace: polyhedron.db is missing.')
+    // Never adopt another person's credentials (or their machine-bound encrypted
+    // values). Keep this computer's own keys across imports instead.
+    const localSecrets = getDb().select().from(config).all().filter(row => isSensitiveConfigKey(row.key))
+    sanitizeWorkspaceDatabase(importedDbPath)
+    restoreLocalSecrets(importedDbPath, localSecrets)
     await backupDatabase(backupPath)
     closeDb()
     fs.copyFileSync(importedDbPath, currentDbPath)
@@ -171,6 +182,12 @@ export async function importWorkspace(
       stats = getWorkspaceTranslationStats(sessionsDir)
     }
     rewriteImportedPaths(currentDbPath)
+      const importedSuggestions = path.join(tempDir, 'translation-suggestion-sources')
+      if (fs.existsSync(importedSuggestions)) {
+        const destination = suggestionSourcesDirectory()
+        if (fs.existsSync(destination)) fs.cpSync(destination, `${destination}.before-import-${Date.now()}`, { recursive: true })
+        fs.cpSync(importedSuggestions, destination, { recursive: true })
+      }
     return { backupPath, stats }
   } finally {
     cleanupTempDir(tempDir)

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ConfigKey } from '@/types'
+import { isSecretConfigKey, STORED_SECRET_MARKER } from '../../../shared/secret-config'
 
 const CONFIG_CHANGED_EVENT = 'polyhedron:config-changed'
 
@@ -26,8 +27,9 @@ export function useConfig() {
 
   const set = useCallback(async (key: ConfigKey, value: string) => {
     await window.api.config.set({ key, value })
-    setConfig((prev) => ({ ...prev, [key]: value }))
-    window.dispatchEvent(new CustomEvent(CONFIG_CHANGED_EVENT, { detail: { key, value } }))
+    const publicValue = isSecretConfigKey(key) && value ? STORED_SECRET_MARKER : value
+    setConfig((prev) => ({ ...prev, [key]: publicValue }))
+    window.dispatchEvent(new CustomEvent(CONFIG_CHANGED_EVENT, { detail: { key, value: publicValue } }))
   }, [])
 
   return { config, loading, set }

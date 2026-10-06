@@ -32,6 +32,7 @@ import { checkForUpdates, registerUpdateService } from './services/update.servic
 import { migrateLegacyUserData } from './services/user-data-migration.service'
 import { applyWindowsAppIcon, savedWindowsAppIcon, updateAppIcon } from './services/app-icon.service'
 import { ejectMacInstallationImages } from './services/mac-install-image.service'
+import { installIpcSecurity, isAllowedExternalUrl, isAllowedReferenceUrl } from './utils/ipc-security'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -77,7 +78,9 @@ function createWindow(): void {
     icon: savedWindowsIcon ?? (process.platform === 'win32' ? iconWin : icon),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false,
       webviewTag: true
     }
   })
@@ -104,8 +107,26 @@ function createWindow(): void {
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
+    if (isAllowedExternalUrl(details.url)) void shell.openExternal(details.url)
     return { action: 'deny' }
+  })
+
+  mainWindow.webContents.on('will-navigate', event => event.preventDefault())
+  mainWindow.webContents.on('will-attach-webview', (event, preferences, params) => {
+    if (!isAllowedReferenceUrl(params.src)) { event.preventDefault(); return }
+    delete preferences.preload
+    preferences.nodeIntegration = false
+    preferences.contextIsolation = true
+    preferences.sandbox = true
+  })
+  mainWindow.webContents.on('did-attach-webview', (_event, contents) => {
+    contents.on('will-navigate', (event, url) => {
+      if (!isAllowedReferenceUrl(url)) event.preventDefault()
+    })
+    contents.setWindowOpenHandler(({ url }) => {
+      if (isAllowedExternalUrl(url)) void shell.openExternal(url)
+      return { action: 'deny' }
+    })
   })
 
   // macOS reserves Command+F for Chromium's native find bar. Translate has its
@@ -130,6 +151,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   app.setName('Polyhedron')
   migrateLegacyUserData()
+  installIpcSecurity(getWindow)
   ipcMain.handle('app:version', () => app.getVersion())
   electronApp.setAppUserModelId('com.polyhedron.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())

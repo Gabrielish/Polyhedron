@@ -10,6 +10,8 @@ publish:
 directories:
   buildResources: build
 extraResources:
+  - from: build/google-drive/google-drive-credentials.json
+    to: google-drive/google-drive-credentials.json
   - from: data/dialogue-metadata-cache.json
     to: dialogue-metadata-cache.json
 files:
@@ -27,8 +29,14 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
   - '!bkp/**'
   - '!work/pak/Localization/English/english.loca'
+  - '!tools/google-drive/**'
+  - '!**/google-drive-token*'
+  - '!**/google-drive-credentials.json'
+  - '!**/*.db'
+  - '!**/*.db-*'
+  - '!**/*.pws'
+  - '!**/.env*'
 asarUnpack:
-  - resources/**
   - drizzle/**
   - tools/**
   - work/pak/**

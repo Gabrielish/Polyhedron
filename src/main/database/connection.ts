@@ -9,6 +9,7 @@ import * as schema from './schema'
 import { seedLanguages } from './seeds/languages.seed'
 import { seedPromptSlots } from './seeds/prompt-slots.seed'
 import { databasePath } from '../utils/app-paths'
+import { migrateStoredApiKeys } from '../services/secret-storage.service'
 
 type AppDb = ReturnType<typeof drizzle<typeof schema>>
 
@@ -34,6 +35,7 @@ export function getDb(): AppDb {
     backfillDictionaryTextKeys(_sqlite)
     seedLanguages(_db)
     seedPromptSlots(_db)
+    migrateStoredApiKeys(_sqlite)
   }
   return _db
 }

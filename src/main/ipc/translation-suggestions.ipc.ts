@@ -1,57 +1,25 @@
-import { app, ipcMain } from 'electron'
-import fs from 'node:fs'
-import path from 'node:path'
-import { decodeEntities } from '../services/xml-entities.service'
-import { parseLocalizationXml } from '../services/xml-parser.service'
-
-export interface TranslationSuggestionPair {
-  one: string
-  two: string
-}
-
-type SuggestionMap = Record<string, TranslationSuggestionPair>
-
-let cachedSuggestions: SuggestionMap | null = null
-
-function findImportedTranslationFile(name: string): string | null {
-  const candidates = [
-    path.join(app.getAppPath(), 'reference', 'imported-translations', name),
-    path.join(process.cwd(), 'reference', 'imported-translations', name)
-  ]
-  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null
-}
-
-function readSuggestionFile(filePath: string): Map<string, string> {
-  const result = new Map<string, string>()
-  for (const entry of parseLocalizationXml(filePath)) {
-    const text = decodeEntities(entry.text).trim()
-    if (text) result.set(entry.contentuid, text)
-  }
-  return result
-}
-
-function loadSuggestions(): SuggestionMap {
-  if (cachedSuggestions) return cachedSuggestions
-
-  const firstPath = findImportedTranslationFile('traducere1.xml')
-  const secondPath = findImportedTranslationFile('traducere2.xml')
-  if (!firstPath && !secondPath) return {}
-
-  const first = firstPath ? readSuggestionFile(firstPath) : new Map<string, string>()
-  const second = secondPath ? readSuggestionFile(secondPath) : new Map<string, string>()
-  const allUids = new Set([...first.keys(), ...second.keys()])
-  const suggestions: SuggestionMap = {}
-
-  for (const uid of allUids) {
-    const one = first.get(uid) ?? ''
-    const two = second.get(uid) ?? ''
-    if (one || two) suggestions[uid] = { one, two }
-  }
-
-  cachedSuggestions = suggestions
-  return suggestions
-}
+import { dialog, ipcMain } from 'electron'
+import { addSuggestionSources, listSuggestionSources, loadSuggestions, removeSuggestionSource, setSuggestionSourceEnabled } from '../services/translation-suggestions.service'
 
 export function registerTranslationSuggestionHandlers(): void {
   ipcMain.handle('translation-suggestions:load', () => loadSuggestions())
+  ipcMain.handle('translation-suggestions:list', () => listSuggestionSources())
+  ipcMain.handle('translation-suggestions:add', async (event) => {
+    const selected = await dialog.showOpenDialog({ title: 'Add translation suggestion files', properties: ['openFile', 'multiSelections'], filters: [{ name: 'Localization XML', extensions: ['xml'] }] })
+    if (!selected.canceled && selected.filePaths.length) {
+      addSuggestionSources(selected.filePaths)
+      event.sender.send('translation-suggestions:changed')
+    }
+    return listSuggestionSources()
+  })
+  ipcMain.handle('translation-suggestions:set-enabled', (event, { id, enabled }) => {
+    setSuggestionSourceEnabled(id, enabled)
+    event.sender.send('translation-suggestions:changed')
+    return listSuggestionSources()
+  })
+  ipcMain.handle('translation-suggestions:remove', async (event, { id }) => {
+    await removeSuggestionSource(id)
+    event.sender.send('translation-suggestions:changed')
+    return listSuggestionSources()
+  })
 }

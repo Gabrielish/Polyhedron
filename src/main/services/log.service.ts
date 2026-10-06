@@ -26,8 +26,8 @@ export function writeLog(payload: LogPayload): void {
     timestamp: new Date().toISOString(),
     level: payload.level ?? 'error',
     scope: payload.scope,
-    message: payload.message,
-    stack: payload.stack,
+    message: redactString(payload.message),
+    stack: payload.stack ? redactString(payload.stack) : undefined,
     meta: sanitize(payload.meta)
   }
   fs.appendFileSync(logPath, `${JSON.stringify(record)}\n`, 'utf-8')
@@ -84,4 +84,10 @@ function redactString(value: string): string {
     .replace(/DeepL-Auth-Key\s+[^\s"']+/gi, `DeepL-Auth-Key ${REDACTED}`)
     .replace(/Bearer\s+[^\s"']+/gi, `Bearer ${REDACTED}`)
     .replace(/sk-[A-Za-z0-9_-]+/g, REDACTED)
+    .replace(/AIza[A-Za-z0-9_-]{20,}/g, REDACTED)
+    .replace(/ya29\.[A-Za-z0-9._-]+/g, REDACTED)
+    .replace(/1\/\/[A-Za-z0-9._-]+/g, REDACTED)
+    .replace(/([?&](?:key|api_key|access_token|refresh_token)=)[^&\s]+/gi, `$1${REDACTED}`)
+    .replace(/("(?:api[_-]?key|access_token|refresh_token|client_secret)"\s*:\s*")[^"]+/gi, `$1${REDACTED}`)
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}:fx/gi, REDACTED)
 }

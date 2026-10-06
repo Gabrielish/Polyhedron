@@ -3,7 +3,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { app } from 'electron'
 import { google } from 'googleapis'
-import { authenticate } from '@google-cloud/local-auth'
+import { authenticateDesktopGoogle } from './google-oauth.service'
+import { decryptSecret, encryptSecret } from './secret-storage.service'
 import type { drive_v3 } from 'googleapis'
 import { getDb } from '../database/connection'
 import { config, mod } from '../database/schema'
@@ -170,6 +171,7 @@ function buildPwaSyncDocument() {
 function credentialsPath(): string {
   const candidates = [
     path.join(app.getPath('userData'), 'google-drive-credentials.json'),
+    path.join(process.resourcesPath, 'google-drive', 'google-drive-credentials.json'),
     path.join(process.resourcesPath, 'tools', 'google-drive', 'google-drive-credentials.json'),
     path.join(app.getAppPath(), 'tools', 'google-drive', 'google-drive-credentials.json')
   ]
@@ -177,10 +179,22 @@ function credentialsPath(): string {
 }
 
 function tokenPath(): string {
+  return projectPath('google-drive-token.secure.json')
+}
+
+function legacyTokenPath(): string {
   return projectPath('google-drive-token.json')
 }
 
-async function getAuth() {
+function saveToken(clientId: string, refreshToken: string): void {
+  const savedPath = tokenPath()
+  fs.mkdirSync(path.dirname(savedPath), { recursive: true })
+  const temporary = `${savedPath}.tmp`
+  fs.writeFileSync(temporary, JSON.stringify({ version: 1, clientId, encryptedRefreshToken: encryptSecret(refreshToken) }), { mode: 0o600 })
+  fs.renameSync(temporary, savedPath)
+}
+
+async function getAuth(interactive = false) {
   const keyfilePath = credentialsPath()
   if (!fs.existsSync(keyfilePath)) {
     throw new Error(
@@ -193,49 +207,46 @@ async function getAuth() {
   }
   const clientId = installed.installed?.client_id
   const clientSecret = installed.installed?.client_secret
-  if (!clientId || !clientSecret) throw new Error('Google Drive credentials are incomplete.')
+  if (!clientId || !clientSecret) throw new Error('Google Drive requires OAuth credentials of type Desktop app.')
+
+  if (!fs.existsSync(tokenPath()) && fs.existsSync(legacyTokenPath())) {
+    const legacy = JSON.parse(fs.readFileSync(legacyTokenPath(), 'utf8')) as { client_id?: string; refresh_token?: string }
+    if (legacy.client_id === clientId && legacy.refresh_token) {
+      saveToken(clientId, legacy.refresh_token)
+      fs.rmSync(legacyTokenPath(), { force: true })
+    }
+  }
 
   const savedTokenPath = tokenPath()
   if (fs.existsSync(savedTokenPath)) {
     const credentials = JSON.parse(fs.readFileSync(savedTokenPath, 'utf8')) as {
-      type?: string
-      client_id?: string
-      client_secret?: string
-      refresh_token?: string
+      clientId?: string
+      encryptedRefreshToken?: string
     }
     const auth = new google.auth.OAuth2(clientId, clientSecret)
-    auth.setCredentials({ refresh_token: credentials.refresh_token })
-    try {
-      await auth.getAccessToken()
-      return auth
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
-      if (!/invalid_grant|invalid credentials|unauthorized/i.test(message)) throw error
-      // Refresh tokens can be revoked or expire. Remove the stale token so the
-      // next authentication transparently opens the Google consent flow again.
-      fs.rmSync(savedTokenPath, { force: true })
+    if (credentials.clientId === clientId && credentials.encryptedRefreshToken) {
+      auth.setCredentials({ refresh_token: decryptSecret(credentials.encryptedRefreshToken) })
+      try {
+        await auth.getAccessToken()
+        return auth
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        if (!/invalid_grant|invalid credentials|unauthorized/i.test(message)) throw error
+        // Reconnecting must be an explicit action, never a startup browser popup.
+        fs.rmSync(savedTokenPath, { force: true })
+      }
     }
   }
 
-  const authenticated = await authenticate({ keyfilePath, scopes: [DRIVE_SCOPE] })
-  const auth = new google.auth.OAuth2(clientId, clientSecret)
-  auth.setCredentials({ refresh_token: authenticated.credentials.refresh_token })
-  fs.mkdirSync(path.dirname(savedTokenPath), { recursive: true })
-  fs.writeFileSync(
-    savedTokenPath,
-    JSON.stringify({
-      type: 'authorized_user',
-      client_id: clientId,
-      client_secret: clientSecret,
-      refresh_token: auth.credentials.refresh_token
-    }),
-    { encoding: 'utf8', mode: 0o600 }
-  )
-  return auth
+  if (!interactive) throw new Error('Google Drive is not connected. Use Connect to sign in.')
+  const authenticated = await authenticateDesktopGoogle(clientId, clientSecret, DRIVE_SCOPE)
+  saveToken(clientId, authenticated.credentials.refresh_token!)
+  fs.rmSync(legacyTokenPath(), { force: true })
+  return authenticated
 }
 
-async function getDriveAccount(): Promise<CloudAccount> {
-  const drive = google.drive({ version: 'v3', auth: await getAuth() })
+async function getDriveAccount(interactive = false): Promise<CloudAccount> {
+  const drive = google.drive({ version: 'v3', auth: await getAuth(interactive) })
   const response = await drive.about.get({ fields: 'user(displayName,emailAddress,photoLink)' })
   const user = response.data.user
   let photoDataUrl: string | undefined
@@ -263,7 +274,7 @@ async function getDriveAccount(): Promise<CloudAccount> {
 }
 
 export async function getCloudAccount(): Promise<CloudAccount> {
-  if (!fs.existsSync(tokenPath())) return { connected: false }
+  if (!fs.existsSync(tokenPath()) && !fs.existsSync(legacyTokenPath())) return { connected: false }
   try {
     return await getDriveAccount()
   } catch {
@@ -272,11 +283,12 @@ export async function getCloudAccount(): Promise<CloudAccount> {
 }
 
 export async function connectCloudAccount(): Promise<CloudAccount> {
-  return getDriveAccount()
+  return getDriveAccount(true)
 }
 
 export function disconnectCloudAccount(): { connected: false } {
   fs.rmSync(tokenPath(), { force: true })
+  fs.rmSync(legacyTokenPath(), { force: true })
   return { connected: false }
 }
 

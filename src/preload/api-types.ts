@@ -685,7 +685,12 @@ export interface AppApi {
 }
 
 export interface TranslationSuggestionsApi {
-  load(): Promise<Record<string, { one: string; two: string }>>
+  load(): Promise<import('../shared/translation-suggestions').SuggestionMap>
+  list(): Promise<import('../shared/translation-suggestions').SuggestionSource[]>
+  add(): Promise<import('../shared/translation-suggestions').SuggestionSource[]>
+  setEnabled(params: { id: string; enabled: boolean }): Promise<import('../shared/translation-suggestions').SuggestionSource[]>
+  remove(params: { id: string }): Promise<import('../shared/translation-suggestions').SuggestionSource[]>
+  onChanged(cb: () => void): UnsubscribeFn
 }
 
 export type UpdateState =

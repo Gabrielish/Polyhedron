@@ -1,0 +1,79 @@
+[center]
+[img]POLYHEDRON_HEADER_IMAGE_URL[/img]
+[size=5][color=#A7F175][b]Every word. In your world.[/b][/color][/size]
+[color=#D4D4D8][b]Windows · macOS · Browser companion[/b][/color]
+[/center]
+
+[color=#D4D4D8]
+Polyhedron brings translation editing, search, review, and export into one workspace for [b]Baldur’s Gate 3, Divinity: Original Sin, and Divinity: Original Sin 2[/b]. Spend less time managing files and more time translating.
+
+[b]This is a translation tool, not a finished language pack.[/b]
+
+[url=https://gabrielish.github.io/Polyhedron/][color=#A7F175][b]Explore the website & browser companion →[/b][/color][/url]
+
+[center][line][/center]
+
+[size=4][color=#A7F175][b]SUPPORT & FEEDBACK[/b][/color][/size]
+
+[b]Polyhedron is free to use. Donations are optional.[/b] If it helps your project, you can support its development and maintenance:
+
+[center]
+[url=https://www.patreon.com/Gabrielish][img]https://img.shields.io/badge/Patreon-Support_the_project-A7F175?style=for-the-badge&logo=patreon&logoColor=A7F175&labelColor=101010[/img][/url]
+[url=https://ko-fi.com/gabrielish][img]https://img.shields.io/badge/Ko--fi-Buy_me_a_coffee-A7F175?style=for-the-badge&logo=kofi&logoColor=A7F175&labelColor=101010[/img][/url]
+[/center]
+
+Ideas, questions, or bugs? Join [url=https://discord.gg/ZkQjpPmjZ][color=#A7F175]Discord[/color][/url], message [b]gabrielish[/b], or report an issue on [url=https://github.com/Gabrielish/Polyhedron/issues][color=#A7F175]GitHub[/color][/url].
+
+[center][line][/center]
+
+[size=4][color=#A7F175][b]WHAT YOU CAN DO[/b][/color][/size]
+
+[list]
+[*][b]Translate & review[/b] — side-by-side or stacked editing, supported gender variants, entry history, review statuses, and formatting-tag helpers.[/*]
+[*][b]Find what matters[/b] — precise search, find & replace, speaker/status filters, repeated-string detection, and content-ID display and copying.[/*]
+[*][b]Keep wording consistent[/b] — compare different translations of identical strings, apply preferred wording, and maintain a glossary.[/*]
+[*][b]Understand the context[/b] — BG3 dialogue references, game data, spells, actions, conditions, and a creature guide with linked translations.[/*]
+[*][b]Use optional translation providers[/b] — Google Translate, DeepL, Gemini, OpenAI, Claude, or Grok; translate individual entries or batches with configurable AI prompts.[/*]
+[*][b]Export & manage files[/b] — XML export, plus supported BG3 PAK/ZIP packaging, extraction, merging, and localization injection.[/*]
+[*][b]Back up & continue elsewhere[/b] — portable .pws workspaces, optional Google Drive synchronization, and a browser/mobile companion for supported editing views.[/*]
+[*][b]Make it yours[/b] — a dark interface with a customizable accent, button text color, and application-icon styles.[/*]
+[/list]
+
+[b]Game support:[/b] BG3 supports XML/PAK/ZIP workflows and dedicated reference tools. Divinity profiles support localization XML editing and export. Packaging, extraction, and injection remain desktop features.
+
+[b]Online translation is optional[/b] and requires your own credentials where applicable. Provider charges are separate; always review generated text before using it in-game.
+
+[center][line][/center]
+
+[size=4][color=#A7F175][b]GET STARTED[/b][/color][/size]
+
+[list=1]
+[*]Download the appropriate version from [b]Files[/b]. On Windows, run the installer. On macOS, open the DMG and drag [b]Polyhedron.app[/b] into [b]Applications[/b].[/*]
+[*]Launch Polyhedron, choose your game and language pair, then create or select a project.[/*]
+[*]Open your localization file and start translating. To restore an existing workspace, use [b]Workspace → Import Workspace[/b].[/*]
+[/list]
+
+Polyhedron is a standalone application: [b]do not install it through Vortex or place it in the game’s Mods folder[/b]. You do not need the game installed just to edit a localization file.
+
+[b]Before BG3 injection:[/b] close the game and keep your own project and game-file backups. Injection modifies the game’s localization files; updates or file verification may restore the originals.
+
+[b]Workspace import replaces your current workspace; it does not merge it.[/b] Local editing requires no Google account. Drive synchronization and online providers require an internet connection.
+
+[center][line][/center]
+
+[size=4][color=#A7F175][b]CREDITS & ACKNOWLEDGMENTS[/b][/color][/size]
+
+[b][color=#A7F175]Kaironn2 — Icosa: BG3 Translation Tool[/color][/b]
+Polyhedron started by adapting parts of [url=https://www.nexusmods.com/baldursgate3/mods/15976][color=#A7F175][b]Icosa[/b][/color][/url], created by [b]Kaironn2[/b]. Credit for that original foundation belongs to them. My contribution has been to rework the interface, refine the workflows, and extend the application. Thank you for the groundwork that made Polyhedron possible — please visit and support the original tool as well.
+
+[list]
+[*][b]Norbyte[/b] — [url=https://github.com/Norbyte/lslib][color=#A7F175]LSLib[/color][/url] and Larian file-format tools.[/*]
+[*][b][url=https://bg3.wiki/][color=#A7F175]BG3 Wiki contributors[/color][/url][/b] — game references, descriptions, and imagery.[/*]
+[*][b]Larian Studios[/b] — the games that bring these projects to life.[/*]
+[*][b]Translators, testers & the modding community[/b] — feedback, testing, and ideas.[/*]
+[/list]
+
+Polyhedron is an independent community project. These credits do not imply endorsement by the original creators or Larian Studios.
+
+[center][color=#A7F175][b]Thank you for your support.[/b][/color][/center]
+[/color]

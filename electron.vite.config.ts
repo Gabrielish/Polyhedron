@@ -27,7 +27,7 @@ export default defineConfig({
       }
     }
   },
-  preload: { build: { rollupOptions: { input: {
+  preload: { build: { externalizeDeps: { exclude: ['@electron-toolkit/preload'] }, rollupOptions: { input: {
     index: resolve('src/preload/index.ts'), installer: resolve('src/preload/installer.ts')
   } } } },
   renderer: {

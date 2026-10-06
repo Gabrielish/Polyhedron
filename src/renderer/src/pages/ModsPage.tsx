@@ -5,14 +5,16 @@ import { ExtractPage } from './ExtractPage'
 import { ManageModsPage } from './ManageModsPage'
 import { MergeToolPage } from './MergeToolPage'
 import { PackagePage } from './PackagePage'
+import { TranslationSuggestionsPage } from './TranslationSuggestionsPage'
 
-type ModTool = 'manage' | 'merge' | 'extract' | 'package'
+type ModTool = 'manage' | 'merge' | 'extract' | 'package' | 'suggestions'
 
 const TOOLS: Array<{ id: ModTool; label: string }> = [
   { id: 'manage', label: 'Manage projects' },
   { id: 'merge', label: 'Merge translations' },
   { id: 'extract', label: 'Extract mod' },
-  { id: 'package', label: 'Create package' }
+  { id: 'package', label: 'Create package' },
+  { id: 'suggestions', label: 'Translation suggestions' }
 ]
 
 export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
@@ -80,6 +82,7 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
           {activeTool === 'merge' && <MergeToolPage />}
           {activeTool === 'extract' && <ExtractPage />}
           {activeTool === 'package' && <PackagePage />}
+          {activeTool === 'suggestions' && <TranslationSuggestionsPage />}
         </main>
       </div>
       {embedded && <div className="mods-bottom-spacer" aria-hidden="true" />}
