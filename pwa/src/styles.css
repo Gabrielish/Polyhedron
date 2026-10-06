@@ -339,3 +339,5 @@ h2 { font-size: 20px; }
 .companion-shell .game-data-list .pagination-bar { position:sticky; bottom:0; background:#101010; padding:10px 0; }
 @media(max-width:620px) { .companion-search-row { gap:7px; } .companion-search { flex-basis:100%; height:38px; } .companion-toolbar { max-width:100%; flex-wrap:wrap; } .companion-search input { font-size:16px; } .companion-replace input { font-size:16px; } .companion-tool { width:30px; height:30px; } .companion-shell .dialogue-tree { max-height:36vh; } .companion-shell .counter { align-self:flex-start; white-space:normal; } .companion-shell .game-data-categories span { display:inline; } .companion-tool[data-tooltip]::after { display:none; } }
 @media(prefers-reduced-motion:reduce) { .companion-shell :is(button,a) { transition:none; } .companion-shell :is(button,a):active { transform:none !important; } }
+.companion-legal { margin:10px 0; color:#969a91; font-size:11px; line-height:1.7; }
+.companion-legal a { color:var(--poly-accent,#a7f175); text-underline-offset:3px; }
