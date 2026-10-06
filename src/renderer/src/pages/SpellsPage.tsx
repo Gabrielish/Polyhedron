@@ -34,6 +34,11 @@ import {
   useState
 } from 'react'
 import { useRetainedMemo } from '@/hooks/useRetainedMemo'
+import {
+  getSpellsViewMemory,
+  useSpellsRememberedScroll,
+  useSpellsRememberedState
+} from '@/hooks/useSpellsViewMemory'
 import { DeferredSpellCard } from '@/components/shared/DeferredSpellCard'
 import { createSourceResolver } from '@/utils/sourceResolver'
 import { createPortal } from 'react-dom'
@@ -494,15 +499,20 @@ export function SpellsPage(): React.JSX.Element {
       </div>
     )
   }
-  return <LoadedSpellsPage session={session} />
+  const memoryKey = `${session.storedPath ?? session.inputPath ?? session.modName}|${session.sourceLang}|${session.targetLang}`
+  return <LoadedSpellsPage key={memoryKey} session={session} memoryKey={memoryKey} />
 }
 
 function LoadedSpellsPage({
-  session
+  session,
+  memoryKey
 }: {
   session: ReturnType<typeof useTranslationSession>
+  memoryKey: string
 }): React.JSX.Element {
   const navigate = useNavigate()
+  const memory = useMemo(() => getSpellsViewMemory(memoryKey), [memoryKey])
+  const catalogScrollRef = useSpellsRememberedScroll(memory, 'catalog')
   const searchInputRef = useRef<HTMLInputElement>(null)
   const [viewMemory] = useState<SpellsViewMemory>(() => {
     try {
@@ -511,32 +521,87 @@ function LoadedSpellsPage({
       return {}
     }
   })
-  const [query, setQuery] = useState(viewMemory.query ?? '')
-  const [kind, setKind] = useState<'all' | EntryKind>(
-    viewMemory.kind && viewMemory.kind !== 'all' ? viewMemory.kind : 'spell'
+  const [query, setQuery] = useSpellsRememberedState(memory, 'query', viewMemory.query ?? '')
+  const [kind, setKind] = useSpellsRememberedState<'all' | EntryKind>(
+    memory,
+    'kind',
+    viewMemory.kind ?? 'spell'
   )
-  const [sort, setSort] = useState<'alpha' | 'complete' | 'incomplete'>(
+  const [sort, setSort] = useSpellsRememberedState<'alpha' | 'complete' | 'incomplete'>(
+    memory,
+    'sort',
     viewMemory.sort === 'complete' || viewMemory.sort === 'incomplete' ? viewMemory.sort : 'alpha'
   )
-  const [view, setView] = useState<'cards' | 'list'>(viewMemory.view ?? 'cards')
-  const [statusFilter, setStatusFilter] = useState<'all' | ReviewStatus>(viewMemory.status ?? 'all')
+  const [view, setView] = useSpellsRememberedState<'cards' | 'list'>(
+    memory,
+    'view',
+    viewMemory.view ?? 'cards'
+  )
+  const [statusFilter, setStatusFilter] = useSpellsRememberedState<'all' | ReviewStatus>(
+    memory,
+    'status',
+    viewMemory.status ?? 'all'
+  )
   const [editingSpell] = useState<string | null>(null)
-  const [selectedSpellKey, setSelectedSpellKey] = useState<string | null>(null)
-  const [showSpellWiki, setShowSpellWiki] = useState(false)
-  const [expandedVariants, setExpandedVariants] = useState<Set<string>>(new Set())
-  const [expandedConditions, setExpandedConditions] = useState<Set<string>>(new Set())
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<EntryKind>>(new Set())
-  const [collapsedLevels, setCollapsedLevels] = useState<Set<string>>(new Set())
-  const [wikiConditions, setWikiConditions] = useState<Record<string, string[]>>({})
+  const [selectedSpellKey, setSelectedSpellKey] = useSpellsRememberedState<string | null>(
+    memory,
+    'selected',
+    null
+  )
+  const [showSpellWiki, setShowSpellWiki] = useSpellsRememberedState(memory, 'wiki-open', false)
+  const editorScrollRef = useSpellsRememberedScroll(
+    memory,
+    `editor:${selectedSpellKey ?? ''}:${showSpellWiki ? 'wiki' : 'translation'}`
+  )
+  const [expandedVariants, setExpandedVariants] = useSpellsRememberedState<Set<string>>(
+    memory,
+    'variants-open',
+    () => new Set()
+  )
+  const [expandedConditions, setExpandedConditions] = useSpellsRememberedState<Set<string>>(
+    memory,
+    'conditions-open',
+    () => new Set()
+  )
+  const [collapsedGroups, setCollapsedGroups] = useSpellsRememberedState<Set<EntryKind>>(
+    memory,
+    'groups',
+    () => new Set()
+  )
+  const [collapsedLevels, setCollapsedLevels] = useSpellsRememberedState<Set<string>>(
+    memory,
+    'levels',
+    () => new Set()
+  )
+  const [wikiConditions, setWikiConditions] = useSpellsRememberedState<Record<string, string[]>>(
+    memory,
+    'wiki-conditions',
+    {}
+  )
   const [loadingWikiConditions, setLoadingWikiConditions] = useState<Set<string>>(new Set())
-  const [wikiSpellVariants, setWikiSpellVariants] = useState<Record<string, WikiVariant[]>>({})
-  const [wikiSpellDescriptions, setWikiSpellDescriptions] = useState<Record<string, string>>({})
+  const [wikiSpellVariants, setWikiSpellVariants] = useSpellsRememberedState<
+    Record<string, WikiVariant[]>
+  >(memory, 'wiki-variants', {})
+  const [wikiSpellDescriptions, setWikiSpellDescriptions] = useSpellsRememberedState<
+    Record<string, string>
+  >(memory, 'wiki-descriptions', {})
   const [loadingWikiVariants, setLoadingWikiVariants] = useState<Set<string>>(new Set())
-  const [wikiConditionEntries, setWikiConditionEntries] =
-    useState<DisplayEntry[]>(EMPTY_WIKI_CONDITIONS)
-  const [wikiCatalogRequested, setWikiCatalogRequested] = useState(false)
-  const [showSpellUid, setShowSpellUid] = useState(false)
-  const [showSpellSuggestions, setShowSpellSuggestions] = useState(false)
+  const [wikiConditionEntries, setWikiConditionEntries] = useSpellsRememberedState<DisplayEntry[]>(
+    memory,
+    'wiki-catalog',
+    EMPTY_WIKI_CONDITIONS
+  )
+  const [wikiCatalogRequested, setWikiCatalogRequested] = useSpellsRememberedState(
+    memory,
+    'wiki-requested',
+    false
+  )
+  const [showSpellUid, setShowSpellUid] = useSpellsRememberedState(memory, 'uid', false)
+  const [showSpellSuggestions, setShowSpellSuggestions] = useSpellsRememberedState(
+    memory,
+    'suggestions-open',
+    false
+  )
   const [spellSuggestions, setSpellSuggestions] = useState<
     Record<string, { one: string; two: string }>
   >({})
@@ -595,7 +660,7 @@ function LoadedSpellsPage({
   }, [selectedSpellKey])
 
   useEffect(() => {
-    if (!wikiCatalogRequested) return
+    if (!wikiCatalogRequested || wikiConditionEntries.length > 0) return
     let cancelled = false
     const loadConditionCatalog = async () => {
       const pages = ['1-500', '501-1000', '1001-1500']
@@ -1169,7 +1234,10 @@ function LoadedSpellsPage({
                 />
               </div>
             ) : (
-              <div className="polyhedron-scroll min-h-0 flex-1 space-y-3 overflow-y-auto p-5 pb-28">
+              <div
+                ref={editorScrollRef}
+                className="polyhedron-scroll min-h-0 flex-1 space-y-3 overflow-y-auto p-5 pb-28"
+              >
                 <section className="space-y-2">
                   <div className="space-y-1.5">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
@@ -1939,7 +2007,10 @@ function LoadedSpellsPage({
         <div
           className={`spells-workbench min-h-0 flex-1 ${selectedSpell ? 'spells-workbench-editing' : ''}`}
         >
-          <div className="spells-catalog polyhedron-scroll min-h-0 overflow-y-auto p-4 sm:p-6">
+          <div
+            ref={catalogScrollRef}
+            className="spells-catalog polyhedron-scroll min-h-0 overflow-y-auto p-4 sm:p-6"
+          >
             <div className="w-full space-y-7">
               {grouped.map(([group, spells]) => (
                 <section key={group}>
@@ -2025,7 +2096,9 @@ function LoadedSpellsPage({
                               </div>
                             )}
                             {!collapsedLevels.has(levelKey) && (
-                              <DeferredSpellCard>{() => renderSpellCard(spell)}</DeferredSpellCard>
+                              <DeferredSpellCard memoryKey={spell.id ?? spell.name}>
+                                {() => renderSpellCard(spell)}
+                              </DeferredSpellCard>
                             )}
                           </Fragment>
                         )

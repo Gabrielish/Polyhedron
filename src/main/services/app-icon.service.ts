@@ -12,6 +12,12 @@ const WINDOWS_APP_ID = 'com.polyhedron.bg3-mod-translator'
 const appliedWindowsIcons = new WeakMap<BrowserWindow, string>()
 const taskbarRefreshTimers = new WeakMap<BrowserWindow, ReturnType<typeof setTimeout>>()
 const windowsIconWrites = new WeakMap<BrowserWindow, Promise<void>>()
+const notificationIcons = new WeakMap<BrowserWindow, Electron.NativeImage>()
+
+/** Notification artwork is independent of the OS's cached application badge. */
+export function currentNotificationIcon(window: BrowserWindow): Electron.NativeImage | undefined {
+  return window.isDestroyed() ? undefined : notificationIcons.get(window)
+}
 
 function windowsIconFilename(ico: Buffer): string {
   return `taskbar-icon-${createHash('sha256').update(ico).digest('hex').slice(0, 16)}.ico`
@@ -186,6 +192,7 @@ export async function updateAppIcon(window: BrowserWindow, accent: string, style
     if (window.isDestroyed() || requests.get(window) !== request) return
     const icon = nativeImage.createFromDataURL(dataUrl)
     if (icon.isEmpty()) throw new Error('Generated application icon is empty')
+    notificationIcons.set(window, icon.resize({ width: 256, height: 256, quality: 'best' }))
     if (process.platform === 'darwin') app.dock?.setIcon(icon)
     else {
       // With an AppUserModelId Windows uses the relaunch icon for the taskbar

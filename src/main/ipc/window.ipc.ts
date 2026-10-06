@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, Notification } from 'electron'
+import { currentNotificationIcon } from '../services/app-icon.service'
 
 
 export function registerWindowHandlers(getWindow: () => BrowserWindow | null, refreshAppIcon?: () => Promise<void>): void {
@@ -50,6 +51,9 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null, re
         new Notification({
           title: `Polyhedron · ${direction} complete`,
           body,
+          // macOS uses this as the content image, Windows as the toast image.
+          // Neither replaces the system-managed application identity badge.
+          icon: currentNotificationIcon(win),
           sound: process.platform === 'darwin' ? 'Glass' : undefined
         }).show()
       }

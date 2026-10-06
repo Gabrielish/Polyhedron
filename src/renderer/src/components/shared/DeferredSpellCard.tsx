@@ -47,7 +47,13 @@ function observeCard(element: Element, activate: () => void): () => void {
   }
 }
 
-export function DeferredSpellCard({ children }: { children: () => ReactNode }): React.JSX.Element {
+export function DeferredSpellCard({
+  children,
+  memoryKey
+}: {
+  children: () => ReactNode
+  memoryKey?: string
+}): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
@@ -58,6 +64,7 @@ export function DeferredSpellCard({ children }: { children: () => ReactNode }): 
   return (
     <div
       ref={ref}
+      data-spell-key={memoryKey}
       className="min-w-0"
       style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 220px' }}
       data-deferred-spell-card={visible ? 'ready' : 'pending'}

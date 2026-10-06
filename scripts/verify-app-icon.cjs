@@ -24,13 +24,14 @@ async function run() {
   service.filename = path.join(root, 'scripts', 'app-icon-test.cjs')
   service.paths = module.paths
   service._compile(bundle.outputFiles[0].text, service.filename)
-  const { updateAppIcon, createAppIconSvg, savedWindowsAppIcon, applyWindowsAppIcon } = service.exports
+  const { updateAppIcon, createAppIconSvg, savedWindowsAppIcon, applyWindowsAppIcon, currentNotificationIcon } = service.exports
   await app.whenReady()
   const window = new BrowserWindow({ show: false })
   await window.loadURL('data:text/html,' + encodeURIComponent(
     '<meta http-equiv="Content-Security-Policy" content="default-src \'self\'; img-src \'self\' data:"><p id="branding">Original branding</p>'
   ))
   const icons = []
+  assert.equal(currentNotificationIcon(window), undefined, 'No stale notification image before initialization')
   const setIcon = app.dock.setIcon.bind(app.dock)
   app.dock.setIcon = icon => { icons.push(icon); setIcon(icon) }
   const pixel = (icon, x, y) => [...icon.toBitmap().subarray((y * 1024 + x) * 4, (y * 1024 + x) * 4 + 4)]
@@ -44,6 +45,9 @@ async function run() {
   for (const color of ['#8C52FF', '#A7F175', '#ED1C24']) {
     await updateAppIcon(window, color)
     const icon = icons.at(-1)
+    const notificationIcon = currentNotificationIcon(window)
+    assert.deepEqual(notificationIcon.getSize(), { width: 256, height: 256 })
+    assert.deepEqual(notificationIcon.toPNG(), icon.resize({ width: 256, height: 256, quality: 'best' }).toPNG(), 'Notification image matches the latest selected Dock artwork')
     assert.ok(icon, 'Dock icon must be applied')
     assert.deepEqual(icon.getSize(), { width: 1024, height: 1024 })
     checkSurface(icon, color)
