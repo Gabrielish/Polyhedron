@@ -1,5 +1,5 @@
 import { Boxes } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { ExtractPage } from './ExtractPage'
 import { ManageModsPage } from './ManageModsPage'
@@ -20,17 +20,21 @@ const TOOLS: Array<{ id: ModTool; label: string }> = [
 export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JSX.Element {
   const [activeTool, setActiveTool] = useState<ModTool>('manage')
   const [selectionCount, setSelectionCount] = useState(0)
+  const [suggestionsReady, setSuggestionsReady] = useState(false)
+  const onSuggestionsReady = useCallback(() => setSuggestionsReady(true), [])
   const rootRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (selectionCount === 0) return
+    // Suggestions load asynchronously: align the full card, not the shorter loading state.
+    if (activeTool === 'suggestions' && !suggestionsReady) return
     const frame = requestAnimationFrame(() => {
       const target = embedded ? rootRef.current : contentRef.current?.lastElementChild
       target?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })
     })
     return () => cancelAnimationFrame(frame)
-  }, [activeTool, embedded, selectionCount])
+  }, [activeTool, embedded, selectionCount, suggestionsReady])
 
   return (
     <div
@@ -58,6 +62,7 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
             <ThemedSelect
               value={activeTool || 'manage'}
               onChange={(value) => {
+                if (value === 'suggestions' && activeTool !== 'suggestions') setSuggestionsReady(false)
                 setActiveTool(value as ModTool)
                 setSelectionCount(count => count + 1)
               }}
@@ -82,7 +87,7 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
           {activeTool === 'merge' && <MergeToolPage />}
           {activeTool === 'extract' && <ExtractPage />}
           {activeTool === 'package' && <PackagePage />}
-          {activeTool === 'suggestions' && <TranslationSuggestionsPage />}
+          {activeTool === 'suggestions' && <TranslationSuggestionsPage onReady={onSuggestionsReady} />}
         </main>
       </div>
       {embedded && <div className="mods-bottom-spacer" aria-hidden="true" />}

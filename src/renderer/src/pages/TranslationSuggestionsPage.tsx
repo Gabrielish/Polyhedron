@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import type { SuggestionSource } from '../../../shared/translation-suggestions'
 
-export function TranslationSuggestionsPage(): React.JSX.Element {
+export function TranslationSuggestionsPage({ onReady }: { onReady?: () => void }): React.JSX.Element {
   const [sources, setSources] = useState<SuggestionSource[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -17,6 +17,10 @@ export function TranslationSuggestionsPage(): React.JSX.Element {
       .finally(() => { if (mounted) setLoading(false) })
     return () => { mounted = false }
   }, [])
+
+  useEffect(() => {
+    if (!loading) onReady?.()
+  }, [loading, onReady])
 
   const run = async (operation: () => Promise<SuggestionSource[]>, message?: string): Promise<void> => {
     setBusy(true)
