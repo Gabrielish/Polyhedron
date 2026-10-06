@@ -1,5 +1,5 @@
 import type { WorkspaceSyncDocument } from './workspaceSync'
-import { parseWorkspaceSyncDocument } from './workspaceSync'
+import { parseWorkspaceText } from '../utils/parseWorkspace'
 
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive'
 const FILE_NAME = 'polyhedron-workspace-sync.json'
@@ -98,6 +98,5 @@ export async function downloadWorkspaceSync(token: string): Promise<WorkspaceSyn
   if (!file?.id) throw new Error(`No ${FILE_NAME} file was found in Google Drive.`)
   const response = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`, { headers: { Authorization: `Bearer ${token}` } })
   if (!response.ok) throw new Error(`Google Drive download failed (${response.status}).`)
-  const parsed: unknown = await response.json()
-  return parseWorkspaceSyncDocument(parsed)
+  return parseWorkspaceText(await response.text())
 }

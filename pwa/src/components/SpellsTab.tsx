@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Check, CircleCheck, CircleDashed, ExternalLink, Pencil, Search, WandSparkles, X } from 'lucide-react'
 import wikiSpells from '../../../src/renderer/src/data/spells.json'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
+import { indexWorkspace, loadCatalog, sourceKey } from '../utils/workspace'
 
 type Spell = { id?: string; name: string; description: string; category: string; icon?: string; flags?: string; useCosts?: string; actionType?: string; level?: string; conditions?: string[] }
 type Kind = 'spell' | 'action' | 'bonus' | 'ritual' | 'monster'
@@ -56,7 +57,7 @@ function SpellIcon({ name }: { name: string }): React.JSX.Element {
   return <span className="spell-icon">{failed ? <WandSparkles size={23} /> : <img src={src} alt="" loading="lazy" referrerPolicy="no-referrer" onError={recover} />}</span>
 }
 
-export function SpellsTab({ document, onDocumentChange }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void }): React.JSX.Element {
+export function SpellsTab({ document, onDocumentChange, sessionId }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; sessionId?: string }): React.JSX.Element {
   const [catalog, setCatalog] = useState<Spell[]>([])
   const [loading, setLoading] = useState(true)
   const [failure, setFailure] = useState('')
@@ -68,15 +69,13 @@ export function SpellsTab({ document, onDocumentChange }: { document: WorkspaceS
   const [page, setPage] = useState(1)
   const [project, setProject] = useState('')
   const [editing, setEditing] = useState<string | null>(null)
-  const session = document.sessions.find(item => item.id === project) ?? document.sessions[0]
+  const session = document.sessions.find(item => item.id === (sessionId ?? project)) ?? document.sessions[0]
+  const workspace = useMemo(() => indexWorkspace(session), [session])
   const pageSize = 24
   useEffect(() => {
-    const abort = new AbortController()
+    let active = true
     setLoading(true); setFailure('')
-    void fetch(`${import.meta.env.BASE_URL}data/game-reference.json`, { signal: abort.signal }).then(response => {
-      if (!response.ok) throw new Error('The spell catalog could not be loaded.')
-      return response.json() as Promise<unknown>
-    }).then(value => {
+    void loadCatalog().then(value => {
       if (!Array.isArray(value)) throw new Error('The spell catalog is invalid.')
       const unique = new Map<string, Spell>()
       for (const entry of value) {
@@ -84,25 +83,19 @@ export function SpellsTab({ document, onDocumentChange }: { document: WorkspaceS
         const key = `${entry.name}\0${entry.description}`
         if (!unique.has(key)) unique.set(key, entry)
       }
-      setCatalog([...unique.values()])
-    }).catch(error => { if (!abort.signal.aborted) setFailure(error instanceof Error ? error.message : 'The spell catalog could not be loaded.') }).finally(() => { if (!abort.signal.aborted) setLoading(false) })
-    return () => abort.abort()
+      if (active) setCatalog([...unique.values()])
+    }).catch(error => { if (active) setFailure(error instanceof Error ? error.message : 'The spell catalog could not be loaded.') }).finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
   }, [reload])
   const linked = useMemo(() => {
-    const bySource = new Map<string, SyncEntry[]>()
-    for (const entry of session?.entries ?? []) {
-      if (entry.sourceMissing || !entry.source.trim()) continue
-      const key = normalize(entry.source)
-      const group = bySource.get(key)
-      if (group) group.push(entry); else bySource.set(key, [entry])
-    }
+    const findRows = (text: string) => (workspace.bySource.get(sourceKey(text)) ?? []).flatMap(uid => { const row = workspace.byUid.get(uid); return row ? [row] : [] })
     return catalog.map(spell => {
-      const titles = bySource.get(normalize(spell.name)) ?? []
-      const descriptions = spell.description.trim() ? bySource.get(normalize(spell.description)) ?? [] : []
+      const titles = findRows(spell.name)
+      const descriptions = spell.description.trim() ? findRows(spell.description) : []
       const rows = [...titles, ...descriptions]
       return { spell, titles, descriptions, linked: rows.length > 0, complete: titles.length > 0 && titles.every(entry => entry.target.trim()) && (!spell.description.trim() || descriptions.length > 0 && descriptions.every(entry => entry.target.trim())) }
     })
-  }, [catalog, session])
+  }, [catalog, workspace])
   const filtered = useMemo(() => {
     const text = normalize(query)
     return linked.filter(item => (kind === 'all' || classify(item.spell) === kind) && (status === 'all' || (status === 'translated' ? item.complete : status === 'untranslated' ? item.linked && !item.complete : !item.linked)) && (!text || normalize(`${item.spell.name} ${item.spell.description} ${item.titles.map(entry => entry.target).join(' ')} ${item.descriptions.map(entry => entry.target).join(' ')}`).includes(text))).sort((a, b) => {
@@ -125,7 +118,7 @@ export function SpellsTab({ document, onDocumentChange }: { document: WorkspaceS
   }
   return <section className="spells-panel" aria-label="Spells catalog">
     <div className="spells-heading"><div><h2><WandSparkles size={20} />Spells</h2><p>Baldur’s Gate 3 abilities · linked workspace translations</p></div><span>{filtered.length.toLocaleString()} entries</span></div>
-    <div className="spells-controls"><label className="search-field"><input aria-label="Search spells" placeholder="Search spells, actions, abilities…" value={query} onChange={event => setQuery(event.target.value)} /><Search size={17} /></label><select aria-label="Ability type" value={kind} onChange={event => setKind(event.target.value as Kind | 'all')}>{kinds.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select><select aria-label="Spell translation status" value={status} onChange={event => setStatus(event.target.value)}><option value="all">All statuses</option><option value="translated">Translated</option><option value="untranslated">Incomplete</option><option value="unlinked">Not linked</option></select><select aria-label="Sort spells" value={sort} onChange={event => setSort(event.target.value)}><option value="alpha">Name A–Z</option><option value="level">Spell level</option></select>{document.sessions.length > 1 && <select aria-label="Spell workspace project" value={session?.id ?? ''} onChange={event => setProject(event.target.value)}>{document.sessions.map(item => <option key={item.id} value={item.id}>{item.modName}</option>)}</select>}</div>
+    <div className="spells-controls"><label className="search-field"><input aria-label="Search spells" placeholder="Search spells, actions, abilities…" value={query} onChange={event => setQuery(event.target.value)} /><Search size={17} /></label><select aria-label="Ability type" value={kind} onChange={event => setKind(event.target.value as Kind | 'all')}>{kinds.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select><select aria-label="Spell translation status" value={status} onChange={event => setStatus(event.target.value)}><option value="all">All statuses</option><option value="translated">Translated</option><option value="untranslated">Incomplete</option><option value="unlinked">Not linked</option></select><select aria-label="Sort spells" value={sort} onChange={event => setSort(event.target.value)}><option value="alpha">Name A–Z</option><option value="level">Spell level</option></select>{!sessionId && document.sessions.length > 1 && <select aria-label="Spell workspace project" value={session?.id ?? ''} onChange={event => setProject(event.target.value)}>{document.sessions.map(item => <option key={item.id} value={item.id}>{item.modName}</option>)}</select>}</div>
     {loading ? <p className="empty-state" role="status">Loading spells…</p> : failure ? <div className="companion-empty" role="alert"><p>{failure}</p><button className="secondary-button" onClick={() => setReload(value => value + 1)}>Try again</button></div> : filtered.length === 0 ? <p className="empty-state">No matching spells.</p> : <div className="spell-grid">{filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map(item => {
       const key = `${item.spell.name}\0${item.spell.description}`
       return <article className={`spell-card${item.complete ? ' is-translated' : ''}`} key={key}><div className="spell-card-heading"><SpellIcon name={item.spell.name} /><div><h3>{item.spell.name}</h3>{item.titles[0]?.target.trim() && <p className="spell-target">↳ {plain(item.titles[0].target)}</p>}</div></div><p className="spell-description">{plain(item.spell.description) || 'No description available.'}</p>{item.descriptions[0]?.target.trim() && <p className="spell-description spell-target">↳ {plain(item.descriptions[0].target)}</p>}{item.spell.conditions?.length ? <details className="spell-conditions"><summary>Conditions ({item.spell.conditions.length})</summary><p>{item.spell.conditions.join(' · ')}</p></details> : null}<div className="spell-card-footer"><span className="spell-status">{item.complete ? <CircleCheck size={15} /> : <CircleDashed size={15} />}{item.complete ? 'Translated' : item.linked ? 'Incomplete' : 'Not linked'}</span><span className="spell-level">{levelLabel(item.spell)}</span><a href={`https://bg3.wiki/wiki/${encodeURIComponent(item.spell.name.replace(/\s+/g, '_'))}`} target="_blank" rel="noopener noreferrer" aria-label={`Open ${item.spell.name} on BG3 Wiki`}><ExternalLink size={14} /></a><button disabled={!item.linked} aria-label={`Edit ${item.spell.name} translation`} aria-expanded={editing === key} onClick={() => setEditing(editing === key ? null : key)}>{editing === key ? <X size={14} /> : <Pencil size={14} />}</button></div>{editing === key && <SpellEditor key={`${key}:${session?.id}`} item={item} language={session?.targetLang ?? ''} onSave={(title, description) => save(item, title, description)} />}</article>

@@ -7,5 +7,6 @@ export default defineConfig({
   base: '/Polyhedron/',
   plugins: [react()],
   publicDir: 'public',
+  worker: { format: 'es' },
   build: { outDir: 'dist', emptyOutDir: true }
 })

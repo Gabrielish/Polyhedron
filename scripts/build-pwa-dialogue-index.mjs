@@ -9,7 +9,8 @@ const compact = {
   categories: source.categories,
   files: source.files,
   dialogues: source.dialogues,
-  nodes: source.nodes.map(([dialogue, node, hashes, next]) => [dialogue, node, hashes, next]),
+  // The companion opens full graphs on the external viewer. Its local editor
+  // only needs source-to-dialogue mappings, not the unused graph (~19 MB).
   entries: source.entries
 }
 fs.mkdirSync(path.dirname(outputPath), { recursive: true })

@@ -1,9 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Cloud, Download, Languages, GitBranch, Swords, Upload, CircleCheck, CircleAlert, LoaderCircle, FolderOpen } from 'lucide-react'
 import { TranslateTab } from './components/TranslateTab'
-import { DialogueNodesTab } from './components/DialogueNodesTab'
-import { GameDataTab } from './components/GameDataTab'
-import { SpellsTab } from './components/SpellsTab'
 import { WandSparkles } from 'lucide-react'
 import { WorkspaceErrorBoundary } from './components/WorkspaceErrorBoundary'
 import { downloadWorkspaceSync, uploadWorkspaceSync } from './sync/googleDrive'
@@ -14,9 +11,14 @@ import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
 const tabs = [{ name: 'Translate', icon: Languages }, { name: 'Dialogue Nodes', icon: GitBranch }, { name: 'Game Data', icon: Swords }, { name: 'Spells', icon: WandSparkles }] as const
 type Tab = (typeof tabs)[number]['name']
 const dragonPath = dragonSvg.match(/<path\b[^>]*\bd="([^"]+)"/)?.[1]
+const DialogueNodesTab = lazy(() => import('./components/DialogueNodesTab').then(module => ({ default: module.DialogueNodesTab })))
+const GameDataTab = lazy(() => import('./components/GameDataTab').then(module => ({ default: module.GameDataTab })))
+const SpellsTab = lazy(() => import('./components/SpellsTab').then(module => ({ default: module.SpellsTab })))
 
 export function App(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('Translate')
+  const [visited, setVisited] = useState<Set<Tab>>(new Set(['Translate']))
+  const [project, setProject] = useState('')
   const [document, setDocument] = useState<WorkspaceSyncDocument>(emptyDocument)
   const [driveToken, setDriveToken] = useState<string | null>(null)
   const [busy, setBusy] = useState<'connecting' | 'downloading' | 'saving' | null>(null)
@@ -24,6 +26,8 @@ export function App(): React.JSX.Element {
   const [error, setError] = useState(false)
   const [importSignal, setImportSignal] = useState(0)
   const hasWorkspace = document.sessions.length > 0
+  const sessionId = document.sessions.find(item => item.id === project)?.id ?? document.sessions[0]?.id
+  function selectTab(next: Tab): void { setTab(next); setVisited(current => current.has(next) ? current : new Set([...current, next])) }
   const missingSources = useMemo(() => document.sessions.reduce((count, session) => count + session.entries.filter(entry => entry.sourceMissing).length, 0), [document])
   function report(message: string, failed = false): void { setSyncMessage(message); setError(failed) }
   useEffect(() => {
@@ -71,9 +75,10 @@ export function App(): React.JSX.Element {
     <section className="companion-intro"><p className="eyebrow">YOUR WORKSPACE, WITHIN REACH</p><h1>Your workspace.</h1><p>Download from Google Drive, continue translating, and save your changes back.</p></section>
     <section className="companion-drive" aria-label="Google Drive workspace"><div className="companion-drive-icon"><Cloud size={25} /></div><div className="companion-drive-copy"><h2>Google Drive</h2><p>{busy === 'connecting' ? 'Connecting your account…' : driveToken ? 'Connected · Your workspace is ready to download.' : 'Sign in when you download your synced workspace.'}</p></div><div className="companion-drive-actions"><button type="button" className="primary-button" disabled={busy !== null} onClick={() => void download()}>{busy === 'connecting' || busy === 'downloading' ? <LoaderCircle size={16} className="companion-spin" /> : <Download size={16} />}{busy === 'connecting' ? 'Connecting…' : busy === 'downloading' ? 'Downloading…' : 'Download workspace'}</button>{hasWorkspace && <button type="button" className="secondary-button" disabled={busy !== null} onClick={() => void upload()}>{busy === 'saving' ? <LoaderCircle size={16} className="companion-spin" /> : <Upload size={16} />}{busy === 'saving' ? 'Saving…' : 'Save to Drive'}</button>}</div></section>
     <div className="companion-feedback" aria-live="polite">{syncMessage && <p className={error ? 'sync-status companion-error' : 'sync-status'} role={error ? 'alert' : 'status'}>{error ? <CircleAlert size={16} /> : busy ? <LoaderCircle size={16} className="companion-spin" /> : <CircleCheck size={16} />}{syncMessage}</p>}</div>
-    <nav className="tabs" aria-label="Companion tabs">{tabs.map(item => <button key={item.name} type="button" className={tab === item.name ? 'tab active' : 'tab'} onClick={() => setTab(item.name)}><item.icon size={16} />{item.name}</button>)}</nav>
+    <nav className="tabs" aria-label="Companion tabs">{tabs.map(item => <button key={item.name} type="button" aria-pressed={tab === item.name} className={tab === item.name ? 'tab active' : 'tab'} onClick={() => selectTab(item.name)}><item.icon size={16} />{item.name}</button>)}</nav>
+    {hasWorkspace && <div className="companion-project"><FolderOpen size={15} /><label htmlFor="workspace-project">Project</label><select id="workspace-project" value={sessionId} onChange={event => setProject(event.target.value)}>{document.sessions.map(item => <option key={item.id} value={item.id}>{item.modName}</option>)}</select></div>}
     {!hasWorkspace && <div className="companion-empty"><FolderOpen size={22} /><div><h2>No workspace loaded</h2><p>Download your synced workspace above, or import a workspace-sync.json exported from the desktop app.</p></div><button type="button" className="secondary-button" disabled={busy !== null} onClick={() => { setTab('Translate'); setImportSignal(value => value + 1) }}>Import file</button></div>}
     {missingSources > 0 && <p className="sync-status companion-source-warning" role="status"><CircleAlert size={16} />This older sync file is missing source text for {missingSources.toLocaleString()} {missingSources === 1 ? 'string' : 'strings'}. Translations are kept. Upload your workspace again from an updated desktop app to restore the source text.</p>}
-    <WorkspaceErrorBoundary key={`${tab}:${document.sessions.map(session => session.id).join('|')}`} onReset={() => { setDocument(emptyDocument()); report('Workspace view reset. Your cloud file has not been changed.') }}><div hidden={!hasWorkspace && tab !== 'Spells'}>{tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} importSignal={importSignal} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : tab === 'Spells' ? <SpellsTab document={document} onDocumentChange={setDocument} /> : <GameDataTab document={document} onDocumentChange={setDocument} />}</div></WorkspaceErrorBoundary>
+    {tabs.filter(item => visited.has(item.name)).map(item => <div key={item.name} hidden={tab !== item.name || (!hasWorkspace && item.name !== 'Spells')}><WorkspaceErrorBoundary key={document.sessions.map(session => session.id).join('|')} onReset={() => { setDocument(emptyDocument()); report('Workspace view reset. Your cloud file has not been changed.') }}><Suspense fallback={<p className="companion-inline-status" role="status">Loading tab…</p>}>{item.name === 'Translate' ? <TranslateTab document={document} sessionId={sessionId} onDocumentChange={setDocument} importSignal={importSignal} onImportMessage={report} /> : item.name === 'Dialogue Nodes' ? <DialogueNodesTab document={document} sessionId={sessionId} onDocumentChange={setDocument} /> : item.name === 'Spells' ? <SpellsTab document={document} sessionId={sessionId} onDocumentChange={setDocument} /> : <GameDataTab document={document} sessionId={sessionId} onDocumentChange={setDocument} />}</Suspense></WorkspaceErrorBoundary></div>)}
   </main>
 }

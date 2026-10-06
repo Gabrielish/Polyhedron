@@ -4,7 +4,7 @@ const { createRequire } = require('node:module')
 const { buildSync } = createRequire(require.resolve('vite/package.json'))('esbuild')
 const root = path.resolve(__dirname, '..')
 function bundle(contents, clientId = 'undefined') {
-  const output = buildSync({ absWorkingDir: root, bundle: true, write: false, platform: 'node', format: 'cjs', jsx: 'automatic', loader: { '.css': 'empty', '.svg': 'text' }, define: { 'import.meta.env.VITE_GOOGLE_CLIENT_ID': clientId, 'import.meta.env.BASE_URL': '"/Polyhedron/"' }, stdin: { resolveDir: root, loader: 'jsx', contents } }).outputFiles[0].text
+  const output = buildSync({ absWorkingDir: root, bundle: true, write: false, platform: 'node', format: 'cjs', jsx: 'automatic', loader: { '.css': 'empty', '.svg': 'text' }, define: { 'import.meta.env.VITE_GOOGLE_CLIENT_ID': clientId, 'import.meta.env.BASE_URL': '"/Polyhedron/"', 'import.meta.url': '"file:///test/companion.js"' }, stdin: { resolveDir: root, loader: 'jsx', contents } }).outputFiles[0].text
   const module = { exports: {} }
   new Function('module', 'exports', 'require', output)(module, module.exports, require)
   return module.exports

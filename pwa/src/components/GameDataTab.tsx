@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useDeferredValue } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
-import { Search } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
+import { CompanionSearch } from './CompanionSearch'
+import { defaultSearch, indexWorkspace, loadCatalog, matcher, sourceKey, updateProject } from '../utils/workspace'
 
 type Category = 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt'
 type CatalogEntry = { name: string; description: string; category: Category }
@@ -8,7 +10,6 @@ const CATEGORIES: Array<{ label: string; value: Category }> = [
   { label: 'Weapons', value: 'Weapon' }, { label: 'Armour', value: 'Armour' }, { label: 'Objects', value: 'Object' },
   { label: 'Spells', value: 'Spell' }, { label: 'Passives', value: 'Passive' }, { label: 'Statuses', value: 'Status' }, { label: 'Interrupts', value: 'Interrupt' }
 ]
-const normalize = (value: string) => decodeHtml(value).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase()
 const decodeHtml = (value: string) => { const textarea = window.document.createElement('textarea'); textarea.innerHTML = value; return textarea.value }
 
 function wikiUrl(entry: CatalogEntry): string { return `https://bg3.wiki/wiki/${encodeURIComponent(entry.name.trim().replace(/\s+/g, '_'))}` }
@@ -23,44 +24,51 @@ function CategoryIcon({ category }: { category: Category }): React.JSX.Element {
   return <svg {...common}><path d="M7 3 3 7l4 4M3 7h8a4 4 0 0 1 4 4v4M11 13l4-4-4-4" /></svg>
 }
 
-export function GameDataTab({ document, onDocumentChange }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void }): React.JSX.Element {
+export function GameDataTab({ document, onDocumentChange, sessionId }: { document: WorkspaceSyncDocument; onDocumentChange: (document: WorkspaceSyncDocument) => void; sessionId?: string }): React.JSX.Element {
   const [catalog, setCatalog] = useState<CatalogEntry[]>([])
   const [category, setCategory] = useState<Category>('Weapon')
-  const [query, setQuery] = useState('')
+  const [search, setSearch] = useState(defaultSearch)
+  const deferred = useDeferredValue(search)
   const [selected, setSelected] = useState<CatalogEntry | null>(null)
-  useEffect(() => { void fetch('./data/game-reference.json').then((response) => response.json()).then((value: unknown) => setCatalog(Array.isArray(value) ? value as CatalogEntry[] : [])).catch(() => setCatalog([])) }, [])
-  const filtered = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase()
-    return catalog.filter((entry) => entry.category === category && (!q || `${entry.name} ${entry.description}`.toLocaleLowerCase().includes(q)))
-  }, [catalog, category, query])
-  useEffect(() => {
-    setSelected(filtered[0] ?? null)
-  }, [category, query, catalog, filtered])
-  // Keep the editor in sync with the visible list. When a category or search
-  // changes, fall back to the first matching entry instead of leaving stale
-  // content (or an empty editor) from the previous category.
-  const current = selected && selected.category === category && filtered.some((entry) => entry.name === selected.name && entry.description === selected.description)
-    ? selected
-    : filtered[0] ?? null
-  const session = document.sessions[0]
-  const linked = useMemo(() => {
-    if (!current || !session) return { title: [] as SyncEntry[], description: [] as SyncEntry[] }
-    const title = normalize(current.name); const description = normalize(current.description)
-    return { title: session.entries.filter((entry) => normalize(entry.source) === title), description: session.entries.filter((entry) => normalize(entry.source) === description) }
-  }, [current, session])
-  const updateEntries = (entries: SyncEntry[], value: string) => {
-    const ids = new Set(entries.map((entry) => entry.uid))
-    onDocumentChange({ ...document, generatedAt: new Date().toISOString(), sessions: document.sessions.map((item) => ({ ...item, entries: item.entries.map((entry) => ids.has(entry.uid) ? { ...entry, target: value, matchType: 'manual' as const } : entry) })) })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [retry, setRetry] = useState(0)
+  const [page, setPage] = useState(1)
+  const [status, setStatus] = useState('all')
+  const session = document.sessions.find(item => item.id === sessionId) ?? document.sessions[0]
+  const workspace = useMemo(() => indexWorkspace(session), [session])
+  useEffect(() => { let active = true; setLoading(true); setError(''); void loadCatalog().then(value => { if (active) setCatalog(value.filter(entry => CATEGORIES.some(category => category.value === entry.category)) as CatalogEntry[]) }).catch(reason => { if (active) setError(reason instanceof Error ? reason.message : 'Game reference failed to load.') }).finally(() => { if (active) setLoading(false) }); return () => { active = false } }, [retry])
+  const linkedFor = (entry: CatalogEntry) => {
+    const rows = (text: string) => (workspace.bySource.get(sourceKey(text)) ?? []).flatMap(uid => { const row = workspace.byUid.get(uid); return row ? [row] : [] })
+    return { title: rows(entry.name), description: rows(entry.description) }
   }
+  const filtered = useMemo(() => {
+    const test = matcher(deferred)
+    return catalog.filter(entry => {
+      if (entry.category !== category) return false
+      const linked = linkedFor(entry)
+      const rows = [...linked.title, ...linked.description]
+      const complete = linked.title.length > 0 && linked.title.every(row => row.target.trim()) && (!entry.description.trim() || linked.description.length > 0 && linked.description.every(row => row.target.trim()))
+      if (status === 'linked' && !rows.length || status === 'translated' && !complete || status === 'untranslated' && (complete || !rows.length) || status === 'unlinked' && rows.length) return false
+      const fields = deferred.scope === 'source' ? [entry.name, entry.description] : deferred.scope === 'target' ? rows.map(row => row.target) : [entry.name, entry.description, ...rows.map(row => row.target)]
+      return fields.some(test)
+    })
+  }, [catalog, category, deferred, workspace, status])
+  useEffect(() => { setPage(1); setSelected(null) }, [category, search, status, session?.id])
+  const current = selected && filtered.includes(selected) ? selected : filtered[0] ?? null
+  const linked = useMemo(() => current ? linkedFor(current) : { title: [] as SyncEntry[], description: [] as SyncEntry[] }, [current, workspace])
+  const pages = Math.max(1, Math.ceil(filtered.length / 100))
+  const currentPage = Math.min(page, pages)
+  function updateEntries(rows: SyncEntry[], value: string): void { if (session && rows.length) onDocumentChange(updateProject(document, session.id, new Map(rows.map(row => [row.uid, { target: value, matchType: 'manual' as const }])))) }
   return <section className="game-data-panel">
-    <div className="game-data-controls"><div className="game-data-search-row"><label className="search-field"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search..." /><Search aria-hidden="true" size={17} /></label><a className="game-data-open" href={current ? wikiUrl(current) : 'https://bg3.wiki/wiki/Weapons'} target="_blank" rel="noreferrer" title="Open selected entry on Baldur's Gate wiki" aria-label="Open selected entry on Baldur's Gate wiki">↗</a></div><div className="game-data-categories">{CATEGORIES.map((item) => <button key={item.value} type="button" className={category === item.value ? 'game-data-category active' : 'game-data-category'} onClick={() => { setCategory(item.value); setQuery(''); setSelected(null) }}><CategoryIcon category={item.value} /> <span>{item.label}</span></button>)}</div></div>
-    <div className="game-data-layout"><aside key={category} className="game-data-list"><p className="tree-label">{CATEGORIES.find((item) => item.value === category)?.label} · {filtered.length.toLocaleString()} entries</p>{filtered.length ? filtered.map((entry) => <button type="button" key={`${entry.category}-${entry.name}`} className={current?.name === entry.name ? 'game-data-item selected' : 'game-data-item'} onClick={() => setSelected(entry)}><span>{entry.name}</span></button>) : <p className="dialogue-empty">{catalog.length ? 'No matching entries.' : 'Loading game data…'}</p>}</aside><main className="game-data-editor" key={`${category}-${current?.name ?? 'empty'}`}>{current && session ? <><div className="game-data-title"><span className="game-data-entry-icon"><CategoryIcon category={current.category} /></span><h3>{current.name}</h3></div><GameDataField label="Title · EN" source={current.name} value={linked.title[0]?.target ?? ''} onChange={(value) => updateEntries(linked.title, value)} /><GameDataField label="Description · EN" source={current.description} value={linked.description[0]?.target ?? ''} onChange={(value) => updateEntries(linked.description, value)} /></> : <div className="dialogue-empty">Select an entry from the list.</div>}</main></div>
+    <div className="game-data-controls"><CompanionSearch value={search} onChange={setSearch} label="Search game data" placeholder="Search names, descriptions, translations…" /><div className="game-data-categories">{CATEGORIES.map(item => <button key={item.value} className={category === item.value ? 'game-data-category active' : 'game-data-category'} onClick={() => setCategory(item.value)}><CategoryIcon category={item.value} /><span>{item.label}</span></button>)}</div><select className="companion-status-filter" aria-label="Game data status" value={status} onChange={event => setStatus(event.target.value)}><option value="all">All entries</option><option value="linked">Linked to project</option><option value="translated">Translated</option><option value="untranslated">Incomplete</option><option value="unlinked">Not linked</option></select></div>
+    {error && <p className="companion-inline-status" role="alert">{error}<button className="secondary-button" onClick={() => setRetry(value => value + 1)}>Retry</button></p>}
+    <div className="game-data-layout"><aside className="game-data-list"><p className="tree-label">{CATEGORIES.find(item => item.value === category)?.label} · {filtered.length.toLocaleString()} entries</p>{filtered.slice((currentPage - 1) * 100, currentPage * 100).map((entry, index) => <button key={category + ':' + index + ':' + entry.name} className={current === entry ? 'game-data-item selected' : 'game-data-item'} onClick={() => setSelected(entry)}><span>{entry.name}</span></button>)}{!filtered.length && <p className="dialogue-empty">{loading ? 'Loading game reference…' : 'No matching entries.'}</p>}{pages > 1 && <div className="pagination-bar"><button className="secondary-button" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>Previous</button><span>{currentPage} / {pages}</span><button className="secondary-button" disabled={currentPage >= pages} onClick={() => setPage(currentPage + 1)}>Next</button></div>}</aside><main className="game-data-editor" key={session?.id + ':' + category + ':' + current?.name + ':' + current?.description}>{current ? <><div className="companion-section-heading"><div className="game-data-title"><span className="game-data-entry-icon"><CategoryIcon category={current.category} /></span><h3>{current.name}</h3></div><a className="secondary-button" href={wikiUrl(current)} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} />Wiki</a></div><GameDataField label="Title · EN" source={current.name} value={linked.title[0]?.target ?? ''} disabled={!linked.title.length} targetLang={session?.targetLang} onChange={value => updateEntries(linked.title, value)} /><GameDataField label="Description · EN" source={current.description} value={linked.description[0]?.target ?? ''} disabled={!linked.description.length} targetLang={session?.targetLang} onChange={value => updateEntries(linked.description, value)} /></> : <div className="dialogue-empty">Select an entry from the list.</div>}</main></div>
   </section>
 }
-
-function GameDataField({ label, source, value, onChange }: { label: string; source: string; value: string; onChange: (value: string) => void }): React.JSX.Element {
+function GameDataField({ label, source, value, disabled, targetLang, onChange }: { label: string; source: string; value: string; disabled: boolean; targetLang?: string; onChange: (value: string) => void }): React.JSX.Element {
   const [draft, setDraft] = useState(value)
   useEffect(() => setDraft(value), [value])
-  function commit(): void { if (draft !== value) onChange(draft) }
-  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><textarea value={draft} onChange={(event) => setDraft(event.target.value)} onBlur={commit} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder="Translation..." rows={Math.max(2, draft.split('\n').length + 1)} /></section>
+  function commit(): void { if (!disabled && draft !== value) onChange(draft) }
+  return <section className="game-data-field"><label>{label}</label><div className="game-data-source">{decodeHtml(source)}</div><label>Translation{targetLang ? ' · ' + targetLang.toUpperCase() : ''}{disabled ? ' · Not linked to this project' : ''}</label><textarea aria-label={label.startsWith('Title') ? 'Game title translation' : 'Game description translation'} disabled={disabled} value={draft} onChange={event => setDraft(event.target.value)} onBlur={commit} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); commit() } }} placeholder={disabled ? 'No matching source in this project.' : 'Translation…'} rows={Math.max(2, draft.split('\n').length + 1)} /></section>
 }
