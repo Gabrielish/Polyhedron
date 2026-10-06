@@ -7,7 +7,7 @@ let scriptPromise: Promise<void> | null = null
 
 type TokenClient = { requestAccessToken: (options?: { prompt?: string }) => void }
 declare global {
-  interface Window { google?: { accounts: { oauth2: { initTokenClient: (options: { client_id: string; scope: string; callback: (response: { access_token?: string; error?: string }) => void }) => TokenClient } } } }
+  interface Window { google?: { accounts: { oauth2: { initTokenClient: (options: { client_id: string; scope: string; callback: (response: { access_token?: string; error?: string }) => void; error_callback?: (error: { type: string }) => void }) => TokenClient } } } }
 }
 
 function loadGoogleScript(): Promise<void> {
@@ -18,7 +18,7 @@ function loadGoogleScript(): Promise<void> {
     script.src = 'https://accounts.google.com/gsi/client'
     script.async = true
     script.onload = () => resolve()
-    script.onerror = () => reject(new Error('Google Identity Services could not be loaded.'))
+    script.onerror = () => { scriptPromise = null; script.remove(); reject(new Error('Google Identity Services could not be loaded. Please try again.')) }
     document.head.appendChild(script)
   })
   return scriptPromise
@@ -38,7 +38,10 @@ export async function requestDriveAccessToken(clientId: string, prompt = 'consen
       scope: DRIVE_SCOPE,
       callback: (response) => response.access_token
         ? finish(() => resolve(response.access_token as string))
-        : finish(() => reject(new Error(response.error || 'Google authorization was cancelled.')))
+        : finish(() => reject(new Error(response.error || 'Google authorization was cancelled.'))),
+      error_callback: (error) => finish(() => reject(new Error(error.type === 'popup_failed_to_open'
+        ? 'Google sign-in was blocked by your browser. Allow the popup and try Download workspace again.'
+        : error.type === 'popup_closed' ? 'Google sign-in was cancelled. You can try again.' : 'Google sign-in could not be completed. Please try again.')))
     })
     if (!client) {
       finish(() => reject(new Error('Google Identity Services is unavailable.')))

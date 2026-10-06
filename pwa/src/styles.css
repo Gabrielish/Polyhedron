@@ -1,9 +1,9 @@
-@font-face { font-family: 'Breathe Fire III'; src: url('/fonts/BreatheFireIII.otf') format('opentype'); font-display: swap; }
+@font-face { font-family: 'Breathe Fire III'; src: url('../public/fonts/BreatheFireIII.otf') format('opentype'); font-display: swap; }
 * { box-sizing: border-box; }
 :root {
-  --accent: #ED1C24;
-  --accent-rgb: 237 28 36;
-  --accent-foreground: #FFFFFF;
+  --accent: #A7F175;
+  --accent-rgb: 167 241 117;
+  --accent-foreground: #101010;
   --accent-light: color-mix(in srgb, var(--accent) 45%, white);
   --accent-surface: color-mix(in srgb, var(--accent) 10%, #131518);
   --accent-border: color-mix(in srgb, var(--accent) 22%, #2a2f37);
@@ -18,6 +18,41 @@ button { font: inherit; }
 .brand-dragon { width: 25px; height: 22px; flex: 0 0 auto; color: var(--accent); }
 .brand-name { font-family: 'Breathe Fire III', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; }
 .brand-platform { color: #6f7680; font-size: 9px; font-weight: 400; white-space: nowrap; }
+.companion-shell { --accent:#a7f175; --accent-rgb:167 241 117; --accent-foreground:#101010; --accent-light:#c7f7a9; --accent-surface:#172112; --accent-border:#36472c; width:min(1160px,100%); padding:0 28px 48px; color:#efefed; }
+.companion-shell .app-header { min-height:84px; justify-content:space-between; padding:20px 0; background:transparent; }
+.companion-shell .brand-lockup { text-decoration:none; gap:10px; }
+.companion-shell .brand-name { font-size:22px; }
+.companion-back { color:#92958e; font-size:12px; text-decoration:none; }
+.companion-back:hover { color:var(--accent); }
+.companion-intro { padding:46px 0 28px; }
+.companion-intro h1 { font-size:clamp(32px,5vw,48px); font-weight:600; letter-spacing:-1.5px; margin-top:12px; }
+.companion-intro>p:last-child { color:#969a91; font-size:13px; line-height:1.7; }
+.companion-drive { display:flex; align-items:center; gap:18px; padding:24px; border:1px solid #2e3728; border-radius:12px; background:linear-gradient(115deg,#151c10,#101010 65%); }
+.companion-drive-icon { display:grid; place-items:center; width:52px; height:52px; flex-shrink:0; background:#a7f17512; border-radius:12px; color:var(--accent); }
+.companion-drive-copy { flex:1; min-width:0; }
+.companion-drive-copy h2 { font-size:15px; }
+.companion-drive-copy p { color:#919b88; font-size:12px; line-height:1.7; margin:6px 0 0; }
+.companion-drive-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.companion-shell :is(.primary-button,.secondary-button,.tab) { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:12px; }
+.companion-shell .primary-button { border-radius:999px; color:#101010; padding:11px 18px; font-weight:600; }
+.companion-shell .secondary-button { background:#101010; border-color:#35432b; border-radius:8px; }
+.companion-shell button:disabled { opacity:.5; cursor:not-allowed; }
+.companion-feedback { min-height:42px; padding:10px 0; }
+.companion-feedback .sync-status { display:flex; align-items:flex-start; gap:8px; margin:0; border:0; background:none; padding:0; line-height:1.6; }
+.companion-feedback svg { flex-shrink:0; margin-top:1px; }
+.companion-feedback .companion-error { color:#ff9999; }
+.companion-shell .tabs { border-bottom:1px solid #252920; margin:0 0 22px; padding:0 0 14px; gap:8px; }
+.companion-shell .tab { border-radius:8px; padding:10px 14px; }
+.companion-empty { display:flex; align-items:center; gap:16px; padding:28px; background:#101010; border:1px dashed #343c2d; border-radius:12px; }
+.companion-empty>svg { color:var(--accent); flex-shrink:0; }
+.companion-empty>div { flex:1; }
+.companion-empty h2 { font-size:14px; }
+.companion-empty p { color:#8e9587; font-size:12px; line-height:1.7; margin:7px 0 0; }
+.companion-spin { animation:companion-spin 1s linear infinite; }
+@keyframes companion-spin { to { transform:rotate(360deg); } }
+.companion-shell :is(a,button):focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+@media(max-width:620px) { .companion-shell { padding-inline:18px; } .companion-shell .app-header { flex-direction:row; min-height:72px; gap:10px; } .companion-shell .brand-name { font-size:19px; } .companion-shell .brand-platform { display:none; } .companion-intro { padding-top:32px; } .companion-drive { flex-wrap:wrap; padding:20px; gap:12px; } .companion-drive-actions { flex:1 1 100%; } .companion-drive-actions button { flex:1; } .companion-empty { flex-wrap:wrap; padding:20px; } .companion-empty>div { min-width:200px; } .companion-empty button { width:100%; } .companion-shell .tab { padding:9px 10px; font-size:11px; } }
+@media(prefers-reduced-motion:reduce) { .companion-spin { animation:none; } }
 
 .eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 h1, h2 { margin: 0; }

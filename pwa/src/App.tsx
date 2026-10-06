@@ -1,117 +1,73 @@
 import { useEffect, useState } from 'react'
+import { Cloud, Download, Languages, GitBranch, Swords, Upload, CircleCheck, CircleAlert, LoaderCircle, FolderOpen } from 'lucide-react'
 import { TranslateTab } from './components/TranslateTab'
 import { DialogueNodesTab } from './components/DialogueNodesTab'
 import { GameDataTab } from './components/GameDataTab'
-import { downloadWorkspaceSync, requestDriveAccessToken, uploadWorkspaceSync } from './sync/googleDrive'
+import { downloadWorkspaceSync, uploadWorkspaceSync } from './sync/googleDrive'
+import { beginDriveConnection, pendingDriveConnection } from './sync/driveConnection'
 import { emptyDocument, type WorkspaceSyncDocument } from './sync/workspaceSync'
-import { applyAppearance, normalizeAppearance, readAppearance } from './sync/appearance'
+import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
 
-const tabs = ['Translate', 'Dialogue Nodes', 'Game Data'] as const
-type Tab = (typeof tabs)[number]
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined
-const commitSha = import.meta.env.VITE_COMMIT_SHA as string | undefined
-const DRIVE_CONNECTED_KEY = 'polyhedron.google-drive.connected'
+const tabs = [{ name: 'Translate', icon: Languages }, { name: 'Dialogue Nodes', icon: GitBranch }, { name: 'Game Data', icon: Swords }] as const
+type Tab = (typeof tabs)[number]['name']
+const dragonPath = dragonSvg.match(/<path\b[^>]*\bd="([^"]+)"/)?.[1]
 
 export function App(): React.JSX.Element {
   const [tab, setTab] = useState<Tab>('Translate')
   const [document, setDocument] = useState<WorkspaceSyncDocument>(emptyDocument)
   const [driveToken, setDriveToken] = useState<string | null>(null)
-  const [hasWorkspace, setHasWorkspace] = useState(false)
+  const [busy, setBusy] = useState<'connecting' | 'downloading' | 'saving' | null>(null)
   const [syncMessage, setSyncMessage] = useState('')
-  const isConnected = driveToken !== null
-
+  const [error, setError] = useState(false)
+  const [importSignal, setImportSignal] = useState(0)
+  const hasWorkspace = document.sessions.length > 0
+  function report(message: string, failed = false): void { setSyncMessage(message); setError(failed) }
   useEffect(() => {
-    applyAppearance(normalizeAppearance(document.appearance) ?? readAppearance())
-  }, [document.appearance])
+    const connection = pendingDriveConnection()
+    if (!connection) return
+    let active = true
+    setBusy('connecting')
+    void connection.then(token => {
+      if (active) { setDriveToken(token); report('Google Drive connected. You can download your workspace.') }
+    }).catch(reason => {
+      if (active) report(reason instanceof Error ? reason.message : 'Google authorization failed.', true)
+    }).finally(() => { if (active) setBusy(null) })
+    return () => { active = false }
+  }, [])
 
-
-
-  async function connectDrive(): Promise<string | null> {
-    if (!googleClientId) {
-      setSyncMessage('Set VITE_GOOGLE_CLIENT_ID before connecting Google Drive.')
-      return null
-    }
-    try {
-      // After the user has authorized once, ask Google for a token silently. This
-      // reuses the active Google session and skips the account picker/consent UI.
-      // A first-time connection still needs the normal consent screen.
-      const previouslyConnected = window.localStorage.getItem(DRIVE_CONNECTED_KEY) === 'true'
-      let token: string
-      try {
-        token = await requestDriveAccessToken(googleClientId, previouslyConnected ? '' : 'consent')
-      } catch (silentError) {
-        if (!previouslyConnected) throw silentError
-        // The Google session may have expired; fall back to the interactive flow
-        // so Connect remains reliable instead of leaving the user stuck.
-        token = await requestDriveAccessToken(googleClientId, 'consent')
-      }
-      setDriveToken(token)
-      window.localStorage.setItem(DRIVE_CONNECTED_KEY, 'true')
-      setSyncMessage('Google Drive connected.')
-      return token
-    } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : 'Google authorization failed.')
-      return null
-    }
+  async function connectDrive(): Promise<string> {
+    const token = driveToken ?? await beginDriveConnection()
+    setDriveToken(token)
+    return token
   }
-
-  async function upload(): Promise<void> {
-    const token = driveToken ?? await connectDrive()
-    if (!token) return
-    if (!hasWorkspace || document.sessions.length === 0) {
-      setSyncMessage('Download a workspace before saving.')
-      return
-    }
-    try {
-      await uploadWorkspaceSync(token, document)
-      const message = 'Workspace saved to Google Drive.'
-      setSyncMessage(message)
-      window.alert(message)
-    } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : 'Google Drive upload failed.')
-    }
-  }
-
   async function download(): Promise<void> {
-    const token = driveToken ?? await connectDrive()
-    if (!token) return
+    if (busy) return
+    setBusy('downloading'); report('Downloading your workspace…')
     try {
-      const nextDocument = await downloadWorkspaceSync(token)
-      setDocument(nextDocument)
-      setHasWorkspace(true)
-      setSyncMessage('Workspace downloaded from Google Drive.')
-    } catch (error) {
-      setSyncMessage(error instanceof Error ? error.message : 'Google Drive download failed.')
-    }
+      const next = await downloadWorkspaceSync(await connectDrive())
+      setDocument(next)
+      report('Workspace downloaded from Google Drive.')
+    } catch (reason) { report(reason instanceof Error ? reason.message : 'Google Drive download failed.', true) }
+    finally { setBusy(null) }
+  }
+  async function upload(): Promise<void> {
+    if (busy || !hasWorkspace) return
+    setBusy('saving'); report('Saving your workspace…')
+    try { await uploadWorkspaceSync(await connectDrive(), document); report('Workspace saved to Google Drive.') }
+    catch (reason) { report(reason instanceof Error ? reason.message : 'Google Drive upload failed.', true) }
+    finally { setBusy(null) }
   }
 
-  if (!isConnected) return <main className="app-shell">    <header className="app-header">
-        <div className="brand-lockup">
-          <svg aria-hidden="true" className="brand-dragon" viewBox="0 0 12.21 10.26" xmlns="http://www.w3.org/2000/svg">
-            <path fill="currentColor" d="M12.19,6.21c-.09.23-.43.6-.76.68.05-.37-.27-.58-.5-.64.15-.71-.15-1.58-1.2-2.55-.89-.84-2.56-2-2.49-3.48-.26.31-.44,1.24-.2,1.79.73.83,2.26,1.71,2.66,3.09-.68-1.61-3.97-2.88-3.83-5.1-.41.42-.66,1.97-.33,2.8.63.36,1.17.98,1.26,1.53-.41-.89-1.72-1.28-2.68-1.96-.41-.3-.76-.64-.96-1.1-.19.55-.08,1.24.24,1.7,0,0-.61-.23-1.84-.18.34.14,1.23.88,1.11,1.31h.01c-.12.44-1.84.94-2.68,1.75,1.24-.24,1.87-.04,2.07.46.14.35-.03.85-.14,1.43.3-.32,1.12-.89,1.95-1.26.33-.14.65-.26.95-.31-.2-.06-.65-.15-.94-.17-.07-.02-.13-.02-.18-.02.06-.07.12-.13.19-.18.83-.73,2.32-.95,3.17-.74-.6-.03-1.78.27-2.25.64.38.06.76.15,1.12.27-.56.21-1.27.84-1.51,1.52.74-.49,2.2-.36,2.43.65.1.45-.08.87-.28,1.13-.1.14-.22.24-.31.27.2.04.73-.02.93-.11-.07.28-.53.75-.8.83.71,0,1.71-.4,2.07-1.01.03-.05.06-.1.08-.15,0,0-.46.15-.67-.06-.19-.18.04-.91.08-1.05-.07.07-.32.33-.52.14-.25-.24.09-1.04.23-1.23-.24-.1-.92-.17-1.21-.14.84-.3,2.73-.45,2.93-.1.16.29-.24.86-.24.86.33-.02,1.29-.01,1.63.38.34.41.14.93.14.93.76-.34,1.43-1.51,1.27-2.62ZM8.4,4.89c.85.3,1.1,1.08,1.1,1.08-.71,0-.94-.52-1.1-1.08Z" />
-          </svg>
-          <span className="brand-name">Polyhedron</span>
-          <span className="brand-platform">Mobile · {commitSha ? commitSha.slice(0, 7) : 'local'}</span>
-        </div>
-    </header><section className="connect-screen"><p className="eyebrow">Mobile workspace</p><h1>Polyhedron Mobile</h1><p>Connect Google Drive to open your Translate workspace.</p><button type="button" className="primary-button connect-button" onClick={() => void connectDrive()}>Connect</button>{syncMessage && <p className="sync-status" role="status">{syncMessage}</p>}</section></main>
-
-  return (
-    <main className="app-shell">
-    <header className="app-header">
-        <div className="brand-lockup">
-          <svg aria-hidden="true" className="brand-dragon" viewBox="0 0 12.21 10.26" xmlns="http://www.w3.org/2000/svg">
-            <path fill="currentColor" d="M12.19,6.21c-.09.23-.43.6-.76.68.05-.37-.27-.58-.5-.64.15-.71-.15-1.58-1.2-2.55-.89-.84-2.56-2-2.49-3.48-.26.31-.44,1.24-.2,1.79.73.83,2.26,1.71,2.66,3.09-.68-1.61-3.97-2.88-3.83-5.1-.41.42-.66,1.97-.33,2.8.63.36,1.17.98,1.26,1.53-.41-.89-1.72-1.28-2.68-1.96-.41-.3-.76-.64-.96-1.1-.19.55-.08,1.24.24,1.7,0,0-.61-.23-1.84-.18.34.14,1.23.88,1.11,1.31h.01c-.12.44-1.84.94-2.68,1.75,1.24-.24,1.87-.04,2.07.46.14.35-.03.85-.14,1.43.3-.32,1.12-.89,1.95-1.26.33-.14.65-.26.95-.31-.2-.06-.65-.15-.94-.17-.07-.02-.13-.02-.18-.02.06-.07.12-.13.19-.18.83-.73,2.32-.95,3.17-.74-.6-.03-1.78.27-2.25.64.38.06.76.15,1.12.27-.56.21-1.27.84-1.51,1.52.74-.49,2.2-.36,2.43.65.1.45-.08.87-.28,1.13-.1.14-.22.24-.31.27.2.04.73-.02.93-.11-.07.28-.53.75-.8.83.71,0,1.71-.4,2.07-1.01.03-.05.06-.1.08-.15,0,0-.46.15-.67-.06-.19-.18.04-.91.08-1.05-.07.07-.32.33-.52.14-.25-.24.09-1.04.23-1.23-.24-.1-.92-.17-1.21-.14.84-.3,2.73-.45,2.93-.1.16.29-.24.86-.24.86.33-.02,1.29-.01,1.63.38.34.41.14.93.14.93.76-.34,1.43-1.51,1.27-2.62ZM8.4,4.89c.85.3,1.1,1.08,1.1,1.08-.71,0-.94-.52-1.1-1.08Z" />
-          </svg>
-          <span className="brand-name">Polyhedron</span>
-          <span className="brand-platform">Mobile · {commitSha ? commitSha.slice(0, 7) : 'local'}</span>
-        </div>
-    </header>
-      <div className="top-actions"><button type="button" className="secondary-button" onClick={() => void download()}>Download</button>{hasWorkspace && <button type="button" className="primary-button" onClick={() => void upload()}>Save</button>}</div>
-      {syncMessage && <p className="sync-status" role="status" aria-live="polite">{syncMessage}</p>}
-      <nav className="tabs" aria-label="Companion tabs">
-        {tabs.map((item) => <button key={item} type="button" className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>)}
-      </nav>
-      {tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : <GameDataTab document={document} onDocumentChange={setDocument} />}
-    </main>
-  )
+  return <main className="app-shell companion-shell">
+    <header className="app-header"><a className="brand-lockup" href="#top" aria-label="Polyhedron home">
+      <svg aria-hidden="true" className="brand-dragon" viewBox="0 0 12.21 10.26"><path fill="currentColor" d={dragonPath} /></svg>
+      <span className="brand-name">Polyhedron</span><span className="brand-platform">Web companion</span>
+    </a><a className="companion-back" href="#top">Back to website <span aria-hidden="true">↗</span></a></header>
+    <section className="companion-intro"><p className="eyebrow">YOUR WORKSPACE, WITHIN REACH</p><h1>Your workspace.</h1><p>Download from Google Drive, continue translating, and save your changes back.</p></section>
+    <section className="companion-drive" aria-label="Google Drive workspace"><div className="companion-drive-icon"><Cloud size={25} /></div><div className="companion-drive-copy"><h2>Google Drive</h2><p>{busy === 'connecting' ? 'Connecting your account…' : driveToken ? 'Connected · Your workspace is ready to download.' : 'Sign in when you download your synced workspace.'}</p></div><div className="companion-drive-actions"><button type="button" className="primary-button" disabled={busy !== null} onClick={() => void download()}>{busy === 'connecting' || busy === 'downloading' ? <LoaderCircle size={16} className="companion-spin" /> : <Download size={16} />}{busy === 'connecting' ? 'Connecting…' : busy === 'downloading' ? 'Downloading…' : 'Download workspace'}</button>{hasWorkspace && <button type="button" className="secondary-button" disabled={busy !== null} onClick={() => void upload()}>{busy === 'saving' ? <LoaderCircle size={16} className="companion-spin" /> : <Upload size={16} />}{busy === 'saving' ? 'Saving…' : 'Save to Drive'}</button>}</div></section>
+    <div className="companion-feedback" aria-live="polite">{syncMessage && <p className={error ? 'sync-status companion-error' : 'sync-status'} role={error ? 'alert' : 'status'}>{error ? <CircleAlert size={16} /> : busy ? <LoaderCircle size={16} className="companion-spin" /> : <CircleCheck size={16} />}{syncMessage}</p>}</div>
+    <nav className="tabs" aria-label="Companion tabs">{tabs.map(item => <button key={item.name} type="button" className={tab === item.name ? 'tab active' : 'tab'} onClick={() => setTab(item.name)}><item.icon size={16} />{item.name}</button>)}</nav>
+    {!hasWorkspace && <div className="companion-empty"><FolderOpen size={22} /><div><h2>No workspace loaded</h2><p>Download your synced workspace above, or import a workspace-sync.json exported from the desktop app.</p></div><button type="button" className="secondary-button" disabled={busy !== null} onClick={() => { setTab('Translate'); setImportSignal(value => value + 1) }}>Import file</button></div>}
+    <div hidden={!hasWorkspace}>{tab === 'Translate' ? <TranslateTab document={document} onDocumentChange={setDocument} importSignal={importSignal} /> : tab === 'Dialogue Nodes' ? <DialogueNodesTab document={document} onDocumentChange={setDocument} /> : <GameDataTab document={document} onDocumentChange={setDocument} />}</div>
+  </main>
 }
