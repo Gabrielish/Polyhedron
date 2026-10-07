@@ -14,6 +14,8 @@ new Function('module', 'exports', 'require', bundle)(result, result.exports, req
 const html = result.exports
 assert.match(html, /href="#app"/)
 assert.match(html, /class="lp-hero-copy"/)
+assert.doesNotMatch(html, /lp-hero-dragon/)
+assert.match(html, /class="lp-brand"[^>]*><svg/)
 assert.match(html, /lucide-apple/)
 assert.equal((html.match(/<details>/g) || []).length, 9)
 assert.match(html, /id="extra-questions" hidden=""/)

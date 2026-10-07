@@ -109,7 +109,7 @@ export function LandingPage(): React.JSX.Element {
     </header>
     <main id="main">
       <section className="lp-hero lp-wrap" aria-labelledby="hero-heading">
-        <div className="lp-hero-glow" aria-hidden="true" /><Dragon className="lp-hero-dragon" />
+        <div className="lp-hero-glow" aria-hidden="true" />
         <div className="lp-hero-copy">
         <p className="lp-eyebrow"><span /> BUILT FOR GAME TRANSLATION</p>
         <h1 id="hero-heading">Every word.<br /><em>In your world.</em></h1>
