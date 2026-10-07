@@ -726,7 +726,6 @@ export function SettingsPage(): React.JSX.Element {
           </SettingsSectionCard>
         </section>
 
-        <div className="h-4" />
       </div>
     </div>
   )

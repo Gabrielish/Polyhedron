@@ -2163,10 +2163,6 @@ export function TranslationGrid({
     </div>
   )
 
-  // Keep enough scroll room for the floating pagination dock so the final
-  // translation row can always be brought fully above it.
-  const paginationBottomSpacer = 112
-
   const filterItems = useMemo<
     Array<{
       mode: FilterMode
@@ -2954,7 +2950,7 @@ export function TranslationGrid({
           </div>
           <div
             style={{
-              height: sideVirtualizer.getTotalSize() + paginationBottomSpacer,
+              height: `calc(${sideVirtualizer.getTotalSize()}px + var(--app-dock-clearance, 0px))`,
               position: 'relative'
             }}
           >
@@ -3196,7 +3192,7 @@ export function TranslationGrid({
       >
         <div
           style={{
-            height: stackedVirtualizer.getTotalSize() + paginationBottomSpacer,
+            height: `calc(${stackedVirtualizer.getTotalSize()}px + var(--app-dock-clearance, 0px))`,
             position: 'relative'
           }}
         >

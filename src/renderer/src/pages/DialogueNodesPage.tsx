@@ -1088,7 +1088,7 @@ export function DialogueNodesPage(): React.JSX.Element {
             style={treePanelStyle}
             className="contents lg:grid lg:min-h-0 lg:max-h-none lg:grid-rows-[minmax(0,0.32fr)_minmax(0,0.68fr)] lg:border-r lg:border-[#1f2329]"
           >
-            <div className="order-1 min-h-[var(--dialogue-tree-mobile-height)] overflow-y-auto border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0">
+            <div className="app-dock-scroll order-1 min-h-[var(--dialogue-tree-mobile-height)] overflow-y-auto border-b border-[#1f2329] p-3 lg:order-none lg:min-h-0">
               <div className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
                 Dialogue tree · {visibleChoices.length}
               </div>
@@ -1135,7 +1135,7 @@ export function DialogueNodesPage(): React.JSX.Element {
               )}
             </div>
           </aside>
-          <section className="order-2 polyhedron-scroll relative min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
+          <section className="app-dock-scroll order-2 polyhedron-scroll relative min-h-[700px] min-w-0 overflow-y-auto border-b border-[#1f2329] p-3 sm:p-5 lg:order-none lg:min-h-0 lg:border-b-0">
             {selected ? (
               <div className="w-full space-y-3">
                 {nodes.map((node, index) => {

@@ -4,12 +4,13 @@ export type LarianTag = { opening: string; closing?: string }
 
 export function extractLarianTags(source: string): LarianTag[] {
   const tags: LarianTag[] = []
-  const pattern = /(<LSTag\b[^>]*>[\s\S]*?<\/LSTag>|<i\b[^>]*>[\s\S]*?<\/i>|<br\s*\/?>)/gi
+  // Match standalone tags first so they cannot consume the next paired LSTag.
+  const pattern = /(<LSTag\b[^>]*\/\s*>|<LSTag\b[^>]*>[\s\S]*?<\/LSTag>|<i\b[^>]*>[\s\S]*?<\/i>|<br\s*\/?>)/gi
   let match: RegExpExecArray | null
   while ((match = pattern.exec(source)) !== null) {
     const value = match[1]
     const opening = value.match(/^<(?:LSTag|i)\b[^>]*>/i)?.[0]
-    if (opening) {
+    if (opening && !/\/\s*>$/.test(opening)) {
       const closing = value.match(/<\/(?:LSTag|i)>$/i)?.[0]
       if (closing) tags.push({ opening, closing })
     } else {

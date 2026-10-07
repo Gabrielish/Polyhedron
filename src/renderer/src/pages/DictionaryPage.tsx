@@ -707,7 +707,7 @@ export function DictionaryPage(): React.JSX.Element {
         {/* grid-based virtualized layout (Option B) - avoids <table> absolute-positioning quirks */}
         <div
           ref={scrollRef}
-          className="dictionary-table-scroll polyhedron-scroll h-full overflow-auto"
+          className="app-dock-scroll dictionary-table-scroll polyhedron-scroll h-full overflow-auto"
         >
           {/* sticky header row */}
           <div

@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useDockClearance } from '@/hooks/useDockClearance'
 import { CloudSyncMenu } from './CloudSyncMenu'
 import { TitleBar } from './TitleBar'
 import { Sidebar } from './Sidebar'
@@ -33,6 +34,7 @@ export function MainLayout(): React.JSX.Element {
     }
   }, [])
   const location = useLocation()
+  useDockClearance(location.pathname)
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export function MainLayout(): React.JSX.Element {
             <CloudSyncMenu />
           </div>
         </div>
-        <main className="relative polyhedron-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <main className="app-route-viewport relative polyhedron-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
           {routeLoading ? (
             <RouteLoadingSkeleton pathname={loadingPathname ?? location.pathname} />
           ) : (

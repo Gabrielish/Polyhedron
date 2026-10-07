@@ -413,7 +413,7 @@ export function ConsistencyPage(): React.JSX.Element {
           </>
         )}
       </div>
-      <div ref={parentRef} className="min-h-0 flex-1 overflow-y-auto p-4">
+      <div ref={parentRef} className="app-dock-scroll min-h-0 flex-1 overflow-y-auto p-4">
         {visibleGroups.length === 0 ? (
           <div className="flex h-full items-center justify-center text-sm text-neutral-500">
             No inconsistent repeated translations found.

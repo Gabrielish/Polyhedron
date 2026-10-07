@@ -80,7 +80,7 @@ export function WorkspacePage(): React.JSX.Element {
   }
 
   return (
-    <div className="h-full min-h-0 overflow-y-auto p-8 text-neutral-200">
+    <div className="workspace-page-shell h-full min-h-0 overflow-y-auto p-8 text-neutral-200">
       <ConfirmDialog
         open={pendingImportPath !== null}
         title="Import workspace"

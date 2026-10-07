@@ -90,7 +90,6 @@ export function ModsPage({ embedded = false }: { embedded?: boolean }): React.JS
           {activeTool === 'suggestions' && <TranslationSuggestionsPage onReady={onSuggestionsReady} />}
         </main>
       </div>
-      {embedded && <div className="mods-bottom-spacer" aria-hidden="true" />}
     </div>
   )
 }

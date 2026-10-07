@@ -2009,7 +2009,7 @@ function LoadedSpellsPage({
         >
           <div
             ref={catalogScrollRef}
-            className="spells-catalog polyhedron-scroll min-h-0 overflow-y-auto p-4 sm:p-6"
+            className="app-dock-scroll spells-catalog polyhedron-scroll min-h-0 overflow-y-auto p-4 sm:p-6"
           >
             <div className="w-full space-y-7">
               {grouped.map(([group, spells]) => (

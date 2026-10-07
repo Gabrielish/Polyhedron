@@ -1501,14 +1501,14 @@ html[data-theme="liquid-glass"] .sidebar-shell:focus-within {
   transform: translateX(-50%) translateY(0) !important;
 }
 
-/* Keep the setup action row above the floating Liquid Glass dock. */
+/* The dock stays over the full-height scrollport, not in a separate footer band. */
 html[data-theme="liquid-glass"] .translate-idle-footer {
-  margin-bottom: 96px;
+  margin-bottom: 0;
 }
 
-/* Leave the same breathing room as Mods below the final Translate card. */
+/* Only the measured tail after the final Translate setup card. */
 html[data-theme="liquid-glass"] .translate-idle-content {
-  padding-bottom: 112px;
+  padding-bottom: var(--app-dock-clearance, 82px);
 }
 
 html[data-theme="liquid-glass"] .bulk-status-menu {
@@ -1876,30 +1876,38 @@ html[data-theme="liquid-glass"] .dictionary-pagination-capsule button:not(:disab
 }
 
 html[data-theme="liquid-glass"] .inject-localization-page {
-  padding-bottom: 112px;
+  padding-bottom: var(--app-dock-clearance, 82px);
 }
 html[data-theme="liquid-glass"] .inject-localization-page-embedded {
   padding-bottom: 0;
 }
 
-/* Mods tools remain reachable above the floating Liquid Glass dock. */
+/* Standalone Mods has one measured tail; Workspace owns the embedded tail. */
 html[data-theme="liquid-glass"] .mods-page-main {
-  padding-bottom: 112px;
+  padding-bottom: var(--app-dock-clearance, 82px) !important;
   scrollbar-gutter: stable;
 }
 
-/* Keep breathing room outside the embedded Mods card, so the card itself does not grow. */
+/* Embedded Mods cards do not need their own dock padding. */
 html[data-theme="liquid-glass"] .mods-embedded .mods-page-main {
-  padding-bottom: 0;
+  padding-bottom: 0 !important;
 }
-html[data-theme="liquid-glass"] .mods-bottom-spacer {
-  /* Workspace already contributes 32px of bottom padding. */
-  flex: 0 0 80px;
+/* Maximum scroll aligns the final Settings card immediately above the dock. */
+html[data-theme="liquid-glass"] .settings-page-shell {
+  padding-bottom: var(--app-dock-clearance, 82px);
 }
 
-/* Keep the final Settings card clear of the floating dock. */
-html[data-theme="liquid-glass"] .settings-page-shell {
-  padding-bottom: 80px;
+/* Keep content scrolling behind the dock. Only the measured tail is added,
+   without shortening the viewport or painting a full-width bottom band. */
+html[data-theme="liquid-glass"] .workspace-page-shell,
+html[data-theme="liquid-glass"] .app-dock-scroll {
+  padding-bottom: var(--app-dock-clearance, 82px) !important;
+}
+html[data-theme="liquid-glass"] .mods-embedded {
+  scroll-margin-bottom: var(--app-dock-clearance, 82px);
+}
+html[data-theme="liquid-glass"] .translate-idle-content > [class~="p-8"] {
+  padding-bottom: 0;
 }
 
 /* The Mods tool card owns the surface color. Keep its nested main transparent
