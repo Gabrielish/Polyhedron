@@ -44,7 +44,7 @@ npm run typecheck
 npm run test:security
 npm run test:security:startup
 # Read-only package audit; optionally supply --profile C:/path/to/local/profile.
-electron scripts/verify-release-security.cjs dist/security-check/win-unpacked
+electron tests/verify-release-security.cjs dist/security-check/win-unpacked
 ```
 
 The tests use temporary databases and fake credentials, OS encryption, a real

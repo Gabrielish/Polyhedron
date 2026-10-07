@@ -14,10 +14,10 @@ function publicDesktopCredentials(input) {
 
 function prepare() {
   const root = path.resolve(__dirname, '..')
-  const local = path.join(root, 'tools/google-drive/google-drive-credentials.json')
+  const local = path.join(root, 'resources/tools/google-drive/google-drive-credentials.json')
   const fromIndex = process.argv.indexOf('--from')
   const source = fromIndex >= 0 ? process.argv[fromIndex + 1] : process.env.POLYHEDRON_GOOGLE_OAUTH_FILE || local
-  const target = path.join(root, 'build/google-drive/google-drive-credentials.json')
+  const target = path.join(root, 'resources/installer/google-drive/google-drive-credentials.json')
   let config
   if (source && fs.existsSync(source)) {
     config = publicDesktopCredentials(JSON.parse(fs.readFileSync(source, 'utf8')))

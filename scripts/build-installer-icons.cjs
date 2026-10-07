@@ -93,10 +93,10 @@ async function run() {
     const start = ico.readUInt32LE(6 + i * 16 + 12)
     assert.deepEqual(nativeImage.createFromBuffer(ico.subarray(start, start + frames[i].length)).getSize(), { width: sizes[i], height: sizes[i] })
   }
-  await fs.writeFile(path.join(root, 'build', 'icon.png'), image.toPNG())
-  await fs.writeFile(path.join(root, 'build', 'icon.icns'), icnsBytes)
-  await fs.writeFile(path.join(root, 'build', 'icon.ico'), ico)
-  console.log('Generated and verified build/icon.png, build/icon.icns, build/icon.ico: #A7F175 dragon, dark macOS-style background.')
+  await fs.writeFile(path.join(root, 'resources/installer', 'icon.png'), image.toPNG())
+  await fs.writeFile(path.join(root, 'resources/installer', 'icon.icns'), icnsBytes)
+  await fs.writeFile(path.join(root, 'resources/installer', 'icon.ico'), ico)
+  console.log('Generated and verified resources/installer/icon.png, resources/installer/icon.icns, resources/installer/icon.ico: #A7F175 dragon, dark macOS-style background.')
   window.destroy()
   app.quit()
 }

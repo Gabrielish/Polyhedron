@@ -14,4 +14,4 @@ supportedArchitectures:
   cpu: [current, arm64, x64]
 
 patchedDependencies:
-  dmg-builder@26.8.1: patches/dmg-builder@26.8.1.patch
+  dmg-builder@26.8.1: resources/patches/dmg-builder@26.8.1.patch

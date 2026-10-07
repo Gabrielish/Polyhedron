@@ -7,7 +7,8 @@ import { decodeEntities } from './xml-entities.service'
 import { parseLocalizationXml } from './xml-parser.service'
 
 type StoredSource = Omit<SuggestionSource, 'available'>
-const BUILTINS = ['traducere1.xml', 'traducere2.xml'] as const
+// Only for migrating sources configured by older releases. New profiles are empty.
+const LEGACY_BUILTINS = ['traducere1.xml', 'traducere2.xml'] as const
 let cache: { signature: string; suggestions: SuggestionMap } | null = null
 export function suggestionSourcesDirectory(): string {
   return path.join(app.getPath('userData'), 'translation-suggestion-sources')
@@ -15,18 +16,34 @@ export function suggestionSourcesDirectory(): string {
 function manifestPath(): string { return path.join(suggestionSourcesDirectory(), 'sources.json') }
 function readSources(): StoredSource[] {
   if (!fs.existsSync(manifestPath())) {
-    const initial = BUILTINS.map((name, index) => ({ id: `builtin-${index + 1}`, name, builtin: name, enabled: true }))
-    saveSources(initial)
-    return initial
+    saveSources([])
+    return []
   }
   const sources: unknown = JSON.parse(fs.readFileSync(manifestPath(), 'utf8'))
   if (!Array.isArray(sources) || sources.some(source => !source || typeof source.id !== 'string' ||
     !/^[a-zA-Z0-9-]+$/.test(source.id) || typeof source.name !== 'string' ||
-    typeof source.enabled !== 'boolean' || (source.builtin && !BUILTINS.includes(source.builtin))) ||
+    typeof source.enabled !== 'boolean' || (source.builtin && !LEGACY_BUILTINS.includes(source.builtin))) ||
     new Set(sources.map(source => source.id)).size !== sources.length) {
     throw new Error('Invalid translation suggestion sources configuration.')
   }
-  return sources as StoredSource[]
+  const migrated = (sources as StoredSource[]).map(source => {
+    if (!source.builtin) return source
+    const local = sourcePath(source)
+    if (!fs.existsSync(local)) {
+      const original = [app.getAppPath(), process.cwd()]
+        .flatMap(root => [
+          path.join(root, 'resources/reference', 'imported-translations', source.builtin!),
+          path.join(root, 'reference', 'imported-translations', source.builtin!)
+        ])
+        .find(file => fs.existsSync(file))
+      if (!original) return source // Preserve unavailable legacy entries for a later import.
+      fs.copyFileSync(original, local, fs.constants.COPYFILE_EXCL)
+    }
+    const { builtin, ...stored } = source
+    return stored
+  })
+  if (migrated.some((source, index) => source !== sources[index])) saveSources(migrated)
+  return migrated
 }
 function saveSources(sources: StoredSource[]): void {
   fs.mkdirSync(suggestionSourcesDirectory(), { recursive: true })
@@ -35,10 +52,8 @@ function saveSources(sources: StoredSource[]): void {
   fs.renameSync(temporary, manifestPath())
   cache = null
 }
-function sourcePath(source: StoredSource): string | null {
-  if (!source.builtin) return path.join(suggestionSourcesDirectory(), `${source.id}.xml`)
-  return [app.getAppPath(), process.cwd()].map(root => path.join(root, 'reference', 'imported-translations', source.builtin!))
-    .find(file => fs.existsSync(file)) ?? null
+function sourcePath(source: StoredSource): string {
+  return path.join(suggestionSourcesDirectory(), `${source.id}.xml`)
 }
 export function listSuggestionSources(): SuggestionSource[] {
   return readSources().map(source => {
@@ -79,12 +94,10 @@ export async function removeSuggestionSource(id: string): Promise<void> {
   const source = sources.find(item => item.id === id)
   if (!source) throw new Error('Suggestion source not found.')
   saveSources(sources.filter(item => item.id !== id))
-  // Removed built-ins stay excluded on restart; originals are not modified.
-  if (!source.builtin) {
-    const file = sourcePath(source)!
-    if (fs.existsSync(file)) {
-      try { await shell.trashItem(file) } catch (error) { saveSources(sources); throw error }
-    }
+  // All imported/migrated copies are local; original user files stay untouched.
+  const file = sourcePath(source)
+  if (fs.existsSync(file)) {
+    try { await shell.trashItem(file) } catch (error) { saveSources(sources); throw error }
   }
 }
 export function loadSuggestions(): SuggestionMap {

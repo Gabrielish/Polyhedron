@@ -47,16 +47,16 @@ async function run() {
     assert.deepEqual(image.getSize(), { width: width * scale, height: height * scale })
     return image
   }
-  const background = await fs.readFile(path.join(root, 'build/dmg-background.svg'), 'utf8')
+  const background = await fs.readFile(path.join(root, 'resources/installer/dmg-background.svg'), 'utf8')
   for (const scale of [1, 2]) {
     const image = await render(background, 4096, 2304, scale)
     for (const [x, y] of [[1100, 650], [4095, 2303]]) {
       const pixel = image.crop({ x: x * scale, y: y * scale, width: 1, height: 1 }).toBitmap()
       assert.deepEqual([...pixel], [16, 16, 16, 255], 'Expanded Finder area stays opaque dark, not white')
     }
-    await fs.writeFile(path.join(root, `build/dmg-background${scale === 2 ? '@2x' : ''}.png`), image.toPNG())
+    await fs.writeFile(path.join(root, `resources/installer/dmg-background${scale === 2 ? '@2x' : ''}.png`), image.toPNG())
   }
-  const icon = 'data:image/png;base64,' + (await fs.readFile(path.join(root, 'build/icon.png'))).toString('base64')
+  const icon = 'data:image/png;base64,' + (await fs.readFile(path.join(root, 'resources/installer/icon.png'))).toString('base64')
   const dragonSvg = await fs.readFile(path.join(root, 'src/renderer/src/assets/dungeons-dragons.svg'), 'utf8')
   const dragonPath = dragonSvg.match(/<path\b[^>]*\bd="([^"]+)"/)?.[1]
   assert.ok(dragonPath, 'Dragon silhouette must be available')
@@ -82,7 +82,7 @@ async function run() {
   </svg>`
   assert.ok(!/\bmods?\b|Translate\. Organize\./i.test(sidebar + header), 'Installer artwork contains no mod branding or slogan')
   assert.ok(!/<text\b|<image\b/.test(sidebar), 'Sidebar contains only the unframed dragon, no text or app icon tile')
-  const welcome = await fs.readFile(path.join(root, 'build/installer.nsh'), 'utf8')
+  const welcome = await fs.readFile(path.join(root, 'resources/installer/installer.nsh'), 'utf8')
   assert.ok(!/\bmods?\b/i.test(welcome), 'Installer welcome describes translation, not mods')
   for (const [name, svg, width, height] of [['installerSidebar', sidebar, 164, 314], ['installerHeader', header, 150, 57]]) {
     const image = await render(svg, width, height)
@@ -90,8 +90,8 @@ async function run() {
     assert.equal(bmp.readUInt16LE(28), 24)
     assert.equal(bmp.readInt32LE(18), width)
     assert.equal(bmp.readInt32LE(22), height)
-    await fs.writeFile(path.join(root, `build/${name}.bmp`), bmp)
-    await fs.writeFile(path.join(root, `build/${name}.png`), image.toPNG())
+    await fs.writeFile(path.join(root, `resources/installer/${name}.bmp`), bmp)
+    await fs.writeFile(path.join(root, `resources/installer/${name}.png`), image.toPNG())
   }
   console.log('Verified macOS DMG backgrounds (1x/2x) and Windows NSIS sidebar/header (24-bit BMP).')
   window.destroy()

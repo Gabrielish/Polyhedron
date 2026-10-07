@@ -12,5 +12,5 @@ To add later selections from a local installation, use
 `scripts/export-creature-images.cjs` with that profile's exact Local Storage
 LevelDB directory and `--export`. It reads the image collection for export,
 without modifying the original profile or copying account/project settings.
-Verify the collection with `node scripts/verify-creature-images.cjs` before
+Verify the collection with `node tests/verify-creature-images.cjs` before
 committing new portraits.

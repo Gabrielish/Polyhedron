@@ -1,7 +1,7 @@
 node_modules
 node_modules.*
 dist
-build/setup-ui.7z
+resources/installer/setup-ui.7z
 out
 .DS_Store
 .eslintcache
@@ -20,8 +20,12 @@ data/
 design/
 
 # Local Google Drive OAuth credentials
-tools/google-drive/google-drive-credentials.json
-build/google-drive/
+resources/tools/google-drive/google-drive-credentials.json
+resources/installer/google-drive/
 **/google-drive-token*.json
 
 pwa/.env.save
+
+# Private machine-local translation examples (never redistribute in source/builds).
+/resources/reference/imported-translations/
+**/translation-suggestion-sources/

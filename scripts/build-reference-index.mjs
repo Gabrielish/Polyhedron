@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const root = process.cwd()
-const referenceDir = path.join(root, 'reference')
+const referenceDir = path.join(root, 'resources/reference')
 const output = path.join(root, 'src', 'renderer', 'src', 'data', 'gameReference.generated.json')
 const files = [
   ['BG3 Weapons.html', 'Weapon'],

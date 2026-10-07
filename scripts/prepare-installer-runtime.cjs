@@ -11,7 +11,7 @@ module.exports = async context => {
   if (context.electronPlatformName !== 'win32') return
   const root = context.packager.projectDir
   const stage = await fs.mkdtemp(path.join(os.tmpdir(), 'polyhedron-setup-runtime-'))
-  const archive = path.join(root, 'build/setup-ui.7z')
+  const archive = path.join(root, 'resources/installer/setup-ui.7z')
   try {
     for (const entry of await fs.readdir(context.appOutDir, { withFileTypes: true })) {
       if (entry.name === 'resources') continue

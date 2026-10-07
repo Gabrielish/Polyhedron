@@ -64,13 +64,12 @@ export function TranslationSuggestionsPage({ onReady }: { onReady?: () => void }
               <div className="truncate text-sm font-medium text-neutral-200" title={source.name}>{source.name}</div>
               <div className="text-xs text-neutral-500">{!source.available ? 'File unavailable' : source.enabled ? 'Enabled' : 'Disabled — kept for later'}</div>
             </div>
-            <label className="flex cursor-pointer items-center gap-2 text-xs text-neutral-400">
-              <input type="checkbox" checked={source.enabled} disabled={busy || !source.available}
+            <button type="button" role="switch" aria-checked={source.enabled} disabled={busy || !source.available}
                 aria-label={`Enable suggestions from ${source.name}`}
-                onChange={event => void run(() => window.api.translationSuggestions.setEnabled({ id: source.id, enabled: event.target.checked }))}
-                style={{ accentColor: 'var(--poly-accent)' }} className="h-4 w-4 cursor-pointer disabled:cursor-not-allowed" />
-              Enabled
-            </label>
+                onClick={() => void run(() => window.api.translationSuggestions.setEnabled({ id: source.id, enabled: !source.enabled }))}
+                className={`relative h-5.5 w-9.5 shrink-0 cursor-pointer rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${source.enabled ? 'border-amber-500 bg-amber-500' : 'border-neutral-600 bg-neutral-800'}`}>
+              <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform ${source.enabled ? 'translate-x-4' : ''}`} />
+            </button>
             <button type="button" disabled={busy} title={`Remove ${source.name}`} aria-label={`Remove ${source.name}`}
               onClick={() => setPendingRemoval(source)}
               className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-neutral-500 transition-colors hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-45"><Trash2 size={15} /></button>

@@ -7,7 +7,7 @@ settings:
 patchedDependencies:
   dmg-builder@26.8.1:
     hash: 0f064feec7d4135984ab32be053f86d6e75f358eb5efe0383319f503a3d6df18
-    path: patches/dmg-builder@26.8.1.patch
+    path: resources/patches/dmg-builder@26.8.1.patch
 
 importers:
 

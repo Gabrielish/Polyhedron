@@ -172,6 +172,9 @@ function credentialsPath(): string {
   const candidates = [
     path.join(app.getPath('userData'), 'google-drive-credentials.json'),
     path.join(process.resourcesPath, 'google-drive', 'google-drive-credentials.json'),
+    path.join(process.resourcesPath, 'resources/tools', 'google-drive', 'google-drive-credentials.json'),
+    path.join(app.getAppPath(), 'resources/tools', 'google-drive', 'google-drive-credentials.json'),
+    // Read legacy installation locations without exposing or moving account tokens.
     path.join(process.resourcesPath, 'tools', 'google-drive', 'google-drive-credentials.json'),
     path.join(app.getAppPath(), 'tools', 'google-drive', 'google-drive-credentials.json')
   ]

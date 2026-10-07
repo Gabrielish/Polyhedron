@@ -2,7 +2,7 @@
   "name": "polyhedron",
   "version": "1.0.0",
   "private": true,
-  "description": "Polyhedron \u2014 desktop translator for Baldur's Gate 3 localization.",
+  "description": "Polyhedron — desktop translator for Baldur's Gate 3 localization.",
   "main": "./out/main/index.js",
   "author": {
     "name": "Gabrielish",
@@ -24,20 +24,20 @@
     "build:dialog-index": "node scripts/build-dialog-index.mjs",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
-    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck:node": "tsc --noEmit -p config/tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p config/tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "test:security": "electron scripts/verify-security.cjs",
-    "test:security:startup": "electron scripts/verify-security-startup.cjs",
-    "start": "electron-vite preview",
-    "dev": "electron-vite dev",
-    "build": "node scripts/prepare-google-oauth.cjs && npm run build:dialog-index && npm run build:reference-index && npm run typecheck && electron-vite build",
+    "test:security": "electron tests/verify-security.cjs",
+    "test:security:startup": "electron tests/verify-security-startup.cjs",
+    "start": "electron-vite preview --config config/electron.vite.config.ts",
+    "dev": "electron-vite dev --config config/electron.vite.config.ts",
+    "build": "node scripts/prepare-google-oauth.cjs && npm run build:dialog-index && npm run build:reference-index && npm run typecheck && electron-vite build --config config/electron.vite.config.ts",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win && electron-builder install-app-deps",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
-    "db:studio": "drizzle-kit studio",
+    "db:studio": "drizzle-kit studio --config config/drizzle.config.ts",
     "build:reference-index": "node scripts/build-reference-index.mjs && node scripts/build-dialog-reference-module.mjs",
     "pwa:build": "node scripts/build-dialog-index.mjs && node scripts/build-dialog-reference-module.mjs && node scripts/build-pwa-dialogue-index.mjs && node scripts/build-reference-index.mjs && node scripts/build-pwa-game-reference.mjs && tsc --noEmit -p pwa/tsconfig.json && vite build --config pwa/vite.config.ts"
   },
@@ -96,5 +96,8 @@
     "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3",
     "vite": "^7.2.6"
+  },
+  "build": {
+    "extends": "./config/electron-builder.yml"
   }
 }

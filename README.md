@@ -140,6 +140,11 @@ pnpm pwa:build
 
 ## Repository
 
+The desktop source is in `src/`, and the website/browser companion is in `pwa/`.
+Build configuration is grouped in `config/`, shared build inputs in `resources/`,
+build generators in `scripts/`, and regression checks in `tests/`.
+See [Project structure](docs/PROJECT_STRUCTURE.md) for the layout, commands and local-data boundaries.
+
 [github.com/Gabrielish/Polyhedron](https://github.com/Gabrielish/Polyhedron)
 
 ## License

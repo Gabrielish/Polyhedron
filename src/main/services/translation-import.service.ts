@@ -87,7 +87,7 @@ function bundledAssetPath(relativePath: string): string {
 }
 
 async function runDivine(args: string[]): Promise<void> {
-  const divineDir = bundledAssetPath(path.join('tools', 'lslib', 'Tools'))
+  const divineDir = bundledAssetPath(path.join('resources/tools', 'lslib', 'Tools'))
   const divinePath = path.join(divineDir, 'Divine.exe')
   if (!fs.existsSync(divinePath)) {
     throw new Error(`Divine.exe was not found at ${divinePath}`)
@@ -111,7 +111,7 @@ export async function exportLocalizationPak(
   entries: ExportPackageEntry[],
   outputPath: string
 ): Promise<{ outputPath: string }> {
-  const templateRoot = bundledAssetPath(path.join('work', 'pak'))
+  const templateRoot = bundledAssetPath(path.join('resources/localization-template'))
   if (!fs.existsSync(templateRoot)) throw new Error(`PAK template was not found at ${templateRoot}`)
 
   const tempDir = createTempDir('polyhedron_pak_export')

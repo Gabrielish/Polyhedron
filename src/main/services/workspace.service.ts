@@ -10,7 +10,6 @@ import { runFileTask } from './file-task.service'
 import { databasePath, projectPath } from '../utils/app-paths'
 import { sanitizeWorkspaceDatabase, restoreLocalSecrets } from './workspace-security.service'
 import { isSensitiveConfigKey } from '../../shared/secret-config'
-import { listSuggestionSources, suggestionSourcesDirectory } from './translation-suggestions.service'
 
 const WORKSPACE_VERSION = 1
 
@@ -125,8 +124,7 @@ export async function exportWorkspace(outputPath: string): Promise<{ outputPath:
     if (fs.existsSync(modsDir)) await fs.promises.cp(modsDir, path.join(tempDir, 'mods'), { recursive: true })
     const sessionsDir = projectPath('sessions')
     if (fs.existsSync(sessionsDir)) await copyCurrentSessions(path.join(tempDir, 'sessions'))
-      listSuggestionSources()
-      await fs.promises.cp(suggestionSourcesDirectory(), path.join(tempDir, 'translation-suggestion-sources'), { recursive: true })
+    // Suggestion XMLs are private, machine-local references: never export/sync them.
     await fs.promises.writeFile(
       path.join(tempDir, 'workspace.json'),
       JSON.stringify({ version: WORKSPACE_VERSION, createdAt: new Date().toISOString() }, null, 2)
@@ -182,12 +180,7 @@ export async function importWorkspace(
       stats = getWorkspaceTranslationStats(sessionsDir)
     }
     rewriteImportedPaths(currentDbPath)
-      const importedSuggestions = path.join(tempDir, 'translation-suggestion-sources')
-      if (fs.existsSync(importedSuggestions)) {
-        const destination = suggestionSourcesDirectory()
-        if (fs.existsSync(destination)) fs.cpSync(destination, `${destination}.before-import-${Date.now()}`, { recursive: true })
-        fs.cpSync(importedSuggestions, destination, { recursive: true })
-      }
+    // Ignore suggestion files in older archives; imports must preserve local references.
     return { backupPath, stats }
   } finally {
     cleanupTempDir(tempDir)

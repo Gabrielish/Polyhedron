@@ -1,0 +1,109 @@
+appId: com.polyhedron.bg3-mod-translator
+productName: Polyhedron
+afterPack: scripts/prepare-installer-runtime.cjs
+copyright: Copyright © 2026 Gabrielish
+publish:
+  provider: github
+  owner: Gabrielish
+  repo: Polyhedron
+  releaseType: release
+directories:
+  buildResources: resources/installer
+extraResources:
+  - from: resources/installer/google-drive/google-drive-credentials.json
+    to: google-drive/google-drive-credentials.json
+  - from: data/dialogue-metadata-cache.json
+    to: dialogue-metadata-cache.json
+files:
+  - package.json
+  - out/**
+  - resources/migrations/**
+  - resources/tools/**
+  - resources/localization-template/**
+  - '!resources/reference/imported-translations/**'
+  - '!**/translation-suggestion-sources/**'
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,CHANGELOG.md,README.md,PLANNING.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,config/tsconfig.node.json,config/tsconfig.web.json}'
+  - '!bkp/**'
+  - '!resources/localization-template/Localization/English/english.loca'
+  - '!resources/tools/google-drive/**'
+  - '!**/google-drive-token*'
+  - '!**/google-drive-credentials.json'
+  - '!**/*.db'
+  - '!**/*.db-*'
+  - '!**/*.pws'
+  - '!**/.env*'
+asarUnpack:
+  - resources/migrations/**
+  - resources/tools/**
+  - resources/localization-template/**
+  # napi-rs native binding for lz4-napi (pak compression). Its .node lives in a
+  # platform-specific package that must sit on the real filesystem - dlopen can't read
+  # it from inside app.asar. '**/*.node' also covers any future native dependency.
+  - '**/*.node'
+  - node_modules/@antoniomuso/**
+win:
+  executableName: Polyhedron
+  icon: resources/installer/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  requestedExecutionLevel: asInvoker
+nsis:
+  artifactName: ${productName}-${version}-windows-${arch}-setup.${ext}
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: resources/installer/icon.ico
+  uninstallerIcon: resources/installer/icon.ico
+  installerSidebar: resources/installer/installerSidebar.bmp
+  uninstallerSidebar: resources/installer/installerSidebar.bmp
+  installerHeader: resources/installer/installerHeader.bmp
+  include: resources/installer/installer.nsh
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+  runAfterFinish: false
+  deleteAppDataOnUninstall: false
+mac:
+  icon: resources/installer/icon.icns
+  # This is a local, unsigned build. Keeping identity null prevents a
+  # partially-signed app/framework bundle and Team ID mismatch on macOS.
+  identity: null
+  target:
+    - target: dmg
+      arch:
+        - arm64
+    - target: zip
+      arch:
+        - arm64
+  artifactName: ${productName}-${version}-${arch}.${ext}
+npmRebuild: true
+dmg:
+  title: ${productName} ${version}
+  icon: resources/installer/icon.icns
+  background: resources/installer/dmg-background.png
+  iconSize: 96
+  iconTextSize: 12
+  window:
+    x: 620
+    y: 435
+    width: 680
+    height: 330
+  contents:
+    - x: 174
+      y: 116
+      type: file
+    - x: 506
+      y: 116
+      type: link
+      path: /Applications
