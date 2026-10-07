@@ -16,8 +16,7 @@ async function run() {
   const evaluate = code => win.webContents.executeJavaScript(code, true)
   await evaluate(`window.testState={state:'ready',target:'C:\\Programs\\Polyhedron',version:'test'};window.closedSetup=false;
     window.installer={status:async()=>window.testState,install:async()=>{window.testState={...window.testState,state:'installing'}},close:async()=>{window.closedSetup=true},launch:async()=>{},minimize:async()=>{},browse:async()=>null};
-    window.testTime=0;Object.defineProperty(performance,'now',{value:()=>window.testTime});
-    const interval=window.setInterval.bind(window);window.setInterval=(callback,delay)=>delay===50?(window.progressTick=callback,123456789):interval(callback,delay);undefined`)
+    undefined`)
   await evaluate(bundle.outputFiles[0].text)
   const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
   const check = async (name, code) => { await wait(100); if (!await evaluate(code)) throw new Error(name); console.log('PASS: ' + name) }
@@ -25,15 +24,22 @@ async function run() {
   await evaluate(`document.querySelector('footer button:last-child').click()`)
   await wait(400)
   await check('no numeric percentage or counts in progress section', `!/%|\\d+ \\/ \\d+/.test(document.querySelector('section').textContent)`)
-  await evaluate('window.testTime=13500;window.progressTick()')
-  await check('single-pass animation is halfway after 13.5 seconds', `document.querySelector('.h-full.rounded-full').style.width==='50%'`)
-  await evaluate('window.testTime=27000;window.progressTick()')
-  await check('animation reaches 100% after 27 seconds', `document.querySelector('.h-full.rounded-full').style.width==='100%'`)
-  await evaluate('window.testTime=35000;window.progressTick()')
-  await check('full bar stays full but does not fake completion', `document.querySelector('.h-full.rounded-full').style.width==='100%' && document.querySelector('footer button:last-child').disabled && !window.closedSetup`)
+  await check('missing native progress uses indeterminate feedback', `document.querySelector('.setup-progress') !== null`)
+  await evaluate('window.testState={...window.testState,progress:45,phase:"extracting"}')
+  await wait(400)
+  await check('bar follows native progress rather than elapsed time', `document.querySelector('.h-full.rounded-full').style.width==='45%'`)
+  await wait(700)
+  await check('progress remains still when no additional work is reported', `document.querySelector('.h-full.rounded-full').style.width==='45%'`)
+  await evaluate('window.testState={...window.testState,progress:95,phase:"finalizing"}')
+  await wait(400)
+  await check('finalization remains below completion and keeps actions locked', `document.querySelector('.h-full.rounded-full').style.width==='95%' && document.querySelector('section').textContent.includes('Finalizing installation') && document.querySelector('footer button:last-child').disabled && !window.closedSetup`)
+  await evaluate('window.testState={...window.testState,progress:100}')
+  await wait(400)
+  await check('100 from an incomplete INI update cannot imply success', `document.querySelector('.h-full.rounded-full').style.width==='99%' && document.querySelector('footer button:last-child').disabled`)
   await check('copy explains preserved projects and manual close after completion', `document.querySelector('section').textContent.includes('Your existing projects and settings are kept. You can close Setup once installation is complete.') && !document.body.textContent.includes('automatically')`)
   await evaluate(`window.testState={...window.testState,state:'done'}`)
   await wait(400)
+  await check('success displays the completed bar', `document.querySelector('.h-full.rounded-full').style.width==='100%'`)
   await check('completion leaves Setup open with manual Close/Open actions', `!window.closedSetup && document.querySelector('footer button').textContent==='Close' && document.querySelector('footer button:last-child').textContent.includes('Open Polyhedron') && !document.querySelector('footer button:last-child').disabled`)
   win.destroy(); app.quit()
 }

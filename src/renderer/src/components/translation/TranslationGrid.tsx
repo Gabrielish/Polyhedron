@@ -39,6 +39,7 @@ import {
   X
 } from 'lucide-react'
 import {
+  useCallback,
   useDeferredValue,
   useEffect,
   useLayoutEffect,
@@ -163,6 +164,8 @@ type ReplaceChange = {
   before: string
   after: string
 }
+
+type ReplacementSelection = ReplaceChange & { start: number; end: number }
 
 const TRANSLATE_VIEW_STATE_KEY = 'polyhedron.translate.view'
 type TranslateViewState = {
@@ -311,6 +314,7 @@ function SearchFilterSelect({
   searchable = false,
   searchPlaceholder,
   maxOptionsWithoutQuery,
+  maxVisibleOptions,
   virtualized = false
 }: {
   value: string
@@ -321,6 +325,7 @@ function SearchFilterSelect({
   searchable?: boolean
   searchPlaceholder?: string
   maxOptionsWithoutQuery?: number
+  maxVisibleOptions?: number
   virtualized?: boolean
 }): React.JSX.Element {
   return (
@@ -332,6 +337,7 @@ function SearchFilterSelect({
         searchable={searchable}
         searchPlaceholder={searchPlaceholder}
         maxOptionsWithoutQuery={maxOptionsWithoutQuery}
+        maxVisibleOptions={maxVisibleOptions}
         virtualized={virtualized}
         className="w-full"
         triggerClassName="h-8 rounded-md px-3 text-xs shadow-none"
@@ -537,6 +543,7 @@ export function TranslationGrid({
   const [replaceWith, setReplaceWith] = useState('')
   const [replaceUndo, setReplaceUndo] = useState<ReplaceChange[][]>([])
   const [replaceRedo, setReplaceRedo] = useState<ReplaceChange[][]>([])
+  const [replacementSelection, setReplacementSelection] = useState<ReplacementSelection | null>(null)
   const [bulkStatusOpen, setBulkStatusOpen] = useState(false)
   const [openSpecialFilter, setOpenSpecialFilter] = useState<'tags' | 'brackets' | null>(null)
   const [exactMatch, setExactMatch] = useState(savedViewState.exactMatch ?? false)
@@ -1179,11 +1186,12 @@ export function TranslationGrid({
     JSON.stringify(selection.filter.dialogueFilters) === JSON.stringify(deferredDialogueFilters) &&
     JSON.stringify(selection.filter.dialogueScope) === JSON.stringify(dialogueScope)
 
+  const toggleFindReplace = useCallback(() => {
+    setReplaceOpen((open) => !open)
+    window.setTimeout(() => searchInputRef.current?.focus(), 0)
+  }, [])
+
   useEffect(() => {
-    const toggleFindReplace = () => {
-      setReplaceOpen((open) => !open)
-      window.setTimeout(() => searchInputRef.current?.focus(), 0)
-    }
     const handleFindShortcut = (event: KeyboardEvent) => {
       if ((!event.ctrlKey && !event.metaKey) || event.shiftKey || event.altKey) return
       if (event.key.toLowerCase() !== 'f') return
@@ -1198,11 +1206,12 @@ export function TranslationGrid({
       window.removeEventListener('keydown', handleFindShortcut)
       window.removeEventListener('polyhedron:toggle-find-replace', toggleFindReplace)
     }
-  }, [])
+  }, [toggleFindReplace])
 
   const replaceMatches = (all: boolean) => {
     const find = replaceFind
     if (!find) return
+    setReplacementSelection(null)
     let changed = 0
     let done = false
     const changes: ReplaceChange[] = []
@@ -1244,6 +1253,13 @@ export function TranslationGrid({
       if (done) break
     }
     if (changed > 0) {
+      if (!all) {
+        const change = changes[0]
+        const start = change.before.toLocaleLowerCase().indexOf(find.toLocaleLowerCase())
+        markSticky(change.rowId)
+        setGenderVariants(previous => ({ ...previous, [change.rowId]: change.variant }))
+        setReplacementSelection({ ...change, start, end: start + replaceWith.length })
+      }
       setReplaceUndo((history) => [...history, changes])
       setReplaceRedo([])
       toast.success(
@@ -1252,7 +1268,36 @@ export function TranslationGrid({
     } else toast.info('No matching text found in translations')
   }
 
+  useEffect(() => {
+    if (!replacementSelection) return
+    const index = filteredEntries.findIndex(entry => entry.rowId === replacementSelection.rowId)
+    if (index < 0) return
+    const page = Math.floor(index / pageSize) + 1
+    if (page !== currentPage) {
+      setCurrentPage(page)
+      return
+    }
+    const virtualizer = viewMode === 'side' ? sideVirtualizer : stackedVirtualizer
+    virtualizer.scrollToIndex(index % pageSize, { align: 'auto' })
+    let frame = 0
+    let attempts = 0
+    const selectReplacement = () => {
+      const textarea = textareaRefs.current.get(replacementSelection.rowId)
+      // The controlled editor's draft and virtualized row may settle a frame later.
+      if (!textarea || textarea.value !== replacementSelection.after) {
+        if (++attempts < 30) frame = requestAnimationFrame(selectReplacement)
+        return
+      }
+      textarea.focus({ preventScroll: true })
+      textarea.setSelectionRange(replacementSelection.start, replacementSelection.end)
+      setReplacementSelection(null)
+    }
+    frame = requestAnimationFrame(selectReplacement)
+    return () => cancelAnimationFrame(frame)
+  }, [replacementSelection, filteredEntries, currentPage, pageSize, viewMode, sideVirtualizer, stackedVirtualizer])
+
   const applyReplaceChanges = (changes: ReplaceChange[], useAfter: boolean) => {
+    setReplacementSelection(null)
     for (const change of changes) {
       const value = useAfter ? change.after : change.before
       if (change.variant === 'default') {
@@ -1303,28 +1348,7 @@ export function TranslationGrid({
     }
   }
 
-  const handleContentIdClick = async () => {
-    if (!showId) {
-      setShowId(true)
-      return
-    }
-
-    const selectedEntries = materializeSelectedEntries(session)
-    if (selectedEntries.length === 0) {
-      setShowId(false)
-      return
-    }
-
-    try {
-      await navigator.clipboard.writeText(selectedEntries.map((entry) => entry.uid).join('\n'))
-      toast.success(
-        `${selectedEntries.length} content ${selectedEntries.length === 1 ? 'ID' : 'IDs'} copied to clipboard`,
-        { position: 'bottom-right' }
-      )
-    } catch (err) {
-      toast.error(getLocalizedErrorMessage(err, t), { position: 'bottom-right' })
-    }
-  }
+  const handleContentIdClick = () => setShowId(value => !value)
 
   const updateEntryTarget = (entry: TranslationSessionEntry, value: string) => {
     if (value !== entry.target) {
@@ -2010,15 +2034,13 @@ export function TranslationGrid({
                               </div>
                               <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-600">
                                 Source
-                                <button
-                                  type="button"
-                                  aria-label="Copy source"
-                                  title="Copy source"
+                                <TranslateActionTooltipButton
+                                  tooltip="Copy source"
                                   onClick={(event) => handleCopySource(event, entry.source)}
                                   className="inline-flex h-5 cursor-pointer items-center rounded px-1.5 text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-200"
                                 >
                                   <Copy size={11} />
-                                </button>
+                                </TranslateActionTooltipButton>
                               </div>
                               <div className="text-xs leading-5 text-neutral-200">
                                 {entry.source}
@@ -2580,13 +2602,7 @@ export function TranslationGrid({
           </SearchToolbarToggle>
           <SearchToolbarToggle
             active={showId}
-            tooltip={
-              !showId
-                ? 'Show content ID'
-                : selectedStats.selectedStrings > 0
-                  ? 'Copy selected content IDs'
-                  : 'Hide content ID'
-            }
+            tooltip={showId ? 'Hide content ID' : 'Show content ID'}
             onClick={handleContentIdClick}
           >
             <Hash size={14} />
@@ -2615,6 +2631,13 @@ export function TranslationGrid({
           >
             <Sparkles size={14} className={translationSuggestionsLoading ? 'animate-pulse' : ''} />
           </SearchToolbarToggle>}
+          <SearchToolbarToggle
+            active={replaceOpen}
+            tooltip="Find & replace (Ctrl+F)"
+            onClick={toggleFindReplace}
+          >
+            <Replace size={14} />
+          </SearchToolbarToggle>
         </div>
 
         <SearchFilterSelect
@@ -2624,6 +2647,7 @@ export function TranslationGrid({
           className="w-52"
           searchable
           searchPlaceholder="Search speaker..."
+          maxVisibleOptions={7}
           maxOptionsWithoutQuery={100}
           virtualized
         />
@@ -2772,51 +2796,41 @@ export function TranslationGrid({
               )}
             </div>
           </div>
-          <SearchToolbarToggle
-            active={false}
-            disabled={!replaceFind}
-            onClick={() => replaceMatches(false)}
-            tooltip="Replace first match"
-            className="border border-[#1f2329] bg-[#131518] hover:border-amber-500/60 hover:text-amber-300"
-          >
-            <Replace size={14} />
-          </SearchToolbarToggle>
-          <SearchToolbarToggle
-            active={false}
-            disabled={!replaceFind}
-            onClick={() => replaceMatches(true)}
-            tooltip="Replace all matches"
-            className="border border-[#1f2329] bg-[#131518] hover:border-amber-500/60 hover:text-amber-300"
-          >
-            <ReplaceAll size={14} />
-          </SearchToolbarToggle>
-          <span className="mx-1 h-5 w-px bg-[#2a2f37]" />
-          <SearchToolbarToggle
-            active={false}
-            disabled={replaceUndo.length === 0}
-            onClick={undoReplace}
-            tooltip="Undo replace"
-            className="border border-[#1f2329] bg-[#131518] hover:border-amber-500/60 hover:text-amber-300"
-          >
-            <Undo2 size={14} />
-          </SearchToolbarToggle>
-          <SearchToolbarToggle
-            active={false}
-            disabled={replaceRedo.length === 0}
-            onClick={redoReplace}
-            tooltip="Redo replace"
-            className="border border-[#1f2329] bg-[#131518] hover:border-amber-500/60 hover:text-amber-300"
-          >
-            <Redo2 size={14} />
-          </SearchToolbarToggle>
-          <SearchToolbarToggle
-            active={false}
-            onClick={() => setReplaceOpen(false)}
-            tooltip="Close find and replace"
-            className="border border-[#1f2329] bg-[#131518] hover:text-neutral-200"
-          >
-            <X size={14} />
-          </SearchToolbarToggle>
+          <div className="translation-replace-actions inline-flex h-8 w-fit max-w-full shrink-0 items-center gap-1 rounded-md border border-[#1f2329] bg-[#131518] px-1.5">
+            <SearchToolbarToggle
+              active={false}
+              disabled={!replaceFind}
+              onClick={() => replaceMatches(false)}
+              tooltip="Replace first match"
+            >
+              <Replace size={14} />
+            </SearchToolbarToggle>
+            <SearchToolbarToggle
+              active={false}
+              disabled={!replaceFind}
+              onClick={() => replaceMatches(true)}
+              tooltip="Replace all matches"
+            >
+              <ReplaceAll size={14} />
+            </SearchToolbarToggle>
+            <span className="mx-1 h-5 w-px bg-[#2a2f37]" />
+            <SearchToolbarToggle
+              active={false}
+              disabled={replaceUndo.length === 0}
+              onClick={undoReplace}
+              tooltip="Undo replace"
+            >
+              <Undo2 size={14} />
+            </SearchToolbarToggle>
+            <SearchToolbarToggle
+              active={false}
+              disabled={replaceRedo.length === 0}
+              onClick={redoReplace}
+              tooltip="Redo replace"
+            >
+              <Redo2 size={14} />
+            </SearchToolbarToggle>
+          </div>
         </div>
       )}
 
@@ -3058,15 +3072,13 @@ export function TranslationGrid({
                             className={cn(
                               'mr-1 inline-flex items-center rounded border border-amber-400/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300'
                             )}
-                            title={`Speaker: ${speaker.name}`}
                           >
                             {speaker.name}
                           </span>
                         )}
                         {dialogueGroups.length > 0 && (
-                          <button
-                            type="button"
-                            title="Show dialogue nodes"
+                          <TranslateActionTooltipButton
+                            tooltip="Show dialogue nodes"
                             onClick={(event) => {
                               event.stopPropagation()
                               openDialogueForEntry(entry)
@@ -3074,17 +3086,15 @@ export function TranslationGrid({
                             className="inline-flex h-6 cursor-pointer items-center gap-1 rounded bg-transparent px-2 text-[11px] text-amber-400 transition-colors hover:bg-[#1c1f24] hover:text-amber-300"
                           >
                             <GitBranch size={11} />
-                          </button>
+                          </TranslateActionTooltipButton>
                         )}
-                        <button
-                          type="button"
-                          aria-label={t('grid.copySource', { ns: 'translate' })}
-                          title={t('grid.copySource', { ns: 'translate' })}
+                        <TranslateActionTooltipButton
+                          tooltip={t('grid.copySource', { ns: 'translate' })}
                           className="inline-flex h-6 cursor-pointer items-center gap-1 rounded bg-transparent px-2 text-[11px] text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-200"
                           onClick={(event) => handleCopySource(event, entry.source)}
                         >
                           <Copy size={11} />
-                        </button>
+                        </TranslateActionTooltipButton>
                       </span>
                     </div>
                   </div>
@@ -3318,15 +3328,13 @@ export function TranslationGrid({
                             className={cn(
                               'inline-flex items-center rounded border border-amber-400/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300'
                             )}
-                            title={`Speaker: ${speaker.name}`}
                           >
                             {speaker.name}
                           </span>
                         )}
                         {dialogueGroups.length > 0 && (
-                          <button
-                            type="button"
-                            title="Show dialogue nodes"
+                          <TranslateActionTooltipButton
+                            tooltip="Show dialogue nodes"
                             onClick={(event) => {
                               event.stopPropagation()
                               openDialogueForEntry(entry)
@@ -3334,17 +3342,15 @@ export function TranslationGrid({
                             className="inline-flex h-6 cursor-pointer items-center gap-1 rounded bg-transparent px-2 text-[11px] text-amber-400 transition-colors hover:bg-[#1c1f24] hover:text-amber-300"
                           >
                             <GitBranch size={11} />
-                          </button>
+                          </TranslateActionTooltipButton>
                         )}
-                        <button
-                          type="button"
-                          aria-label={t('grid.copySource', { ns: 'translate' })}
-                          title={t('grid.copySource', { ns: 'translate' })}
+                        <TranslateActionTooltipButton
+                          tooltip={t('grid.copySource', { ns: 'translate' })}
                           className="inline-flex h-6 cursor-pointer items-center gap-1 rounded bg-transparent px-2 text-[11px] text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-200"
                           onClick={(event) => handleCopySource(event, entry.source)}
                         >
                           <Copy size={11} />
-                        </button>
+                        </TranslateActionTooltipButton>
                       </div>
                       <div className="flex min-w-0 items-start gap-2">
                         <div className="translation-source-text min-w-0 flex-1 wrap-break-word text-[14px] leading-[1.65] text-neutral-200 whitespace-pre-wrap">

@@ -35,6 +35,7 @@ interface ThemedSelectProps {
   menuMinWidth?: number
   triggerAdornment?: React.ReactNode
   maxOptionsWithoutQuery?: number
+  maxVisibleOptions?: number
   virtualized?: boolean
 }
 
@@ -57,8 +58,10 @@ export function ThemedSelect({
   menuMinWidth,
   triggerAdornment,
   maxOptionsWithoutQuery,
+  maxVisibleOptions,
   virtualized = false
 }: ThemedSelectProps): React.JSX.Element {
+  const menuMaxHeight = maxVisibleOptions ? Math.max(1, Math.floor(maxVisibleOptions)) * 32 + 8 : MENU_MAX_HEIGHT
   const { t } = useAppTranslation('common')
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -95,7 +98,7 @@ export function ThemedSelect({
   }, [filteredOptions, maxOptionsWithoutQuery, query, virtualized])
   const virtualStart = virtualized ? Math.max(0, Math.floor(optionScrollTop / 32) - 5) : 0
   const virtualEnd = virtualized
-    ? Math.min(visibleOptions.length, Math.ceil((optionScrollTop + 240) / 32) + 5)
+    ? Math.min(visibleOptions.length, Math.ceil((optionScrollTop + menuMaxHeight) / 32) + 5)
     : visibleOptions.length
   const renderedOptions = visibleOptions.slice(virtualStart, virtualEnd)
 
@@ -111,7 +114,7 @@ export function ThemedSelect({
       // Measure the real content: a two-option menu is much shorter than
       // the scroll limit, and searchable menus also include a header.
       const chromeHeight = menu && options ? menu.offsetHeight - options.offsetHeight : 2
-      const contentHeight = options ? Math.min(MENU_MAX_HEIGHT, options.scrollHeight) : MENU_MAX_HEIGHT
+      const contentHeight = options ? Math.min(menuMaxHeight, options.scrollHeight) : menuMaxHeight
       const desiredHeight = contentHeight + chromeHeight
       const spaceBelow = Math.max(0, window.innerHeight - rect.bottom - MENU_GAP * 2)
       const spaceAbove = Math.max(0, rect.top - MENU_GAP * 2)
@@ -125,7 +128,7 @@ export function ThemedSelect({
           : rect.bottom + MENU_GAP,
         left: Math.max(MENU_GAP, Math.min(rect.left, window.innerWidth - width - MENU_GAP)),
         width,
-        optionsMaxHeight: Math.max(0, Math.min(MENU_MAX_HEIGHT, availableHeight - chromeHeight))
+        optionsMaxHeight: Math.max(0, Math.min(menuMaxHeight, availableHeight - chromeHeight))
       }
       setMenuPosition(previous => previous && previous.top === next.top && previous.left === next.left &&
         previous.width === next.width && previous.optionsMaxHeight === next.optionsMaxHeight ? previous : next)
@@ -142,7 +145,7 @@ export function ThemedSelect({
       window.removeEventListener('scroll', updatePosition, true)
       observer.disconnect()
     }
-  }, [menuMinWidth, open, Boolean(menuPosition), visibleOptions.length, query, searchable, virtualized])
+  }, [menuMinWidth, menuMaxHeight, open, Boolean(menuPosition), visibleOptions.length, query, searchable, virtualized])
 
   useEffect(() => {
     if (!open) return
@@ -232,7 +235,7 @@ export function ThemedSelect({
               onScroll={(event) => setOptionScrollTop(event.currentTarget.scrollTop)}
               style={{
                 maxHeight: menuPosition.optionsMaxHeight,
-                ...(virtualized ? { height: Math.min(MENU_MAX_HEIGHT, visibleOptions.length * 32 + 8) } : {})
+                ...(virtualized ? { height: Math.min(menuMaxHeight, visibleOptions.length * 32 + 8) } : {})
               }}
             >
               {visibleOptions.length > 0 ? (

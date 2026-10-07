@@ -6,6 +6,7 @@ import { ProgressBar } from './components/shared/ProgressBar'
 import { btnBase, btnPrimary, btnGhostIcon } from './features/translate/components/styles'
 import { applyTheme } from './context/ThemeContext'
 import type { InstallerAPI, InstallerStatus } from '../../preload/installer-types'
+import { installerProgress } from '../../preload/installer-progress'
 import './assets/main.css'
 import './installer.css'
 
@@ -17,7 +18,6 @@ function Installer(): React.JSX.Element {
   const [target, setTarget] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const [visualProgress, setVisualProgress] = useState(0)
   useEffect(() => {
     let active = true
     const poll = (): void => { void window.installer.status().then((next) => {
@@ -29,18 +29,7 @@ function Installer(): React.JSX.Element {
     const timer = setInterval(poll, 300)
     return () => { active = false; clearInterval(timer) }
   }, [])
-  useEffect(() => {
-    if (status?.state === 'done') { setVisualProgress(100); return }
-    if (status?.state !== 'installing') { setVisualProgress(0); return }
-    const started = performance.now()
-    const timer = window.setInterval(() => {
-      // Cosmetic, single-pass animation. Only NSIS can confirm completion and
-      // enable opening the app, even if the animation has reached its end.
-      const elapsed = performance.now() - started
-      setVisualProgress(Math.min(100, (elapsed / 27000) * 100))
-    }, 50)
-    return () => window.clearInterval(timer)
-  }, [status?.state])
+  const visualProgress = status ? installerProgress(status.state, status.progress) : undefined
   const installing = status?.state === 'installing'
   const done = status?.state === 'done'
   const failed = status?.state === 'error'
@@ -67,10 +56,11 @@ function Installer(): React.JSX.Element {
         <div className="flex items-center gap-2 border-b border-neutral-800 px-5 py-3 text-sm font-medium"><FolderOpen size={16} className="text-amber-500"/>{done ? 'Installation complete' : installing ? 'Installation progress' : 'Installation folder'}</div>
         <div className="space-y-4 p-5">
           {installing ? <>
-            <div className="flex items-center justify-between text-sm"><span>Installing application files</span><span className="text-neutral-500">Please wait</span></div>
-            <ProgressBar current={visualProgress} total={100} showCounts={false} showPercentage={false} tone="accent"/>
+            <div className="flex items-center justify-between text-sm"><span>{status?.phase === 'finalizing' ? 'Finalizing installation' : status?.phase === 'copying' ? 'Copying application files' : 'Installing application files'}</span><span className="text-neutral-500">Please wait</span></div>
+            <ProgressBar current={visualProgress ?? 0} total={100} indeterminate={visualProgress === undefined} showCounts={false} showPercentage={false} tone="accent"/>
             <p className="text-xs leading-relaxed text-neutral-500">Your existing projects and settings are kept. You can close Setup once installation is complete.</p>
           </> : done ? <>
+            <ProgressBar current={100} total={100} showCounts={false} showPercentage={false} tone="accent"/>
             <div className="flex items-center gap-2 text-sm"><Check size={18} className="text-amber-500"/>Successfully installed</div>
             <p className="break-all text-xs text-neutral-400">{status?.target}</p>
           </> : <>

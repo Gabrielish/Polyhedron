@@ -4,6 +4,8 @@ export interface InstallerStatus {
   version: string
   error?: string
   preview: boolean
+  progress?: number
+  phase?: 'extracting' | 'copying' | 'finalizing'
 }
 export interface InstallerAPI {
   status(): Promise<InstallerStatus>

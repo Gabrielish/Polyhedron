@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { materializeSelectedEntries } from '@/context/TranslationSession'
+import { formatSelectionForClipboard, type SelectionCopyFormat } from '../utils/selectionClipboard'
 import { AlreadyTranslatedDialog } from '@/components/translation/AlreadyTranslatedDialog'
 import { BatchActionBar } from '@/components/translation/BatchActionBar'
 import { QuotaExceededDialog } from '@/components/translation/QuotaExceededDialog'
@@ -116,6 +118,18 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     }
   }, [t])
 
+  const handleCopySelection = async (format: SelectionCopyFormat): Promise<void> => {
+    const selected = materializeSelectedEntries(sessionRef.current)
+    if (selected.length === 0) return
+    try {
+      await navigator.clipboard.writeText(formatSelectionForClipboard(selected, format))
+      const label = format === 'ids' ? `content ${selected.length === 1 ? 'ID' : 'IDs'}` : `source ${selected.length === 1 ? 'entry' : 'entries'} with IDs`
+      toast.success(`${selected.length} ${label} copied to clipboard`, { position: 'bottom-right' })
+    } catch {
+      toast.error('Could not copy the selected entries to clipboard.', { position: 'bottom-right' })
+    }
+  }
+
   useLoadedEditorShortcuts({
     onSave: handleSaveSession,
     onCycleExportFormat: exportFlow.cycleExportFormat,
@@ -155,6 +169,7 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
               batchTotal={batch.batchTotal}
               onTranslateDeepL={() => batch.batchTranslate('deepl')}
               onTranslateGoogle={() => batch.batchTranslate('google')}
+              onCopySelection={format => { void handleCopySelection(format) }}
               onTranslateAI={() => batch.batchTranslate(aiProvider)}
               aiProviderName={getProviderMeta(aiProvider).name}
               onCancelTranslation={batch.cancelBatch}

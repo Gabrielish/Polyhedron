@@ -13,6 +13,38 @@
   Var PolyhedronWaitTicks
   Var PolyhedronSplashLibrary
   Var PolyhedronSplashHide
+  Var PolyhedronProgressCallback
+  Var PolyhedronCompletedBytes
+  Var PolyhedronTotalBytes
+  Var PolyhedronLastProgress
+
+  Function PolyhedronExtractionProgress
+    ; Nsis7z pushes total bytes, then completed bytes. Consume both without
+    ; disturbing the extraction macro's saved OUTDIR or its registers.
+    Pop $PolyhedronCompletedBytes
+    Pop $PolyhedronTotalBytes
+    Push $0
+    Push $1
+    System::Int64Op $PolyhedronTotalBytes > 0
+    Pop $0
+    System::Int64Op $PolyhedronCompletedBytes > $PolyhedronTotalBytes
+    Pop $1
+    ${If} $0 == 1
+    ${AndIf} $1 == 0
+      System::Int64Op $PolyhedronCompletedBytes * 90
+      Pop $0
+      System::Int64Op $0 / $PolyhedronTotalBytes
+      Pop $0
+      ; Publish whole-percent changes only, avoiding thousands of INI writes.
+      ${If} $0 > $PolyhedronLastProgress
+      ${AndIf} $0 <= 90
+        StrCpy $PolyhedronLastProgress $0
+        WriteINIStr "$PLUGINSDIR\status.ini" "installer" "progress" "$0"
+      ${EndIf}
+    ${EndIf}
+    Pop $1
+    Pop $0
+  FunctionEnd
 
   Function PolyhedronHideSplash
     ${If} $PolyhedronSplashHide != 0
@@ -36,6 +68,7 @@
     Function .onInstSuccess
       ${If} $PolyhedronUiEnabled == 1
         WriteINIStr "$PLUGINSDIR\status.ini" "installer" "target" "$INSTDIR"
+        WriteINIStr "$PLUGINSDIR\status.ini" "installer" "progress" "100"
         WriteINIStr "$PLUGINSDIR\status.ini" "installer" "state" "done"
         Call PolyhedronWaitForUi
       ${EndIf}
@@ -135,6 +168,9 @@
           !insertmacro setInstallModePerUser
           StrCpy $INSTDIR $R4
           WriteINIStr "$PLUGINSDIR\status.ini" "installer" "target" "$INSTDIR"
+          StrCpy $PolyhedronLastProgress 0
+          WriteINIStr "$PLUGINSDIR\status.ini" "installer" "progress" "0"
+          WriteINIStr "$PLUGINSDIR\status.ini" "installer" "phase" "extracting"
           WriteINIStr "$PLUGINSDIR\status.ini" "installer" "state" "installing"
           SetOutPath "$INSTDIR"
           SetSilent silent

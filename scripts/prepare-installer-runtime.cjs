@@ -6,10 +6,20 @@ const os = require('node:os')
 const { promisify } = require('node:util')
 const execFile = promisify(require('node:child_process').execFile)
 const { path7za } = require('7zip-bin')
+const { createRequire } = require('node:module')
+const { attachInstallerProgress } = require('./installer-progress-script.cjs')
 
 module.exports = async context => {
   if (context.electronPlatformName !== 'win32') return
   const root = context.packager.projectDir
+  const builderRequire = createRequire(require.resolve('electron-builder/package.json'))
+  const templates = path.join(path.dirname(builderRequire.resolve('app-builder-lib/package.json')), 'templates/nsis')
+  const [section, extraction] = await Promise.all([
+    'installSection.nsh', 'include/extractAppPackage.nsh'
+  ].map(file => fs.readFile(path.join(templates, file), 'utf8')))
+  for (const target of context.targets) {
+    if (target.name === 'nsis' || target.name === 'nsis-web') attachInstallerProgress(target, section, extraction)
+  }
   const stage = await fs.mkdtemp(path.join(os.tmpdir(), 'polyhedron-setup-runtime-'))
   const archive = path.join(root, 'resources/installer/setup-ui.7z')
   try {

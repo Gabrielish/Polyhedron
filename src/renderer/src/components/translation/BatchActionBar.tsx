@@ -1,5 +1,7 @@
 import { Globe2, Languages, Loader2, Sparkles, Square, X } from 'lucide-react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
+import { ThemedSelect } from '@/components/shared/ThemedSelect'
+import type { SelectionCopyFormat } from '@/features/translate/utils/selectionClipboard'
 
 interface BatchActionBarProps {
   selectedCount: number
@@ -8,6 +10,7 @@ interface BatchActionBarProps {
   onTranslateDeepL: () => void
   onTranslateGoogle: () => void
   onTranslateAI: () => void
+  onCopySelection: (format: SelectionCopyFormat) => void
   aiProviderName: string
   onCancelTranslation: () => void
   onClearSelection: () => void
@@ -23,6 +26,7 @@ export function BatchActionBar({
   onTranslateDeepL,
   onTranslateGoogle,
   onTranslateAI,
+  onCopySelection,
   aiProviderName,
   onCancelTranslation,
   onClearSelection,
@@ -48,6 +52,21 @@ export function BatchActionBar({
         {t('batchBar.selectedCount', { ns: 'translate', count: selectedCount })}
       </span>
 
+      {!isTranslating && (
+        <ThemedSelect
+          value=""
+          onChange={format => onCopySelection(format as SelectionCopyFormat)}
+          placeholder="Copy selected"
+          options={[
+            { value: 'ids', label: 'Content IDs' },
+            { value: 'source-ids', label: 'Source text + IDs' }
+          ]}
+          className="w-36 shrink-0"
+          triggerClassName="h-7 border-amber-500/30 bg-amber-500/5 px-2.5 text-[11px] font-semibold text-amber-200 shadow-none hover:text-amber-100"
+          menuClassName="bulk-status-menu"
+        />
+      )}
+
       {isTranslating ? (
         <>
           <div className="flex items-center gap-2 px-1 text-xs text-neutral-400">
@@ -60,13 +79,13 @@ export function BatchActionBar({
         </>
       ) : (
         <>
-          <button type="button" onClick={onTranslateAI} title={t('actions.translateWithAIProvider', { ns: 'ai', provider: aiProviderName })} className={actionButton}>
+          <button type="button" onClick={onTranslateAI} className={actionButton}>
             <Sparkles size={13} className="text-amber-400" /> Translate with {aiProviderName}
           </button>
-          <button type="button" onClick={onTranslateDeepL} title={t('batchBar.translateWithDeepL', { ns: 'translate' })} className={actionButton}>
+          <button type="button" onClick={onTranslateDeepL} className={actionButton}>
             <Languages size={13} className="text-blue-400" /> Translate with DeepL
           </button>
-          <button type="button" onClick={onTranslateGoogle} title={t('batchBar.translateWithGoogle', { ns: 'translate' })} className={actionButton}>
+          <button type="button" onClick={onTranslateGoogle} className={actionButton}>
             <Globe2 size={13} className="text-red-400" /> Translate with Google
           </button>
         </>

@@ -4,6 +4,7 @@ import { join, win32 } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawn } from 'node:child_process'
 import type { InstallerStatus } from '../preload/installer-types'
+import { installerProgress } from '../preload/installer-progress'
 import { version } from '../../package.json'
 
 export async function startInstaller(): Promise<void> {
@@ -28,7 +29,15 @@ export async function startInstaller(): Promise<void> {
       const fields = Object.fromEntries(ini.split(/\r?\n/).filter((line) => line.includes('=')).map((line) => {
         const split = line.indexOf('='); return [line.slice(0, split), line.slice(split + 1)]
       }))
-      if (['ready', 'installing', 'done', 'error'].includes(fields.state) && !(requested && fields.state === 'ready')) status = { ...status, state: fields.state as InstallerStatus['state'], target: fields.target || status.target }
+      if (['ready', 'installing', 'done', 'error'].includes(fields.state) && !(requested && fields.state === 'ready')) {
+        const state = fields.state as InstallerStatus['state']
+        const progress = installerProgress(state, fields.progress)
+        status = {
+          ...status, state, target: fields.target || status.target,
+          progress: progress === undefined ? status.progress : Math.max(status.progress ?? 0, progress),
+          phase: ['extracting', 'copying', 'finalizing'].includes(fields.phase) ? fields.phase as InstallerStatus['phase'] : status.phase
+        }
+      }
       if (fields.pid && status.state !== 'done' && status.state !== 'error') {
         try { process.kill(Number(fields.pid), 0) } catch { status = { ...status, state: 'error', error: 'Setup stopped unexpectedly. Please run the installer again.' } }
       }
