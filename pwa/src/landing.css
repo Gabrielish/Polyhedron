@@ -112,10 +112,14 @@
 .lp-download-card>svg { color:#9eac91; }
 .lp-download-card h3 { font-size:21px; margin-top:24px; letter-spacing:-.5px; }
 .lp-download-card p { color:#78866c; font-size:12px; margin-top:8px; }
+.lp-download-card .lp-download-count { color:#a1b58f; font-size:11px; margin-top:14px; }
 .lp-download-card>span { display:flex; align-items:center; justify-content:space-between; border-top:1px solid #293321; margin-top:28px; padding-top:18px; font-size:12px; color:var(--site-accent); }
 .lp-download-web { border-color:#4b6435; background:#182110; }
 .lp-download-note { text-align:center; color:#69775d; margin-top:20px!important; font-size:10px; }
 .lp-download-note a { color:#aec899; text-decoration:underline; text-underline-offset:3px; }
+.lp-scan-note { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; }
+.lp-scan-note>svg { color:var(--site-accent); flex-shrink:0; }
+.lp-scan-note>span { flex-basis:100%; }
 .lp-faq { padding:70px 0 75px; max-width:760px; }
 .lp-faq h2 { font-size:26px; letter-spacing:-.7px; margin-bottom:24px; }
 .lp-faq details { border-bottom:1px solid #252e1e; padding:18px 0; }

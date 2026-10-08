@@ -23,6 +23,36 @@ assert.match(html, /class="lp-faq-toggle" type="button" aria-expanded="false" ar
 assert.match(html, /Show more/)
 assert.match(html, /href="#download"/)
 assert.match(html, /id="support"/)
+assert.match(html, /VirusTotal links are available when GitHub provides the current file hashes/)
+assert.equal((html.match(/class="lp-download-count"/g) || []).length, 2)
+const ts = require('typescript')
+const downloadsModule = { exports: {} }
+const downloadsSource = fs.readFileSync(path.join(root, 'pwa/src/releaseDownloads.ts'), 'utf8')
+new Function('module', 'exports', ts.transpileModule(downloadsSource, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(downloadsModule, downloadsModule.exports)
+const { releaseDownloads, releasesRepo, virusTotalReport } = downloadsModule.exports
+const currentWindowsHash = '5327948d887742463201007d7751efb2736d38eaaa8a03e06924486ee39b4418'
+const currentMacHash = 'acf30b83a35c931cd4f80b90ae202b0b9eb3882b0142c6dd12d0d051ee22901c'
+for (const hash of [currentWindowsHash, currentMacHash]) {
+  assert.equal(virusTotalReport({ url: '', digest: `sha256:${hash}` }), `https://www.virustotal.com/gui/file/${hash}`)
+}
+assert.equal(virusTotalReport({ url: '', digest: `sha256:${currentMacHash.toUpperCase()}` }), `https://www.virustotal.com/gui/file/${currentMacHash}`)
+for (const digest of [undefined, null, '', 'sha256:short', `md5:${currentWindowsHash}`, 'sha256:https://example.com']) assert.equal(virusTotalReport({ url: '', digest }), undefined)
+assert.equal(virusTotalReport(), undefined)
+const releaseAsset = (name, download_count = 0, browser_download_url = `${releasesRepo}/releases/download/v-test/${name}`) => ({ name, download_count, browser_download_url })
+const downloads = releaseDownloads({ tag_name: 'v-test', assets: [
+  releaseAsset('Polyhedron-windows-x64-setup.exe.blockmap', 999),
+  releaseAsset('Polyhedron-windows-x64-setup.exe', 500, 'https://example.com/fake.exe'),
+  releaseAsset('Polyhedron-windows-x64-setup.exe', 12),
+  releaseAsset('Polyhedron-arm64.zip', 600),
+  releaseAsset('Polyhedron-arm64.dmg', 0)
+] })
+assert.equal(downloads.version, 'v-test')
+assert.equal(downloads.windows.downloads, 12)
+assert.equal(downloads.mac.downloads, 0, 'Zero is a real count, not missing data')
+assert.match(downloads.windows.url, /setup\.exe$/)
+assert.match(downloads.mac.url, /arm64\.dmg$/)
+assert.equal(releaseDownloads({ tag_name: 'v-empty', assets: [] }).windows, undefined)
+assert.equal(releaseDownloads({ tag_name: 'v-bad-count', assets: [releaseAsset('Polyhedron-arm64.dmg', -1)] }).mac.downloads, undefined)
 assert.match(html, /href="https:\/\/www\.patreon\.com\/Gabrielish\/posts\/baldurs-gate-3-166380267\?/)
 assert.match(html, /href="https:\/\/ko-fi\.com\/gabrielish" target="_blank" rel="noopener noreferrer"/)
 assert.match(html, /aria-controls="site-navigation"/)

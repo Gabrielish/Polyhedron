@@ -3,6 +3,7 @@ import { ArrowDown, ArrowDownAZ, ArrowDownUp, ArrowDownWideNarrow, ArrowRight, A
 import dragonSvg from '../../src/renderer/src/assets/dungeons-dragons.svg?raw'
 import { beginDriveConnection, prepareDriveConnection } from './sync/driveConnection'
 import { Apple, Coffee, Heart } from 'lucide-react'
+import { releaseDownloads, virusTotalReport } from './releaseDownloads'
 import './landing.css'
 
 const repo = 'https://github.com/Gabrielish/Polyhedron'
@@ -56,7 +57,9 @@ export function LandingPage(): React.JSX.Element {
   const [zoom, setZoom] = useState(false)
   const zoomClose = useRef<HTMLButtonElement>(null)
   const zoomTrigger = useRef<HTMLButtonElement>(null)
-  const [release, setRelease] = useState<{ version: string; windows?: string; mac?: string } | null>(null)
+  const [release, setRelease] = useState<ReturnType<typeof releaseDownloads> | null>(null)
+  const windowsReport = virusTotalReport(release?.windows)
+  const macReport = virusTotalReport(release?.mac)
   const current = workspaces[workspace]
   const SelectedIcon = tools[tool].icon
   useEffect(() => {
@@ -65,10 +68,9 @@ export function LandingPage(): React.JSX.Element {
     const timeout = setTimeout(() => abort.abort(), 8000)
     void fetch('https://api.github.com/repos/Gabrielish/Polyhedron/releases/latest', { signal: abort.signal }).then(response => {
       if (!response.ok) throw new Error('Release unavailable')
-      return response.json() as Promise<{ tag_name: string; assets: Array<{ name: string; browser_download_url: string }> }>
+      return response.json() as Promise<Parameters<typeof releaseDownloads>[0]>
     }).then(data => {
-      const find = (pattern: RegExp) => data.assets.find(item => pattern.test(item.name) && item.browser_download_url.startsWith(`${repo}/releases/download/`))?.browser_download_url
-      setRelease({ version: data.tag_name, windows: find(/windows.*setup\.exe$/i), mac: find(/arm64\.dmg$/i) })
+      setRelease(releaseDownloads(data))
     }).catch(() => {}).finally(() => clearTimeout(timeout))
     return () => { abort.abort(); clearTimeout(timeout) }
   }, [])
@@ -155,8 +157,18 @@ export function LandingPage(): React.JSX.Element {
         <div><p className="lp-eyebrow">03 / PICK UP WHERE YOU LEFT OFF</p><h2 id="companion-heading">Your workspace.<br /><span>Within reach.</span></h2><p className="lp-body-copy">Connect Google Drive in the web companion to download your synced workspace, edit translations and upload changes back. Or import an exported workspace file.</p><p className="lp-body-copy lp-muted">Desktop is the full workspace. The companion brings Translate, Dialogue Nodes and Game Data to your browser.</p><a className="lp-button lp-primary" href="#app"><Cloud size={18} />Connect<ArrowRight size={17} /></a></div>
       </section>
       <section className="lp-section lp-wrap" id="download" aria-labelledby="download-heading"><div className="lp-download-heading"><p className="lp-eyebrow">04 / MAKE IT YOUR WORKSPACE</p><h2 id="download-heading">Ready for your<br /><span>next translation?</span></h2><p>Get Polyhedron for desktop, or connect from your browser.</p>{release && <span className="lp-release">Latest release · {release.version}</span>}</div>
-        <div className="lp-download-grid"><a href={release?.windows ?? `${repo}/releases`} className="lp-download-card"><Monitor size={28} /><h3>Windows</h3><p>x64 · Setup installer</p><span>Download <Download size={17} /></span></a><a href={release?.mac ?? `${repo}/releases`} className="lp-download-card"><Apple size={28} /><h3>macOS</h3><p>Apple Silicon · DMG</p><span>Download <Download size={17} /></span></a><a href="#app" className="lp-download-card lp-download-web"><Cloud size={28} /><h3>Web companion</h3><p>Continue in your browser</p><span>Connect <ArrowRight size={17} /></span></a></div>
+        <div className="lp-download-grid">
+          <a href={release?.windows?.url ?? `${repo}/releases`} className="lp-download-card"><Monitor size={28} /><h3>Windows</h3><p>x64 · Setup installer</p><p className="lp-download-count" aria-live="polite">{release?.windows?.downloads !== undefined ? `${release.windows.downloads.toLocaleString('en-US')} downloads · latest release` : 'Download count unavailable'}</p><span>Download <Download size={17} /></span></a>
+          <a href={release?.mac?.url ?? `${repo}/releases`} className="lp-download-card"><Apple size={28} /><h3>macOS</h3><p>Apple Silicon · DMG</p><p className="lp-download-count" aria-live="polite">{release?.mac?.downloads !== undefined ? `${release.mac.downloads.toLocaleString('en-US')} downloads · latest release` : 'Download count unavailable'}</p><span>Download <Download size={17} /></span></a>
+          <a href="#app" className="lp-download-card lp-download-web"><Cloud size={28} /><h3>Web companion</h3><p>Continue in your browser</p><span>Connect <ArrowRight size={17} /></span></a>
+        </div>
         <p className="lp-download-note">Desktop downloads are hosted on GitHub Releases. No release available? <a href={`${repo}/releases`}>Check the release page.</a></p>
+        <p className="lp-download-note lp-scan-note">
+          <ShieldCheck size={14} aria-hidden="true" />
+          {windowsReport && <a href={windowsReport} target="_blank" rel="noopener noreferrer">Windows · VirusTotal</a>}
+          {macReport && <a href={macReport} target="_blank" rel="noopener noreferrer">macOS · VirusTotal</a>}
+          <span>{windowsReport || macReport ? 'Links use the SHA-256 of the current downloads. A report is available only if the file has been analyzed on VirusTotal.' : 'VirusTotal links are available when GitHub provides the current file hashes.'}</span>
+        </p>
       </section>
       <section className="lp-wrap lp-support" id="support" aria-labelledby="support-heading">
         <div className="lp-support-mark" aria-hidden="true"><Heart size={27} /></div>
