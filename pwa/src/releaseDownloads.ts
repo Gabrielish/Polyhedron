@@ -1,4 +1,7 @@
 export const releasesRepo = 'https://github.com/Gabrielish/Polyhedron'
+// Explicitly supplied scan of the newly built Windows installer. This is not
+// automatically a report for whichever binary GitHub currently offers.
+export const windowsReportUrl = 'https://www.virustotal.com/gui/file/fa24539148f9d0b596bc57e563d2dc79d750cba977714b01150a3fa2c9eae88b?nocache=1'
 
 interface ReleaseAsset {
   name: string

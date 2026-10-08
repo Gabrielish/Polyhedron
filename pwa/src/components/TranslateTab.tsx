@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SyncEntry, WorkspaceSyncDocument } from '../sync/workspaceSync'
-import { parseWorkspaceText } from '../utils/parseWorkspace'
+import { parseWorkspaceFile } from '../utils/parseWorkspace'
 import { TranslationActions } from './TranslationActions'
 import { Check, ArrowDownUp, ArrowDownWideNarrow, SquareDashed, Hash, Highlighter, Sparkles, Replace, Undo2, Redo2 } from 'lucide-react'
 import { CompanionSearch, ToolButton } from './CompanionSearch'
@@ -80,7 +80,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0, ses
   async function importDocument(file: File): Promise<void> {
     try {
       onImportMessage?.('Importing workspace…')
-      const parsed = await parseWorkspaceText(await file.text())
+      const parsed = await parseWorkspaceFile(file)
       onDocumentChange(parsed)
       setPage(1)
       setMessage(`Loaded ${parsed.sessions.length} session${parsed.sessions.length === 1 ? '' : 's'} from ${file.name}.`)
@@ -103,7 +103,7 @@ export function TranslateTab({ document, onDocumentChange, importSignal = 0, ses
 
   return (
     <section className="translate-panel">
-      <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
+      <input ref={inputRef} type="file" accept=".pws,application/json,.json" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void importDocument(file); event.currentTarget.value = '' }} />
 
       {document.sessions.length > 0 && (
         <div className="translate-controls">

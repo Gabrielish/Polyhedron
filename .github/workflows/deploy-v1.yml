@@ -48,7 +48,7 @@ jobs:
       - name: Build PWA
         run: pnpm run pwa:build
       - name: Verify companion
-        run: node tests/verify-pwa-companion.cjs && node tests/verify-pwa-landing.cjs && node tests/verify-pwa-search.cjs && node tests/verify-pwa-dialogue.cjs && node tests/verify-pwa-legal.cjs
+        run: node tests/verify-pwa-companion.cjs && node tests/verify-pwa-pws.cjs && node tests/verify-pwa-landing.cjs && node tests/verify-pwa-search.cjs && node tests/verify-pwa-dialogue.cjs && node tests/verify-pwa-legal.cjs
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact

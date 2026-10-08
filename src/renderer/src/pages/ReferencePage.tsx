@@ -706,13 +706,12 @@ export function ReferencePage(): React.JSX.Element {
         onClose={() => setTermGlossaryOpen(false)}
       />
       <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
-        <div className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] px-6 py-5">
+        <header className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
           <Icon size={20} className="text-amber-400" />
           <div>
-            <h1 className="text-base font-semibold">Game Data</h1>
+            <h1 className="text-base font-semibold text-neutral-100">Game Data</h1>
             <p className="text-xs text-neutral-500">
-              {filtered.length.toLocaleString()} entries · {filtered.length.toLocaleString()}{' '}
-              entries · names and descriptions
+              {filtered.length.toLocaleString()} entries · names and descriptions
             </p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -748,7 +747,7 @@ export function ReferencePage(): React.JSX.Element {
             <div className="mx-1 h-4.5 w-px shrink-0 bg-[#1f2329]" />
             <SessionSaveButton session={session} />
           </div>
-        </div>
+        </header>
         <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto md:grid-cols-[minmax(280px,0.42fr)_minmax(0,0.58fr)] md:overflow-hidden">
           <aside className="flex min-h-[250px] max-h-[46vh] min-w-0 flex-col border-b border-[#1f2329] p-3 md:min-h-0 md:max-h-none md:border-b-0 md:border-r">
             <GameDataSearch

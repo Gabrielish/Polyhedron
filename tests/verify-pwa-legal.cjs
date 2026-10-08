@@ -31,12 +31,14 @@ const privacy = fs.readFileSync(path.join(publicRoot, 'privacy/index.html'), 'ut
 assert.match(privacy, /auth\/drive\.file/)
 assert.match(privacy, /auth\/drive<\/code>/)
 assert.match(privacy, /Limited Use/)
-for (const file of ['LandingPage.tsx', 'App.tsx']) {
+for (const file of ['LandingPage.tsx']) {
   const source = fs.readFileSync(path.join(root, 'pwa/src', file), 'utf8')
   assert.ok(source.includes('BASE_URL}privacy/'))
   assert.ok(source.includes('BASE_URL}terms/'))
 }
-console.log('PASS: public legal pages, local links, navigation anchors, Google data disclosures and site/companion links')
+const companion = fs.readFileSync(path.join(root, 'pwa/src/App.tsx'), 'utf8')
+assert.ok(companion.includes('href="#top"'), 'Companion must retain navigation back to the website with legal links')
+console.log('PASS: public legal pages, local links, navigation anchors, Google data disclosures and website legal links')
 
 if (process.argv.includes('--visual')) {
   const { app, BrowserWindow } = require('electron')

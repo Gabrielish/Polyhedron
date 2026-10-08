@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { Cloud, Download, Languages, GitBranch, Swords, Upload, CircleCheck, CircleAlert, LoaderCircle, FolderOpen } from 'lucide-react'
+import { ArrowRight, Cloud, Download, Languages, GitBranch, Swords, Upload, CircleCheck, CircleAlert, LoaderCircle, FolderOpen } from 'lucide-react'
 import { TranslateTab } from './components/TranslateTab'
 import { WandSparkles } from 'lucide-react'
 import { WorkspaceErrorBoundary } from './components/WorkspaceErrorBoundary'
@@ -67,19 +67,27 @@ export function App(): React.JSX.Element {
     finally { setBusy(null) }
   }
 
-  return <main className="app-shell companion-shell">
-    <header className="app-header"><a className="brand-lockup" href="#top" aria-label="Polyhedron home">
-      <svg aria-hidden="true" className="brand-dragon" viewBox="0 0 12.21 10.26"><path fill="currentColor" d={dragonPath} /></svg>
-      <span className="brand-name">Polyhedron</span><span className="brand-platform">Web companion</span>
-    </a><a className="companion-back" href="#top">Back to website <span aria-hidden="true">↗</span></a></header>
-    <section className="companion-intro"><p className="eyebrow">YOUR WORKSPACE, WITHIN REACH</p><h1>Your workspace.</h1><p>Download from Google Drive, continue translating, and save your changes back.</p></section>
-    <section className="companion-drive" aria-label="Google Drive workspace"><div className="companion-drive-icon"><Cloud size={25} /></div><div className="companion-drive-copy"><h2>Google Drive</h2><p>{busy === 'connecting' ? 'Connecting your account…' : driveToken ? 'Connected · Your workspace is ready to download.' : 'Sign in when you download your synced workspace.'}</p></div><div className="companion-drive-actions"><button type="button" className="primary-button" disabled={busy !== null} onClick={() => void download()}>{busy === 'connecting' || busy === 'downloading' ? <LoaderCircle size={16} className="companion-spin" /> : <Download size={16} />}{busy === 'connecting' ? 'Connecting…' : busy === 'downloading' ? 'Downloading…' : 'Download workspace'}</button>{hasWorkspace && <button type="button" className="secondary-button" disabled={busy !== null} onClick={() => void upload()}>{busy === 'saving' ? <LoaderCircle size={16} className="companion-spin" /> : <Upload size={16} />}{busy === 'saving' ? 'Saving…' : 'Save to Drive'}</button>}</div></section>
-    <p className="companion-legal">Before connecting, review our <a href={`${import.meta.env.BASE_URL}privacy/`}>Privacy Policy</a> and <a href={`${import.meta.env.BASE_URL}terms/`}>Terms of Service</a>.</p>
-    <div className="companion-feedback" aria-live="polite">{syncMessage && <p className={error ? 'sync-status companion-error' : 'sync-status'} role={error ? 'alert' : 'status'}>{error ? <CircleAlert size={16} /> : busy ? <LoaderCircle size={16} className="companion-spin" /> : <CircleCheck size={16} />}{syncMessage}</p>}</div>
+  return <div className="companion-page">
+    <header className="lp-header companion-header"><a className="lp-brand" href="#app" aria-label="Polyhedron companion" onClick={event => { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'auto' }) }}>
+      <svg aria-hidden="true" viewBox="0 0 12.21 10.26"><path fill="currentColor" d={dragonPath} /></svg>
+      <span>Polyhedron</span>
+    </a><span className="brand-platform">Web companion</span><a className="lp-nav-connect companion-back" href="#top"><span className="companion-back-desktop">Back to website</span><span className="companion-back-mobile">Website</span><ArrowRight size={15} aria-hidden="true" /></a></header>
+    <main className="app-shell companion-shell">
+    <section className="companion-workspace-bar" aria-label="Google Drive workspace">
+      <div className="companion-workspace-mark" aria-hidden="true"><Cloud size={27} /></div>
+      <div className="companion-workspace-copy"><h1>{hasWorkspace ? 'Your workspace' : 'Open a workspace'}</h1><p>{hasWorkspace ? 'Continue editing and save your changes to Google Drive.' : 'Download from Google Drive or import a .pws workspace or sync JSON file.'}</p><span className="companion-connection"><Cloud size={13} aria-hidden="true" />{busy === 'connecting' ? 'Connecting…' : driveToken ? 'Google Drive connected' : 'Google sign-in only needed for Drive'}</span>
+      </div>
+      <div className="companion-workspace-actions">
+        <button type="button" className="primary-button" disabled={busy !== null} onClick={() => void download()}>{busy === 'connecting' || busy === 'downloading' ? <LoaderCircle size={16} className="companion-spin" /> : <Download size={16} />}{busy === 'connecting' ? 'Connecting…' : busy === 'downloading' ? 'Downloading…' : 'Download workspace'}</button>
+        {hasWorkspace ? <button type="button" className="secondary-button" disabled={busy !== null} onClick={() => void upload()}>{busy === 'saving' ? <LoaderCircle size={16} className="companion-spin" /> : <Upload size={16} />}{busy === 'saving' ? 'Saving…' : 'Save to Drive'}</button> : <button type="button" className="secondary-button" disabled={busy !== null} onClick={() => { setTab('Translate'); setImportSignal(value => value + 1) }}><FolderOpen size={16} />Import file</button>}
+      </div>
+    </section>
+    {!driveToken && <aside className="companion-drive-notice" aria-label="Google Drive availability"><CircleAlert size={16} aria-hidden="true" /><p><strong>Google Drive access is temporarily limited.</strong> Google verification is in progress, so sign-in is currently available only to approved test users. In the meantime, use Import file to open a .pws workspace or sync JSON file without signing in.</p></aside>}
+    {syncMessage && <div className="companion-feedback" aria-live="polite"><p className={error ? 'sync-status companion-error' : 'sync-status'} role={error ? 'alert' : 'status'}>{error ? <CircleAlert size={16} /> : busy ? <LoaderCircle size={16} className="companion-spin" /> : <CircleCheck size={16} />}{syncMessage}</p></div>}
     <nav className="tabs" aria-label="Companion tabs">{tabs.map(item => <button key={item.name} type="button" aria-pressed={tab === item.name} className={tab === item.name ? 'tab active' : 'tab'} onClick={() => selectTab(item.name)}><item.icon size={16} />{item.name}</button>)}</nav>
     {hasWorkspace && <div className="companion-project"><FolderOpen size={15} /><label htmlFor="workspace-project">Project</label><select id="workspace-project" value={sessionId} onChange={event => setProject(event.target.value)}>{document.sessions.map(item => <option key={item.id} value={item.id}>{item.modName}</option>)}</select></div>}
-    {!hasWorkspace && <div className="companion-empty"><FolderOpen size={22} /><div><h2>No workspace loaded</h2><p>Download your synced workspace above, or import a workspace-sync.json exported from the desktop app.</p></div><button type="button" className="secondary-button" disabled={busy !== null} onClick={() => { setTab('Translate'); setImportSignal(value => value + 1) }}>Import file</button></div>}
     {missingSources > 0 && <p className="sync-status companion-source-warning" role="status"><CircleAlert size={16} />This older sync file is missing source text for {missingSources.toLocaleString()} {missingSources === 1 ? 'string' : 'strings'}. Translations are kept. Upload your workspace again from an updated desktop app to restore the source text.</p>}
     {tabs.filter(item => visited.has(item.name)).map(item => <div key={item.name} hidden={tab !== item.name || (!hasWorkspace && item.name !== 'Spells')}><WorkspaceErrorBoundary key={document.sessions.map(session => session.id).join('|')} onReset={() => { setDocument(emptyDocument()); report('Workspace view reset. Your cloud file has not been changed.') }}><Suspense fallback={<p className="companion-inline-status" role="status">Loading tab…</p>}>{item.name === 'Translate' ? <TranslateTab document={document} sessionId={sessionId} onDocumentChange={setDocument} importSignal={importSignal} onImportMessage={report} /> : item.name === 'Dialogue Nodes' ? <DialogueNodesTab document={document} sessionId={sessionId} onDocumentChange={setDocument} /> : item.name === 'Spells' ? <SpellsTab document={document} sessionId={sessionId} onDocumentChange={setDocument} /> : <GameDataTab document={document} sessionId={sessionId} onDocumentChange={setDocument} />}</Suspense></WorkspaceErrorBoundary></div>)}
-  </main>
+    </main>
+  </div>
 }

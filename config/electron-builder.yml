@@ -76,6 +76,13 @@ nsis:
   deleteAppDataOnUninstall: false
 mac:
   icon: resources/installer/icon.icns
+  # Give the fixed green application badge a distinct resource identity instead
+  # of reusing icon.icns from older releases. Dock artwork remains customizable.
+  extendInfo:
+    CFBundleIconFile: PolyhedronGreen.icns
+  extraFiles:
+    - from: resources/installer/icon.icns
+      to: Resources/PolyhedronGreen.icns
   # This is a local, unsigned build. Keeping identity null prevents a
   # partially-signed app/framework bundle and Team ID mismatch on macOS.
   identity: null

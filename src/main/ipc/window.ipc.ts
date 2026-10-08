@@ -51,9 +51,9 @@ export function registerWindowHandlers(getWindow: () => BrowserWindow | null, re
         new Notification({
           title: `Polyhedron · ${direction} complete`,
           body,
-          // macOS uses this as the content image, Windows as the toast image.
-          // Neither replaces the system-managed application identity badge.
-          icon: currentNotificationIcon(win),
+          // macOS already displays the bundle icon. Passing icon adds a second
+          // image on the right; Dock customization cannot replace that badge.
+          ...(process.platform === 'darwin' ? {} : { icon: currentNotificationIcon(win) }),
           sound: process.platform === 'darwin' ? 'Glass' : undefined
         }).show()
       }
