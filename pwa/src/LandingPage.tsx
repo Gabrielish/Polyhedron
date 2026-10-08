@@ -49,6 +49,32 @@ const extraQuestions = [
 ] as const
 
 export function LandingPage(): React.JSX.Element {
+  useEffect(() => {
+    // External fragment links can arrive before React creates their target.
+    // Wait for the page fonts/layout, then resolve the anchor after mounting.
+    let disposed = false
+    let frame = 0
+    const followAnchor = () => {
+      const hash = window.location.hash
+      void document.fonts.ready.then(() => {
+        if (disposed || window.location.hash !== hash) return
+        cancelAnimationFrame(frame)
+        frame = requestAnimationFrame(() => {
+          if (disposed || window.location.hash !== hash) return
+          let id: string
+          try { id = decodeURIComponent(hash.slice(1)) } catch { return }
+          if (id) document.getElementById(id)?.scrollIntoView({ behavior: 'instant', block: 'start' })
+        })
+      })
+    }
+    followAnchor()
+    window.addEventListener('hashchange', followAnchor)
+    return () => {
+      disposed = true
+      cancelAnimationFrame(frame)
+      window.removeEventListener('hashchange', followAnchor)
+    }
+  }, [])
   useEffect(() => { void prepareDriveConnection().catch(() => {}) }, [])
   const [menu, setMenu] = useState(false)
   const [moreQuestions, setMoreQuestions] = useState(false)
