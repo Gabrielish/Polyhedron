@@ -18,6 +18,7 @@ import {
   Hash,
   History,
   Languages,
+  MapPin,
   Package,
   ScrollText,
   Shield,
@@ -61,16 +62,20 @@ import {
 
 const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [
   { label: 'Quests', value: 'Quest' },
+  { label: 'Locations', value: 'Location' },
   { label: 'Books', value: 'Book' },
   { label: 'Items', value: 'Item' },
-  { label: 'NPCs', value: 'NPC' }
+  { label: 'NPCs', value: 'NPC' },
+  { label: 'Char. Creation', value: 'Character Creation' }
 ]
-const ITEM_TITLE_TRANSLATION_PREFERENCE = 'polyhedron:game-data:show-translated-item-titles'
+const TITLE_TRANSLATION_PREFERENCE = 'polyhedron:game-data:show-translated-item-titles'
 function iconFor(category: string): typeof Swords {
   if (category === 'Quest') return ScrollText
   if (category === 'Book') return BookOpen
   if (category === 'Item') return Package
   if (category === 'NPC') return UsersRound
+  if (category === 'Location') return MapPin
+  if (category === 'Character Creation') return UsersRound
   if (category === 'Armour') return Shield
   if (category === 'Spell' || category === 'Status') return Sparkles
   if (category === 'Object') return FlaskConical
@@ -89,11 +94,14 @@ function wikiPath(category: ReferenceCategory, name?: string): string {
     Quest: 'Quests',
     Book: 'Books',
     Item: 'Items',
-    NPC: 'List_of_characters'
+    NPC: 'List_of_characters',
+    Location: 'Locations',
+    'Character Creation': 'Character_creation'
   }
-  return name
-    ? `/wiki/${encodeURIComponent(name.trim().replace(/\s+/g, '_'))}`
-    : `/wiki/${names[category]}`
+  if (!name) return `/wiki/${names[category]}`
+  const [title, section] = name.split('#', 2)
+  const pagePath = `/wiki/${encodeURIComponent(title.trim().replace(/\s+/g, '_'))}`
+  return section ? `${pagePath}#${encodeURIComponent(section.replace(/\s+/g, '_'))}` : pagePath
 }
 function QuestTreeList({
   entries,
@@ -101,6 +109,8 @@ function QuestTreeList({
   current,
   onSelect,
   statusByEntry,
+  rowsBySource,
+  showTranslatedTitles,
   collapseSectionsByDefault = false
 }: {
   entries: ReferenceCatalogEntry[]
@@ -108,6 +118,8 @@ function QuestTreeList({
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
   statusByEntry: Map<string, ReferenceStatusCounts>
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  showTranslatedTitles: boolean
   collapseSectionsByDefault?: boolean
 }): React.JSX.Element {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
@@ -115,7 +127,7 @@ function QuestTreeList({
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set())
   const byName = useMemo(() => new Map(allEntries.map((entry) => [entry.name, entry])), [allEntries])
   const referenced = useMemo(
-    () => new Set(entries.flatMap((entry) => entry.subquests ?? [])),
+    () => new Set(entries.flatMap((entry) => entry.category === 'Location' ? entry.subLocations ?? [] : entry.subquests ?? [])),
     [entries]
   )
   const roots = entries.filter((entry) => !referenced.has(entry.name))
@@ -147,12 +159,17 @@ function QuestTreeList({
   }
 
   const renderQuest = (entry: ReferenceCatalogEntry, depth = 0, ancestors = new Set<string>()): React.JSX.Element => {
-    const childEntries = (entry.subquests ?? [])
+    const childNames = entry.category === 'Location' ? entry.subLocations ?? [] : entry.subquests ?? []
+    const childEntries = childNames
       .map((name) => byName.get(name))
       .filter((child): child is ReferenceCatalogEntry => child !== undefined && !ancestors.has(child.name))
     const hasChildren = childEntries.length > 0
     const open = expanded.has(entry.name)
     const selected = current?.name === entry.name
+    const titleRows = rowsBySource.get(normalize(entry.name)) ?? []
+    const translatedTitle = showTranslatedTitles
+      ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+      : undefined
     const nextAncestors = new Set(ancestors).add(entry.name)
     return (
       <div key={`${entry.name}:${depth}`}>
@@ -179,9 +196,9 @@ function QuestTreeList({
                 ? 'bg-amber-500/10 text-amber-300'
                 : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100'
             )}
-            title={entry.name}
+            title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}
           >
-            {entry.name}
+            <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
           </button>
           <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
         </div>
@@ -221,7 +238,7 @@ function QuestTreeList({
           {open && <div className="space-y-0.5">{group.map((entry) => renderQuest(entry))}</div>}
         </section>
       )})}
-      {roots.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No quests found.</p>}
+      {roots.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">{entries[0]?.category === 'Location' ? 'No locations found.' : entries[0]?.category === 'Book' ? 'No books found.' : 'No quests found.'}</p>}
     </div>
   )
 }
@@ -266,13 +283,17 @@ function NpcTreeList({
   current,
   onSelect,
   statusByEntry,
-  searching
+  searching,
+  rowsBySource,
+  showTranslatedTitles
 }: {
   entries: ReferenceCatalogEntry[]
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
   statusByEntry: Map<string, ReferenceStatusCounts>
   searching: boolean
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  showTranslatedTitles: boolean
 }): React.JSX.Element {
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set())
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
@@ -309,12 +330,16 @@ function NpcTreeList({
   }
   const countEntries = (node: NpcGroupNode): number =>
     node.entries.length + [...node.children.values()].reduce((total, child) => total + countEntries(child), 0)
-  const renderEntry = (entry: ReferenceCatalogEntry, key: string, depth: number): React.JSX.Element => (
-    <button
+  const renderEntry = (entry: ReferenceCatalogEntry, key: string, depth: number): React.JSX.Element => {
+    const titleRows = rowsBySource.get(normalize(entry.name)) ?? []
+    const translatedTitle = showTranslatedTitles
+      ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+      : undefined
+    return <button
       key={key}
       type="button"
       onClick={() => onSelect(entry)}
-      title={entry.name}
+      title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}
       className={cn(
         'flex min-h-8 w-full items-center rounded-md text-left text-[11px] transition-colors',
         depth === 0 ? 'px-2' : 'px-2',
@@ -322,10 +347,10 @@ function NpcTreeList({
       )}
       style={{ paddingLeft: `${12 + depth * 12}px`, paddingRight: 8 }}
     >
-      <span className="min-w-0 flex-1 truncate">{entry.name}</span>
+      <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
       <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
     </button>
-  )
+  }
   const renderGroup = (label: string, node: NpcGroupNode, path: string, depth: number): React.JSX.Element => {
     const open = searching || (depth === 0 ? !collapsed.has(path) : expanded.has(path))
     const headerClass = depth === 0
@@ -554,6 +579,21 @@ function normalize(value: string): string {
   return normalized
 }
 const normalizedSources = new Map<string, string>()
+const SOURCE_PREFIX_LENGTH = 32
+function rowsForReferenceText(
+  text: string,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): TranslationSessionEntry[] {
+  const key = normalize(text)
+  const exact = rowsBySource.get(key)
+  if (exact?.length || key.length < 32) return exact ?? []
+  const candidates = sourceKeysByPrefix.get(key.slice(0, SOURCE_PREFIX_LENGTH)) ?? []
+  // Wiki descriptions can be shorter than the matching localization string; keep its full text untouched.
+  return candidates
+    .filter((source) => source.startsWith(`${key} `))
+    .flatMap((source) => rowsBySource.get(source) ?? [])
+}
 const catalogRowKeys = new WeakMap(getReferenceCatalog().map((entry, index) => [entry, `${entry.category}:${entry.name}:${index}`] as const))
 function LocalTranslationInput({
   value,
@@ -606,8 +646,8 @@ function GameDataSearch({
   onMatchCaseChange,
   wholeWord,
   onWholeWordChange,
-  showTranslatedItemTitles,
-  onShowTranslatedItemTitlesChange
+  showTranslatedTitles,
+  onShowTranslatedTitlesChange
 }: {
   query: string
   onSearch: (value: string) => void
@@ -617,8 +657,8 @@ function GameDataSearch({
   onMatchCaseChange: (value: boolean) => void
   wholeWord: boolean
   onWholeWordChange: (value: boolean) => void
-  showTranslatedItemTitles: boolean
-  onShowTranslatedItemTitlesChange: (value: boolean) => void
+  showTranslatedTitles: boolean
+  onShowTranslatedTitlesChange: (value: boolean) => void
 }): React.JSX.Element {
   return (
     <TextSearchInput
@@ -629,12 +669,12 @@ function GameDataSearch({
       onMatchCaseChange={onMatchCaseChange}
       matchWholeWord={wholeWord}
       onMatchWholeWordChange={onWholeWordChange}
-      leadingToggle={category === 'Item' ? {
+      leadingToggle={{
         label: 'Translation',
-        active: showTranslatedItemTitles,
-        onClick: () => onShowTranslatedItemTitlesChange(!showTranslatedItemTitles),
+        active: showTranslatedTitles,
+        onClick: () => onShowTranslatedTitlesChange(!showTranslatedTitles),
         icon: <Languages size={14} />
-      } : undefined}
+      }}
       scopeValue={category}
       onScopeChange={(value) => onCategoryChange(value as ReferenceCategory)}
       scopeOptions={CATEGORIES.map((item) => ({ value: item.value ?? 'all', label: item.label }))}
@@ -938,8 +978,9 @@ function GameDataList({
   current,
   onSelect,
   rowsBySource,
-  searching = false,
-  showTranslatedItemTitles = false
+  sourceKeysByPrefix,
+  showTranslatedTitles,
+  searching = false
 }: {
   entries: ReferenceCatalogEntry[]
   allEntries: ReferenceCatalogEntry[]
@@ -947,8 +988,9 @@ function GameDataList({
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
   rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
+  showTranslatedTitles: boolean
   searching?: boolean
-  showTranslatedItemTitles?: boolean
 }): React.JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
   const virtualizer = useVirtualizer({
@@ -963,7 +1005,7 @@ function GameDataList({
     for (const entry of allEntries) {
       const rows = [
         ...(entry.name.trim() ? rowsBySource.get(normalize(entry.name)) ?? [] : []),
-        ...(entry.description.trim() ? rowsBySource.get(normalize(entry.description)) ?? [] : [])
+        ...(entry.description.trim() ? rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix) : [])
       ]
       const stats = emptyReferenceStatusCounts()
       for (const row of rows) {
@@ -973,12 +1015,12 @@ function GameDataList({
       result.set(referenceEntryKey(entry), stats)
     }
     return result
-  }, [allEntries, rowsBySource])
+  }, [allEntries, rowsBySource, sourceKeysByPrefix])
   const translatedKeys = useMemo(() => {
     const result = new Set<string>()
     for (const item of getReferenceCatalog()) {
       const titleRows = rowsBySource.get(normalize(item.name)) ?? []
-      const descriptionRows = rowsBySource.get(normalize(item.description)) ?? []
+      const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
       if (
         titleRows.some((row) => row.target.trim()) &&
         descriptionRows.some((row) => row.target.trim())
@@ -986,12 +1028,12 @@ function GameDataList({
         result.add(`${item.category}:${item.name}`)
     }
     return result
-  }, [rowsBySource])
+  }, [rowsBySource, sourceKeysByPrefix])
   const verifiedKeys = useMemo(() => {
     const result = new Set<string>()
     for (const item of getReferenceCatalog()) {
       const titleRows = rowsBySource.get(normalize(item.name)) ?? []
-      const descriptionRows = rowsBySource.get(normalize(item.description)) ?? []
+      const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
       const rows = [...titleRows, ...descriptionRows]
       if (
         rows.length > 0 &&
@@ -1001,7 +1043,7 @@ function GameDataList({
       }
     }
     return result
-  }, [rowsBySource])
+  }, [rowsBySource, sourceKeysByPrefix])
   useEffect(() => {
     const scrollElement = parentRef.current
     if (scrollElement) scrollElement.scrollTop = 0
@@ -1014,13 +1056,13 @@ function GameDataList({
       searching={searching}
       statusByEntry={statusByEntry}
       rowsBySource={rowsBySource}
-      showTranslatedTitles={showTranslatedItemTitles}
+      showTranslatedTitles={showTranslatedTitles}
     />
   }
   if (category === 'NPC') {
-    return <NpcTreeList entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} />
+    return <NpcTreeList entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} showTranslatedTitles={showTranslatedTitles} />
   }
-  if (category === 'Quest' || category === 'Book') {
+  if (category === 'Quest' || category === 'Book' || category === 'Location' || category === 'Character Creation') {
     return (
       <QuestTreeList
         entries={entries}
@@ -1028,6 +1070,8 @@ function GameDataList({
         current={current}
         onSelect={onSelect}
         statusByEntry={statusByEntry}
+        rowsBySource={rowsBySource}
+        showTranslatedTitles={showTranslatedTitles}
         collapseSectionsByDefault={category === 'Book'}
       />
     )
@@ -1041,6 +1085,10 @@ function GameDataList({
           const key = `${entry.category}:${entry.name}`
           const translated = translatedKeys.has(key)
           const verified = verifiedKeys.has(key)
+          const titleRows = rowsBySource.get(normalize(entry.name)) ?? []
+          const titleTranslation = showTranslatedTitles
+            ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+            : undefined
           return (
             <div
               key={item.key}
@@ -1061,6 +1109,7 @@ function GameDataList({
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2 truncate text-xs">
                     {entry.name}
+                    {titleTranslation && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{titleTranslation}</span></>}
                     {translated && (
                       <span className="shrink-0 rounded border border-orange-400/30 bg-orange-500/10 px-1 py-0.5 text-[9px] text-orange-300">
                         Translated
@@ -1091,9 +1140,9 @@ export function ReferencePage(): React.JSX.Element {
   const [query, setQuery] = useState('')
   const [matchCase, setMatchCase] = useState(false)
   const [wholeWord, setWholeWord] = useState(false)
-  const [showTranslatedItemTitles, setShowTranslatedItemTitles] = useState(() => {
+  const [showTranslatedTitles, setShowTranslatedTitles] = useState(() => {
     try {
-      return window.localStorage.getItem(ITEM_TITLE_TRANSLATION_PREFERENCE) === 'true'
+      return window.localStorage.getItem(TITLE_TRANSLATION_PREFERENCE) === 'true'
     } catch {
       return false
     }
@@ -1119,11 +1168,11 @@ export function ReferencePage(): React.JSX.Element {
   )
   useEffect(() => {
     try {
-      window.localStorage.setItem(ITEM_TITLE_TRANSLATION_PREFERENCE, String(showTranslatedItemTitles))
+      window.localStorage.setItem(TITLE_TRANSLATION_PREFERENCE, String(showTranslatedTitles))
     } catch {
       // Keep the preference for this session if storage is unavailable.
     }
-  }, [showTranslatedItemTitles])
+  }, [showTranslatedTitles])
   useEffect(() => {
     try {
       window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
@@ -1198,6 +1247,16 @@ export function ReferencePage(): React.JSX.Element {
     }
     return map
   }, [sourceEntries])
+  const sourceKeysByPrefix = useRetainedMemo('game-data:source-prefixes', () => {
+    const prefixes = new Map<string, string[]>()
+    for (const source of sourceMembership.keys()) {
+      const prefix = source.slice(0, SOURCE_PREFIX_LENGTH)
+      const matches = prefixes.get(prefix)
+      if (matches) matches.push(source)
+      else prefixes.set(prefix, [source])
+    }
+    return prefixes
+  }, [sourceMembership])
   const rowsBySource = useRetainedMemo('game-data:rows', () => {
     const current = new Map(session.entries.map(entry => [entry.rowId, entry]))
     return new Map([...sourceMembership].map(([source, ids]) => [source, ids.map(id => current.get(id)!)]))
@@ -1214,7 +1273,9 @@ export function ReferencePage(): React.JSX.Element {
       ? selected
       : (filtered[0] ?? null))
   const linkedTitle = current ? (rowsBySource.get(normalize(referenceTitleSource(current))) ?? []) : []
-  const linkedDescription = current ? (rowsBySource.get(normalize(current.description)) ?? []) : []
+  const linkedDescription = current
+    ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
+    : []
   const Icon = iconFor(current?.category ?? category ?? 'Weapon')
   const wikiUrl = current
     ? `https://bg3.wiki${wikiPath(current.category, current.wikiTitle ?? current.name)}`
@@ -1358,8 +1419,8 @@ export function ReferencePage(): React.JSX.Element {
               onMatchCaseChange={setMatchCase}
               wholeWord={wholeWord}
               onWholeWordChange={setWholeWord}
-              showTranslatedItemTitles={showTranslatedItemTitles}
-              onShowTranslatedItemTitlesChange={setShowTranslatedItemTitles}
+              showTranslatedTitles={showTranslatedTitles}
+              onShowTranslatedTitlesChange={setShowTranslatedTitles}
             />
             <GameDataList
               key={category ?? 'all'}
@@ -1369,8 +1430,9 @@ export function ReferencePage(): React.JSX.Element {
               current={current}
               onSelect={setSelected}
               rowsBySource={rowsBySource}
+              sourceKeysByPrefix={sourceKeysByPrefix}
               searching={query.trim().length > 0}
-              showTranslatedItemTitles={showTranslatedItemTitles}
+              showTranslatedTitles={showTranslatedTitles}
             />
           </aside>
           <main className={cn(
@@ -1412,7 +1474,7 @@ export function ReferencePage(): React.JSX.Element {
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
                   />
-                  {(current.category !== 'NPC' || linkedDescription.length > 0) && (
+                  {((current.category !== 'NPC' && current.category !== 'Location' && current.category !== 'Character Creation') || linkedDescription.length > 0) && (
                     <TranslationField
                       label="Description EN"
                       source={current.description}

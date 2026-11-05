@@ -5,8 +5,12 @@ export function useDockClearance(pathname: string, dockHidden = false): void {
   useLayoutEffect(() => {
     const root = document.documentElement
     const shell = document.querySelector('.app-content-shell')
-    const dock = document.querySelector('.sidebar-shell')
-    if (dockHidden || !shell || !dock) {
+    if (dockHidden) {
+      // Keep CSS fallbacks from reintroducing the default dock tail while hidden.
+      root.style.setProperty('--app-dock-clearance', '0px')
+      return () => root.style.removeProperty('--app-dock-clearance')
+    }
+    if (!shell) {
       root.style.removeProperty('--app-dock-clearance')
       return
     }
@@ -16,7 +20,11 @@ export function useDockClearance(pathname: string, dockHidden = false): void {
     const update = () => {
       frame = 0
       if (disposed) return
-      const elements = [dock, ...shell.querySelectorAll('.translation-pagination-footer, .dictionary-footer')]
+      const dock = document.querySelector('.sidebar-shell')
+      const elements = [
+        ...(dock ? [dock] : []),
+        ...shell.querySelectorAll('.translation-pagination-footer, .dictionary-footer')
+      ]
       for (const element of observed) {
         if (!elements.includes(element)) { resize.unobserve(element); observed.delete(element) }
       }
@@ -38,8 +46,11 @@ export function useDockClearance(pathname: string, dockHidden = false): void {
     const content = new MutationObserver(schedule)
     const theme = new MutationObserver(schedule)
     content.observe(shell, { childList: true, subtree: true })
+    // The dock is a sibling of the content shell and is remounted after its hide animation.
+    if (shell.parentElement) content.observe(shell.parentElement, { childList: true })
     theme.observe(root, { attributes: true, attributeFilter: ['data-theme'] })
     window.addEventListener('resize', schedule)
+    window.addEventListener('polyhedron:dock-settled', schedule)
     update()
     return () => {
       disposed = true
@@ -48,6 +59,7 @@ export function useDockClearance(pathname: string, dockHidden = false): void {
       content.disconnect()
       theme.disconnect()
       window.removeEventListener('resize', schedule)
+      window.removeEventListener('polyhedron:dock-settled', schedule)
       root.style.removeProperty('--app-dock-clearance')
     }
   }, [pathname, dockHidden])

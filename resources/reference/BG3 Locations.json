@@ -1,0 +1,1532 @@
+{
+  "sourceUrl": "https://bg3.wiki/wiki/Locations",
+  "sourceRevision": 420555,
+  "license": "CC BY-NC-SA 4.0 or CC BY-SA 4.0 (see source page)",
+  "entries": [
+    {
+      "name": "Nautiloid",
+      "description": "A flying illithid ship visited during the prologue, travelling through the Hells.",
+      "wikiTitle": "Nautiloid",
+      "section": "Prologue / Other Planes",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ravaged Beach",
+      "description": "A beach along the river Chionthar, now strewn with the remains of a crashed Nautiloid.",
+      "wikiTitle": "Ravaged Beach",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Overgrown Ruins",
+      "description": "A large ruin near to the grove, with the remnants of what was once a chapel.",
+      "wikiTitle": "Overgrown Ruins",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Mountain Pass",
+      "description": "A trail at the edge of the wilderness, leading off to Rosymorn Monastery.",
+      "wikiTitle": "Mountain Pass",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sunlit Wetlands",
+      "description": "Picturesque wetlands that give way to a Putrid Bog when held under scrutiny.",
+      "wikiTitle": "Sunlit Wetlands",
+      "section": "Act One / Wilderness",
+      "subLocations": [
+        "Overgrown Tunnel"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Blighted Village",
+      "description": "An abandoned village, now occupied by goblins.",
+      "wikiTitle": "Blighted Village",
+      "section": "Act One / Wilderness",
+      "subLocations": [
+        "Apothecary's Cellar",
+        "Whispering Depths"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Emerald Grove",
+      "description": "A sacred grove and home to druids, and temporary refuge for a group of tiefling refugees.",
+      "wikiTitle": "Emerald Grove",
+      "section": "Act One / Wilderness",
+      "subLocations": [
+        "Inner Sanctum",
+        "Sacred Pool",
+        "Secluded Cove",
+        "The Hollow",
+        "Underground Passage"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Forest",
+      "description": "A patch of woodland west of the grove.",
+      "wikiTitle": "Forest",
+      "section": "Act One / Wilderness",
+      "subLocations": [
+        "Owlbear Nest"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Goblin Camp",
+      "description": "An old Selûnite temple in use as a base of operations for the Cult of the Absolute.",
+      "wikiTitle": "Goblin Camp",
+      "section": "Act One / Wilderness",
+      "subLocations": [
+        "Defiled Temple",
+        "Shattered Sanctum",
+        "Worg Pens"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "The Risen Road",
+      "description": "A long stretch of road that connects Elturel and Baldur's Gate, running parallel to the river Chionthar.",
+      "wikiTitle": "The Risen Road",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Waukeen's Rest",
+      "description": "An inn on the Risen Road, in flames after an assault from the Absolute.",
+      "wikiTitle": "Waukeen's Rest",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Zhentarim Basement",
+      "description": "A hidden cavern beneath the inn, the base of operations for the Black Network.",
+      "wikiTitle": "Zhentarim Basement",
+      "section": "Act One / Wilderness",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Rosymorn Monastery Trail",
+      "description": "A pilgrimage trail leading between the wilderness, Rosymorn Monastery and the Shadow-Cursed Lands.",
+      "wikiTitle": "Rosymorn Monastery Trail",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Rosymorn Monastery",
+      "description": "A secluded monastery for monks of Lathander.",
+      "wikiTitle": "Rosymorn Monastery",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Crèche Y'llek",
+      "description": "Rosymorn Monastery's living quarters, transformed into a githyanki base.",
+      "wikiTitle": "Crèche Y'llek",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subLocations": [
+        "Astral Plane",
+        "Secret Chamber"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Arcane Tower",
+      "description": "An isolated wizard tower protected by Arcane Cannons.",
+      "wikiTitle": "Arcane Tower",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ebonlake Grotto",
+      "description": "Home of the myconids, lead by Sovereign Spaw.",
+      "wikiTitle": "Ebonlake Grotto",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Decrepit Village",
+      "description": "An abandoned village on a beach beside the Ebonlake.",
+      "wikiTitle": "Decrepit Village",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Dread Hollow",
+      "description": "A cavernous hollow growing a large Sussur tree.",
+      "wikiTitle": "Dread Hollow",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Selûnite Outpost",
+      "description": "An abandoned outpost which previously housed followers of Selûne.",
+      "wikiTitle": "Selûnite Outpost",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Storehouse",
+      "description": "A lone storehouse with an elevator leading to the surface",
+      "wikiTitle": "Storehouse",
+      "section": "Act One / Underdark",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Grymforge",
+      "description": "The legendary Grymforge, built by Sharran worshippers in times past.",
+      "wikiTitle": "Grymforge",
+      "section": "Act One / Underdark",
+      "subLocations": [
+        "Adamantine Forge",
+        "Abandoned Refuge",
+        "Ancient Temple"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Astral Plane",
+      "description": "A small section of the Astral Sea.",
+      "wikiTitle": "Astral Plane",
+      "section": "Act One / Other Planes",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Abandoned Refuge",
+      "description": "The Abandoned Refuge (also known as the Ancient Forge) is a Location within the Grymforge in Act One of Baldur's Gate 3. It is south of and adjacent to Grymforge, and home to the Adamantine Forge and serves as a connecting landmass between the former and the latter, and overlooks Ancient Temple.",
+      "wikiTitle": "Abandoned Refuge",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Adamantine Forge",
+      "description": "The Adamantine Forge is a Location within Grymforge in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Adamantine Forge (location)",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ancient Temple",
+      "description": "The Ancient Temple is a Location within Grymforge in Act One of Baldur's Gate 3. A location discoverable in Act One, but without immediate access beyond some overlooking cliffs.",
+      "wikiTitle": "Ancient Temple",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Apothecary's Cellar",
+      "description": "The Apothecary's Cellar is a Location within the Blighted Village in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Apothecary's Cellar",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Bloodied Shrine",
+      "description": "The Bloodied Shrine is a Location within the Shattered Sanctum in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Bloodied Shrine",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Campsite",
+      "description": "The Campsite is a region in Baldur's Gate 3. It is a special location the party discovers when their first Long Rest is initiated, and can subsequently be travelled to via the right menu, long resting or fast travel.",
+      "wikiTitle": "Campsite",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Defiled Temple",
+      "description": "The Defiled Temple is a Location within the Shattered Sanctum in Act One of Baldur's Gate 3. It serves as one of the entrances to the Underdark.",
+      "wikiTitle": "Defiled Temple",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Goblin Celebration",
+      "description": "The goblin celebration is a special camp event which occurs after completing ⁠Raid the Emerald Grove, while siding with the goblins.",
+      "wikiTitle": "Goblin Celebration",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Inner Sanctum",
+      "description": "The Inner Sanctum is a Location within the Emerald Grove in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Inner Sanctum",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Overgrown Tunnel",
+      "description": "The Overgrown Tunnel is a Location within the Sunlit Wetlands in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Overgrown Tunnel",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Owlbear Nest",
+      "description": "The Owlbear Nest (also known as the Owlbear Cave) is a Location within the Forest in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Owlbear Nest",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sacred Pool",
+      "description": "The Sacred Pool is a Location within the Emerald Grove in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Sacred Pool",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Secluded Cove",
+      "description": "The Secluded Cove is a Location within the Wilderness in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Secluded Cove",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Secret Chamber",
+      "description": "The Secret Chamber is a Location within the Crèche Y'llek in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Secret Chamber",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Shattered Sanctum",
+      "description": "The Shattered Sanctum is a Location within the Wilderness in Act One of Baldur's Gate 3. It is the interior area of the Goblin Camp, and leads to the Defiled Temple and Worg Pens.",
+      "wikiTitle": "Shattered Sanctum",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Festering Cove",
+      "description": "The Festering Cove is a Location within the Underdark in Act One of Baldur's Gate 3.",
+      "wikiTitle": "The Festering Cove",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Hollow",
+      "description": "The Hollow is a Location within the Emerald Grove in Act One of Baldur's Gate 3. It is the section of the Emerald Grove where most of the tiefling refugees reside.",
+      "wikiTitle": "The Hollow",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Tiefling Hideout",
+      "description": "The Tiefling Hideout is a Location within the Emerald Grove in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Tiefling Hideout",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Tiefling Refugee Celebration",
+      "description": "The tiefling refugee celebration is a special camp event which occurs after completing either ⁠Defeat the Goblins or ⁠Raid the Emerald Grove, while siding with the tieflings.",
+      "wikiTitle": "Tiefling Refugee Celebration",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Underdark",
+      "description": "The Underdark is a region in Act One of Baldur's Gate 3. It is a vast series of caverns and tunnels devoid of sunlight but full of dangerous creatures and even more dangerous mushrooms. It also contains a multitude of alchemical ingredients that are hard to find elsewhere.",
+      "wikiTitle": "Underdark",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Underground Passage",
+      "description": "The Underground Passage is a Location within the Emerald Grove in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Underground Passage",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Whispering Depths",
+      "description": "The Whispering Depths is a Location within the Blighted Village in Act One of Baldur's Gate 3. It is situated below the village.",
+      "wikiTitle": "Whispering Depths",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Wilderness",
+      "description": "The Wilderness is a region in Act One of Baldur's Gate 3.",
+      "wikiTitle": "Wilderness",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Worg Pens",
+      "description": "The Worg Pens is a Location within the Shattered Sanctum in Act One of Baldur's Gate 3. It is a separate sub-area which can be reached only from the Sanctum.",
+      "wikiTitle": "Worg Pens",
+      "section": "Act One / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ruined Battlefield",
+      "description": "A large battlefield spanning half the region, with remnants of a conflict from before the shadow curse.",
+      "wikiTitle": "Ruined Battlefield",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subLocations": [
+        "House in Deep Shadows"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Last Light Inn",
+      "description": "A sanctuary within the Shadow-Cursed Lands, currently occupied by Harpers and members of the Flaming Fist.",
+      "wikiTitle": "Last Light Inn",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subLocations": [
+        "Last Light Inn - Cellar"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Reithwin Town",
+      "description": "A now empty town, previously home to followers of Selûne and the Thorm family.",
+      "wikiTitle": "Reithwin Town",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subLocations": [
+        "House of Healing",
+        "House of Healing Morgue",
+        "Mason's Guild",
+        "Reithwin Graveyard",
+        "Reithwin Tollhouse",
+        "Sharran Sanctuary",
+        "The Waning Moon"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Grand Mausoleum",
+      "description": "The Thorm family mausoleum, resting place of Melodia Thorm and entrance to the Gauntlet of Shar.",
+      "wikiTitle": "Grand Mausoleum",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subLocations": [
+        "Gauntlet of Shar"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Moonrise Towers",
+      "description": "The seat of the Absolute and base of their operations, located south of Reithwin Town.",
+      "wikiTitle": "Moonrise Towers",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subLocations": [
+        "Mind Flayer Colony",
+        "Oubliette",
+        "Moonrise Towers Prison",
+        "Moonrise Towers Rooftop"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Shadowfell",
+      "description": "A plane of shadows and domain of Shar.",
+      "wikiTitle": "Shadowfell",
+      "section": "Act Two / Other Planes",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Brain Mapping Puzzle",
+      "description": "In the southeast section of the Necrotic Lab area of the Mind Flayer Colony, there is a console. Interacting with the console using Illithid powers projects an empty neural map of one of the brains the Mind Flayers have been experimenting on. The neural map is basically a connect the dots puzzle; solving it allows to access the Waking Mind, which can be inserted into The Mind-Archive Interface at X: 699 Y: -117 in order to gain the permanent buff: Githzerai Mind Barrier. Solving the puzzle also grants the inspiration ⁠Brain Blast! for party members with the Sage background. Note for console users: To use the nodes, console users should enter interaction mode (L3; pressing down on the toggle stick) and select \"use\" on each node.",
+      "wikiTitle": "Brain Mapping Puzzle",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Gauntlet of Shar",
+      "description": "The Gauntlet of Shar is a Location within the Shadow-Cursed Lands in Act Two of Baldur's Gate 3. It is only accessible through the Grand Mausoleum in the Shadow-Cursed Lands. It is the major dungeon of Act Two, featuring many puzzles and combat encounters, and its completion leads to pivotal developments in multiple questlines. This location also plays a central role in Shadowheart's personal quest ⁠Daughter of Darkness.",
+      "wikiTitle": "Gauntlet of Shar",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "House in Deep Shadows",
+      "description": "The House in Deep Shadows is a Location within the Ruined Battlefield in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "House in Deep Shadows",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "House of Healing",
+      "description": "The House of Healing is a Location within Reithwin Town in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "House of Healing",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Mason's Guild",
+      "description": "The Mason's Guild is a Location within Reithwin Town in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Mason's Guild",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Mind Flayer Colony",
+      "description": "The Mind Flayer Colony is a Location within the Shadow-Cursed Lands in Act Two of Baldur's Gate 3. It is located under the Moonrise Towers Prison in the Shadow-Cursed Lands.",
+      "wikiTitle": "Mind Flayer Colony",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Moonrise Towers Prison",
+      "description": "Moonrise Towers Prison is a Location within Moonrise Towers in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Moonrise Towers Prison",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Moonrise Towers Rooftop",
+      "description": "Moonrise Towers Rooftop is a Location within Moonrise Towers in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Moonrise Towers Rooftop",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Necrotic Laboratory",
+      "description": "The Necrotic Laboratory is a Location within the Shadow-Cursed Lands in Act Two of Baldur's Gate 3. It is part of the Mind Flayer Colony located in the south-east (entrance X: 715 Y: -50) and connected directly to its other part, Morgue.",
+      "wikiTitle": "Necrotic Laboratory",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Oubliette",
+      "description": "Oubliette is a Location within Shadow-Cursed Lands in Act Two of Baldur's Gate 3. Shrouded in shadow and covered in bloody viscera, it houses prisoners of the Cult of the Absolute, both living and dead.",
+      "wikiTitle": "Oubliette",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Reithwin Tollhouse",
+      "description": "Reithwin Tollhouse is a Location within Reithwin Town in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Reithwin Tollhouse",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Shadow-Cursed Lands",
+      "description": "The Shadow-Cursed Lands is a region in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Shadow-Cursed Lands",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sharran Sanctuary",
+      "description": "The Sharran Sanctuary is a Location within Reithwin Town in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "Sharran Sanctuary",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Tadpoling Centre",
+      "description": "The Tadpoling Centre is a Location within Shadow-Cursed Lands in Act Two of Baldur's Gate 3. It is where captives of the Cult of the Absolute deemed worthy of further 'usage' are kept, tadpoled and sometimes turned into mind flayers. It can be reached (as the rest of the colony) only within Act Two of the game and only after the initial fight with Ketheric Thorm.",
+      "wikiTitle": "Tadpoling Centre",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Waning Moon",
+      "description": "The Waning Moon is a Location within Reithwin Town in Act Two of Baldur's Gate 3.",
+      "wikiTitle": "The Waning Moon",
+      "section": "Act Two / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Rivington",
+      "description": "The southern-most district of Baldur's Gate, located on the southern shore of the River Chionthar and south of of Wyrm's Crossing.",
+      "wikiTitle": "Rivington",
+      "section": "Act Three / Rivington",
+      "subLocations": [
+        "Abandoned Windmill",
+        "Gur Camp",
+        "Rivington Well",
+        "Western Beach"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Arfur's Mansion",
+      "description": "The home of toymaker Arfur Gregorio",
+      "wikiTitle": "Arfur's Mansion",
+      "section": "Act Three / Rivington",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Circus of the Last Days",
+      "description": "An extraplanar circus run by ringmaster Lucretious.",
+      "wikiTitle": "Circus of the Last Days",
+      "section": "Act Three / Rivington",
+      "subLocations": [
+        "Jungle"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Open Hand Temple",
+      "description": "A temple dedicated to Ilmater, grieving after the loss of their head priest.",
+      "wikiTitle": "Open Hand Temple",
+      "section": "Act Three / Rivington",
+      "subLocations": [
+        "Open Hand Temple Cellar",
+        "Under Temple Cave Area"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Requisitioned Barn",
+      "description": "A large barn, currently in use as storage for refugee requisitions.",
+      "wikiTitle": "Requisitioned Barn",
+      "section": "Act Three / Rivington",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "South Span Checkpoint",
+      "description": "An intermediate checkpoint between Rivington and Wyrm's Crossing.",
+      "wikiTitle": "South Span Checkpoint",
+      "section": "Act Three / Rivington",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sword Coast Couriers",
+      "description": "Rivington's post office, complete with pigeon carriers.",
+      "wikiTitle": "Sword Coast Couriers",
+      "section": "Act Three / Rivington",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Rivington General",
+      "description": "A weapons and armour store, run by Gyldro Angleiron and his clerk Exxvikyap.",
+      "wikiTitle": "Rivington General",
+      "section": "Act Three / Rivington",
+      "subLocations": [
+        "Angleiron's Cellar"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Wyrm's Crossing",
+      "description": "A crossing between Rivington and the Lower City of Baldur's Gate.",
+      "wikiTitle": "Wyrm's Crossing",
+      "section": "Act Three / Wyrm's Crossing",
+      "subLocations": [
+        "Carm's Garms",
+        "Fraygo's Flophouse",
+        "Stylin' Horst Potion Shop"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Danthelon's Dancing Axe",
+      "description": "A weapons and armour store owned by Entharl Danthelon, as well as a front to a Harper hideout.",
+      "wikiTitle": "Danthelon's Dancing Axe",
+      "section": "Act Three / Wyrm's Crossing",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sharess' Caress",
+      "description": "A house of pleasure run by Mamzell Amira and Kira.",
+      "wikiTitle": "Sharess' Caress",
+      "section": "Act Three / Wyrm's Crossing",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Wyrm's Rock Fortress",
+      "description": "An island-fortress which serves as one of the Flaming Fist's headquarters.",
+      "wikiTitle": "Wyrm's Rock Fortress",
+      "section": "Act Three / Wyrm's Crossing",
+      "subLocations": [
+        "The Wyrmway",
+        "Wyrm's Rock Prison"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Lower City",
+      "description": "The mercantile hub and southernmost region of the port-side city of Baldur's Gate.",
+      "wikiTitle": "Lower City",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Beehive General Goods",
+        "Bonecloak's Apothecary",
+        "Chromatic Scale",
+        "Facemaker's Boutique",
+        "Flymm's Cobblers",
+        "Stormshore Armoury",
+        "The Bibliophile",
+        "The Glitter Gala",
+        "The Singing Lute",
+        "Armbrust's Home",
+        "Barren's Coop",
+        "Golbraith's Cellar",
+        "Lavernica's Home",
+        "Lora's House",
+        "Nortale's Hostel",
+        "Old Jol's"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Baldur's Mouth",
+      "description": "A print shop for news broadsheets, run by editor Ettvard",
+      "wikiTitle": "Baldur's Mouth",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Basilisk Gate Barracks",
+      "description": "Barracks for the Flaming Fist and location of Heapside Prison.",
+      "wikiTitle": "Basilisk Gate Barracks",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Bloomridge Park",
+      "description": "A large park in the north of the Lower City.",
+      "wikiTitle": "Bloomridge Park",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Candulhallow's Tombstones",
+      "description": "An unassuming funerary store nestled along a back street.",
+      "wikiTitle": "Candulhallow's Tombstones",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Murder Tribunal"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Devil's Fee",
+      "description": "A curio store run by Helsik.",
+      "wikiTitle": "Devil's Fee",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Elerrathin's Home",
+      "description": "The home of Jaheira and her wards, with a large, lush basement cavern.",
+      "wikiTitle": "Elerrathin's Home",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Elfsong Tavern",
+      "description": "A well-known tavern, popular with adventurers and independent operators.",
+      "wikiTitle": "Elfsong Tavern",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Knights of the Shield Hideout"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Felogyr's Fireworks",
+      "description": "A fireworks store in the south-east of the city.",
+      "wikiTitle": "Felogyr's Fireworks",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Flymm Cargo",
+      "description": "A dock-side warehouse and access point to the Lower City Sewers and Iron Throne.",
+      "wikiTitle": "Flymm Cargo",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Iron Throne"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Forge of the Nine",
+      "description": "An outdoor smithy, possibly run by Dammon.",
+      "wikiTitle": "Forge of the Nine",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Graveyard (Lower City)",
+      "description": "The Lower City's graveyard, housing several mausoleums and a morgue.",
+      "wikiTitle": "Graveyard (Lower City)",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Ancient Mausoleum",
+        "Durinbold Mausoleum",
+        "Gorion Mausoleum",
+        "Hhune Mausoleum"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "House of Grief",
+      "description": "A healing house run by Sharran cultists, and aboveground facade to their cloister.",
+      "wikiTitle": "House of Grief",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Cloister of Sombre Embrace"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Lady Jannath's Estate",
+      "description": "The home of Lady Jannath and her husband, the artist Oskar Fevras.",
+      "wikiTitle": "Lady Jannath's Estate",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Lustrous Lass",
+      "description": "A cursed ship docked at Greyharbour.",
+      "wikiTitle": "Lustrous Lass",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Old Garlow's Place",
+      "description": "A somewhat rundown house and hideout for a group of hag survivors.",
+      "wikiTitle": "Old Garlow's Place",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Philgrave's Mansion",
+      "description": "A waterside mansion and home of Mystic Carrion.",
+      "wikiTitle": "Philgrave's Mansion",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Vonayn's Home"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Steel Watch Foundry",
+      "description": "Factory for Gortash's Steel Watch, found near the Grey Harbour.",
+      "wikiTitle": "Steel Watch Foundry",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sorcerous Sundries",
+      "description": "A large magical marketplace, run by the renound wizard Lorroakan.",
+      "wikiTitle": "Sorcerous Sundries",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Ramazith's Tower",
+        "Sorcerous Vault"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Stormshore Tabernacle",
+      "description": "A house of worship in the north-eastern part of the city.",
+      "wikiTitle": "Stormshore Tabernacle",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Szarr Palace",
+      "description": "Palace of Cazador Szarr and home to his vampire spawn.",
+      "wikiTitle": "Szarr Palace",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [
+        "Cazador's Dungeon"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "The Blushing Mermaid",
+      "description": "A large tavern with an old ship's bow protruding from the side.",
+      "wikiTitle": "The Blushing Mermaid",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Highberry's Home",
+      "description": "A small festival taking place on the Highberry's home porch, hosted by Cora Highberry.",
+      "wikiTitle": "Highberry's Home",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Lodge",
+      "description": "Headquarters of the Society of Brilliance, perched high above the Greyharbour Docks.",
+      "wikiTitle": "The Lodge",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Water Queen's House",
+      "description": "An outdoor temple to Bitch Queen Umberlee, overseen by Wavemistress Allandra Grey.",
+      "wikiTitle": "Water Queen's House",
+      "section": "Act Three / Baldur's Gate / Lower City",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Lower City Sewers",
+      "description": "A large sewerage network beneath the Lower City.",
+      "wikiTitle": "Lower City Sewers",
+      "section": "Act Three / Baldur's Gate / Underground",
+      "subLocations": [
+        "Abandoned Cistern",
+        "Guildhall"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Undercity Ruins",
+      "description": "The remains of an old city, located in a vast cavern beneath Baldur's Gate.",
+      "wikiTitle": "Undercity Ruins",
+      "section": "Act Three / Baldur's Gate / Underground",
+      "subLocations": [
+        "Ancient Lair",
+        "Bhaal Temple",
+        "Morphic Pool"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "Upper City",
+      "description": "A wealthy region in Baldur's Gate, home to its patriar families.",
+      "wikiTitle": "Upper City",
+      "section": "Act Three / Baldur's Gate / Upper City",
+      "subLocations": [
+        "High Hall",
+        "Upper City Sewers"
+      ],
+      "category": "Location"
+    },
+    {
+      "name": "House of Hope",
+      "description": "Raphael's home in the hells.",
+      "wikiTitle": "House of Hope",
+      "section": "Act Three / Other Planes",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Abandoned Cistern",
+      "description": "The Abandoned Cistern is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Abandoned Cistern",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Abandoned Windmill",
+      "description": "The Abandoned Windmill is a Location within Rivington in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Abandoned Windmill",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ancient Lair",
+      "description": "The Ancient Lair is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Ancient Lair",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ancient Mausoleum",
+      "description": "The Ancient Mausoleum is a Location within the Lower City in Act Three of Baldur's Gate 3. It can be accessed through the mausoleum labelled as Grand Mausoluem in the Graveyard of the Lower City, not to be confused with the Grand Mausoleum which is a completely different location.",
+      "wikiTitle": "Ancient Mausoleum",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Armbrust's Home",
+      "description": "Armbrust's Home is a Location within Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Armbrust's Home",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Baldur's Gate",
+      "description": "The city of Baldur's Gate is a large region within Act Three of Baldur's Gate 3. It is the setting of nearly all of Act Three, and contains many individual locations. It can be seen on the map of the Over-world. It was founded by Balduran the seafarer and is located on the Sword Coast on the banks of the Chionthar.",
+      "wikiTitle": "Baldur's Gate",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Barren's Coop",
+      "description": "Barren's Coop is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Barren's Coop",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Beehive General Goods",
+      "description": "Beehive General Goods is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Beehive General Goods",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Bhaal Temple",
+      "description": "The Bhaal Temple is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Bhaal Temple",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Bonecloak's Apothecary",
+      "description": "Bonecloak's Apothecary is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Bonecloak's Apothecary",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Bruc and Pishe's Emporium",
+      "description": "Bruc and Pishe's Emporium is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Bruc and Pishe's Emporium",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Carm's Garms",
+      "description": "Carm's Garms is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is a clothing store selling various camp clothing items, as well as dyes to diversify them.",
+      "wikiTitle": "Carm's Garms",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Cazador's Dungeon",
+      "description": "Cazador's Dungeon is a Location within the Szarr Palace in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Cazador's Dungeon",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Central Watch Tower",
+      "description": "The Central Watch Tower is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Central Watch Tower",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Chromatic Scale",
+      "description": "The Chromatic Scale is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Chromatic Scale",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Cloister of Sombre Embrace",
+      "description": "The Cloister of Sombre Embrace is a Location within the House of Grief in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Cloister of Sombre Embrace",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Crimson Draughts",
+      "description": "Crimson Draughts is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Crimson Draughts",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Devil's Den",
+      "description": "The Devil's Den is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is located in one of Sharess' Caress' private rooms, and is currently in use by Raphael.",
+      "wikiTitle": "Devil's Den",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Durinbold Mausoleum",
+      "description": "The Durinbold Mausoleum is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Durinbold Mausoleum",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Elminster's Library",
+      "description": "Elminster's Library is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is one of thematic parlours on the Upper Floor of Sharess' Caress.",
+      "wikiTitle": "Elminster's Library",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Facemaker's Boutique",
+      "description": "The Facemaker's Boutique is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Facemaker's Boutique",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Flymm's Cobblers",
+      "description": "Flymm's Cobblers is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Flymm's Cobblers",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Fraygo's Flophouse",
+      "description": "Fraygo's Flophouse is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is a three-storied building on the western side of the Wyrm's Crossing, just north from the ramparts of South Span Checkpoint.",
+      "wikiTitle": "Fraygo's Flophouse",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Golbraith's Cellar",
+      "description": "Golbraith's Cellar is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Golbraith's Cellar",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Gorion Mausoleum",
+      "description": "The Gorion Mausoleum is a Location within the Lower City in Act Three of Baldur's Gate 3. It can be accessed through the Graveyard of the Lower City.",
+      "wikiTitle": "Gorion Mausoleum",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Grey Harbour Docks",
+      "description": "Grey Harbour Docks is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Grey Harbour Docks",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Guildhall",
+      "description": "The Guildhall is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Guildhall",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Gur Camp",
+      "description": "The Gur Camp is a Location within Rivington in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Gur Camp",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Hhune Mausoleum",
+      "description": "The Hhune Mausoleum is a Location within the Lower City in Act Three of Baldur's Gate 3. It can be accessed through the Graveyard of the Lower City. The aboveground entrance is on the northern side of the mortuary.",
+      "wikiTitle": "Hhune Mausoleum",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "High Hall",
+      "description": "High Hall is a Location within the Upper City in Act Three of Baldur's Gate 3. This area is accessible only after travelling to the Morphic Pool to begin the final quest of Baldur's Gate 3.",
+      "wikiTitle": "High Hall",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Iron Throne",
+      "description": "The Iron Throne is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Iron Throne",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Jungle",
+      "description": "The Jungle is a region in Act Three of Baldur's Gate 3. It is accessible only through Akabi at the Circus of the Last Days in Rivington. A single party member can be teleported here if they win the jackpot in Akabi's spin the wheel game.",
+      "wikiTitle": "Jungle",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Knights of the Shield Hideout",
+      "description": "The Knights of the Shield Hideout is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Knights of the Shield Hideout",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Lavernica's Home",
+      "description": "Lavernica's Home is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Lavernica's Home",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Lora's House",
+      "description": "Lora's House is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Lora's House",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Mapping of the Heart",
+      "description": "The Mapping of the Heart is a ritual carried out by the Inquisitor of Shar at the House of Grief. The mapping is performed on whoever sits on the stone bench at X: -272 Y: 9. Only one character per run can undergo the Mapping of the Heart. Shadowheart will have a unique interaction with the Inquisitor on the bench and will not complete a typical mapping. The answers to the mapping affect the battle with the Viconia DeVir by giving her two specialized spells Castigate Heartform and Mapped Terror. The Mapping can be skipped entirely by passing a DC 20 Investigation Check to find a button on the wall that opens the hidden passage to the Cloister of Sombre Embrace, or by initiating combat with at least three of the Sharrans in the above-ground part of House of Grief, at which point the button becomes visible.",
+      "wikiTitle": "Mapping of the Heart",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Morphic Pool",
+      "description": "The Morphic Pool is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Morphic Pool",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Murder Tribunal",
+      "description": "The Murder Tribunal (also known as Bhaalist Crypt) is a Location within the Undercity in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Murder Tribunal",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Nortale's Hostel",
+      "description": "Nortale's Hostel is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Nortale's Hostel",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Nymph's Grotto",
+      "description": "Nymph's Grotto is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is one of Sharess' Caress' private rooms, currently in use by Naoise Nallinto.",
+      "wikiTitle": "Nymph's Grotto",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Old Jol's",
+      "description": "Old Jol's is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Old Jol's",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Open Hand Temple Underground Area",
+      "description": "The Open Hand Temple Underground Area is a Location within Rivington in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Open Hand Temple Underground Area",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Peartree House",
+      "description": "Peartree House is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Peartree House",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Rainforest's Home",
+      "description": "Rainforest's Home is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Rainforest's Home",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Ramazith's Tower",
+      "description": "Ramazith's Tower is a Location within the Upper City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Ramazith's Tower",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sorcerous Vault",
+      "description": "The Sorcerous Vault is a Location within Sorcerous Sundries in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Sorcerous Vault",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Stormshore Armoury",
+      "description": "Stormshore Armoury is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Stormshore Armoury",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Submersible",
+      "description": "The Submersible is a Location within the Lower City in Act Three of Baldur's Gate 3. It can be accessed from the basement of Flymm Cargo, and provides access to the Iron Throne.",
+      "wikiTitle": "Submersible",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Bibliophile",
+      "description": "The Bibliophile is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "The Bibliophile",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Counting House",
+      "description": "The Counting House is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "The Counting House",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Dragon's Sanctum",
+      "description": "The Dragon's Sanctum is a Location within Wyrm's Rock Fortress in Act Three of Baldur's Gate 3. This vast cave deep beneath the Wyrm's Rock isle is described in legends as the hiding place of Ansur, protector of Baldur's Gate.",
+      "wikiTitle": "The Dragon's Sanctum",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Glitter Gala",
+      "description": "The Glitter Gala is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "The Glitter Gala",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Singing Lute",
+      "description": "The Singing Lute is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "The Singing Lute",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Velveteen Elixir",
+      "description": "The Velveteen Elixir is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is an establishment trading in various elixirs, potions and alchemical ingredients, including quite rare ones.",
+      "wikiTitle": "The Velveteen Elixir",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "The Wyrmway",
+      "description": "The Wyrmway is a Location within Wyrm's Rock Fortress in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "The Wyrmway",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Undercity",
+      "description": "The Undercity is a region in Act Three of Baldur's Gate 3. It is located beneath the Lower City.",
+      "wikiTitle": "Undercity",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Underdark Pleasures",
+      "description": "Underdark Pleasures is a Location within Wyrm's Crossing in Act Three of Baldur's Gate 3. It is one of Sharess' Caress' thematic parlours, in use by Nym and Sorn Orlith.",
+      "wikiTitle": "Underdark Pleasures",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Upper City Gate Checkpoint",
+      "description": "Upper City Gate Checkpoint is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Upper City Gate Checkpoint",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Vonayn's Home",
+      "description": "Vonayn's Home is a Location within the Lower City in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Vonayn's Home",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Western Beach",
+      "description": "The Western Beach is a Location within Rivington in Act Three of Baldur's Gate 3.",
+      "wikiTitle": "Western Beach",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Wyrm's Rock Prison",
+      "description": "Wyrm's Rock Prison is a Location within Wyrm's Rock Fortress in Act Three of Baldur's Gate 3. The prison occupies the fortress's basement. While inside, the party cannot fast-travel to a Waypoint or go to camp.",
+      "wikiTitle": "Wyrm's Rock Prison",
+      "section": "Act Three / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Avernus",
+      "description": "Avernus is the first layer of the Nine Hells, in both the setting of Baldur's Gate 3, as well as the Forgotten Realms universe the game sources its setting from.",
+      "wikiTitle": "Avernus",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Faerûn",
+      "description": "Faerûn is a major continent on Toril, and is the place where the vast majority of the events of Baldur's Gate 3 happen. The word Faerûn is a modified version of the name of the homeland of the ancient elves, \"Faerie\".",
+      "wikiTitle": "Faerûn",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Nine Hells",
+      "description": "The Nine Hells are the infernal lower Planes, each ruled by an Archdevil. They are home to Devils and divided into nine cosmological layers. Every layer is its own unique magical ecosystem, warped after the sheer presence of their rulers. The Nine Hells are locked into a never-ending Blood War with the Demons of the Abyss.",
+      "wikiTitle": "Nine Hells",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "River Chionthar",
+      "description": "The River Chionthar is a wide river that runs from Iriaebor to the Sword Coast. The Risen Road runs parallel to the river.",
+      "wikiTitle": "River Chionthar",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Sword Coast",
+      "description": "The Sword Coast is a region of Faerûn along its northwestern coast. It is where the majority of the events of Baldur's Gate III take place, more specifically along the north bank of the Chionthar river between the cities of Baldur's Gate and Elturel. The dimensions of the Sword Coast are somewhat subjective (both in- and out-of-universe), and overlap with other regional concepts such as \"the Western Heartlands\" and \"the North\". The Sword Coast's southern border is generally agreed to be the Cloud Peaks, which separate it from Amn. The northern border is usually given as Waterdeep, but some sources go further up to Neverwinter or Luskan. The eastern (inland) border is the vaguest, with different sources placing it anywhere from the Misty Forest and Wood of Sharp Teeth to the Sunset Mountains and Anauroch desert.",
+      "wikiTitle": "Sword Coast",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Toril",
+      "description": "Toril is the planet on which Faerûn is situated.",
+      "wikiTitle": "Toril",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    },
+    {
+      "name": "Waterdeep",
+      "description": "The city of Waterdeep is a cosmopolitan city on the Sword Coast in the Forgotten Realms.",
+      "wikiTitle": "Waterdeep",
+      "section": "Other Locations / Other Locations",
+      "subLocations": [],
+      "category": "Location"
+    }
+  ]
+}

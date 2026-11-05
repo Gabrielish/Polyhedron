@@ -4,13 +4,17 @@ import {
   type TranslationSessionEntry
 } from '@/context/TranslationSession'
 import { larianTagSignature } from '@/utils/larianTags'
+import { quoteStyleSignature, quoteStyleSignaturesMismatch } from '@/utils/quoteStyle'
 
 export function analyzeTranslateEntries(
   entries: TranslationSessionEntry[],
   hideDeveloperNotes: boolean
 ) {
   const visibleEntries = hideDeveloperNotes ? ([] as TranslationSessionEntry[]) : entries
-  const sourceFlags = new Map<string, { tags: boolean; brackets: boolean; larianTagSignature: string }>()
+  const sourceFlags = new Map<
+    string,
+    { tags: boolean; brackets: boolean; larianTagSignature: string; quoteStyleSignature: string }
+  >()
   let translated = 0
   let untranslated = 0
   let verified = 0
@@ -19,6 +23,7 @@ export function analyzeTranslateEntries(
   let brackets = 0
   let needsReview = 0
   let warnings = 0
+  let quoteMismatches = 0
   for (const entry of entries) {
     if (hideDeveloperNotes && isDeveloperNote(entry.source)) continue
     if (hideDeveloperNotes) visibleEntries.push(entry)
@@ -33,7 +38,8 @@ export function analyzeTranslateEntries(
       flags = {
         tags: /(<[^>]+>|\{[^}]+\})/.test(entry.source.replace(/<\/?(?:i|br|b)\b[^>]*>/gi, '')),
         brackets: /\[[^\]\r\n]+\]/.test(entry.source),
-        larianTagSignature: larianTagSignature(entry.source)
+        larianTagSignature: larianTagSignature(entry.source),
+        quoteStyleSignature: quoteStyleSignature(entry.source)
       }
       sourceFlags.set(entry.source, flags)
     }
@@ -47,7 +53,11 @@ export function analyzeTranslateEntries(
         flags.larianTagSignature !== targetTagSignature
     }
     const hasCaseMismatch = hasCapitalizationMismatch(entry)
+    const hasQuotesMismatch = entry.target.trim()
+      ? quoteStyleSignaturesMismatch(flags.quoteStyleSignature, quoteStyleSignature(entry.target))
+      : false
     if (hasTagMismatch || hasCaseMismatch) warnings++
+    if (hasQuotesMismatch) quoteMismatches++
   }
   return {
     visibleEntries,
@@ -58,7 +68,8 @@ export function analyzeTranslateEntries(
     tags,
     brackets,
     needsReview,
-    warnings
+    warnings,
+    quoteMismatches
   }
 }
 

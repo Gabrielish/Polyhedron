@@ -26,6 +26,8 @@
     "build:books-reference": "node scripts/build-books-reference.mjs",
     "build:npc-reference": "node scripts/build-npc-reference.mjs",
     "build:items-reference": "node scripts/build-items-reference.mjs",
+    "build:locations-reference": "node scripts/build-locations-reference.mjs",
+    "build:character-creation-reference": "node scripts/build-character-creation-reference.mjs",
     "format": "biome format --write .",
     "lint": "biome check .",
     "typecheck:node": "tsc --noEmit -p config/tsconfig.node.json --composite false",

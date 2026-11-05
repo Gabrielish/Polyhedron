@@ -130,6 +130,14 @@ const npcReference = JSON.parse(
   fs.readFileSync(path.join(root, 'resources/reference/BG3 NPCs.json'), 'utf8')
 )
 entries.push(...npcReference.entries)
+const locationReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 Locations.json'), 'utf8')
+)
+entries.push(...locationReference.entries)
+const characterCreationReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 Character Creation.json'), 'utf8')
+)
+entries.push(...characterCreationReference.entries)
 const unique = [
   ...new Map(
     entries.map((entry) => [

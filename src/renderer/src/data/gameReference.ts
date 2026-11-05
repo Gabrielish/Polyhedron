@@ -1,6 +1,6 @@
 import catalog from './gameReference.generated.json'
 
-export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Spell' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC'
+export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Spell' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC' | 'Location' | 'Character Creation'
 export type ReferenceCatalogEntry = {
   name: string
   description: string
@@ -17,11 +17,12 @@ export type ReferenceCatalogEntry = {
   wikiTitle?: string
   section?: string
   subquests?: string[]
+  subLocations?: string[]
   npcGroups?: string[]
   itemGroups?: Array<{ section: string; type: string; subtype?: string }>
   rarity?: string
 }
-export type ReferenceTag = 'Name' | 'Description' | 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC'
+export type ReferenceTag = 'Name' | 'Description' | 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC' | 'Location' | 'Character Creation'
 export type ReferenceLink = { kind: 'Name' | 'Description'; text: string }
 
 const entries = catalog as ReferenceCatalogEntry[]

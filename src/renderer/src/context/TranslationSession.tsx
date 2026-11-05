@@ -19,6 +19,7 @@ import { i18n } from '@/i18n'
 import type { TranslationHistoryEntry, XmlEntry, XmlLoadProgress } from '@/types'
 import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
 import { hasLarianTagMismatch } from '@/utils/larianTags'
+import { hasQuoteStyleMismatch } from '@/utils/quoteStyle'
 import type { GameProfileId } from '@/features/translate/gameProfiles'
 import { prepareSessionEntries } from '@/features/translate/utils/prepareSessionEntries'
 import { useLocation } from 'react-router-dom'
@@ -41,6 +42,7 @@ export type FilterMode =
   | 'brackets'
   | 'needs-review'
   | 'warnings'
+  | 'quote-mismatch'
 export interface FilterSpec {
   mode: FilterMode
   referenceTag: ReferenceTag | 'all'
@@ -179,6 +181,8 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
     !hasLarianTagMismatch(entry.source, entry.target) &&
     !hasCapitalizationMismatch(entry)
   ) return false
+  if (filter.mode === 'quote-mismatch' && !hasQuoteStyleMismatch(entry.source, entry.target))
+    return false
   if (
     filter.referenceTag !== 'all' &&
     !getReferenceTags(entry.source).includes(filter.referenceTag)

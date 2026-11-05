@@ -31,6 +31,7 @@ import {
   History,
   Redo2,
   RefreshCw,
+  Quote,
   Replace,
   ReplaceAll,
   Sparkles,
@@ -99,6 +100,7 @@ import {
   type TextSelection,
   wrapSelectionWithTag
 } from '@/utils/larianTags'
+import { hasQuoteStyleMismatch } from '@/utils/quoteStyle'
 import { renderSource } from '@/utils/renderSource'
 import { normalizeSearchText } from '@/utils/search'
 import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata'
@@ -114,6 +116,7 @@ type FilterMode =
   | 'brackets'
   | 'needs-review'
   | 'warnings'
+  | 'quote-mismatch'
 type XmlTagFilter = 'all' | 'untranslated' | 'translated'
 type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
@@ -809,10 +812,22 @@ export function TranslationGrid({
   // The fallback covers retained values restored during HMR from before this counter existed.
   const warningCount = useMemo(
     () => counts.warnings ?? entries.reduce(
-      (total, entry) => total + (hasLarianTagMismatch(entry.source, entry.target) || hasCapitalizationMismatch(entry) ? 1 : 0),
+      (total, entry) => total + (
+        hasLarianTagMismatch(entry.source, entry.target) ||
+        hasCapitalizationMismatch(entry)
+          ? 1
+          : 0
+      ),
       0
     ),
     [counts.warnings, entries]
+  )
+  const quoteMismatchCount = useMemo(
+    () => counts.quoteMismatches ?? entries.reduce(
+      (total, entry) => total + (hasQuoteStyleMismatch(entry.source, entry.target) ? 1 : 0),
+      0
+    ),
+    [counts.quoteMismatches, entries]
   )
 
   // Metadata is only relevant while a concrete speaker filter is active. Keep
@@ -873,6 +888,10 @@ export function TranslationGrid({
         deferredFilter === 'warnings' &&
         !hasLarianTagMismatch(entry.source, entry.target) &&
         !hasCapitalizationMismatch(entry)
+      ) return false
+      if (
+        deferredFilter === 'quote-mismatch' &&
+        !hasQuoteStyleMismatch(entry.source, entry.target)
       ) return false
       if (
         deferredReferenceTag !== 'all' &&
@@ -1164,9 +1183,15 @@ export function TranslationGrid({
     searchField !== deferredSearchField ||
     filter !== deferredFilter
 
+  const getVirtualEntryKey = useCallback(
+    (index: number) => pageEntries[index]?.rowId ?? index,
+    [pageEntries]
+  )
+
   const sideVirtualizer = useVirtualizer({
     count: pageEntries.length,
     getScrollElement: () => sideParentRef.current,
+    getItemKey: getVirtualEntryKey,
     estimateSize: () => (showTranslationSuggestions ? 150 : 72),
     overscan: 12,
     useAnimationFrameWithResizeObserver: true
@@ -1175,6 +1200,7 @@ export function TranslationGrid({
   const stackedVirtualizer = useVirtualizer({
     count: pageEntries.length,
     getScrollElement: () => stackedParentRef.current,
+    getItemKey: getVirtualEntryKey,
     estimateSize: () => (showTranslationSuggestions ? 300 : 220),
     overscan: 12,
     useAnimationFrameWithResizeObserver: true
@@ -2255,9 +2281,15 @@ export function TranslationGrid({
         label: 'Warnings',
         count: warningCount,
         dot: 'bg-yellow-400'
+      },
+      {
+        mode: 'quote-mismatch',
+        label: 'Quote mismatch',
+        count: quoteMismatchCount,
+        dot: 'bg-fuchsia-400'
       }
     ],
-    [counts, entries, t, warningCount]
+    [counts, entries, t, warningCount, quoteMismatchCount]
   )
 
   const statusTabs = (
@@ -2298,7 +2330,8 @@ export function TranslationGrid({
         </span>
       </button>
       {filterItems.map((item) => {
-        if (item.mode === 'warnings' && item.count === 0) return null
+        if ((item.mode === 'warnings' || item.mode === 'quote-mismatch') && item.count === 0)
+          return null
         if (item.mode === 'warnings') {
           const active = filter === 'warnings'
           return (
@@ -2317,7 +2350,36 @@ export function TranslationGrid({
               <TriangleAlert size={13} aria-hidden="true" />
               <span className={cn(
                 'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
-                active ? 'bg-yellow-400/20 text-yellow-200' : 'bg-[#181b1f] text-yellow-400/80'
+                active
+                  ? 'bg-yellow-400/20 text-yellow-200'
+                  : 'bg-[#181b1f] text-yellow-400/80'
+              )}>
+                {item.count}
+              </span>
+            </button>
+          )
+        }
+        if (item.mode === 'quote-mismatch') {
+          const active = filter === 'quote-mismatch'
+          return (
+            <button
+              key={item.mode}
+              type="button"
+              aria-label={`Quote mismatches (${item.count})`}
+              onClick={() => startFilterTransition(() => setFilter('quote-mismatch'))}
+              className={cn(
+                'inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors',
+                active
+                  ? 'border-fuchsia-400/60 bg-fuchsia-500/15 text-fuchsia-300'
+                  : 'border-fuchsia-500/25 text-fuchsia-300/70 hover:border-fuchsia-400/50 hover:bg-fuchsia-500/10 hover:text-fuchsia-200'
+              )}
+            >
+              <Quote size={13} aria-hidden="true" />
+              <span className={cn(
+                'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
+                active
+                  ? 'bg-fuchsia-400/20 text-fuchsia-200'
+                  : 'bg-[#181b1f] text-fuchsia-300/80'
               )}>
                 {item.count}
               </span>
@@ -2355,10 +2417,9 @@ export function TranslationGrid({
               <span>{isXmlTagFilter ? 'XML' : 'PL'}</span>
               <span
                 className={cn(
-                  'font-mono text-[10px] tabular-nums',
+                  'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
                   active
                     ? cn(
-                        'rounded-full px-1.5 py-0.5',
                         isXmlTagFilter
                           ? 'bg-purple-400/20 text-purple-200'
                           : 'bg-cyan-400/20 text-cyan-200'
@@ -2477,7 +2538,9 @@ export function TranslationGrid({
                         ? 'bg-rose-400/20 text-rose-200'
                         : active
                           ? 'bg-orange-400/20 text-orange-200'
-                          : 'bg-[#181b1f] text-neutral-500'
+                          : item.mode === 'needs-review'
+                            ? 'bg-[#181b1f] text-rose-400/80'
+                            : 'bg-[#181b1f] text-neutral-500'
               )}
             >
               {item.count}

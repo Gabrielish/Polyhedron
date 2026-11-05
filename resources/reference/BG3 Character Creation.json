@@ -1,0 +1,476 @@
+{
+  "sourceUrl": "https://bg3.wiki/wiki/Character_creation",
+  "sourceRevision": 416995,
+  "license": "CC BY-NC-SA 4.0 or CC BY-SA 4.0 (see source page)",
+  "entries": [
+    {
+      "name": "Custom",
+      "description": "",
+      "wikiTitle": "Character_creation",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Astarion",
+      "description": "Astarion Ancunín is an Origin character and recruitable companion who can be romanced by characters of any gender. He is a high elven rogue with the Charlatan background. Astarion can be first found west of the Nautiloid Wreck during Act One. A vampire spawn previously under the control of Cazador Szarr until being abducted by the Nautiloid, Astarion is set on exacting revenge upon Cazador and becoming free, no matter the consequences.",
+      "wikiTitle": "Astarion",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Gale",
+      "description": "Gale Dekarios is an Origin Character and recruitable Companion who can be romanced by characters of any gender. He is a human wizard with the Sage background. Gale can be first found at the Roadside Cliffs waypoint during Act One. A scholar and prodigy in the arcane arts, Gale is committed to unlocking the secrets of the Weave no matter the cost.",
+      "wikiTitle": "Gale",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Karlach",
+      "description": "Karlach Cliffgate is an Origin Character and a recruitable Companion who can be romanced by characters of any gender. She is a Zariel Tiefling and a Barbarian with the Outlander background. Karlach is on the Risen Road during Act One. Once a soldier in Zariel's army, Karlach has been given a new chance at life after the recent events. Now, freed from Avernus, she will make the most out of it, and no one will get in her way. In multiplayer sessions, if Karlach is chosen as an origin by a player, Wyll is locked out as an option to other players.",
+      "wikiTitle": "Karlach",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Lae'zel",
+      "description": "Lae'zel of Crèche K'liir is an Origin Character and a recruitable Companion who can be romanced by characters of any gender. She is a Githyanki Fighter with the Soldier background. Unless played as an origin character, Lae'zel is first encountered on the Nautiloid during the prologue, where she serves as a temporary companion, and can be properly recruited on the Roadside Cliffs in Act One. A ferocious warrior zealously devoted to the Lich Queen Vlaakith, Lae'zel will do whatever is necessary to end the terror of the Illithid and prove herself to her queen.",
+      "wikiTitle": "Lae'zel",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Shadowheart",
+      "description": "Shadowheart (born Jenevelle Hallowleaf) is an Origin character and a recruitable companion who can be romanced by characters of any gender. She is a high half-elf and a Trickery Domain Cleric with the Acolyte background. Shadowheart can be first found on the Nautiloid during the prologue where she serves as a temporary companion, and can be properly recruited at various points in Act One. As a loyal servant of the goddess Shar, Shadowheart can be cold and calculating, willing to do whatever is necessary to serve the Dark Lady with utter devotion.",
+      "wikiTitle": "Shadowheart",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Wyll",
+      "description": "Wyll Ravengard is an Origin Character and a recruitable Companion who can be romanced by characters of any gender. He is a Human and a Fiend Warlock with the Folk Hero background. Wyll is first encountered just outside the Emerald Grove in Act One. Known as the \"Blade of Frontiers\" across the marches of Baldur's Gate, Wyll is a valiant hero who fights injustice and hunts monsters wherever they may hide. Though forever bound to his infernal patron Mizora, he has dedicated his whole life to protecting the city he loves. In multiplayer sessions, if Wyll is chosen as an origin by a player, Karlach is locked out as an option to other players.",
+      "wikiTitle": "Wyll",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "The Dark Urge",
+      "description": "The Dark Urge is a special origin in Baldur's Gate 3. It can be customised to any race, class, and gender, and will not be part of player's party if they use any other origin character.",
+      "wikiTitle": "The Dark Urge (Origin)",
+      "section": "Origins",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Human",
+      "description": "Humans are a playable race in Baldur's Gate 3. They are one of the most populous races in Faerûn, exhibiting a versatile range of skills rather than any one mastery.",
+      "wikiTitle": "Human",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Elf",
+      "description": "Elves are a playable race. They are long lived, and have an affinity for magic.",
+      "wikiTitle": "Elf",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Drow",
+      "description": "Drow are a playable race in Baldur's Gate 3. They are the dark elves of the Forgotten Realms, dwelling in the Underdark, large subterranean caverns beneath the surface.",
+      "wikiTitle": "Drow",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Half-Elf",
+      "description": "Half-elves are a playable race in Baldur's Gate 3.",
+      "wikiTitle": "Half-Elf",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Half-Orc",
+      "description": "Half-orcs are a playable race in Baldur's Gate 3. They are born of both human and orc ancestry, and exhibit a blend of orcish and human characteristics, their appearances varying widely.",
+      "wikiTitle": "Half-Orc",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Halfling",
+      "description": "Halflings are a playable race in Baldur's Gate 3.",
+      "wikiTitle": "Halfling",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Dwarf",
+      "description": "Dwarves are a playable race in Baldur's Gate 3.",
+      "wikiTitle": "Dwarf",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Gnome",
+      "description": "Gnomes are a playable race in Baldur's Gate 3.",
+      "wikiTitle": "Gnome",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Tiefling",
+      "description": "Tieflings are a playable race in Baldur's Gate 3. Touched by the Hells, tieflings are resistant to fire and carry extraordinary Infernal powers.",
+      "wikiTitle": "Tiefling",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Githyanki",
+      "description": "Githyanki are a playable race in Baldur's Gate 3.",
+      "wikiTitle": "Githyanki",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Dragonborn",
+      "description": "Dragonborn are a playable race in Baldur's Gate 3. They have resistance to a type of energy damage, and are able to make deadly breath weapon attacks. These abilities are affected by their dragonborn subrace. Dragonborn resemble draconic humanoids, can have scales in a variety of colours, and may or may not have a tail.",
+      "wikiTitle": "Dragonborn",
+      "section": "Race",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Barbarian",
+      "description": "Barbarian is a class in Baldur's Gate 3.",
+      "wikiTitle": "Barbarian",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Bard",
+      "description": "Bard is a class in Baldur's Gate 3.",
+      "wikiTitle": "Bard",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Cleric",
+      "description": "Cleric is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Cleric",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Druid",
+      "description": "Druid is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Druid",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Fighter",
+      "description": "Fighter is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Fighter",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Monk",
+      "description": "Monk is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Monk",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Paladin",
+      "description": "Paladin is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Paladin",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Ranger",
+      "description": "Ranger is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Ranger",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Rogue",
+      "description": "Rogue is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Rogue",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Sorcerer",
+      "description": "Sorcerer is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Sorcerer",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Warlock",
+      "description": "Warlock is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Warlock",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Wizard",
+      "description": "Wizard is a character class in Baldur's Gate 3.",
+      "wikiTitle": "Wizard",
+      "section": "Starting Class",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Acolyte",
+      "description": "Acolyte is a character background with skills and inspirations themed around religion. Shadowheart and the hireling Zenith Feur'sel have this background.",
+      "wikiTitle": "Acolyte",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Charlatan",
+      "description": "Charlatan is a character background with skills and inspirations themed around trickery and deceit. Astarion and the hireling Kree Derryck have this background.",
+      "wikiTitle": "Charlatan",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Criminal",
+      "description": "Criminal is a character background with skills and inspirations themed around law-breaking and the criminal underworld. The hireling Ver'yll Wenkiir has this background.",
+      "wikiTitle": "Criminal",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Entertainer",
+      "description": "Entertainer is a character background with skills and inspirations themed around bardic performances. The hireling Brinna Brightsong has this background.",
+      "wikiTitle": "Entertainer",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Folk Hero",
+      "description": "Folk Hero is a character background with skills and inspirations themed around rescuing others from peril. Wyll, Minsc, and the hireling Danton have this background.",
+      "wikiTitle": "Folk Hero",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Guild Artisan",
+      "description": "Guild Artisan is a character background with skills and inspirations themed around crafting and mercantilism. The hireling Jacelyn has this background.",
+      "wikiTitle": "Guild Artisan",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Haunted One",
+      "description": "Haunted One is a character background unique to the Dark Urge with inspirations themed around embracing (or sometimes resisting) The Urge.",
+      "wikiTitle": "Haunted One",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Noble",
+      "description": "Noble is a character background. Minthara and the hireling Kerz have this background.",
+      "wikiTitle": "Noble",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Outlander",
+      "description": "Outlander is a character background with skills and inspirations themed around exploration and navigating the wilds. Karlach, Halsin, and the hirelings Eldra Luthrinn and Sina'zith have this background.",
+      "wikiTitle": "Outlander",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Sage",
+      "description": "Sage is a character background with skills and inspirations themed around the pursuit of scholarly knowledge. Gale and the hireling Sir Fuzzalump have this background.",
+      "wikiTitle": "Sage",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Soldier",
+      "description": "Soldier is a character background with skills and inspirations themed around war and masterful combat. Lae'zel, Jaheira, and the hireling Varanna Sunblossom have this background.",
+      "wikiTitle": "Soldier",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Urchin",
+      "description": "Urchin is a character background with skills and inspirations themed around street smarts. The hireling Maddala Deadeye has this background.",
+      "wikiTitle": "Urchin",
+      "section": "Backgrounds",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Strength",
+      "description": "Strength is an ability score and the primary ability of Barbarian, Fighter, Paladin. Strength affects your Athletics skill and attack rolls so you become better at melee combat. It also determines how far you can jump, how much you can carry and how far you can shove (possibly based on Athletics).",
+      "wikiTitle": "Strength",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Dexterity",
+      "description": "Dexterity is an ability score and a key ability of Rogues, Rangers, Monks, and other wielders of finesse weapons. Dexterity affects your Acrobatics, Sleight of Hand, and Stealth skills, as well as your attack rolls for ranged weapons and finesse weapons. It also affects your Initiative and Armour Class.",
+      "wikiTitle": "Dexterity",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Constitution",
+      "description": "Constitution is an ability score. Constitution affects your maximum hit points and concentration saving throws. Your Constitution modifier is added to the number of hit points gained per level (including negative values), and is applied retroactively.",
+      "wikiTitle": "Constitution",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Intelligence",
+      "description": "Intelligence is an ability score and the primary ability of wizards. Intelligence affects your Arcana, History, Investigation, Nature, and Religion skills. It also improves spellcasting for wizards, fighters (useful for Eldritch Knights), and rogues (useful for Arcane Tricksters), by increasing the chance of hitting an enemy with spell attack rolls, due to the increased Difficulty Class of spells with saving throws. In addition, it increases the maximum number of prepared spells for wizards.",
+      "wikiTitle": "Intelligence",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Wisdom",
+      "description": "Wisdom is an ability score, and the primary ability of Clerics and Druids. Wisdom affects your Animal Handling, Insight, Medicine, Perception, and Survival skills and improves spellcasting for Clerics, Druids, Monks and Rangers (better chance to hit enemies with spell attack rolls; increases the Difficulty Class of spells with Saving Throws).",
+      "wikiTitle": "Wisdom",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Charisma",
+      "description": "Charisma is an ability score and the primary ability of Bards, Warlocks, and Sorcerers. Charisma affects its related skills (Deception, Intimidation, Performance, Persuasion) and improves spellcasting for Bards, Paladins, Warlocks and Sorcerers (better chance to hit enemies with spell attack rolls; increases the Difficulty Class of spells with saving throws). Increasing one's Charisma Modifier also improves the prices offered by Traders (by increasing the Persuasion skill bonus).",
+      "wikiTitle": "Charisma",
+      "section": "Ability Scores",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Acrobatics",
+      "description": "Acrobatics is a Dexterity-based Skill. The higher a creature's Dexterity Score, the more likely they will succeed on Acrobatics Checks, including resisting being shoved.",
+      "wikiTitle": "Acrobatics",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Animal Handling",
+      "description": "Animal Handling is a Wisdom-based Skill. The higher a creature's Wisdom Score, the more likely they will succeed on Animal Handling Checks to deal with animals.",
+      "wikiTitle": "Animal Handling",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Arcana",
+      "description": "Arcana is an Intelligence-based skill. It represents an academic understanding of arcane magic and the Weave, but it is not required to cast spells. The higher a creature's Intelligence Score, the more likely they will succeed on Arcana Checks.",
+      "wikiTitle": "Arcana",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Athletics",
+      "description": "Athletics is a Strength-based Skill. The higher a creature's Strength Score, the more likely they will succeed Athletics Checks, including resisting being shoved.",
+      "wikiTitle": "Athletics",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Deception",
+      "description": "Deception is a Charisma-based Skill. The higher a creature's Charisma Score, the more likely they will succeed on Deception Checks to mislead others in conversations.",
+      "wikiTitle": "Deception",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "History",
+      "description": "History is an Intelligence-based Skill. The higher a creature's Intelligence Score, the more likely they will succeed on History Checks to recall history on a particular topic.",
+      "wikiTitle": "History",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Insight",
+      "description": "Insight is a Wisdom-based Skill. The higher a creature's Wisdom Score, the more likely they are to succeed on Insight Checks to detect lies and read people's body language.",
+      "wikiTitle": "Insight",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Intimidation",
+      "description": "Intimidation is a Charisma-based Skill. The higher a creature's Charisma Score, the more likely they will succeed on Intimidation Checks to scare others into submission.",
+      "wikiTitle": "Intimidation",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Investigation",
+      "description": "Investigation is an Intelligence-based Skill. The higher a creature's Intelligence Score, the more likely they will succeed Investigation Checks to uncover hidden clues or objects.",
+      "wikiTitle": "Investigation",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Medicine",
+      "description": "Medicine is a Wisdom-based Skill. The higher a creature's Wisdom Score, the more likely they will succeed on Medicine Checks to diagnose diseases or recognize illnesses.",
+      "wikiTitle": "Medicine",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Nature",
+      "description": "Nature is an Intelligence-based Skill. The higher a creature's Intelligence Score, the more likely they will succeed on Nature Checks to recognize plants and natural creatures.",
+      "wikiTitle": "Nature",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Perception",
+      "description": "Perception is a Wisdom-based Skill. The higher a creature's Wisdom Score, the more likely it will succeed on Perception Checks to spot hidden objects or creatures.",
+      "wikiTitle": "Perception",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Performance",
+      "description": "Performance is a Charisma-based Skill. The higher a creature's Charisma Score, the more likely they will succeed on Performance Checks to entertain others or imitate characters.",
+      "wikiTitle": "Performance",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Persuasion",
+      "description": "Persuasion is a Charisma-based skill used almost exclusively for dialogue ability checks. Persuasion also affects the prices offered by traders alongside their Attitude value towards the party member talking to them.",
+      "wikiTitle": "Persuasion",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Religion",
+      "description": "Religion is an Intelligence-based Skill. The higher a creature's Intelligence Score, the more likely they will succeed on Religion Checks to recognize religious details.",
+      "wikiTitle": "Religion",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Sleight of Hand",
+      "description": "Sleight of Hand is a Dexterity-based skill. The higher a creature's Dexterity score, the more likely they are to succeed on Sleight of Hand ability checks to pick locks, pick pockets, and disarm traps.",
+      "wikiTitle": "Sleight of Hand",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Stealth",
+      "description": "Stealth is a Dexterity-based Skill. The higher a creature's Dexterity Score, the more likely they will succeed on Stealth Checks to stay hidden from enemies or other NPCs.",
+      "wikiTitle": "Stealth",
+      "section": "Skills",
+      "category": "Character Creation"
+    },
+    {
+      "name": "Survival",
+      "description": "Survival is a Wisdom-based Skill. The higher a creature's Wisdom Score, the more likely they will succeed on Survival Checks pertaining to hunting and the wilderness.",
+      "wikiTitle": "Survival",
+      "section": "Skills",
+      "category": "Character Creation"
+    }
+  ]
+}

@@ -1558,6 +1558,13 @@ html[data-theme="liquid-glass"] .app-content-shell main button.bulk-status-optio
 .translation-special-filter {
   border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 22%) !important;
 }
+html[data-theme="polyhedron-green"] .translation-special-filter,
+html[data-theme="duolingo-dark"] .translation-special-filter {
+  border-radius: 0.65rem;
+}
+html[data-theme="liquid-glass"] .translation-special-filter {
+  border-radius: 10px;
+}
 .translation-special-filter:hover {
   border-color: #2a2f37 !important;
   background-color: #181b1f !important;

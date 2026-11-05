@@ -219,6 +219,7 @@ export function Sidebar({ hidden = false }: { hidden?: boolean }): React.JSX.Ele
           ],
           { duration: 480, easing: 'cubic-bezier(0.22, 0.8, 0.24, 1)', fill: 'forwards' }
         )
+        animation.onfinish = () => window.dispatchEvent(new Event('polyhedron:dock-settled'))
       })
     }
 

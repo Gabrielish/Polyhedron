@@ -54,15 +54,18 @@ export function CloudSyncMenu(): React.JSX.Element {
   const [busyAction, setBusyAction] = useState<'upload' | 'download' | null>(null)
   const [busyStartedAt, setBusyStartedAt] = useState<number | null>(null)
   const [busyElapsed, setBusyElapsed] = useState(0)
+  const [confirmAction, setConfirmAction] = useState<'upload' | 'download' | null>(null)
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null)
   useEffect(() => {
-    if (!syncResult) return
+    if (!syncResult && !confirmAction) return
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSyncResult(null)
+      if (event.key !== 'Escape') return
+      setSyncResult(null)
+      setConfirmAction(null)
     }
     window.addEventListener('keydown', handleEscape)
     return () => window.removeEventListener('keydown', handleEscape)
-  }, [syncResult])
+  }, [confirmAction, syncResult])
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const [remoteFingerprint, setRemoteFingerprint] = useState<string | null>(null)
   const [lastUploadedAt, setLastUploadedAt] = useState<string | null>(null)
@@ -478,7 +481,7 @@ export function CloudSyncMenu(): React.JSX.Element {
           )}
           <button
             type="button"
-            onClick={() => void upload()}
+            onClick={() => { setOpen(false); setConfirmAction('upload') }}
             className="flex w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-300 transition-colors hover:bg-neutral-800"
           >
             <Upload size={14} className="text-amber-300" />
@@ -491,7 +494,7 @@ export function CloudSyncMenu(): React.JSX.Element {
           </button>
           <button
             type="button"
-            onClick={() => void download()}
+            onClick={() => { setOpen(false); setConfirmAction('download') }}
             className="flex w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left text-xs whitespace-nowrap text-neutral-300 transition-colors hover:bg-neutral-800"
           >
             <Download size={14} className="text-amber-300" />
@@ -509,6 +512,74 @@ export function CloudSyncMenu(): React.JSX.Element {
             </div>
           )}
           </>}
+        </div>
+      )}
+
+      {confirmAction && (
+        <div
+          className="app-modal-overlay fixed inset-0 z-100 flex items-center justify-center bg-black/55"
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setConfirmAction(null)
+          }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="cloud-sync-confirm-title"
+            aria-describedby="cloud-sync-confirm-description"
+            className="app-modal-panel w-[360px] overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
+          >
+            <div className="flex items-start justify-between border-b border-[#2b2e36] px-4 py-3.5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+                {confirmAction === 'download' ? (
+                  <Download size={17} className="text-amber-300" />
+                ) : (
+                  <Upload size={17} className="text-amber-300" />
+                )}
+                <span id="cloud-sync-confirm-title">
+                  {confirmAction === 'download' ? 'Download workspace?' : 'Upload workspace?'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                aria-label="Close"
+                className="rounded-lg border border-[#34343e] p-1.5 text-neutral-400 transition-colors hover:border-neutral-500 hover:bg-white/5 hover:text-neutral-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-4">
+              <p id="cloud-sync-confirm-description" className="m-0 text-sm leading-5 text-neutral-400">
+                {confirmAction === 'download'
+                  ? 'This will replace the current local workspace with the version from Google Drive. Polyhedron will need to restart after the download.'
+                  : 'This will save the current workspace to Google Drive and replace its existing cloud copy.'}
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmAction(null)}
+                  className="rounded-md border border-[#34343e] px-3 py-2 text-xs font-semibold text-neutral-300 transition-colors hover:bg-white/5 hover:text-neutral-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const action = confirmAction
+                    setConfirmAction(null)
+                    if (action === 'upload') void upload()
+                    else void download()
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
+                >
+                  {confirmAction === 'download' ? <Download size={13} /> : <Upload size={13} />}
+                  {confirmAction === 'download' ? 'Download workspace' : 'Upload workspace'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
