@@ -22,7 +22,7 @@ export function TranslationStats({ translatedCount, total, pct, verifiedCount, b
     <div className="translation-stats flex min-w-95 flex-col gap-2">
       <div className="flex items-end justify-between gap-4 px-1 font-mono tabular-nums">
         <span className={`text-xl font-extrabold ${showVerified ? 'text-emerald-400' : 'text-amber-400'}`}>{activeCount.toLocaleString()} <span className="font-extrabold text-neutral-500">/{total.toLocaleString()}</span></span>
-        <span className="text-xl font-extrabold text-white">{activePct.toFixed(2)}%</span>
+        <span className="text-xl font-extrabold" style={{ color: '#e7e7e7' }}>{activePct.toFixed(2)}%</span>
       </div>
       <div
         className="group relative h-10 cursor-pointer pr-5"

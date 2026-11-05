@@ -35,6 +35,7 @@ import {
   ReplaceAll,
   Sparkles,
   SquareDashed,
+  TriangleAlert,
   Undo2,
   X
 } from 'lucide-react'
@@ -61,6 +62,7 @@ import { SimilarityExamplesModal } from '@/components/translation/SimilarityExam
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
   createEntrySearchMatcher,
+  hasCapitalizationMismatch,
   type FilterSpec,
   type GenderVariant,
   materializeSelectedEntries,
@@ -91,7 +93,12 @@ import type { TranslateEntryStats } from '@/features/translate/utils/entryStats'
 import { getLocalizedErrorMessage } from '@/i18n/errors'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
-import { extractLarianTags, type TextSelection, wrapSelectionWithTag } from '@/utils/larianTags'
+import {
+  extractLarianTags,
+  hasLarianTagMismatch,
+  type TextSelection,
+  wrapSelectionWithTag
+} from '@/utils/larianTags'
 import { renderSource } from '@/utils/renderSource'
 import { normalizeSearchText } from '@/utils/search'
 import { getKnownSpeakers, getSpeakerForDialogue } from '@/utils/speakerMetadata'
@@ -106,6 +113,7 @@ type FilterMode =
   | 'tags'
   | 'brackets'
   | 'needs-review'
+  | 'warnings'
 type XmlTagFilter = 'all' | 'untranslated' | 'translated'
 type BracketFilter = 'all' | 'untranslated' | 'translated'
 type SortMode = 'default' | 'most-repeated' | 'least-repeated'
@@ -798,11 +806,21 @@ export function TranslationGrid({
   }
 
   const counts = entryStats
+  // The fallback covers retained values restored during HMR from before this counter existed.
+  const warningCount = useMemo(
+    () => counts.warnings ?? entries.reduce(
+      (total, entry) => total + (hasLarianTagMismatch(entry.source, entry.target) || hasCapitalizationMismatch(entry) ? 1 : 0),
+      0
+    ),
+    [counts.warnings, entries]
+  )
 
   // Metadata is only relevant while a concrete speaker filter is active. Keep
   // the normal "All speakers" path independent from asynchronous metadata
   // hydration so loading labels cannot re-filter the entire localization file.
-  const activeSpeakerMetadata = speakerFilter === 'all' ? null : dialogueNodeMetadata
+  const activeSpeakerMetadata = speakerFilter === 'all' || speakerFilter === 'none'
+    ? null
+    : dialogueNodeMetadata
 
   const filteredEntries = useMemo(() => {
     // The default view is already ordered and includes every visible row.
@@ -852,6 +870,11 @@ export function TranslationGrid({
         return false
       if (deferredFilter === 'needs-review' && !entry.needsReview) return false
       if (
+        deferredFilter === 'warnings' &&
+        !hasLarianTagMismatch(entry.source, entry.target) &&
+        !hasCapitalizationMismatch(entry)
+      ) return false
+      if (
         deferredReferenceTag !== 'all' &&
         !getReferenceTags(entry.source).includes(deferredReferenceTag)
       ) {
@@ -859,7 +882,9 @@ export function TranslationGrid({
       }
       if (!matchesDialogueFilters(entry.source, deferredDialogueFilters)) return false
       if (!matchesDialogueScope(entry.source, dialogueScope)) return false
-      if (speakerFilter !== 'all') {
+      if (speakerFilter === 'none') {
+        if (getDialogueGroups(entry.source).length > 0) return false
+      } else if (speakerFilter !== 'all') {
         const groups = getDialogueGroups(entry.source)
         const metadataSpeaker = groups
           .map((group) => activeSpeakerMetadata?.get(group.dialogue)?.get(group.node)?.speaker)
@@ -1056,7 +1081,7 @@ export function TranslationGrid({
   )
 
   const allEntryDialogueKey = useMemo(() => {
-    if (speakerFilter === 'all') return ''
+    if (speakerFilter === 'all' || speakerFilter === 'none') return ''
     const dialogues = new Set<string>()
     for (const entry of entries) {
       for (const group of getDialogueGroups(entry.source)) dialogues.add(group.dialogue)
@@ -1065,6 +1090,7 @@ export function TranslationGrid({
   }, [entries, speakerFilter])
 
   const metadataDialogueKey = useMemo(() => {
+    if (speakerFilter === 'none') return ''
     if (speakerFilter !== 'all') return allEntryDialogueKey
     const dialogues = new Set<string>()
     for (const entry of pageEntries) {
@@ -2220,12 +2246,18 @@ export function TranslationGrid({
       },
       {
         mode: 'needs-review',
-        label: t('grid.needsReview', { ns: 'translate' }),
+        label: 'Flagged strings',
         count: counts.needsReview,
         dot: 'bg-orange-400'
+      },
+      {
+        mode: 'warnings',
+        label: 'Warnings',
+        count: warningCount,
+        dot: 'bg-yellow-400'
       }
     ],
-    [counts, entries, t]
+    [counts, entries, t, warningCount]
   )
 
   const statusTabs = (
@@ -2266,6 +2298,32 @@ export function TranslationGrid({
         </span>
       </button>
       {filterItems.map((item) => {
+        if (item.mode === 'warnings' && item.count === 0) return null
+        if (item.mode === 'warnings') {
+          const active = filter === 'warnings'
+          return (
+            <button
+              key={item.mode}
+              type="button"
+              aria-label={`Warnings (${item.count})`}
+              onClick={() => startFilterTransition(() => setFilter('warnings'))}
+              className={cn(
+                'inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors',
+                active
+                  ? 'border-yellow-400/60 bg-yellow-500/15 text-yellow-300'
+                  : 'border-yellow-500/25 text-yellow-400/70 hover:border-yellow-400/50 hover:bg-yellow-500/10 hover:text-yellow-300'
+              )}
+            >
+              <TriangleAlert size={13} aria-hidden="true" />
+              <span className={cn(
+                'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
+                active ? 'bg-yellow-400/20 text-yellow-200' : 'bg-[#181b1f] text-yellow-400/80'
+              )}>
+                {item.count}
+              </span>
+            </button>
+          )
+        }
         if (item.mode === 'tags' || item.mode === 'brackets') {
           const isXmlTagFilter = item.mode === 'tags'
           const active = filter === item.mode
@@ -2383,6 +2441,7 @@ export function TranslationGrid({
           <button
             key={item.mode}
             type="button"
+            aria-label={`${item.label} (${item.count})`}
             onClick={() => startFilterTransition(() => setFilter(item.mode))}
             className={cn(
               'inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[11px] font-semibold transition-colors',
@@ -2391,12 +2450,22 @@ export function TranslationGrid({
                   ? 'border-emerald-400/50 bg-emerald-400/10 text-emerald-200'
                   : item.mode === 'translated'
                     ? 'border-blue-400/50 bg-blue-400/10 text-blue-200'
-                    : 'border-orange-400/50 bg-orange-400/10 text-orange-200'
-                : 'border-transparent text-neutral-400 hover:border-[#2a2f37] hover:bg-[#181b1f] hover:text-neutral-200'
+                    : item.mode === 'needs-review'
+                        ? 'border-rose-400/40 bg-rose-500/15 text-rose-300'
+                        : 'border-orange-400/50 bg-orange-400/10 text-orange-200'
+                : item.mode === 'needs-review'
+                    ? 'border-rose-500/25 text-rose-400/70 hover:border-rose-400/40 hover:bg-rose-500/10 hover:text-rose-300'
+                    : 'border-transparent text-neutral-400 hover:border-[#2a2f37] hover:bg-[#181b1f] hover:text-neutral-200'
             )}
           >
-            <span className={cn('inline-block h-1.5 w-1.5 rounded-full', item.dot)} />
-            {item.mode === 'needs-review' ? 'Review' : item.label}
+            {item.mode !== 'needs-review' && (
+              <span className={cn('inline-block h-1.5 w-1.5 rounded-full', item.dot)} />
+            )}
+            {item.mode === 'needs-review' ? (
+              <Flag size={13} aria-hidden="true" />
+            ) : (
+              item.label
+            )}
             <span
               className={cn(
                 'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
@@ -2404,9 +2473,11 @@ export function TranslationGrid({
                   ? 'bg-emerald-400/20 text-emerald-200'
                   : active && item.mode === 'translated'
                     ? 'bg-blue-400/20 text-blue-200'
-                    : active
-                      ? 'bg-orange-400/20 text-orange-200'
-                      : 'bg-[#181b1f] text-neutral-500'
+                    : active && item.mode === 'needs-review'
+                        ? 'bg-rose-400/20 text-rose-200'
+                        : active
+                          ? 'bg-orange-400/20 text-orange-200'
+                          : 'bg-[#181b1f] text-neutral-500'
               )}
             >
               {item.count}
@@ -2455,6 +2526,7 @@ export function TranslationGrid({
     )
     return [
       { value: 'all', label: 'All speakers' },
+      { value: 'none', label: 'No speakers' },
       ...names.map((name) => ({ value: name, label: name }))
     ]
   }, [apiSpeakers, dialogueNodeMetadata])
@@ -2626,14 +2698,14 @@ export function TranslationGrid({
           </SearchToolbarToggle>
           {hasAvailableSuggestions && <SearchToolbarToggle
             active={showTranslationSuggestions}
-            tooltip="Show translation suggestions"
+            tooltip="Show suggestions"
             onClick={() => handleSuggestionsToggle(!showTranslationSuggestions)}
           >
             <Sparkles size={14} className={translationSuggestionsLoading ? 'animate-pulse' : ''} />
           </SearchToolbarToggle>}
           <SearchToolbarToggle
             active={replaceOpen}
-            tooltip="Find & replace (Ctrl+F)"
+            tooltip="Find & replace"
             onClick={toggleFindReplace}
           >
             <Replace size={14} />

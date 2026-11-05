@@ -43,7 +43,14 @@ export const AI_PROVIDERS: AiProviderMeta[] = [
     short: 'Gemini',
     mark: 'GM',
     color: '#4285f4',
-    models: ['gemini-2.5-pro', 'gemini-2.5-flash'],
+    models: [
+      'gemini-3.8-flash',
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+      'gemini-3.5-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.1-flash-lite'
+    ],
     keyConfigKey: 'gemini_key',
     modelConfigKey: 'gemini_model',
     keyPlaceholder: 'AIza... / AQ...'
@@ -67,7 +74,7 @@ export const DEFAULT_AI_PROVIDER: AiProviderId = 'gemini'
 export const DEFAULT_MODELS: Record<AiProviderId, string> = {
   openai: 'gpt-4o-mini',
   anthropic: 'claude-sonnet-5',
-  gemini: 'gemini-2.5-flash',
+  gemini: 'gemini-3.6-flash',
   grok: 'grok-4'
 }
 

@@ -58,10 +58,14 @@ export function BatchActionBar({
           onChange={format => onCopySelection(format as SelectionCopyFormat)}
           placeholder="Copy selected"
           options={[
-            { value: 'ids', label: 'Content IDs' },
-            { value: 'source-ids', label: 'Source text + IDs' }
+            { value: 'ids', label: 'IDs only' },
+            { value: 'source', label: 'Source only' },
+            { value: 'source-target', label: 'Source + translation' },
+            { value: 'source-target-ids', label: 'Source + translation + IDs' },
+            { value: 'source-ids', label: 'Source + IDs' }
           ]}
           className="w-36 shrink-0"
+          menuMinWidth={196}
           triggerClassName="h-7 border-amber-500/30 bg-amber-500/5 px-2.5 text-[11px] font-semibold text-amber-200 shadow-none hover:text-amber-100"
           menuClassName="bulk-status-menu"
         />

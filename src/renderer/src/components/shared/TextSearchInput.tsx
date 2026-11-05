@@ -16,6 +16,7 @@ interface TextSearchInputProps {
   scopeValue?: string
   onScopeChange?: (value: string) => void
   scopeOptions?: ThemedSelectOption[]
+  leadingToggle?: { label: string; active: boolean; onClick: () => void; icon: React.ReactNode }
 }
 
 function ToggleButton({
@@ -67,7 +68,8 @@ export function TextSearchInput({
   className,
   scopeValue,
   onScopeChange,
-  scopeOptions
+  scopeOptions,
+  leadingToggle
 }: TextSearchInputProps): React.JSX.Element {
   const { t } = useAppTranslation('common')
 
@@ -125,6 +127,11 @@ export function TextSearchInput({
         </button>
       )}
       <div className="flex shrink-0 items-center gap-0.5 border-l border-[#1f2329] pl-1.5">
+        {leadingToggle && (
+          <ToggleButton active={leadingToggle.active} label={leadingToggle.label} onClick={leadingToggle.onClick}>
+            {leadingToggle.icon}
+          </ToggleButton>
+        )}
         <ToggleButton
           active={matchCase}
           label="Match case"

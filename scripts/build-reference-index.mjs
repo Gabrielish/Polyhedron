@@ -72,6 +72,64 @@ for (const [file, category] of files) {
     }
   }
 }
+const questReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 Quests.json'), 'utf8')
+)
+entries.push(...questReference.entries)
+const bookReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 Books.json'), 'utf8')
+)
+entries.push(...bookReference.entries)
+const itemReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 Items.json'), 'utf8')
+)
+const normalizeItemName = (value) =>
+  value
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLocaleLowerCase()
+const entriesByName = new Map(entries.map((entry) => [normalizeItemName(entry.name), entry]))
+for (const entry of entries) {
+  if (entry.category === 'Book') {
+    entry.itemGroups = [{ section: 'Miscellaneous', type: 'Books' }]
+  }
+}
+for (const item of itemReference.entries) {
+  const existing = entriesByName.get(normalizeItemName(item.name))
+  if (existing) {
+    existing.itemGroups = [...(existing.itemGroups ?? [])]
+    const detailedWeaponGroups = new Set(
+      (item.itemGroups ?? []).filter((group) => group.subtype).map((group) => group.type)
+    )
+    if (detailedWeaponGroups.size) {
+      existing.itemGroups = existing.itemGroups.filter(
+        (group) => !detailedWeaponGroups.has(group.type) || group.subtype
+      )
+    }
+    for (const group of item.itemGroups ?? []) {
+      if (
+        !existing.itemGroups.some(
+          (candidate) =>
+            candidate.section === group.section &&
+            candidate.type === group.type &&
+            candidate.subtype === group.subtype
+        )
+      ) {
+        existing.itemGroups.push(group)
+      }
+    }
+    existing.rarity ??= item.rarity
+    existing.wikiTitle ??= item.wikiTitle
+    continue
+  }
+  entries.push(item)
+  entriesByName.set(normalizeItemName(item.name), item)
+}
+const npcReference = JSON.parse(
+  fs.readFileSync(path.join(root, 'resources/reference/BG3 NPCs.json'), 'utf8')
+)
+entries.push(...npcReference.entries)
 const unique = [
   ...new Map(
     entries.map((entry) => [

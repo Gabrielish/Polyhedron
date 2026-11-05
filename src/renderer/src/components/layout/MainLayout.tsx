@@ -8,8 +8,14 @@ import { Sidebar } from './Sidebar'
 import { RouteLoadingSkeleton } from './RouteLoadingSkeleton'
 
 export function MainLayout(): React.JSX.Element {
+  const [navigationDockHidden, setNavigationDockHidden] = useState(
+    () => localStorage.getItem('polyhedron-navigation-dock-hidden') === 'true'
+  )
   const [routeLoading, setRouteLoading] = useState(false)
   const [loadingPathname, setLoadingPathname] = useState<string | null>(null)
+  useEffect(() => {
+    localStorage.setItem('polyhedron-navigation-dock-hidden', String(navigationDockHidden))
+  }, [navigationDockHidden])
   useEffect(() => {
     const root = document.documentElement
     root.classList.add('polyhedron-scrollbars-auto-hide')
@@ -34,8 +40,10 @@ export function MainLayout(): React.JSX.Element {
     }
   }, [])
   const location = useLocation()
-  useDockClearance(location.pathname)
+  useDockClearance(location.pathname, navigationDockHidden)
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
+
+  const toggleNavigationDock = () => setNavigationDockHidden((hidden) => !hidden)
 
   useEffect(() => {
     const handleNavigationStart = (event: Event) => {
@@ -55,9 +63,9 @@ export function MainLayout(): React.JSX.Element {
 
   return (
     <div className="flex h-screen w-screen bg-neutral-950">
-      <Sidebar />
-      <div className="app-content-shell relative ml-14 flex min-w-0 flex-1 flex-col">
-        <TitleBar />
+      <Sidebar hidden={navigationDockHidden} />
+      <div className={`app-content-shell relative flex min-w-0 flex-1 flex-col ${navigationDockHidden ? 'ml-0' : 'ml-14'}`}>
+        <TitleBar navigationDockHidden={navigationDockHidden} onToggleNavigationDock={toggleNavigationDock} />
         <div
           className={`pointer-events-none absolute top-1 z-[2000] ${isMacOS ? 'right-2' : 'right-[150px]'}`}
         >

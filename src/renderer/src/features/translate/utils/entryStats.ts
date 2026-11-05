@@ -1,11 +1,16 @@
-import { isDeveloperNote, type TranslationSessionEntry } from '@/context/TranslationSession'
+import {
+  hasCapitalizationMismatch,
+  isDeveloperNote,
+  type TranslationSessionEntry
+} from '@/context/TranslationSession'
+import { larianTagSignature } from '@/utils/larianTags'
 
 export function analyzeTranslateEntries(
   entries: TranslationSessionEntry[],
   hideDeveloperNotes: boolean
 ) {
   const visibleEntries = hideDeveloperNotes ? ([] as TranslationSessionEntry[]) : entries
-  const sourceFlags = new Map<string, { tags: boolean; brackets: boolean }>()
+  const sourceFlags = new Map<string, { tags: boolean; brackets: boolean; larianTagSignature: string }>()
   let translated = 0
   let untranslated = 0
   let verified = 0
@@ -13,6 +18,7 @@ export function analyzeTranslateEntries(
   let tags = 0
   let brackets = 0
   let needsReview = 0
+  let warnings = 0
   for (const entry of entries) {
     if (hideDeveloperNotes && isDeveloperNote(entry.source)) continue
     if (hideDeveloperNotes) visibleEntries.push(entry)
@@ -26,12 +32,22 @@ export function analyzeTranslateEntries(
     if (!flags) {
       flags = {
         tags: /(<[^>]+>|\{[^}]+\})/.test(entry.source.replace(/<\/?(?:i|br|b)\b[^>]*>/gi, '')),
-        brackets: /\[[^\]\r\n]+\]/.test(entry.source)
+        brackets: /\[[^\]\r\n]+\]/.test(entry.source),
+        larianTagSignature: larianTagSignature(entry.source)
       }
       sourceFlags.set(entry.source, flags)
     }
     if (flags.tags) tags++
     if (flags.brackets) brackets++
+    let hasTagMismatch = false
+    if (entry.target.trim()) {
+      const targetTagSignature = larianTagSignature(entry.target)
+      hasTagMismatch =
+        (flags.larianTagSignature !== '[]' || targetTagSignature !== '[]') &&
+        flags.larianTagSignature !== targetTagSignature
+    }
+    const hasCaseMismatch = hasCapitalizationMismatch(entry)
+    if (hasTagMismatch || hasCaseMismatch) warnings++
   }
   return {
     visibleEntries,
@@ -41,7 +57,8 @@ export function analyzeTranslateEntries(
     dictionary,
     tags,
     brackets,
-    needsReview
+    needsReview,
+    warnings
   }
 }
 

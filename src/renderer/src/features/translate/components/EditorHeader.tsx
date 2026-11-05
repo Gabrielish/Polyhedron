@@ -1,21 +1,18 @@
 import {
-  ArrowLeft,
   ArrowRight,
   BookText,
   Columns2,
   Languages,
   Loader2,
-  Redo2,
   Rows2,
   Save,
-  Undo2
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import type { TranslationSession } from '../types'
 import { RomanianDiacritics } from './RomanianDiacritics'
-import { btnBase, btnGhostIcon, btnPrimary } from './styles'
+import { btnGhostIcon, btnPrimary } from './styles'
 import { TranslationStats } from './TranslationStats'
 
 interface EditorHeaderProps {
@@ -56,15 +53,10 @@ export function EditorHeader({
   return (
     <div className="app-page-header editor-header min-w-0 overflow-x-hidden bg-[#0f1114] border-b border-[#1f2329] px-7 pt-5 pb-4 shrink-0">
       <div className="editor-header-top flex flex-wrap items-center gap-3 mb-4">
-        <button type="button" className={btnBase} onClick={session.resetSession}>
-          <ArrowLeft />
-          {t('editor.back')}
-        </button>
-
         <div className="editor-header-title flex min-w-0 items-center gap-2.5">
           <Languages className="shrink-0 text-amber-500" size={20} />
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-semibold text-neutral-100">Translate</h1>
+            <h1 className="truncate text-lg font-semibold" style={{ color: '#e7e7e7' }}>Translate</h1>
             <p className="truncate text-xs text-neutral-500">
               {session.modName} <span className="text-neutral-700">›</span> {fileName}
             </p>
@@ -101,13 +93,6 @@ export function EditorHeader({
             </button>
           </div>
 
-          <button type="button" className={cn(btnGhostIcon, 'editor-header-floating-icon')} title={t('editor.undo')} disabled>
-            <Undo2 />
-          </button>
-          <button type="button" className={cn(btnGhostIcon, 'editor-header-floating-icon')} title={t('editor.redo')} disabled>
-            <Redo2 />
-          </button>
-
           <div className="w-px h-4.5 bg-[#1f2329] mx-1 shrink-0" />
 
           <button
@@ -138,7 +123,7 @@ export function EditorHeader({
       <div className="editor-header-language-row flex items-end gap-8">
         <div className="editor-header-language-block flex-1 min-w-0">
           <h1 className="flex items-center gap-3.5 m-0 text-[32px] font-bold tracking-tight leading-none mb-2">
-            <span className="font-mono text-neutral-200 font-bold">
+            <span className="font-mono font-bold" style={{ color: '#e7e7e7' }}>
               {session.sourceLang.toUpperCase()}
             </span>
             <span className="text-neutral-500 inline-flex">

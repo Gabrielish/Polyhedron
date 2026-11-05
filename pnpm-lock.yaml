@@ -77,8 +77,8 @@ importers:
         specifier: 4.0.1
         version: 4.0.1
       lucide-react:
-        specifier: ^1.14.0
-        version: 1.14.0(react@19.2.5)
+        specifier: ^1.68.0
+        version: 1.68.0(@types/react@19.2.14)(react@19.2.5)
       lz4-napi:
         specifier: ^2.9.0
         version: 2.9.0
@@ -2455,10 +2455,14 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
-  lucide-react@1.14.0:
-    resolution: {integrity: sha512-+1mdWcfSJVUsaTIjN9zoezmUhfXo5l0vP7ekBMPo3jcS/aIkxHnXqAPsByszMZx/Y8oQBRJxJx5xg+RH3urzxA==}
+  lucide-react@1.68.0:
+    resolution: {integrity: sha512-9i7NKWm2QlOprMhcwkhBOlIt9zB7cp2GIyFY+oMue0EsprolUFxva5rkdBbyfs4k1eejpa0JRnRgVOGiart+Xg==}
     peerDependencies:
+      '@types/react': '*'
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   lz4-napi@2.9.0:
     resolution: {integrity: sha512-ZOWqxBMIK5768aD20tYn5B6Pp9WPM9UG/LHk8neG9p0gC1DtjdzhTtlkxhAjvTRpmJvMtnnqLKlT+COlqAt9cQ==}
@@ -5337,9 +5341,11 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
-  lucide-react@1.14.0(react@19.2.5):
+  lucide-react@1.68.0(@types/react@19.2.14)(react@19.2.5):
     dependencies:
       react: 19.2.5
+    optionalDependencies:
+      '@types/react': 19.2.14
 
   lz4-napi@2.9.0:
     dependencies:

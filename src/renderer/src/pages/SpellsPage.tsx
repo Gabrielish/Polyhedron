@@ -247,8 +247,8 @@ const EntryIcon = ({ entry }: { entry: DisplayEntry }): React.JSX.Element => {
 
 const spellLevelLabel = (entry: GameEntry): string => {
   if (entry.level === '0') return 'Cantrips'
-  if (entry.level) return `Level ${entry.level} spells`
-  return 'Other spells'
+  if (entry.level) return `Level ${entry.level} Spells`
+  return 'Other Spells'
 }
 
 const spellLevelRank = (entry: GameEntry): number => {
@@ -1296,6 +1296,7 @@ function LoadedSpellsPage({
                     </span>
                     <HighlightedTextarea
                       value={translatedDescription}
+                      disableOverlay
                       placeholder="Translation..."
                       onBlur={(event) =>
                         descriptionEntry &&
@@ -1304,7 +1305,7 @@ function LoadedSpellsPage({
                       rows={1}
                       autoGrow
                       containerClassName="spells-edit-translation border-[#2a2f37] bg-[#0c0d0f]"
-                      className="text-sm leading-5 !text-neutral-200"
+                      className="text-sm leading-5"
                     />
                     {showSpellSuggestions &&
                       descriptionEntry?.uid &&
@@ -1411,6 +1412,7 @@ function LoadedSpellsPage({
                             </span>
                             <HighlightedTextarea
                               value={variant.translatedDescription}
+                              disableOverlay
                               placeholder="Translation..."
                               onBlur={(event) =>
                                 variantDescriptionEntry &&
@@ -1535,6 +1537,7 @@ function LoadedSpellsPage({
                             </span>
                             <HighlightedTextarea
                               value={condition.translatedDescription}
+                              disableOverlay
                               placeholder="Translation..."
                               onBlur={(event) =>
                                 conditionDescriptionEntry &&
@@ -1653,6 +1656,7 @@ function LoadedSpellsPage({
             {editingSpell === spellKey && descriptionEntry ? (
               <HighlightedTextarea
                 value={translatedDescription}
+                disableOverlay
                 placeholder="Translation..."
                 onBlur={(event) => session.updateEntry(descriptionEntry.rowId, event.target.value)}
                 rows={3}
@@ -1742,6 +1746,7 @@ function LoadedSpellsPage({
                         {editingSpell === spellKey && variantDescriptionEntry ? (
                           <HighlightedTextarea
                             value={variant.translatedDescription}
+                            disableOverlay
                             placeholder="Translation..."
                             onBlur={(event) =>
                               session.updateEntry(variantDescriptionEntry.rowId, event.target.value)
@@ -1835,6 +1840,7 @@ function LoadedSpellsPage({
                       {editingSpell === spellKey && conditionDescriptionEntry ? (
                         <HighlightedTextarea
                           value={condition.translatedDescription}
+                          disableOverlay
                           placeholder="Translation..."
                           onBlur={(event) =>
                             session.updateEntry(conditionDescriptionEntry.rowId, event.target.value)
@@ -2028,7 +2034,7 @@ function LoadedSpellsPage({
                               return next
                             })
                           }
-                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-200 hover:text-amber-100"
+                          className="inline-flex items-center gap-1.5 text-sm font-semibold text-neutral-300 hover:text-neutral-100"
                           aria-expanded={!collapsedGroups.has(group)}
                         >
                           <ChevronDown
@@ -2037,7 +2043,9 @@ function LoadedSpellsPage({
                           />
                           {kindLabel[group]}
                         </button>
-                        <span className="rounded-full border border-amber-500/20 bg-amber-500/8 px-2 py-0.5 font-mono text-[10px] text-amber-300">
+                        <span
+                          className="rounded-full border border-[#2a2f37] px-2 py-0.5 font-mono text-[10px] text-neutral-500"
+                        >
                           {spells.length}
                         </span>
                         <span className="text-[10px] text-neutral-600">
@@ -2065,7 +2073,7 @@ function LoadedSpellsPage({
                         return (
                           <Fragment key={`${spell.id}-${spell.name}`}>
                             {showLevelHeader && (
-                              <div className="col-span-full flex items-center gap-3 pt-2 first:pt-0">
+                                <div className="col-span-full flex items-center gap-3 pt-2 first:pt-0">
                                 <button
                                   type="button"
                                   onClick={() =>
@@ -2076,7 +2084,7 @@ function LoadedSpellsPage({
                                       return next
                                     })
                                   }
-                                  className="inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-amber-300 hover:text-amber-100"
+                                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-neutral-300 hover:text-neutral-100"
                                   aria-expanded={!collapsedLevels.has(levelKey)}
                                 >
                                   <ChevronDown
@@ -2085,14 +2093,16 @@ function LoadedSpellsPage({
                                   />
                                   {spellLevelLabel(spell)}
                                 </button>
-                                <span className="rounded-full border border-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] text-amber-300/80">
+                                <span
+                                  className="rounded-full border border-[#2a2f37] px-1.5 py-0.5 font-mono text-[10px] text-neutral-500"
+                                >
                                   {levelStats.get(levelKey)?.total ?? 0}
                                 </span>
                                 <span className="text-[10px] text-neutral-600">
                                   {levelStats.get(levelKey)?.completed ?? 0}/
                                   {levelStats.get(levelKey)?.total ?? 0} complete
                                 </span>
-                                <div className="h-px flex-1 bg-amber-500/15" />
+                                <div className="h-px flex-1 bg-[#1f2329]" />
                               </div>
                             )}
                             {!collapsedLevels.has(levelKey) && (

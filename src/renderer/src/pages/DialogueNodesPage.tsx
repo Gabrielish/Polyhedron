@@ -26,6 +26,7 @@ import { useRetainedMemo } from '@/hooks/useRetainedMemo'
 import { useSessionStructure } from '@/hooks/useSessionStructure'
 import { useLocation } from 'react-router-dom'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
+import { AppTooltip } from '@/components/shared/AppTooltip'
 import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { StyledWebview } from '@/components/shared/StyledWebview'
@@ -228,11 +229,93 @@ function makeTree(choices: Choice[]): TreeNode[] {
   }
   return [...root.values()]
 }
-function treeCount(node: TreeNode): number {
+type DialogueStatusKey = 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
+type DialogueStatusCounts = Record<DialogueStatusKey, number> & { total: number }
+const DIALOGUE_STATUS_ITEMS: Array<{
+  key: DialogueStatusKey
+  label: string
+  color: string
+  track: string
+}> = [
+  { key: 'untranslated', label: 'Untranslated', color: '#9ca3af', track: 'rgba(156,163,175,.2)' },
+  { key: 'not-verified', label: 'Not verified', color: '#ef4444', track: 'rgba(239,68,68,.2)' },
+  { key: 'needs-review', label: 'Needs Review', color: '#eab308', track: 'rgba(234,179,8,.2)' },
+  { key: 'verified', label: 'Verified', color: '#10b981', track: 'rgba(16,185,129,.2)' }
+]
+function emptyDialogueStatusCounts(): DialogueStatusCounts {
+  return { untranslated: 0, 'not-verified': 0, 'needs-review': 0, verified: 0, total: 0 }
+}
+function StatusRings({ stats }: { stats: DialogueStatusCounts }): React.JSX.Element {
   return (
-    node.choices.length +
-    [...node.children.values()].reduce((sum, child) => sum + treeCount(child), 0)
+    <span className="ml-2 inline-flex shrink-0 items-center gap-1.5">
+      {DIALOGUE_STATUS_ITEMS.map((status) => {
+        const translated = status.key === 'untranslated'
+        const count = translated ? stats.total - stats.untranslated : stats[status.key]
+        const percent = stats.total ? Math.round((count / stats.total) * 100) : 0
+        const label = translated ? 'Translated' : status.label
+        return (
+          <AppTooltip
+            key={status.key}
+            label={`${label} · ${percent}% · ${count} of ${stats.total}`}
+            focusable={false}
+          >
+            <span
+              aria-label={`${label}: ${count} of ${stats.total}`}
+              role="img"
+              className="relative h-3.5 w-3.5 rounded-full"
+              style={{
+                background: translated
+                  ? `conic-gradient(var(--poly-accent) ${percent}%, color-mix(in srgb, var(--poly-accent) 20%, transparent) ${percent}%)`
+                  : `conic-gradient(${status.color} ${percent}%, ${status.track} ${percent}%)`
+              }}
+            >
+              <span className="absolute inset-[2px] rounded-full bg-[#131518]" />
+            </span>
+          </AppTooltip>
+        )
+      })}
+    </span>
   )
+}
+function aggregateTreeStatusCounts(
+  nodes: TreeNode[],
+  dialogueStats: Map<string, DialogueStatusCounts>
+): Map<string, DialogueStatusCounts> {
+  const result = new Map<string, DialogueStatusCounts>()
+  const visit = (node: TreeNode): DialogueStatusCounts => {
+    const counts = emptyDialogueStatusCounts()
+    for (const choice of node.choices) {
+      const value = dialogueStats.get(choice.dialogue)
+      if (!value) continue
+      for (const status of DIALOGUE_STATUS_ITEMS) counts[status.key] += value[status.key]
+      counts.total += value.total
+    }
+    for (const child of node.children.values()) {
+      const value = visit(child)
+      for (const status of DIALOGUE_STATUS_ITEMS) counts[status.key] += value[status.key]
+      counts.total += value.total
+    }
+    result.set(node.key, counts)
+    return counts
+  }
+  nodes.forEach(visit)
+  return result
+}
+function aggregateTreeNodeCounts(
+  nodes: TreeNode[],
+  dialogueNodeCounts: Map<string, number>
+): Map<string, number> {
+  const result = new Map<string, number>()
+  const visit = (node: TreeNode): number => {
+    const count = node.choices.reduce(
+      (sum, choice) => sum + (dialogueNodeCounts.get(choice.dialogue) ?? 0),
+      0
+    ) + [...node.children.values()].reduce((sum, child) => sum + visit(child), 0)
+    result.set(node.key, count)
+    return count
+  }
+  nodes.forEach(visit)
+  return result
 }
 function visibleTreeRows(nodes: TreeNode[], expanded: Set<string>): number {
   return nodes.reduce((count, node) => {
@@ -256,47 +339,26 @@ function treePathForChoice(
   }
   return null
 }
-function treeCompletion(node: TreeNode, translated: Set<string>): number {
-  const dialogues = treeCompletionDialogues(node)
-  if (dialogues.size === 0) return 0
-  const complete = [...dialogues].filter((dialogue) => translated.has(dialogue)).length
-  return Math.round((complete / dialogues.size) * 1000) / 10
-}
-function treeCompletionDialogues(node: TreeNode): Set<string> {
-  const dialogues = new Set(node.choices.map((choice) => choice.dialogue))
-  for (const child of node.children.values())
-    for (const dialogue of treeCompletionDialogues(child)) dialogues.add(dialogue)
-  return dialogues
-}
-type DialogueReviewStats = { translated: number; verified: number }
-function treeVerifiedCompletion(node: TreeNode, stats: Map<string, DialogueReviewStats>): number {
-  const dialogues = treeCompletionDialogues(node)
-  let translated = 0
-  let verified = 0
-  for (const dialogue of dialogues) {
-    const value = stats.get(dialogue)
-    if (!value) continue
-    translated += value.translated
-    verified += value.verified
-  }
-  return translated === 0 ? 0 : Math.round((verified / translated) * 100)
-}
 function TreeItems({
   nodes,
   expanded,
   toggle,
   selected,
   select,
-  translated,
-  reviewStats
+  nodeStatusStats,
+  treeNodeCounts,
+  dialogueStatusStats,
+  dialogueNodeCounts
 }: {
   nodes: TreeNode[]
   expanded: Set<string>
   toggle: (key: string) => void
   selected: Choice | null
   select: (key: string) => void
-  translated: Set<string>
-  reviewStats: Map<string, DialogueReviewStats>
+  nodeStatusStats: Map<string, DialogueStatusCounts>
+  treeNodeCounts: Map<string, number>
+  dialogueStatusStats: Map<string, DialogueStatusCounts>
+  dialogueNodeCounts: Map<string, number>
 }): React.JSX.Element {
   return (
     <div className="space-y-0.5">
@@ -320,14 +382,9 @@ function TreeItems({
               )}
               <span className="truncate font-medium">{node.label}</span>
               <span className="ml-auto shrink-0 text-[10px] text-neutral-600">
-                {treeCount(node)}
+                {treeNodeCounts.get(node.key) ?? 0} nodes
               </span>
-              <span className="shrink-0 text-[10px] font-semibold text-orange-300">
-                {treeCompletion(node, translated)}%
-              </span>
-              <span className="shrink-0 text-[10px] font-semibold text-emerald-300/80">
-                {treeVerifiedCompletion(node, reviewStats)}% Verified
-              </span>
+              <StatusRings stats={nodeStatusStats.get(node.key) ?? emptyDialogueStatusCounts()} />
             </button>
             {open && (
               <div className="mt-1 ml-3 border-l border-[#1f2329] pl-2">
@@ -338,8 +395,10 @@ function TreeItems({
                     toggle={toggle}
                     selected={selected}
                     select={select}
-                    translated={translated}
-                    reviewStats={reviewStats}
+                    nodeStatusStats={nodeStatusStats}
+                    treeNodeCounts={treeNodeCounts}
+                    dialogueStatusStats={dialogueStatusStats}
+                    dialogueNodeCounts={dialogueNodeCounts}
                   />
                 )}
                 {node.choices.map((choice) => {
@@ -356,26 +415,17 @@ function TreeItems({
                       }
                       onClick={() => select(key)}
                       className={cn(
-                        'dialogue-tree-choice translation-special-filter-option mb-1 block w-full cursor-pointer truncate rounded-md border-0 px-2.5 py-2 text-left text-[10px] transition-colors focus:outline-none focus-visible:outline-none',
+                        'dialogue-tree-choice translation-special-filter-option mb-1 flex w-full min-w-0 cursor-pointer items-center gap-1.5 rounded-md border-0 px-2.5 py-2 text-left text-[10px] transition-colors focus:outline-none focus-visible:outline-none',
                         selected?.file === choice.file && selected.dialogue === choice.dialogue
                           ? 'is-selected text-[var(--poly-accent)]'
                           : 'text-neutral-300'
                       )}
                     >
-                      <span className="truncate">{choice.dialogue}</span>
-                      {translated.has(choice.dialogue) && (
-                        <span className="ml-2 shrink-0 rounded border border-orange-400/30 bg-orange-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-orange-300">
-                          Translated
-                        </span>
-                      )}
-                      <span className="ml-2 shrink-0 rounded border border-emerald-400/25 bg-emerald-500/5 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-300/80">
-                        {(() => {
-                          const stats = reviewStats.get(choice.dialogue)
-                          return stats && stats.translated > 0
-                            ? `${Math.round((stats.verified / stats.translated) * 100)}% Verified`
-                            : '0% Verified'
-                        })()}
+                      <span className="min-w-0 flex-1 truncate">{choice.dialogue}</span>
+                      <span className="ml-auto shrink-0 text-[9px] text-neutral-500">
+                        {dialogueNodeCounts.get(choice.dialogue) ?? 0} nodes
                       </span>
+                      <StatusRings stats={dialogueStatusStats.get(choice.dialogue) ?? emptyDialogueStatusCounts()} />
                     </button>
                   )
                 })}
@@ -627,26 +677,30 @@ export function DialogueNodesPage(): React.JSX.Element {
       .filter((choice) => allowed.has(choice.category))
       .sort((a, b) => a.dialogue.localeCompare(b.dialogue))
   }, [activeAct, dialogueCatalog.choices])
-  const translatedDialogues = useMemo(() => {
-    const translated = new Set<string>()
-    for (const choice of choices) {
-      const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
-      if (rows.length > 0 && rows.every((entry) => entry.target.trim().length > 0))
-        translated.add(choice.dialogue)
-    }
-    return translated
-  }, [choices, dialogueEntryIndex])
-  const reviewStats = useMemo(() => {
-    const stats = new Map<string, DialogueReviewStats>()
+  const dialogueStatusStats = useMemo(() => {
+    const stats = new Map<string, DialogueStatusCounts>()
     for (const choice of choices) {
       const rows = [...(dialogueEntryIndex.get(choice.dialogue)?.values() ?? [])].flat()
       const uniqueRows = [...new Map(rows.map((entry) => [entry.rowId, entry])).values()]
-      const translatedRows = uniqueRows.filter((entry) => entry.target.trim().length > 0)
-      const verified = translatedRows.filter((entry) => entry.reviewStatus === 'verified').length
-      stats.set(choice.dialogue, { translated: translatedRows.length, verified })
+      const counts = emptyDialogueStatusCounts()
+      for (const entry of uniqueRows) {
+        const status: DialogueStatusKey = !entry.target.trim()
+          ? 'untranslated'
+          : (entry.reviewStatus ?? 'needs-review')
+        counts[status] += 1
+        counts.total += 1
+      }
+      stats.set(choice.dialogue, counts)
     }
     return stats
   }, [choices, dialogueEntryIndex])
+  const dialogueNodeCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const choice of choices) {
+      if (!counts.has(choice.dialogue)) counts.set(choice.dialogue, getDialogueNodes(choice.dialogue).length)
+    }
+    return counts
+  }, [choices])
   const visibleChoices = useMemo(() => {
     return choices.filter((choice) => {
       if (
@@ -687,6 +741,14 @@ export function DialogueNodesPage(): React.JSX.Element {
     showContentUid
   ])
   const tree = useMemo(() => makeTree(visibleChoices), [visibleChoices])
+  const nodeStatusStats = useMemo(
+    () => aggregateTreeStatusCounts(tree, dialogueStatusStats),
+    [tree, dialogueStatusStats]
+  )
+  const treeNodeCounts = useMemo(
+    () => aggregateTreeNodeCounts(tree, dialogueNodeCounts),
+    [tree, dialogueNodeCounts]
+  )
   useEffect(() => {
     if (!selectedKey) return
     const path = treePathForChoice(tree, selectedKey)
@@ -1098,8 +1160,10 @@ export function DialogueNodesPage(): React.JSX.Element {
                 toggle={toggleTree}
                 selected={selected}
                 select={setSelectedKey}
-                translated={translatedDialogues}
-                reviewStats={reviewStats}
+                nodeStatusStats={nodeStatusStats}
+                treeNodeCounts={treeNodeCounts}
+                dialogueStatusStats={dialogueStatusStats}
+                dialogueNodeCounts={dialogueNodeCounts}
               />
               {visibleChoices.length === 0 && (
                 <p className="px-2 py-4 text-xs text-neutral-600">

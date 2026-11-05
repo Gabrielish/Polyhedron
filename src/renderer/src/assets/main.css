@@ -3825,6 +3825,9 @@ html[data-theme="liquid-glass"] .dictionary-footer .dictionary-page-range {
   color: var(--poly-accent, #ed1c24);
   filter: drop-shadow(0 0 4px rgb(var(--poly-accent-rgb, 237 28 36) / 42%));
 }
+.titlebar-home-filled > path:first-child {
+  display: none;
+}
 
 /* User-configurable accent color. ThemeContext updates these variables at runtime. */
 html[data-theme="liquid-glass"] .accent-solid-button {

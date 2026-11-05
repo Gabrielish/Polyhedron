@@ -1,0 +1,1216 @@
+{
+  "sourceUrl": "https://bg3.wiki/wiki/Quests",
+  "license": "CC BY-NC-SA 4.0 or CC BY-SA 4.0 (see source page)",
+  "entries": [
+    {
+      "name": "Escape the Nautiloid",
+      "description": "We've been abducted by mind flayers and infected with some kind of parasite. We need to find a way off this ship.",
+      "wikiTitle": "Escape the Nautiloid",
+      "section": "Prologue",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Illithids' Captive",
+      "description": "We encountered a survivor, trapped inside one of the pods aboard the nautiloid. Perhaps we can find a way to free her.",
+      "wikiTitle": "Rescue the Illithids' Captive",
+      "section": "Prologue",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find a Cure",
+      "description": "",
+      "wikiTitle": "Find a Cure",
+      "section": "Multi-act main quests",
+      "subquests": [
+        "Ask the Goblin Priestess for Help",
+        "Find the Githyanki Crèche",
+        "Get Help from Auntie Ethel",
+        "Get Help from Healer Nettie",
+        "Help Omeluum Investigate the Parasite",
+        "Rescue the Druid Halsin"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Nightsong",
+      "description": "A wizard will pay anyone to track down an ancient relic, the Nightsong and bring it to him. The Nightsong is in some kind of temple.",
+      "wikiTitle": "Find the Nightsong",
+      "section": "Multi-act main quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Gather Your Allies",
+      "description": "Recruit allies in the fight against the cult.",
+      "wikiTitle": "Gather Your Allies",
+      "section": "Multi-act main quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Travel to Moonrise Towers",
+      "description": "It is divided into two subquests, reflective of the two paths to the Shadow-Cursed Lands:",
+      "wikiTitle": "Travel to Moonrise Towers",
+      "section": "Multi-act main quests",
+      "subquests": [
+        "Travel through the Mountain Pass",
+        "Travel through the Underdark"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Daughter of Darkness",
+      "description": "We recruited a half-elf named Shadowheart. She was also infected aboard the nautiloid and was playing with a strange object when we met her.",
+      "wikiTitle": "Daughter of Darkness",
+      "section": "Companions / Main Quests",
+      "subquests": [
+        "A Familiar Face",
+        "The Chosen of Shar"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Our Fiery Friend",
+      "description": "We met a fiery tiefling called Karlach. She said servants of the archdevil Zariel were nearby, disguised as paladins of Tyr.",
+      "wikiTitle": "Our Fiery Friend",
+      "section": "Companions / Main Quests",
+      "subquests": [
+        "The Hellion's Heart"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "The Blade of Frontiers",
+      "description": "We recruited Wyll, a monster hunter known as the Blade of Frontiers. He is on a mission to kill Karlach, a powerful devil who is a danger to the entire Sword Coast.",
+      "wikiTitle": "The Blade of Frontiers",
+      "section": "Companions / Main Quests",
+      "subquests": [
+        "The Grand Duke",
+        "Wyrmway"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "The Githyanki Warrior",
+      "description": "Lae'zel promised we could be cleansed of our parasites at a Githyanki Crèche. We should be on the lookout for signs of githyanki presence during our travels.",
+      "wikiTitle": "The Githyanki Warrior",
+      "section": "Companions / Main Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The High Harper",
+      "description": "Jaheira asked us to go to Danthelon's Dancing Axe in Wyrm's Crossing, where her Harper contacts are waiting to report.",
+      "wikiTitle": "The High Harper",
+      "section": "Companions / Main Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Pale Elf",
+      "description": "We met a strange elf who had also been infected with a parasite. He was hostile at first, but agreed to join us when he learned we were infected too.",
+      "wikiTitle": "The Pale Elf",
+      "section": "Companions / Main Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Wizard of Waterdeep",
+      "description": "A wizard named Gale joined the party. He claims to have been on the nautiloid - which means he's infected too.",
+      "wikiTitle": "The Wizard of Waterdeep (Origin)",
+      "section": "Companions / Main Quests",
+      "subquests": [
+        "Balthazar's Experiment",
+        "In Case of Death..."
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "A Familiar Face",
+      "description": "We have entered the Lower City - Shadowheart's old stomping grounds. Perhaps the friend she remembered due to the Noblestalk can still be found with the rest of the Sharrans.",
+      "wikiTitle": "A Familiar Face",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Balthazar's Experiment",
+      "description": "We found a strange ritual circle hidden in a secret workshop within Balthazar's chambers. Gale was able to understand the strange sigils used to cast it, and says it was used to create the Moonlanterns that protect their wielders from the shadow curse.",
+      "wikiTitle": "Balthazar's Experiment",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "In Case of Death...",
+      "description": "Gale died, activating a magical projection of himself which insisted that he be resurrected with the utmost urgency.",
+      "wikiTitle": "In Case of Death...",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Chosen of Shar",
+      "description": "Shadowheart has shown interest in finding the lair of the Dark Justiciar - an elite force dedicated to the goddess Shar.",
+      "wikiTitle": "The Chosen of Shar",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Grand Duke",
+      "description": "A group of Flaming Fist mercenaries believe Grand Duke Ravengard of Baldur's Gate is trapped inside, and are trying to break inside.",
+      "wikiTitle": "The Grand Duke",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Hellion's Heart",
+      "description": "Karlach needs an infernal mechanic to tune up the engine she has for a heart. There might be one nearby.",
+      "wikiTitle": "The Hellion's Heart",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Wyrmway",
+      "description": "After reading 'The Legend of Ansur', We discovered the great wyrm Ansur resides in a secret lair called the Wyrmway. The entrance is apparently located somewhere within Wyrm's Rock Prison, and the notes inside it hint that opening the way involves lightning sparks and torches.",
+      "wikiTitle": "Wyrmway",
+      "section": "Companions / Sub Quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Deal with the Devil",
+      "description": "We spoke with Mamzell Amira on the ground floor of Sharess' Caress, and she mentioned that the devil Raphael has taken a room on the top floor. What's he doing here? We should pay Raphael a visit and find out.",
+      "wikiTitle": "Deal with the Devil",
+      "section": "Personal quests",
+      "subquests": [
+        "Escape the Deal",
+        "Fulfill the Deal"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Discover the Artefact's Secrets",
+      "description": "Shadowheart carries a strange artefact. It seemed to protect us from a horrible voice. She stubbornly avoids the subject. We should find out more about it.",
+      "wikiTitle": "Discover the Artefact's Secrets",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Discover the History of Prince Orpheus",
+      "description": "There may be a way to decipher these books. We should keep an eye out for something that might aid us.",
+      "wikiTitle": "Discover the History of Prince Orpheus",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Embrace Your Potential",
+      "description": "We were visited in our dreams by a mysterious figure, who told us that our illithid parasites are special and the source of great potential.",
+      "wikiTitle": "Embrace Your Potential",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Escape the Deal",
+      "description": "We signed Raphael's deal but are having second thoughts about giving the ultra-powerful Crown of Karsus to a devil. Raphael is smart, but perhaps he can be outsmarted.",
+      "wikiTitle": "Escape the Deal",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Free Orpheus",
+      "description": "We found out that the Astral Prism is a prison for the githyanki prince Orpheus. The mind flayer has been using Orpheus' powers to suppress the influence of the Absolute. We should find out if there's a way to free Orpheus from his chains.",
+      "wikiTitle": "Free Orpheus",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Fulfill the Deal",
+      "description": "According to the terms of our deal with Raphael, we must give him the Crown of Karsus after we've defeated the Absolute threat. But first we must get hold of the relic.",
+      "wikiTitle": "Fulfill the Deal",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Help Kith'rak Voss",
+      "description": "Kith'rak Voss visited our camp and asked us to help him free someone held prisoner within the Astral Prism. We agreed to bring the Prism to Baldur's Gate and meet him there.",
+      "wikiTitle": "Help Kith'rak Voss",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Help Your Protector",
+      "description": "During the night, we were awoken by the voice of the Absolute. A githyanki contingent ambushed us. We heard the voice of the Dream Visitor, desperately seeking our help.",
+      "wikiTitle": "Help Your Protector",
+      "section": "Personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Call of the Blood",
+      "description": "Astarion Origin Quest. I'm... alive? But it won't be long before my old master realises I'm missing, so I had better find out what in the hells is going on and quickly.",
+      "wikiTitle": "Call of the Blood",
+      "section": "Origin personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Forging a Heart",
+      "description": "Dammon, an infernal mechanic, told me to find some infernal iron. He might be able to repair my heart.",
+      "wikiTitle": "Forging a Heart",
+      "section": "Origin personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Open Your Scars",
+      "description": "The Dark Urge finally learns the truth about themselves.",
+      "wikiTitle": "Open Your Scars",
+      "section": "Origin personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Servant of None",
+      "description": "Karlach Origin Quest. This is it. I've been trapped in the Hells for a decade - and this nautiloid is my ticket out.",
+      "wikiTitle": "Servant of None",
+      "section": "Origin personal quests",
+      "subquests": [
+        "Forging a Heart"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "The Prince of the Comet",
+      "description": "Lae'zel Origin Subquest. Gith's son, the Prince of the Comet, is the rightful heir to the Githyanki Empire.",
+      "wikiTitle": "The Prince of the Comet (Quest)",
+      "section": "Origin personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Urge",
+      "description": "The Dark Urge Origin Quest. These vile things you do... Don't you wonder why you're doing them? You want to know, don't you?",
+      "wikiTitle": "The Urge",
+      "section": "Origin personal quests",
+      "subquests": [
+        "Open Your Scars"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Vlaakith's Will",
+      "description": "Lae'zel Origin Subquest. Orpheus will die by my hand, and I will be named Baht t'Vlaakith.",
+      "wikiTitle": "Vlaakith's Will",
+      "section": "Origin personal quests",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Explore the Ruins",
+      "description": "We met some bandits near some ruins. They've been trying to break into a crypt - with no success. Whatever they're after is probably still inside.",
+      "wikiTitle": "Explore the Ruins",
+      "section": "Act One / Ravaged Beach",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Free Lae'zel",
+      "description": "We found Lae'zel, the githyanki from the nautiloid, trapped in a hanging cage. Two tieflings are deciding what to do with her.",
+      "wikiTitle": "Free Lae'zel",
+      "section": "Act One / Ravaged Beach",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Doni",
+      "description": "As the tieflings prepare for the siege, Rikka asked us to find Doni and bring him to safety.",
+      "wikiTitle": "Find Doni",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Your Belongings",
+      "description": "We've been robbed - by children no less. They distracted us by posing as merchants. We should have a word with them.",
+      "wikiTitle": "Find Your Belongings",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Get Help from Healer Nettie",
+      "description": "Aradin told us that the druid Halsin has an apprentice. If we can find her, she might be able to help us with the parasite.",
+      "wikiTitle": "Get Help from Healer Nettie",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate Kagha",
+      "description": "The Rite of Thorns is dangerous magic. Why is Kagha so determined to do this? We should investigate.",
+      "wikiTitle": "Investigate Kagha",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate the Beach",
+      "description": "We heard strange music on the beach. Where is it coming from?",
+      "wikiTitle": "Investigate the Beach",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Kill Kagha",
+      "description": "The tieflings and druids are at an impasse. Killing Kagha might tip the balance.",
+      "wikiTitle": "Kill Kagha",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Raid the Emerald Grove",
+      "description": "Minthara is preparing to attack the grove and told us to wait for next light. We should get some rest.",
+      "wikiTitle": "Raid the Emerald Grove",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Return the Locket",
+      "description": "We met an adventurer called Barth who accused a tiefling child of stealing his locket. We suspected the child but couldn't get the locket back.",
+      "wikiTitle": "Return the Locket",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save Arabella",
+      "description": "We learned that a child named Arabella is being held by the druids on charges of theft. We should check on her.",
+      "wikiTitle": "Save Arabella",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save the First Druid",
+      "description": "First Druid Halsin might be the only one capable of stopping Kagha from finishing the ritual. He was last seen on an expedition into goblin territory.",
+      "wikiTitle": "Save the First Druid",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save the Goblin Sazza",
+      "description": "The goblin Sazza is a prisoner in the grove. She's promise us an introduction to her tribe and their powerful healer - if we break her out.",
+      "wikiTitle": "Save the Goblin Sazza",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save the Refugees",
+      "description": "Kagha, the leader of the druids, ordered the tiefling to leave the grove. Zevlor fears they won't survive on the road and asked us to intervene.",
+      "wikiTitle": "Save the Refugees",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Steal the Sacred Idol",
+      "description": "Mol asked us to steal some kind of idol from the druids.",
+      "wikiTitle": "Steal the Sacred Idol",
+      "section": "Act One / Emerald Grove",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Destroy the Ancient Tome",
+      "description": "Evil is inscribed on every page of this book. But all evil has a weakness - there must be a way to destroy it.",
+      "wikiTitle": "Destroy the Ancient Tome",
+      "section": "Act One / Blighted Village",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Finish the Masterwork Weapon",
+      "description": "We found blueprints for masterwork weapons. All we need to forge one is some bark from a Sussur Tree.",
+      "wikiTitle": "Finish the Masterwork Weapon",
+      "section": "Act One / Blighted Village",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Gnome",
+      "description": "We spotted a deep gnome tied to the blades of a windmill. He's being tormented by a group of goblins.",
+      "wikiTitle": "Rescue the Gnome",
+      "section": "Act One / Blighted Village",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Search the Cellar",
+      "description": "We found a journal that mentioned a cellar - along with some powerful items. This sounds promising and, more importantly, valuable.",
+      "wikiTitle": "Search the Cellar",
+      "section": "Act One / Blighted Village",
+      "subquests": [
+        "Unlock the Ancient Tome",
+        "Destroy the Ancient Tome"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Unlock the Ancient Tome",
+      "description": "This book is locked tight, and the mechanism isn't shaped for a key. Maybe some kind of stone would work?",
+      "wikiTitle": "Unlock the Ancient Tome",
+      "section": "Act One / Blighted Village",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Get Help from Auntie Ethel",
+      "description": "We met an eccentric old lady in the Emerald Grove. She's confident she can remove our parasites and invited us to her teahouse.",
+      "wikiTitle": "Get Help from Auntie Ethel",
+      "section": "Act One / Sunlit Wetlands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save Mayrina",
+      "description": "Two brothers said that their sister Mayrina is being held against her will at Ethel's house - something the old woman denied.",
+      "wikiTitle": "Save Mayrina",
+      "section": "Act One / Sunlit Wetlands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Missing Shipment",
+      "description": "Zarys, leader of the local Zhentarim, said her agents went missing while transporting a shipment. She'll pay a hefty sum if we return it unopened.",
+      "wikiTitle": "Find the Missing Shipment",
+      "section": "Act One / Risen Road",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Free the Artist",
+      "description": "We met Oskar, an artist captured by the Zhentarim. He begged us to help him escape, promising that his patron will reward us handsomely.",
+      "wikiTitle": "Free the Artist",
+      "section": "Act One / Risen Road",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Hunt the Devil",
+      "description": "We met a group of paladins of Tyr who are hunting a devil. Anders asked for our help - we agreed to search for the devil.",
+      "wikiTitle": "Hunt the Devil",
+      "section": "Act One / Risen Road",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Grand Duke",
+      "description": "We approached a burning inn called Waukeen's Rest. Flaming Fists are trying to break down the door - a Grand Duke of Baldur's Gate is trapped inside.",
+      "wikiTitle": "Rescue the Grand Duke",
+      "section": "Act One / Risen Road",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Trapped Man",
+      "description": "We found a man trapped under a beam in Waukeen's Rest.",
+      "wikiTitle": "Rescue the Trapped Man",
+      "section": "Act One / Risen Road",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Ask the Goblin Priestess for Help",
+      "description": "We learned that a goblin tribe is led by a priestess with powerful magic. Dealing with goblins is risky, but this might be one way to cure ourselves.",
+      "wikiTitle": "Ask the Goblin Priestess for Help",
+      "section": "Act One / Goblin Camp and Shattered Sanctum",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Defeat the Goblins",
+      "description": "If the tieflings are to make their way to Baldur's Gate, we will need to deal with the goblins. Zevlor thinks someone must be organising them. We should investigate their camp.",
+      "wikiTitle": "Defeat the Goblins",
+      "section": "Act One / Goblin Camp and Shattered Sanctum",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Druid Halsin",
+      "description": "Halsin was actively researching the parasite - he might be one of the few people who understand our condition.",
+      "wikiTitle": "Rescue the Druid Halsin",
+      "section": "Act One / Goblin Camp and Shattered Sanctum",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue Volo",
+      "description": "We found Volo performing for the goblins under significant duress. He was led into the camp's interior by a guard - he clearly needs help.",
+      "wikiTitle": "Rescue Volo",
+      "section": "Act One / Goblin Camp and Shattered Sanctum",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Avenge Glut's Circle",
+      "description": "A myconid named Glut heard the Sovereign ask us to kill the duergar. It wants to join us.",
+      "wikiTitle": "Avenge Glut's Circle",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Defeat the Duergar Intruders",
+      "description": "We agreed to help the Sovereign remove the duergar who threatened the myconid colony.",
+      "wikiTitle": "Defeat the Duergar Intruders",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Deliver Nere's Head",
+      "description": "Sovereign Spaw wants the head of the drow Nere.",
+      "wikiTitle": "Deliver Nere's Head",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Cure the Poisoned Gnome",
+      "description": "We met Thulla, a deep gnome who was poisoned. The Underdark might hold a cure, but we have to be quick, she won't survive for long.",
+      "wikiTitle": "Cure the Poisoned Gnome",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Missing Boots",
+      "description": "We offered to help a duergar to track down a runaway slave. The slave escaped with a pair of boots belonging to the duergar's sergeant.",
+      "wikiTitle": "Find the Missing Boots",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Mushroom Picker",
+      "description": "Derryth told us about her husband Baelen. He's lost somewhere in the Underdark.",
+      "wikiTitle": "Find the Mushroom Picker",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Help Omeluum Investigate the Parasite",
+      "description": "We mentioned the parasite to Blurg, a hobgoblin. His colleague, a mind flayer named Omeluum, offered to examine it. Perhaps it can cure us?",
+      "wikiTitle": "Help Omeluum Investigate the Parasite",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Travel through the Underdark",
+      "description": "We learned that the best way to get to Moonrise Towers is through the Underdark. Tunnels beneath the temple of Selûne will lead us there.",
+      "wikiTitle": "Travel through the Underdark",
+      "section": "Act One / Underdark",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Blind the Absolute",
+      "description": "We agreed to help Brithvar and his group double-cross Nere. First, we need to take out the scrying eye - discreetly.",
+      "wikiTitle": "Blind the Absolute",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Explosives",
+      "description": "Brithvar mentioned that a deep gnome fled with some smokepowder. Her crew should know more.",
+      "wikiTitle": "Find Explosives",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Free True Soul Nere",
+      "description": "Sergeant Thrinn said the True-Soul leading them is trapped behind the cave-in. She wants us to clear it.",
+      "wikiTitle": "Free True Soul Nere",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Get Past the Rubble",
+      "description": "We found a passage buried in rubble that leads to the Adamantine Forge. We should clear it.",
+      "wikiTitle": "Get Past the Rubble",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Help the Spirit of the Amulet",
+      "description": "We read the journal of a Dark Justiciar. He mentioned an amulet of great power that also made the wearer laugh. It was cast into the lava.",
+      "wikiTitle": "Help the Spirit of the Amulet",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save the Grymforge Gnomes",
+      "description": "Thulla, a gnome of the Ironhand clan, asked us to help her kin. Duergar are holding them captive.",
+      "wikiTitle": "Save the Grymforge Gnomes",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "The Adamantine Forge",
+      "description": "We learned than an adamantine forge is hidden deep within the Underdark.",
+      "wikiTitle": "The Adamantine Forge (Quest)",
+      "section": "Act One / Grymforge",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Blood of Lathander",
+      "description": "We learned that a powerful holy relic, the Blood of Lathander, could be somewhere nearby. We should keep an eye out for it as we explore the monastery.",
+      "wikiTitle": "Find the Blood of Lathander",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Githyanki Crèche",
+      "description": "Lae'zel told us that the githyanki should be able to cure us, if we can find one of their crèches.",
+      "wikiTitle": "Find the Githyanki Crèche",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Reclaim the Blue Jay's Nest",
+      "description": "We met a blue jay who asked us to kill the eagles on the monastery roof. He claimed they stole his nest.",
+      "wikiTitle": "Reclaim the Blue Jay's Nest",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Steal a Githyanki Egg",
+      "description": "Lady Esther has asked that we steal an egg from the githyanki. The Society of Brilliance want to incubate it, raise it, and soothe its so-called violent nature.",
+      "wikiTitle": "Steal a Githyanki Egg",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Travel through the Mountain Pass",
+      "description": "We decided to take the mountain pass. This road should lead us to Moonrise Towers.",
+      "wikiTitle": "Travel through the Mountain Pass",
+      "section": "Act One / Rosymorn Monastery Trail",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Break Yurgir's Contract",
+      "description": "The orthon is bound by Raphael's contract and seeks a way to free himself from it.",
+      "wikiTitle": "Break Yurgir's Contract",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Arabella's Parents",
+      "description": "We met Arabella, a tiefling child from the grove, in the shadow-cursed lands. She was looking for her parents. We offered to search for them, and invited her to our camp.",
+      "wikiTitle": "Find Arabella's Parents",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Rolan in the Shadows",
+      "description": "Rolan has disappeared into the darkness. He left a message for his siblings to wait for him at Last Light. He's out in the shadow curse alone. We should look for him.",
+      "wikiTitle": "Find Rolan in the Shadows",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate the Selûnite Resistance",
+      "description": "We found the old notes of a Sharran inquisitor. She had been investigating rumours of clandestine Selûne-worship in the region, and had been following a lead to an abandoned potter's workshop. Perhaps we should look for it.",
+      "wikiTitle": "Investigate the Selûnite Resistance",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Kill Raphael's Old Enemy",
+      "description": "Raphael told us of a nemesis of his who lurks in the depths beneath the mausoleum. Evidently we should try to deal with this old enemy.",
+      "wikiTitle": "Kill Raphael's Old Enemy",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Lift the Shadow Curse",
+      "description": "According to Halsin, if we want to lift the shadow curse, we must find Thaniel - the spirit of the land.",
+      "wikiTitle": "Lift the Shadow Curse",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Punish the Wicked",
+      "description": "He Who Was wants to bring justice to the victims of a murderer - to do so, he needs a ledger belonging to the killer. It is hidden in The Waning Moon.",
+      "wikiTitle": "Punish the Wicked",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Wake Art Cullagh",
+      "description": "We met Art Cullagh, a mysterious man lying unconscious in Last Light Inn. He's being cared for by a Flaming Fist. He may have knowledge about the shadow curse. We should see if we can wake him somehow.",
+      "wikiTitle": "Wake Art Cullagh",
+      "section": "Act Two / Shadow-Cursed Lands",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Capture Isobel the Selûnite Cleric",
+      "description": "Z'rell, Ketheric's enforcer, told us to kidnap Isobel from Last Light and bring her to Moonrise Towers. If we do this, Last Light will no longer be protected from the shadow curse.",
+      "wikiTitle": "Capture Isobel the Selûnite Cleric",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Decide Minthara's Fate",
+      "description": "Nightwarden Minthara has been condemned to death. We ought to visit her while we can.",
+      "wikiTitle": "Decide Minthara's Fate",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Defeat Ketheric Thorm",
+      "description": "We battled Ketheric Thorm. Before we could finish him, he fled somewhere below the tower. We need to follow him.",
+      "wikiTitle": "Defeat Ketheric Thorm",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Ketheric Thorm's Relic",
+      "description": "Minthara told us that the necromancer Balthazar might know more about Ketheric's invulnerability. She suspects the answers we seek lie in Balthazar's chambers on the upper floor.",
+      "wikiTitle": "Find Ketheric Thorm's Relic",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Mol",
+      "description": "We found out that Mol, the leader of the young tiefling pickpockets, has vanished. We should help them find her.",
+      "wikiTitle": "Find Mol",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Zevlor",
+      "description": "Zevlor was captured by the cult of the Absolute. His fellow tieflings claim he froze and tried to surrender. We should look for him.",
+      "wikiTitle": "Find Zevlor",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Follow the Convoy",
+      "description": "We met a group of cultists preparing to travel to Moonrise Towers. They are waiting for a guide who must be summoned using an instrument the drow Minthara possessed.",
+      "wikiTitle": "Follow the Convoy",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Infiltrate Moonrise Towers",
+      "description": "The dream visitor told us to go to Moonrise Towers and infiltrate the cult of the Absolute. The cult's secrets may teach us how to free ourselves of these parasites.",
+      "wikiTitle": "Infiltrate Moonrise Towers",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue the Tieflings",
+      "description": "We learned from Alfira that some of the tieflings were taken to Moonrise Towers. She's asked us to save them.",
+      "wikiTitle": "Rescue the Tieflings",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue Wulbren",
+      "description": "We freed the deep gnomes in Grymforge, but more of their kin were taken to Moonrise Towers - including their leader Wulbren. We need to find and rescue them.",
+      "wikiTitle": "Rescue Wulbren",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Resolve the Abduction",
+      "description": "Marcus, a True Soul who has infiltrated Last Light, told us that his powerful master demands that the cleric Isobel be taken to Moonrise Towers alive. If we do this, Last Light will no longer be protected from the shadow curse.",
+      "wikiTitle": "Resolve the Abduction",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Seek Protection from the Shadow Curse",
+      "description": "A deadly curse plagues this land. One wrong step could kill us. The shadow curse is even stronger in certain areas. We need to find a way to fend it off.",
+      "wikiTitle": "Seek Protection from the Shadow Curse",
+      "section": "Act Two / Moonrise Towers",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Deal with the Gnomes",
+      "description": "We agreed to help Manip Falcäo track down and kill the gnomes attacking their checkpoint. He promised to reward us if we bring him the head of their leader. We should find the gnomes' hideout.",
+      "wikiTitle": "Deal with the Gnomes",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Feed the Mind Flayer",
+      "description": "A ravenous mind flayer asked us to bring it a humanoid to feast on.",
+      "wikiTitle": "Feed the Mind Flayer",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find a Way into Wyrm's Rock Fortress",
+      "description": "Wyrm's Rock is closed due to the ordination of Gortash - who is about to become Archduke of Baldur's Gate. There must be someone, or something, in Wyrm's Crossing that could help us gain entry.",
+      "wikiTitle": "Find a Way into Wyrm's Rock Fortress",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Dribbles the Clown",
+      "description": "Dribbles the Clown, star of the circus, is missing. Ringmaster Lucretious asked us to find him. He's likely dead, but that doesn't seem to bother her.",
+      "wikiTitle": "Find Dribbles the Clown",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the Missing Letters",
+      "description": "Carrier pigeons have gone missing. Postmaster Danzo asked us to retrieve the letters they carried. He said that if we find the letters, we shouldn't read them.",
+      "wikiTitle": "Find the Missing Letters",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find the 'Stern Librarian' Ffion",
+      "description": "We spoke to Mamzell Amira, the proprietor of Sharess' Caress. She asked us to find Ffion, a worker of hers who has gone missing. She told us to start in Ffion's pleasure room called 'Elminster's Library', two flights up.",
+      "wikiTitle": "Find the 'Stern Librarian' Ffion",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Free Counsellor Florrick",
+      "description": "We learned of Counsellor Florrick's impending execution, but not her exact location. If we want her help, we should find where she's being kept.",
+      "wikiTitle": "Free Counsellor Florrick",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Help the Devilish Ox",
+      "description": "We met an odd creature. It has the shape of an ox, but is clearly something else. We agreed to help it reach the city. It transformed into an apple so we could carry it.",
+      "wikiTitle": "Help the Devilish Ox",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate the Suspicious Toys",
+      "description": "We found a blackmail letter in a toymaker's cellar - something dangerous has been placed inside toys donated to the refugees. We should find them, and quickly.",
+      "wikiTitle": "Investigate the Suspicious Toys",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Solve the Open Hand Temple Murders",
+      "description": "We've been asked to look into the deaths of Father Lorgan and Brilgor at the Open Hand Temple. Sister Yannis, the temple's rector, believes Brilgor's been blamed for the crime too hastily by Investigator Valeria.",
+      "wikiTitle": "Solve the Open Hand Temple Murders",
+      "section": "Act Three / Rivington",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Aid the Underduke",
+      "description": "Nine-Fingers, leader of the city's criminal Guild, is having her territory threatened by a new player on the scene: the Stone Lord. We should head to the Guildhall to find out more.",
+      "wikiTitle": "Aid the Underduke",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Avenge the Drowned",
+      "description": "Flood Tide Allandra Grey bid us avenge Holli, a fallen Waveservant of Umberlee. She was killed by a noxious, polluting beast around Grey Harbour - we must find it and slay its master.",
+      "wikiTitle": "Avenge the Drowned",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Avenge the Hag Survivors",
+      "description": "We disposed of a hag spy named Jatlo. Cold comfort for the hag's victims, who believe her to be in the city, and who want her gone.",
+      "wikiTitle": "Avenge the Hag Survivors",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Avenge the Ironhands",
+      "description": "The Ironhand Gnomes are planning something big in Baldur's Gate. We should look for them once we arrive in the city.",
+      "wikiTitle": "Avenge the Ironhands",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "End Mystic Carrion's Immortality",
+      "description": "We agreed to help Thrumbo permanently defeat Mystic Carrion. He told us to look for a chamber beneath Carrion's mansion.",
+      "wikiTitle": "End Mystic Carrion's Immortality",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Find Mystic Carrion's Servant",
+      "description": "We met Mystic Carrion, who promised to reward us if we bring back the body of one of his zombie servants, Thrumbo.",
+      "wikiTitle": "Find Mystic Carrion's Servant",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [
+        "End Mystic Carrion's Immortality"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Help the Hag Survivors",
+      "description": "We found a poster that mentions a meeting for people who have survived hags. It's being held at Barren's Coop.",
+      "wikiTitle": "Help the Hag Survivors",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate Cazador's Palace",
+      "description": "Ulma told us that a vampire called Cazador has been killing their people and kidnapping their children. She asked us to save the children and slay the vampire.",
+      "wikiTitle": "Investigate Cazador's Palace",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate the House of Grief",
+      "description": "We found a very disoriented merchant called Arves loitering outside a building. We should find out what happened to him.",
+      "wikiTitle": "Investigate the House of Grief",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [
+        "Surrender Shadowheart to Viconia"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Retrieve Omeluum",
+      "description": "We spoke to a hobgoblin called Blurg in the Society of Brilliance Lodge. His illithid companion Omeluum is missing - we agreed to look for it.",
+      "wikiTitle": "Retrieve Omeluum",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Return Rakath's Gold",
+      "description": "We witnessed a heist in the Counting House. Head Banker Rakath asked us to recover the stolen gold - we need to look for clues.",
+      "wikiTitle": "Return Rakath's Gold",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Roveer's Storehouse",
+      "description": "Chef Roveer wants us to kill the rats in his cellar. It's not clear why he can't just do this himself...",
+      "wikiTitle": "Roveer's Storehouse",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save the Gondians",
+      "description": "We agreed to free the gondians' families, kept hostage by Gortash, in exchange for the Steel Watch's destruction. The hostages' location is kept secret, but Zanner thinks there may be clues in the Foundry's lower levels.",
+      "wikiTitle": "Save the Gondians",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save Vanra",
+      "description": "Mayrina told us that a hag has kidnapped a child. The mother, Lora, can be found at Basilisk Gate. We should speak to her.",
+      "wikiTitle": "Save Vanra",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Stop the Presses",
+      "description": "We met a journalist, Estra Stir, who told us we're set to star in the next edition of the Baldur's Mouth Gazette. We should find out why.",
+      "wikiTitle": "Stop the Presses",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Surrender Shadowheart to Viconia",
+      "description": "Viconia asked that we surrender Shadowheart to her in exchange for her help defeating the Absolute.",
+      "wikiTitle": "Surrender Shadowheart to Viconia",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Visit the Emperor's Old Hideout",
+      "description": "The Emperor asked us to check its old hideout in the Elfsong Tavern - some of its old items may be of use to us.",
+      "wikiTitle": "Visit the Emperor's Old Hideout",
+      "section": "Act Three / Baldur's Gate",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Acquire the Gauntlets for Helsik",
+      "description": "Helsik the diabolist said she will help us reach the House of Hope if we steal a powerful artefact for her while we're there: Gauntlets of Hill Giant Strength.",
+      "wikiTitle": "Acquire the Gauntlets for Helsik",
+      "section": "Act Three / House of Hope",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Save Hope",
+      "description": "We met a strange spirit imprisoned in Raphael's home - named Hope, oddly enough. She mentioned an important hammer before disappearing abruptly.",
+      "wikiTitle": "Save Hope",
+      "section": "Act Three / House of Hope",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Confront the Elder Brain",
+      "description": "We can thwart the Chosen of the Dead Three by taking control of the elder brain - but will we use that control to liberate or to conquer? Whatever the answer, it lies in Baldur's Gate.",
+      "wikiTitle": "Confront the Elder Brain",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Consider Gortash's Bargain",
+      "description": "Gortash proposed a pact of allegiance with us. If we kill Orin and take her Netherstone, he will let us rule the city alongside him with the elder brain at our command.",
+      "wikiTitle": "Consider Gortash's Bargain",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Control the Elder Brain",
+      "description": "Whoever has control over the Netherbrain will hold unspeakable power. We could dominate it and have a thousand kingdoms at our command.",
+      "wikiTitle": "Control the Elder Brain",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Destroy the Elder Brain",
+      "description": "The Netherbrain is too powerful to let live. Destroying it may be the smartest thing to do.",
+      "wikiTitle": "Destroy the Elder Brain",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Disable the Steel Watch",
+      "description": "Gortash is protected by the Steel Watchers. We need to figure out how to disable the Steel Watch.",
+      "wikiTitle": "Disable the Steel Watch",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Get Gortash's Netherstone",
+      "description": "We discovered that Gortash is in Wyrm's Rock Fortress, where he will be sworn in as Archduke of Baldur's Gate. We need to make our way there.",
+      "wikiTitle": "Get Gortash's Netherstone",
+      "section": "Act Three / Finale",
+      "subquests": [
+        "Consider Gortash's Bargain",
+        "Disable the Steel Watch"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Get Orin's Netherstone",
+      "description": "Orin, the Lash of Bhaal, is hiding somewhere in Baldur's Gate with a Netherstone. We must find her and take it.",
+      "wikiTitle": "Get Orin's Netherstone",
+      "section": "Act Three / Finale",
+      "subquests": [
+        "Rescue Orin's Victim",
+        "Investigate the Murders",
+        "Impress the Murder Tribunal"
+      ],
+      "category": "Quest"
+    },
+    {
+      "name": "Impress the Murder Tribunal",
+      "description": "An unnerving stranger gave us a list of people and asked us to kill from it. If we do so, and bring a severed hand as proof, we can stand before the Murder Tribunal and enter the Temple of Bhaal.",
+      "wikiTitle": "Impress the Murder Tribunal",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Investigate the Murders",
+      "description": "Duke Stelmane was ritualistically killed at the Elfsong Tavern shortly before our arrival into the city. We should investigate - it may help us find the Lord of Murder's Chosen.",
+      "wikiTitle": "Investigate the Murders",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    },
+    {
+      "name": "Rescue Orin's Victim",
+      "description": "Orin abducted one of our friends. She told us that she'll release them if we kill Gortash.",
+      "wikiTitle": "Rescue Orin's Victim",
+      "section": "Act Three / Finale",
+      "subquests": [],
+      "category": "Quest"
+    }
+  ]
+}

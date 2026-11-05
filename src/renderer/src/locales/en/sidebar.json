@@ -14,5 +14,7 @@
   "metrics": "Metrics",
   "dialogues": "Dialogue Nodes",
   "gameData": "Game Data",
-  "spells": "Spells"
+  "spells": "Spells",
+  "toggleSidebar": "Toggle sidebar",
+  "navigation": "Navigation"
 }

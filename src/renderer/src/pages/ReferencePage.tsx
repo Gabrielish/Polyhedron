@@ -1,68 +1,76 @@
+import { useVirtualizer } from '@tanstack/react-virtual'
 import {
-  ExternalLink,
-  Swords,
-  Shield,
-  FlaskConical,
-  Sparkles,
   BookOpen,
-  Copy,
-  ClipboardPaste,
-  Eye,
-  History,
-  Flag,
-  CircleDashed,
-  CircleX,
+  BookText,
+  ChevronDown,
+  ChevronRight,
   CircleAlert,
   CircleCheck,
-  BookText,
-  Hash,
+  CircleDashed,
+  CircleX,
+  ClipboardPaste,
   Code2,
+  Copy,
+  ExternalLink,
+  Eye,
+  Flag,
+  FlaskConical,
+  Hash,
+  History,
+  Languages,
+  Package,
+  ScrollText,
+  Shield,
+  Sparkles,
+  Swords,
+  UsersRound,
 } from 'lucide-react'
-import { useMemo, useRef, useState } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { useSessionStructure } from '@/hooks/useSessionStructure'
-import { useRetainedMemo } from '@/hooks/useRetainedMemo'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
-import {
-  getReferenceCatalog,
-  type ReferenceCatalogEntry,
-  type ReferenceCategory
-} from '@/data/gameReference'
+import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
+import { AppTooltip } from '@/components/shared/AppTooltip'
+import { StyledWebview } from '@/components/shared/StyledWebview'
+import { TextSearchInput } from '@/components/shared/TextSearchInput'
+import { AITranslateModal } from '@/components/translation/AITranslateModal'
+import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
+import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
   type ReviewStatus,
   type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
+import {
+  getReferenceCatalog,
+  type ReferenceCatalogEntry,
+  type ReferenceCategory
+} from '@/data/gameReference'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
+import { btnGhostIcon } from '@/features/translate/components/styles'
 import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
+import { useRetainedMemo } from '@/hooks/useRetainedMemo'
+import { useSessionStructure } from '@/hooks/useSessionStructure'
+import { cn } from '@/lib/utils'
+import { extractLarianTags, type TextSelection, wrapSelectionWithTag } from '@/utils/larianTags'
+import { renderSource } from '@/utils/renderSource'
+import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
 import {
   getTermGlossaryStorageKey,
   loadTermGlossary,
   type TermGlossaryEntry
 } from '@/utils/termGlossary'
-import { btnGhostIcon } from '@/features/translate/components/styles'
-import { AITranslateModal } from '@/components/translation/AITranslateModal'
-import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
-import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
-import { cn } from '@/lib/utils'
-import { renderSource } from '@/utils/renderSource'
-import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
-import { StyledWebview } from '@/components/shared/StyledWebview'
-import { TextSearchInput } from '@/components/shared/TextSearchInput'
-import { extractLarianTags, wrapSelectionWithTag, type TextSelection } from '@/utils/larianTags'
+
 const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [
-  { label: 'All' },
-  { label: 'Weapons', value: 'Weapon' },
-  { label: 'Armour', value: 'Armour' },
-  { label: 'Objects', value: 'Object' },
-  { label: 'Spells', value: 'Spell' },
-  { label: 'Passives', value: 'Passive' },
-  { label: 'Statuses', value: 'Status' },
-  { label: 'Interrupts', value: 'Interrupt' }
+  { label: 'Quests', value: 'Quest' },
+  { label: 'Books', value: 'Book' },
+  { label: 'Items', value: 'Item' },
+  { label: 'NPCs', value: 'NPC' }
 ]
+const ITEM_TITLE_TRANSLATION_PREFERENCE = 'polyhedron:game-data:show-translated-item-titles'
 function iconFor(category: string): typeof Swords {
+  if (category === 'Quest') return ScrollText
+  if (category === 'Book') return BookOpen
+  if (category === 'Item') return Package
+  if (category === 'NPC') return UsersRound
   if (category === 'Armour') return Shield
   if (category === 'Spell' || category === 'Status') return Sparkles
   if (category === 'Object') return FlaskConical
@@ -77,11 +85,463 @@ function wikiPath(category: ReferenceCategory, name?: string): string {
     Passive: 'Passives',
     Spell: 'Spells',
     Status: 'Statuses',
-    Interrupt: 'Interrupts'
+    Interrupt: 'Interrupts',
+    Quest: 'Quests',
+    Book: 'Books',
+    Item: 'Items',
+    NPC: 'List_of_characters'
   }
   return name
     ? `/wiki/${encodeURIComponent(name.trim().replace(/\s+/g, '_'))}`
     : `/wiki/${names[category]}`
+}
+function QuestTreeList({
+  entries,
+  allEntries,
+  current,
+  onSelect,
+  statusByEntry,
+  collapseSectionsByDefault = false
+}: {
+  entries: ReferenceCatalogEntry[]
+  allEntries: ReferenceCatalogEntry[]
+  current: ReferenceCatalogEntry | null
+  onSelect: (entry: ReferenceCatalogEntry) => void
+  statusByEntry: Map<string, ReferenceStatusCounts>
+  collapseSectionsByDefault?: boolean
+}): React.JSX.Element {
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(() => new Set())
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(() => new Set())
+  const byName = useMemo(() => new Map(allEntries.map((entry) => [entry.name, entry])), [allEntries])
+  const referenced = useMemo(
+    () => new Set(entries.flatMap((entry) => entry.subquests ?? [])),
+    [entries]
+  )
+  const roots = entries.filter((entry) => !referenced.has(entry.name))
+  const sections = useMemo(() => {
+    const groups = new Map<string, ReferenceCatalogEntry[]>()
+    for (const entry of roots) {
+      const section = entry.section || 'Other quests'
+      const group = groups.get(section)
+      if (group) group.push(entry)
+      else groups.set(section, [entry])
+    }
+    return [...groups]
+  }, [roots])
+  const toggle = (name: string) =>
+    setExpanded((previous) => {
+      const next = new Set(previous)
+      if (next.has(name)) next.delete(name)
+      else next.add(name)
+      return next
+    })
+  const toggleSection = (section: string) => {
+    const setSections = collapseSectionsByDefault ? setExpandedSections : setCollapsedSections
+    setSections((previous) => {
+      const next = new Set(previous)
+      if (next.has(section)) next.delete(section)
+      else next.add(section)
+      return next
+    })
+  }
+
+  const renderQuest = (entry: ReferenceCatalogEntry, depth = 0, ancestors = new Set<string>()): React.JSX.Element => {
+    const childEntries = (entry.subquests ?? [])
+      .map((name) => byName.get(name))
+      .filter((child): child is ReferenceCatalogEntry => child !== undefined && !ancestors.has(child.name))
+    const hasChildren = childEntries.length > 0
+    const open = expanded.has(entry.name)
+    const selected = current?.name === entry.name
+    const nextAncestors = new Set(ancestors).add(entry.name)
+    return (
+      <div key={`${entry.name}:${depth}`}>
+        <div className="flex min-w-0 items-center gap-1" style={{ paddingLeft: depth * 12 }}>
+          {hasChildren ? (
+            <button
+              type="button"
+              aria-label={`${open ? 'Collapse' : 'Expand'} ${entry.name}`}
+              aria-expanded={open}
+              onClick={() => toggle(entry.name)}
+              className="flex h-7 w-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:bg-[#1c1f24] hover:text-neutral-200"
+            >
+              {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </button>
+          ) : (
+            <span className="w-6 shrink-0" aria-hidden="true" />
+          )}
+          <button
+            type="button"
+            onClick={() => onSelect(entry)}
+            className={cn(
+              'min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors',
+              selected
+                ? 'bg-amber-500/10 text-amber-300'
+                : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100'
+            )}
+            title={entry.name}
+          >
+            {entry.name}
+          </button>
+          <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+        </div>
+        {open && hasChildren && (
+          <div className="mt-0.5 border-l border-[#24282f]" style={{ marginLeft: depth * 12 + 13 }}>
+            {childEntries.map((child) => renderQuest(child, depth + 1, nextAncestors))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
+      {sections.map(([section, group]) => {
+        const open = collapseSectionsByDefault
+          ? expandedSections.has(section)
+          : !collapsedSections.has(section)
+        return (
+        <section key={section} className="mb-3">
+          {collapseSectionsByDefault ? (
+            <button
+              type="button"
+              aria-expanded={open}
+              onClick={() => toggleSection(section)}
+              className="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-[#0c0d0f] px-2 py-1.5 text-left text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
+            >
+              {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+              <span>{section.replaceAll(' / ', ' · ')}</span>
+              <span className="ml-auto text-neutral-700">{group.length}</span>
+            </button>
+          ) : (
+            <h3 className="sticky top-0 z-10 bg-[#0c0d0f] px-2 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
+              {section.replaceAll(' / ', ' · ')}
+            </h3>
+          )}
+          {open && <div className="space-y-0.5">{group.map((entry) => renderQuest(entry))}</div>}
+        </section>
+      )})}
+      {roots.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No quests found.</p>}
+    </div>
+  )
+}
+
+interface NpcGroupNode {
+  entries: ReferenceCatalogEntry[]
+  children: Map<string, NpcGroupNode>
+}
+
+const NPC_GROUP_ORDER: Record<string, string[]> = {
+  '': ['Party and camp', 'Prologue', 'Act One', 'Act Two', 'Act Three', 'Other Planes', 'Other NPCs'],
+  'Party and camp': [
+    'Origin Characters',
+    'Companions',
+    'Temporary Companions',
+    'Hirelings',
+    'Attached Followers',
+    'Camp Followers',
+    'Other'
+  ],
+  'Act One': ['Wilderness', 'Underdark', 'Rosymorn Monastery', 'Other Locations'],
+  'Act Two': ['Shadow-Cursed Lands', 'Other Locations'],
+  'Act Three': ['Rivington', "Wyrm's Crossing", "Baldur's Gate", 'Other Locations']
+}
+
+function sortNpcGroups(parentPath: string, labels: string[]): string[] {
+  const preferredOrder = NPC_GROUP_ORDER[parentPath]
+  if (!preferredOrder) return labels.sort((a, b) => a.localeCompare(b))
+  const rank = new Map(preferredOrder.map((label, index) => [label, index]))
+  return labels.sort((a, b) => {
+    const rankA = rank.get(a)
+    const rankB = rank.get(b)
+    if (rankA !== undefined || rankB !== undefined) {
+      return (rankA ?? Number.MAX_SAFE_INTEGER) - (rankB ?? Number.MAX_SAFE_INTEGER)
+    }
+    return a.localeCompare(b)
+  })
+}
+
+function NpcTreeList({
+  entries,
+  current,
+  onSelect,
+  statusByEntry,
+  searching
+}: {
+  entries: ReferenceCatalogEntry[]
+  current: ReferenceCatalogEntry | null
+  onSelect: (entry: ReferenceCatalogEntry) => void
+  statusByEntry: Map<string, ReferenceStatusCounts>
+  searching: boolean
+}): React.JSX.Element {
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set())
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
+  const groups = useMemo(() => {
+    const roots = new Map<string, NpcGroupNode>()
+    for (const entry of entries) {
+      for (const groupPath of entry.npcGroups?.length ? entry.npcGroups : ['Other NPCs']) {
+        const path = groupPath.split(' / ').filter(Boolean)
+        if (!path.length) continue
+        let siblings = roots
+        let node: NpcGroupNode | undefined
+        for (const part of path) {
+          node = siblings.get(part)
+          if (!node) {
+            node = { entries: [], children: new Map() }
+            siblings.set(part, node)
+          }
+          siblings = node.children
+        }
+        if (node && !node.entries.some((item) => item.name === entry.name)) node.entries.push(entry)
+      }
+    }
+    return roots
+  }, [entries])
+
+  const toggle = (path: string, depth: number): void => {
+    const setState = depth === 0 ? setCollapsed : setExpanded
+    setState((previous) => {
+      const next = new Set(previous)
+      if (next.has(path)) next.delete(path)
+      else next.add(path)
+      return next
+    })
+  }
+  const countEntries = (node: NpcGroupNode): number =>
+    node.entries.length + [...node.children.values()].reduce((total, child) => total + countEntries(child), 0)
+  const renderEntry = (entry: ReferenceCatalogEntry, key: string, depth: number): React.JSX.Element => (
+    <button
+      key={key}
+      type="button"
+      onClick={() => onSelect(entry)}
+      title={entry.name}
+      className={cn(
+        'flex min-h-8 w-full items-center rounded-md text-left text-[11px] transition-colors',
+        depth === 0 ? 'px-2' : 'px-2',
+        current?.name === entry.name ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24]'
+      )}
+      style={{ paddingLeft: `${12 + depth * 12}px`, paddingRight: 8 }}
+    >
+      <span className="min-w-0 flex-1 truncate">{entry.name}</span>
+      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+    </button>
+  )
+  const renderGroup = (label: string, node: NpcGroupNode, path: string, depth: number): React.JSX.Element => {
+    const open = searching || (depth === 0 ? !collapsed.has(path) : expanded.has(path))
+    const headerClass = depth === 0
+      ? 'sticky top-0 z-10 bg-[#0c0d0f] px-2 py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500'
+      : 'px-3 py-1.5 text-[11px] text-neutral-400'
+    return (
+      <div key={path}>
+        <button
+          type="button"
+          aria-expanded={open}
+          onClick={() => toggle(path, depth)}
+          className={cn('flex w-full items-center gap-1.5 rounded text-left hover:bg-[#14181d] hover:text-neutral-200', headerClass)}
+        >
+          {open ? <ChevronDown size={depth === 0 ? 12 : 11} /> : <ChevronRight size={depth === 0 ? 12 : 11} />}
+          <span className="flex-1">{label}</span>
+          <span className="text-[9px] font-normal normal-case tracking-normal text-neutral-600">{countEntries(node)}</span>
+        </button>
+        {open && (
+          <div className={depth === 0 ? '' : 'ml-2 border-l border-[#24282f]'}>
+            {sortNpcGroups(path, [...node.children.keys()]).map((childLabel) => {
+              const child = node.children.get(childLabel)!
+              return (
+              renderGroup(childLabel, child, `${path}/${childLabel}`, depth + 1)
+              )
+            })}
+            {node.entries
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((entry) => renderEntry(entry, `${path}/${entry.name}`, depth + 1))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
+      {sortNpcGroups('', [...groups.keys()]).map((label) => {
+        const node = groups.get(label)!
+        return renderGroup(label, node, label, 0)
+      })}
+      {entries.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No NPCs found.</p>}
+    </div>
+  )
+}
+
+function ItemTreeList({
+  entries,
+  current,
+  onSelect,
+  searching,
+  statusByEntry,
+  rowsBySource,
+  showTranslatedTitles
+}: {
+  entries: ReferenceCatalogEntry[]
+  current: ReferenceCatalogEntry | null
+  onSelect: (entry: ReferenceCatalogEntry) => void
+  searching: boolean
+  statusByEntry: Map<string, ReferenceStatusCounts>
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  showTranslatedTitles: boolean
+}): React.JSX.Element {
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    () => new Set(['Equipment types', 'Magic equipment', 'Consumables', 'Miscellaneous'])
+  )
+  const [expandedTypes, setExpandedTypes] = useState<Set<string>>(() => new Set())
+  const groups = useMemo(() => {
+    const result = new Map<
+      string,
+      Map<string, { items: ReferenceCatalogEntry[]; subtypes: Map<string, ReferenceCatalogEntry[]> }>
+    >()
+    for (const [section, types] of [
+      ['Equipment types', [
+        'Amulets', 'Armour', 'Camp Clothing', 'Cloaks', 'Clothing', 'Footwear', 'Headwear',
+        'Handwear', 'Instruments', 'Rings', 'Shields', 'Underwear', 'Melee weapons', 'Ranged weapons'
+      ]],
+      ['Magic equipment', ['Magic items in Act One', 'Magic items in Act Two', 'Magic items in Act Three']],
+      ['Consumables', ['Ammunition', 'Camp Supplies', 'Coatings', 'Dyes', 'Elixirs', 'Grenades', 'Potions', 'Scrolls']],
+      ['Miscellaneous', ['Books', 'Containers', 'Notes', 'Other', 'Story Items', 'Valuables']]
+    ] as Array<[string, string[]]>) {
+      result.set(section, new Map(types.map((type) => [type, { items: [], subtypes: new Map() }])))
+    }
+    for (const entry of entries) {
+      for (const group of entry.itemGroups ?? []) {
+        let types = result.get(group.section)
+        if (!types) result.set(group.section, (types = new Map()))
+        let typeGroup = types.get(group.type)
+        if (!typeGroup) types.set(group.type, (typeGroup = { items: [], subtypes: new Map() }))
+        const items = group.subtype
+          ? typeGroup.subtypes.get(group.subtype) ?? []
+          : typeGroup.items
+        if (group.subtype && !typeGroup.subtypes.has(group.subtype)) {
+          typeGroup.subtypes.set(group.subtype, items)
+        }
+        if (!items.some((item) => item.name === entry.name)) items.push(entry)
+      }
+    }
+    return result
+  }, [entries])
+  const toggleSection = (section: string) =>
+    setExpandedSections((previous) => {
+      const next = new Set(previous)
+      if (next.has(section)) next.delete(section)
+      else next.add(section)
+      return next
+    })
+  const toggleType = (key: string) =>
+    setExpandedTypes((previous) => {
+      const next = new Set(previous)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  const rarityColor = (rarity?: string): string => {
+    switch (rarity?.toLowerCase()) {
+      case 'uncommon': return 'text-green-400'
+      case 'rare': return 'text-blue-400'
+      case 'very rare': return 'text-purple-400'
+      case 'legendary': return 'text-orange-400'
+      case 'story item': return 'text-orange-400'
+      default: return 'text-neutral-300'
+    }
+  }
+  return (
+    <div className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
+      {[...groups].map(([section, types]) => {
+        const sectionOpen = searching || expandedSections.has(section)
+        const count = [...types.values()].reduce(
+          (total, group) => total + group.items.length + [...group.subtypes.values()].reduce((sum, items) => sum + items.length, 0),
+          0
+        )
+        return (
+          <section key={section} className="mb-1">
+            <button
+              type="button"
+              aria-expanded={sectionOpen}
+              onClick={() => toggleSection(section)}
+              className="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-[#0c0d0f] px-2 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
+            >
+              {sectionOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+              <span className="flex-1">{section}</span>
+              <span className="text-[9px] font-normal normal-case tracking-normal text-neutral-600">{count}</span>
+            </button>
+            {sectionOpen && [...types].map(([type, typeGroup]) => {
+              const key = `${section}/${type}`
+              const typeOpen = searching || expandedTypes.has(key)
+              const typeCount = typeGroup.items.length + [...typeGroup.subtypes.values()].reduce((sum, items) => sum + items.length, 0)
+              const renderEntry = (entry: ReferenceCatalogEntry, entryKey: string) => {
+                const titleRows = rowsBySource.get(normalize(entry.name)) ?? []
+                const titleTranslation = showTranslatedTitles
+                  ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ??
+                    titleRows.find((row) => row.target.trim()))?.target.trim()
+                  : undefined
+                return (
+                  <button
+                    key={entryKey}
+                    type="button"
+                    onClick={() => onSelect(entry)}
+                    title={entry.name}
+                    className={cn(
+                      'ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded px-2 text-left text-[11px] transition-colors',
+                      current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#1c1f24]'
+                    )}
+                  >
+                    <span
+                      className={cn('min-w-0 flex-1 truncate', rarityColor(entry.rarity))}
+                      style={entry.rarity?.toLowerCase() === 'story item' ? { color: '#fb923c' } : undefined}
+                    >
+                      {entry.name}
+                      {titleTranslation && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{titleTranslation}</span></>}
+                    </span>
+                    <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+                  </button>
+                )
+              }
+              return (
+                <div key={key}>
+                  <button
+                    type="button"
+                    aria-expanded={typeOpen}
+                    onClick={() => toggleType(key)}
+                    className="flex w-full items-center gap-1.5 rounded px-3 py-1.5 text-left text-[11px] text-neutral-400 hover:bg-[#14181d] hover:text-neutral-200"
+                  >
+                    {typeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                    <span className="flex-1">{type}</span>
+                    <span className="text-[9px] text-neutral-600">{typeCount}</span>
+                  </button>
+                  {typeOpen && typeGroup.subtypes.size === 0 && typeGroup.items.map((entry) => renderEntry(entry, `${key}/${entry.name}`))}
+                  {typeOpen && [...typeGroup.subtypes].map(([subtype, items]) => {
+                    const subtypeKey = `${key}/${subtype}`
+                    const subtypeOpen = searching || expandedTypes.has(subtypeKey)
+                    return (
+                      <div key={subtypeKey}>
+                        <button
+                          type="button"
+                          aria-expanded={subtypeOpen}
+                          onClick={() => toggleType(subtypeKey)}
+                          className="ml-3 flex w-[calc(100%-0.75rem)] items-center gap-1.5 rounded px-3 py-1.5 text-left text-[11px] text-neutral-400 hover:bg-[#14181d] hover:text-neutral-200"
+                        >
+                          {subtypeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                          <span className="flex-1">{subtype}</span>
+                          <span className="text-[9px] text-neutral-600">{items.length}</span>
+                        </button>
+                        {subtypeOpen && items.map((entry) => renderEntry(entry, `${subtypeKey}/${entry.name}`))}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </section>
+        )
+      })}
+      {entries.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No items found.</p>}
+    </div>
+  )
 }
 function normalize(value: string): string {
   const cached = normalizedSources.get(value)
@@ -145,16 +605,20 @@ function GameDataSearch({
   matchCase,
   onMatchCaseChange,
   wholeWord,
-  onWholeWordChange
+  onWholeWordChange,
+  showTranslatedItemTitles,
+  onShowTranslatedItemTitlesChange
 }: {
   query: string
   onSearch: (value: string) => void
-  category: ReferenceCategory | undefined
-  onCategoryChange: (value: ReferenceCategory | undefined) => void
+  category: ReferenceCategory
+  onCategoryChange: (value: ReferenceCategory) => void
   matchCase: boolean
   onMatchCaseChange: (value: boolean) => void
   wholeWord: boolean
   onWholeWordChange: (value: boolean) => void
+  showTranslatedItemTitles: boolean
+  onShowTranslatedItemTitlesChange: (value: boolean) => void
 }): React.JSX.Element {
   return (
     <TextSearchInput
@@ -165,8 +629,14 @@ function GameDataSearch({
       onMatchCaseChange={onMatchCaseChange}
       matchWholeWord={wholeWord}
       onMatchWholeWordChange={onWholeWordChange}
-      scopeValue={category ?? 'all'}
-      onScopeChange={(value) => onCategoryChange(value === 'all' ? undefined : (value as ReferenceCategory))}
+      leadingToggle={category === 'Item' ? {
+        label: 'Translation',
+        active: showTranslatedItemTitles,
+        onClick: () => onShowTranslatedItemTitlesChange(!showTranslatedItemTitles),
+        icon: <Languages size={14} />
+      } : undefined}
+      scopeValue={category}
+      onScopeChange={(value) => onCategoryChange(value as ReferenceCategory)}
       scopeOptions={CATEGORIES.map((item) => ({ value: item.value ?? 'all', label: item.label }))}
       className="mb-2 w-full"
     />
@@ -174,6 +644,55 @@ function GameDataSearch({
 }
 function entryReviewStatus(entry: TranslationSessionEntry): ReviewStatus {
   return !entry.target.trim() ? 'untranslated' : (entry.reviewStatus ?? 'needs-review')
+}
+type ReferenceStatusKey = 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
+type ReferenceStatusCounts = Record<ReferenceStatusKey, number> & { total: number }
+const REFERENCE_STATUS_ITEMS: Array<{ key: ReferenceStatusKey; label: string; color: string; track: string }> = [
+  { key: 'untranslated', label: 'Untranslated', color: '#9ca3af', track: 'rgba(156,163,175,.2)' },
+  { key: 'not-verified', label: 'Not verified', color: '#ef4444', track: 'rgba(239,68,68,.2)' },
+  { key: 'needs-review', label: 'Needs Review', color: '#eab308', track: 'rgba(234,179,8,.2)' },
+  { key: 'verified', label: 'Verified', color: '#10b981', track: 'rgba(16,185,129,.2)' }
+]
+function emptyReferenceStatusCounts(): ReferenceStatusCounts {
+  return { untranslated: 0, 'not-verified': 0, 'needs-review': 0, verified: 0, total: 0 }
+}
+function referenceEntryKey(entry: ReferenceCatalogEntry): string {
+  return `${entry.category}:${entry.name}`
+}
+
+function referenceTitleSource(entry: ReferenceCatalogEntry): string {
+  // The game localization uses the origin character's display name without the
+  // wiki's disambiguation suffix.
+  if (entry.category === 'NPC' && normalize(entry.name) === normalize('The Dark Urge (Origin)')) {
+    return 'The Dark Urge'
+  }
+  return entry.name
+}
+function ReferenceStatusRings({ stats }: { stats: ReferenceStatusCounts }): React.JSX.Element {
+  return (
+    <span className="ml-1 inline-flex shrink-0 items-center gap-1.5">
+      {REFERENCE_STATUS_ITEMS.map((status) => {
+        const translated = status.key === 'untranslated'
+        const count = translated ? stats.total - stats.untranslated : stats[status.key]
+        const percent = stats.total ? Math.round((count / stats.total) * 100) : 0
+        const label = translated ? 'Translated' : status.label
+        return (
+          <AppTooltip key={status.key} label={`${label} · ${percent}% · ${count} of ${stats.total}`}>
+            <span
+              aria-label={`${label}: ${count} of ${stats.total}`}
+              role="img"
+              className="relative h-3.5 w-3.5 rounded-full"
+              style={{ background: translated
+                ? `conic-gradient(var(--poly-accent) ${percent}%, color-mix(in srgb, var(--poly-accent) 20%, transparent) ${percent}%)`
+                : `conic-gradient(${status.color} ${percent}%, ${status.track} ${percent}%)` }}
+            >
+              <span className="absolute inset-[2px] rounded-full bg-[#0c0d0f]" />
+            </span>
+          </AppTooltip>
+        )
+      })}
+    </span>
+  )
 }
 const reviewStatusOptions: Array<{
   value: ReviewStatus
@@ -288,28 +807,41 @@ function TranslationField({
   }
   return (
     <div className="mt-3 rounded border border-[#1f2329] bg-[#0c0d0f] p-2">
-      <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
-        {label} · {targetLang}
-        <button
-          type="button"
-          onClick={copy}
-          title="Copy source"
-          className="ml-1 rounded px-1 text-neutral-400 hover:bg-[#1c1f24]"
-        >
-          <Copy size={11} />
-        </button>
-      </div>
-      <div className="translation-source-text mb-2 whitespace-pre-wrap text-xs leading-5 text-neutral-200">
-        {renderSource(source, { termGlossary, whitespaceHighlight: true })}
-      </div>
-      {entries.length === 0 ? (
-        <div className="text-[11px] italic text-neutral-600">
-          This text is not present in the loaded XML.
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
+            {label} · EN
+            <button
+              type="button"
+              onClick={copy}
+              title="Copy source"
+              className="ml-1 rounded px-1 text-neutral-400 hover:bg-[#1c1f24]"
+            >
+              <Copy size={11} />
+            </button>
+          </div>
+          <div className="translation-source-text min-h-10 whitespace-pre-wrap rounded border border-[#2a2f37] bg-[#0c0d0f] p-2 text-xs leading-5 text-neutral-200">
+            {renderSource(source, { termGlossary, whitespaceHighlight: true })}
+          </div>
         </div>
-      ) : (
-        entries.map((entry, index) => (
-          <div key={entry.rowId} className="mb-2 last:mb-0">
-            <div className="mb-1 flex flex-wrap items-center gap-1 text-[9px] text-neutral-600">
+        <div className="min-w-0">
+          <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
+            Translation · {targetLang}
+          </div>
+          {entries.length === 0 ? (
+            <div className="flex min-h-10 items-center rounded border border-[#2a2f37] bg-[#0c0d0f] px-2 text-[11px] italic text-neutral-600">
+              This text is not present in the loaded XML.
+            </div>
+          ) : (
+            entries.map((entry, index) => (
+              <div key={entry.rowId} className="mb-2 last:mb-0">
+                <LocalTranslationInput
+                  value={entry.target}
+                  inputRef={(element) => inputRefFor(entry.rowId, element)}
+                  onSelectionChange={(selection) => onSelectionChange(entry.rowId, selection)}
+                  onCommit={(value) => update(entry.rowId, value)}
+                />
+                <div className="mt-1 flex flex-wrap items-center gap-1 text-[9px] text-neutral-600">
               <span className="mr-1 text-amber-300">
                 Occurrence {index + 1}
                 {entries.length > 1 ? ` of ${entries.length}` : ''}
@@ -390,29 +922,33 @@ function TranslationField({
                   </GameDataTooltipButton>
                 )
               })}
-            </div>
-            <LocalTranslationInput
-              value={entry.target}
-              inputRef={(element) => inputRefFor(entry.rowId, element)}
-              onSelectionChange={(selection) => onSelectionChange(entry.rowId, selection)}
-              onCommit={(value) => update(entry.rowId, value)}
-            />
-          </div>
-        ))
-      )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   )
 }
 function GameDataList({
   entries,
+  allEntries,
+  category,
   current,
   onSelect,
-  rowsBySource
+  rowsBySource,
+  searching = false,
+  showTranslatedItemTitles = false
 }: {
   entries: ReferenceCatalogEntry[]
+  allEntries: ReferenceCatalogEntry[]
+  category: ReferenceCategory | undefined
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
   rowsBySource: Map<string, TranslationSessionEntry[]>
+  searching?: boolean
+  showTranslatedItemTitles?: boolean
 }): React.JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
   const virtualizer = useVirtualizer({
@@ -422,6 +958,22 @@ function GameDataList({
     getItemKey: index => catalogRowKeys.get(entries[index]!)!,
     overscan: 8
   })
+  const statusByEntry = useMemo(() => {
+    const result = new Map<string, ReferenceStatusCounts>()
+    for (const entry of allEntries) {
+      const rows = [
+        ...(entry.name.trim() ? rowsBySource.get(normalize(entry.name)) ?? [] : []),
+        ...(entry.description.trim() ? rowsBySource.get(normalize(entry.description)) ?? [] : [])
+      ]
+      const stats = emptyReferenceStatusCounts()
+      for (const row of rows) {
+        stats[entryReviewStatus(row)] += 1
+        stats.total += 1
+      }
+      result.set(referenceEntryKey(entry), stats)
+    }
+    return result
+  }, [allEntries, rowsBySource])
   const translatedKeys = useMemo(() => {
     const result = new Set<string>()
     for (const item of getReferenceCatalog()) {
@@ -454,6 +1006,32 @@ function GameDataList({
     const scrollElement = parentRef.current
     if (scrollElement) scrollElement.scrollTop = 0
   }, [entries])
+  if (category === 'Item') {
+    return <ItemTreeList
+      entries={entries}
+      current={current}
+      onSelect={onSelect}
+      searching={searching}
+      statusByEntry={statusByEntry}
+      rowsBySource={rowsBySource}
+      showTranslatedTitles={showTranslatedItemTitles}
+    />
+  }
+  if (category === 'NPC') {
+    return <NpcTreeList entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} />
+  }
+  if (category === 'Quest' || category === 'Book') {
+    return (
+      <QuestTreeList
+        entries={entries}
+        allEntries={allEntries}
+        current={current}
+        onSelect={onSelect}
+        statusByEntry={statusByEntry}
+        collapseSectionsByDefault={category === 'Book'}
+      />
+    )
+  }
   return (
     <div ref={parentRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
       <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
@@ -509,10 +1087,17 @@ function GameDataList({
 export function ReferencePage(): React.JSX.Element {
   const session = useTranslationSession()
   const [searchParams] = useSearchParams()
-  const [category, setCategory] = useState<ReferenceCategory | undefined>()
+  const [category, setCategory] = useState<ReferenceCategory>('Quest')
   const [query, setQuery] = useState('')
   const [matchCase, setMatchCase] = useState(false)
   const [wholeWord, setWholeWord] = useState(false)
+  const [showTranslatedItemTitles, setShowTranslatedItemTitles] = useState(() => {
+    try {
+      return window.localStorage.getItem(ITEM_TITLE_TRANSLATION_PREFERENCE) === 'true'
+    } catch {
+      return false
+    }
+  })
   const [selected, setSelected] = useState<ReferenceCatalogEntry | null>(null)
   const [showContentUid, setShowContentUid] = useState(false)
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
@@ -532,6 +1117,13 @@ export function ReferencePage(): React.JSX.Element {
   const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
     loadTermGlossary(termGlossaryKey)
   )
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(ITEM_TITLE_TRANSLATION_PREFERENCE, String(showTranslatedItemTitles))
+    } catch {
+      // Keep the preference for this session if storage is unavailable.
+    }
+  }, [showTranslatedItemTitles])
   useEffect(() => {
     try {
       window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
@@ -557,7 +1149,9 @@ export function ReferencePage(): React.JSX.Element {
   const allEntries = useMemo(
     () =>
       getReferenceCatalog()
-        .filter((entry) => !category || entry.category === category)
+        .filter((entry) =>
+          !category || (category === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === category)
+        )
         .filter(
         (entry) =>
           !entry.name.trim().startsWith('%%%') &&
@@ -616,13 +1210,15 @@ export function ReferencePage(): React.JSX.Element {
     : null
   const current =
     requestedEntry ??
-    (selected && (!category || selected.category === category) ? selected : (filtered[0] ?? null))
-  const linkedTitle = current ? (rowsBySource.get(normalize(current.name)) ?? []) : []
+    (selected && (!category || selected.category === category || (category === 'Item' && selected.itemGroups?.length))
+      ? selected
+      : (filtered[0] ?? null))
+  const linkedTitle = current ? (rowsBySource.get(normalize(referenceTitleSource(current))) ?? []) : []
   const linkedDescription = current ? (rowsBySource.get(normalize(current.description)) ?? []) : []
   const Icon = iconFor(current?.category ?? category ?? 'Weapon')
   const wikiUrl = current
-    ? `https://bg3.wiki${wikiPath(current.category, current.name)}`
-    : 'https://bg3.wiki/wiki/Weapons'
+    ? `https://bg3.wiki${wikiPath(current.category, current.wikiTitle ?? current.name)}`
+    : `https://bg3.wiki${wikiPath(category ?? 'Weapon')}`
   const update = (rowId: string, value: string) => {
     session.updateEntry(rowId, value)
     session.setReviewStatus(rowId, value.trim() ? 'needs-review' : 'untranslated')
@@ -710,9 +1306,9 @@ export function ReferencePage(): React.JSX.Element {
           <Icon size={20} className="text-amber-400" />
           <div>
             <h1 className="text-base font-semibold text-neutral-100">Game Data</h1>
-            <p className="text-xs text-neutral-500">
-              {filtered.length.toLocaleString()} entries · names and descriptions
-            </p>
+              <p className="text-xs text-neutral-500">
+                {filtered.length.toLocaleString()} entries · names and descriptions
+              </p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <a
@@ -748,7 +1344,7 @@ export function ReferencePage(): React.JSX.Element {
             <SessionSaveButton session={session} />
           </div>
         </header>
-        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto md:grid-cols-[minmax(280px,0.42fr)_minmax(0,0.58fr)] md:overflow-hidden">
+        <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-[minmax(360px,0.78fr)_minmax(0,1.22fr)] lg:overflow-hidden">
           <aside className="flex min-h-[250px] max-h-[46vh] min-w-0 flex-col border-b border-[#1f2329] p-3 md:min-h-0 md:max-h-none md:border-b-0 md:border-r">
             <GameDataSearch
               query={query}
@@ -762,17 +1358,27 @@ export function ReferencePage(): React.JSX.Element {
               onMatchCaseChange={setMatchCase}
               wholeWord={wholeWord}
               onWholeWordChange={setWholeWord}
+              showTranslatedItemTitles={showTranslatedItemTitles}
+              onShowTranslatedItemTitlesChange={setShowTranslatedItemTitles}
             />
             <GameDataList
               key={category ?? 'all'}
+              category={category}
               entries={filtered}
+              allEntries={allEntries}
               current={current}
               onSelect={setSelected}
               rowsBySource={rowsBySource}
+              searching={query.trim().length > 0}
+              showTranslatedItemTitles={showTranslatedItemTitles}
             />
           </aside>
-          <main className="grid min-h-[680px] min-w-0 grid-rows-[minmax(260px,auto)_minmax(320px,1fr)] p-3 sm:min-h-[720px] sm:p-4 md:min-h-0 md:grid-rows-[minmax(300px,0.5fr)_minmax(0,0.5fr)]">
-            <section className="mb-3 overflow-y-auto rounded-lg border border-[#1f2329] bg-[#131518] p-4">
+          <main className={cn(
+            'grid min-h-[680px] min-w-0 grid-rows-[minmax(260px,auto)_minmax(320px,1fr)] p-3 sm:min-h-[720px] sm:p-4 md:min-h-0 md:grid-rows-[minmax(300px,0.5fr)_minmax(0,0.5fr)]'
+          )}>
+            <section className={cn(
+              'mb-3 overflow-y-auto rounded-lg border border-[#1f2329] bg-[#131518] p-4'
+            )}>
               {current ? (
                 <>
                   <div className="mb-2 flex items-center gap-2">
@@ -806,30 +1412,32 @@ export function ReferencePage(): React.JSX.Element {
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
                   />
-                  <TranslationField
-                    label="Description EN"
-                    source={current.description}
-                    entries={linkedDescription}
-                    targetLang={session.targetLang.toUpperCase()}
-                    update={update}
-                    copy={copy(current.description)}
-                    paste={paste}
-                    showContentUid={showContentUid}
-                    onGemini={setAiEntry}
-                    onSimilarity={setSimilarityEntry}
-                    onHistory={setHistoryEntry}
-                    onTag={applyNextSourceTag}
-                    inputRefFor={(rowId, element) => {
-                      if (element) translationInputRefs.current.set(rowId, element)
-                      else translationInputRefs.current.delete(rowId)
-                    }}
-                    onSelectionChange={(rowId, selection) =>
-                      tagSelections.current.set(rowId, selection)
-                    }
-                    toggleNeedsReview={session.toggleNeedsReview}
-                    setReviewStatus={session.setReviewStatus}
-                    termGlossary={termGlossary}
-                  />
+                  {(current.category !== 'NPC' || linkedDescription.length > 0) && (
+                    <TranslationField
+                      label="Description EN"
+                      source={current.description}
+                      entries={linkedDescription}
+                      targetLang={session.targetLang.toUpperCase()}
+                      update={update}
+                      copy={copy(current.description)}
+                      paste={paste}
+                      showContentUid={showContentUid}
+                      onGemini={setAiEntry}
+                      onSimilarity={setSimilarityEntry}
+                      onHistory={setHistoryEntry}
+                      onTag={applyNextSourceTag}
+                      inputRefFor={(rowId, element) => {
+                        if (element) translationInputRefs.current.set(rowId, element)
+                        else translationInputRefs.current.delete(rowId)
+                      }}
+                      onSelectionChange={(rowId, selection) =>
+                        tagSelections.current.set(rowId, selection)
+                      }
+                      toggleNeedsReview={session.toggleNeedsReview}
+                      setReviewStatus={session.setReviewStatus}
+                      termGlossary={termGlossary}
+                    />
+                  )}
                 </>
               ) : (
                 <p className="text-sm text-neutral-500">Select an entry from the list.</p>
@@ -837,7 +1445,8 @@ export function ReferencePage(): React.JSX.Element {
             </section>
             <div className="min-h-0 overflow-hidden rounded-lg border border-[#1f2329] bg-[#0c0d0f]">
               <StyledWebview
-                title="BG3 wiki reference"
+                key={wikiUrl}
+                title={current ? `BG3 Wiki: ${current.name}` : 'BG3 Wiki reference'}
                 src={wikiUrl}
                 allowpopups
                 className="block h-full w-full border-0"

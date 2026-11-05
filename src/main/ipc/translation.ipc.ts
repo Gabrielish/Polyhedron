@@ -416,11 +416,15 @@ function resolveApiKey(providerId: AiProviderId): string {
 }
 
 function resolveModel(providerId: AiProviderId, override?: string): string {
-  return (
+  const model =
     override?.trim() ||
     readConfigValue(PROVIDER_CONFIG[providerId].modelConfigName) ||
     PROVIDER_CONFIG[providerId].defaultModel
-  )
+  // Gemini 2.x model IDs are retired. Keep manually configured non-2.x IDs intact.
+  if (providerId === 'gemini' && /^models\/?gemini-2\./i.test(model)) {
+    return PROVIDER_CONFIG.gemini.defaultModel
+  }
+  return model
 }
 
 function resolveActiveTemplate(repos: RepositoryRegistry): string {

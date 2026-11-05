@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
-import { startTransition, useEffect, useState } from 'react'
+import { startTransition, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useAppTranslation } from '@/i18n/useAppTranslation'
 import { cn } from '@/lib/utils'
 import { useTranslationSession } from '@/context/TranslationSession'
@@ -163,16 +163,74 @@ function NavCapsule({
   )
 }
 
-export function Sidebar(): React.JSX.Element {
+export function Sidebar({ hidden = false }: { hidden?: boolean }): React.JSX.Element | null {
   const { t } = useAppTranslation('sidebar')
   const { gameProfile, phase, modName } = useTranslationSession()
+  const [shouldRenderDock, setShouldRenderDock] = useState(!hidden)
+  const dockRef = useRef<HTMLElement | null>(null)
   const hasActiveProject = phase === 'loaded' && modName.trim().length > 0
   // Reference tools are meaningful only while a translation project is open.
   // Keep them out of the navigation on the setup screen, where no project has
   // been entered yet.
   const showBg3Reference = gameProfile === 'bg3' && hasActiveProject
+  useLayoutEffect(() => {
+    if (hidden && !shouldRenderDock) return
+
+    let frame = 0
+    let animation: Animation | undefined
+    const isFloatingDock = document.documentElement.dataset.theme === 'liquid-glass'
+    const dock = dockRef.current
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (!isFloatingDock || reduceMotion) {
+      if (hidden) setShouldRenderDock(false)
+      else setShouldRenderDock(true)
+      return
+    }
+
+    if (hidden) {
+      if (!dock) {
+        setShouldRenderDock(false)
+        return
+      }
+      const dockHeight = dock.getBoundingClientRect().height
+      const visibleBottom = getComputedStyle(dock).bottom
+      animation = dock.animate(
+        [
+          { bottom: visibleBottom, opacity: 1, offset: 0 },
+          { bottom: `calc(${visibleBottom} - 8px)`, opacity: 0.9, offset: 0.18 },
+          { bottom: `-${dockHeight + 8}px`, opacity: 0, offset: 1 }
+        ],
+        { duration: 360, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }
+      )
+      animation.onfinish = () => setShouldRenderDock(false)
+    } else {
+      setShouldRenderDock(true)
+      frame = window.requestAnimationFrame(() => {
+        const visibleDock = dockRef.current
+        if (!visibleDock) return
+        const dockHeight = visibleDock.getBoundingClientRect().height
+        const visibleBottom = getComputedStyle(visibleDock).bottom
+        animation = visibleDock.animate(
+          [
+            { bottom: `-${dockHeight + 8}px`, opacity: 0, offset: 0 },
+            { bottom: `calc(${visibleBottom} + 6px)`, opacity: 1, offset: 0.76 },
+            { bottom: visibleBottom, opacity: 1, offset: 1 }
+          ],
+          { duration: 480, easing: 'cubic-bezier(0.22, 0.8, 0.24, 1)', fill: 'forwards' }
+        )
+      })
+    }
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      animation?.cancel()
+    }
+  }, [hidden, shouldRenderDock])
+
+  if (!shouldRenderDock) return null
   return (
-    <aside className="sidebar-shell group/sidebar fixed top-0 left-0 z-40 flex h-screen w-16 flex-col overflow-hidden border-r border-[#1f2329] bg-[#0f1114] transition-[width] duration-200 hover:w-72">
+    <aside ref={dockRef} className="sidebar-shell group/sidebar fixed top-0 left-0 z-40 flex h-screen w-16 flex-col overflow-hidden border-r border-[#1f2329] bg-[#0f1114] transition-[width] duration-200 hover:w-72">
       <nav className="sidebar-nav flex-1 overflow-y-auto px-2 py-3">
         {NAV_GROUPS.map((group) => {
           const items = group.items.filter(

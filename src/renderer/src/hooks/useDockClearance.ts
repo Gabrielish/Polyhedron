@@ -1,12 +1,15 @@
 import { useLayoutEffect } from 'react'
 
 // Measure the scrollable tail needed to align the last item with the floating dock.
-export function useDockClearance(pathname: string): void {
+export function useDockClearance(pathname: string, dockHidden = false): void {
   useLayoutEffect(() => {
     const root = document.documentElement
     const shell = document.querySelector('.app-content-shell')
     const dock = document.querySelector('.sidebar-shell')
-    if (!shell || !dock) return
+    if (dockHidden || !shell || !dock) {
+      root.style.removeProperty('--app-dock-clearance')
+      return
+    }
     let frame = 0
     let disposed = false
     const observed = new Set<Element>()
@@ -47,5 +50,5 @@ export function useDockClearance(pathname: string): void {
       window.removeEventListener('resize', schedule)
       root.style.removeProperty('--app-dock-clearance')
     }
-  }, [pathname])
+  }, [pathname, dockHidden])
 }

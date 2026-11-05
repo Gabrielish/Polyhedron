@@ -18,8 +18,10 @@ import {
 import { i18n } from '@/i18n'
 import type { TranslationHistoryEntry, XmlEntry, XmlLoadProgress } from '@/types'
 import { normalizeSearchText, stripSearchDiacritics } from '@/utils/search'
+import { hasLarianTagMismatch } from '@/utils/larianTags'
 import type { GameProfileId } from '@/features/translate/gameProfiles'
 import { prepareSessionEntries } from '@/features/translate/utils/prepareSessionEntries'
+import { useLocation } from 'react-router-dom'
 
 export interface TranslationSessionEntry extends XmlEntry {
   rowId: string
@@ -38,6 +40,7 @@ export type FilterMode =
   | 'tags'
   | 'brackets'
   | 'needs-review'
+  | 'warnings'
 export interface FilterSpec {
   mode: FilterMode
   referenceTag: ReferenceTag | 'all'
@@ -172,6 +175,11 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
   if (filter.mode === 'brackets' && !/\[[^\]\r\n]+\]/.test(entry.source)) return false
   if (filter.mode === 'needs-review' && !entry.needsReview) return false
   if (
+    filter.mode === 'warnings' &&
+    !hasLarianTagMismatch(entry.source, entry.target) &&
+    !hasCapitalizationMismatch(entry)
+  ) return false
+  if (
     filter.referenceTag !== 'all' &&
     !getReferenceTags(entry.source).includes(filter.referenceTag)
   ) {
@@ -199,6 +207,20 @@ export function entryMatchesFilter(entry: TranslationSessionEntry, filter: Filte
     return false
   }
   return true
+}
+
+export function hasCapitalizationMismatch(entry: TranslationSessionEntry): boolean {
+  if (!entry.target.trim()) return false
+  const firstLetter = (value: string): string | undefined =>
+    value.replace(/<[^>]*>/g, '').match(/\p{L}/u)?.[0]
+  const sourceLetter = firstLetter(entry.source)
+  const targetLetter = firstLetter(entry.target)
+  if (!sourceLetter || !targetLetter) return false
+  return (
+    sourceLetter !== sourceLetter.toLocaleLowerCase() &&
+    targetLetter !== targetLetter.toLocaleUpperCase() &&
+    targetLetter === targetLetter.toLocaleLowerCase()
+  )
 }
 
 export interface TranslationSessionState {
@@ -248,6 +270,7 @@ type Action =
   | { type: 'SET_ENTRIES'; entries: TranslationSessionEntry[] }
   | { type: 'UPDATE_ENTRY'; rowId: string; target: string }
   | { type: 'UPDATE_GENDER_VARIANT'; rowId: string; variant: GenderVariant; target: string }
+  | { type: 'RESTORE_EDIT'; rowId: string; field: 'target' | GenderVariant; value: string }
   | { type: 'MARK_MANUAL'; rowId: string }
   | { type: 'TOGGLE_NEEDS_REVIEW'; rowId: string }
   | { type: 'SET_REVIEW_STATUS'; rowId: string; status: ReviewStatus }
@@ -331,7 +354,7 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
     }
     case 'UPDATE_GENDER_VARIANT': {
       const currentEntry = state.entries.find((entry) => entry.rowId === action.rowId)
-      if (!currentEntry) return state
+      if (!currentEntry || currentEntry.genderTargets?.[action.variant] === action.target) return state
       const genderTargets = {
         ...(currentEntry.genderTargets ?? {}),
         [action.variant]: action.target
@@ -349,6 +372,64 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
                       variant: action.variant,
                       value: action.target,
                       previousValue: entry.genderTargets?.[action.variant] ?? ''
+                    })
+                  : entry.history
+              }
+            : entry
+        )
+      }
+    }
+    case 'RESTORE_EDIT': {
+      const currentEntry = state.entries.find((entry) => entry.rowId === action.rowId)
+      if (!currentEntry) return state
+      if (action.field === 'target') {
+        if (currentEntry.target === action.value) return state
+        const targetFrequencies = new Map(state.targetFrequencies)
+        if (currentEntry.target) {
+          const count = targetFrequencies.get(currentEntry.target) ?? 0
+          if (count <= 1) targetFrequencies.delete(currentEntry.target)
+          else targetFrequencies.set(currentEntry.target, count - 1)
+        }
+        if (action.value) {
+          targetFrequencies.set(action.value, (targetFrequencies.get(action.value) ?? 0) + 1)
+        }
+        return {
+          ...state,
+          targetFrequencies,
+          entries: state.entries.map((entry) =>
+            entry.rowId === action.rowId
+              ? {
+                  ...entry,
+                  target: action.value,
+                  history: action.value.trim()
+                    ? appendHistory(entry, {
+                        kind: 'translation',
+                        variant: 'default',
+                        value: action.value,
+                        previousValue: entry.target
+                      })
+                    : entry.history
+                }
+              : entry
+          )
+        }
+      }
+      const variant = action.field as GenderVariant
+      const previousValue = currentEntry.genderTargets?.[variant] ?? ''
+      if (previousValue === action.value) return state
+      return {
+        ...state,
+        entries: state.entries.map((entry) =>
+          entry.rowId === action.rowId
+            ? {
+                ...entry,
+                genderTargets: { ...(entry.genderTargets ?? {}), [variant]: action.value },
+                history: action.value.trim()
+                  ? appendHistory(entry, {
+                      kind: 'gender',
+                      variant,
+                      value: action.value,
+                      previousValue
                     })
                   : entry.history
               }
@@ -460,6 +541,10 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
 
 interface TranslationSessionContext extends TranslationSessionState {
   todayProgress: number
+  canUndo: boolean
+  canRedo: boolean
+  undo: () => void
+  redo: () => void
   // new selection API
   selectAllMatching: (filter: FilterSpec) => void
   selectRows: (rowIds: string[]) => void
@@ -502,6 +587,21 @@ const DEFAULT_TARGET = 'ro'
 const DAILY_PROGRESS_KEY = 'polyhedron.daily-progress'
 
 type DailyProgress = { date: string; count: number; ids: string[] }
+type TranslationEdit = {
+  rowId: string
+  field: 'target' | GenderVariant
+  before: string
+  after: string
+  changedAt: number
+  scope: string
+}
+
+function popLatestEditForScope(stack: TranslationEdit[], scope: string): TranslationEdit | undefined {
+  for (let index = stack.length - 1; index >= 0; index -= 1) {
+    if (stack[index]?.scope === scope) return stack.splice(index, 1)[0]
+  }
+  return undefined
+}
 
 function readDailyProgress(): DailyProgress {
   const date = new Date().toISOString().slice(0, 10)
@@ -523,6 +623,7 @@ export function TranslationSessionProvider({
 }: {
   children: React.ReactNode
 }): React.JSX.Element {
+  const location = useLocation()
   const [state, dispatch] = useReducer(reducer, {
     phase: 'idle',
     loadingLabel: '',
@@ -539,6 +640,34 @@ export function TranslationSessionProvider({
     storedPath: null
   })
   const [dailyProgress, setDailyProgress] = useState<DailyProgress>(readDailyProgress)
+  const undoStack = useRef<TranslationEdit[]>([])
+  const redoStack = useRef<TranslationEdit[]>([])
+  const [editHistoryVersion, setEditHistoryVersion] = useState(0)
+  const activeEditScope = useRef(location.pathname)
+  activeEditScope.current = location.pathname
+  const updateEditHistoryState = useCallback(() => {
+    setEditHistoryVersion((version) => version + 1)
+  }, [])
+  const clearEditHistory = useCallback(() => {
+    undoStack.current = []
+    redoStack.current = []
+    updateEditHistoryState()
+  }, [updateEditHistoryState])
+  const recordEdit = useCallback((rowId: string, field: TranslationEdit['field'], before: string, after: string) => {
+    if (before === after) return
+    const now = Date.now()
+    const previous = undoStack.current.at(-1)
+    const scope = activeEditScope.current
+    if (previous && previous.scope === scope && previous.rowId === rowId && previous.field === field && now - previous.changedAt < 800) {
+      previous.after = after
+      previous.changedAt = now
+    } else {
+      undoStack.current.push({ rowId, field, before, after, changedAt: now, scope })
+    }
+    if (undoStack.current.length > 500) undoStack.current.shift()
+    redoStack.current = []
+    updateEditHistoryState()
+  }, [updateEditHistoryState])
   const sessionRef = useRef(state)
   sessionRef.current = state
 
@@ -593,6 +722,7 @@ export function TranslationSessionProvider({
       modName: string,
       options?: { storedPath?: string }
     ) => {
+      clearEditHistory()
       dispatch({
         type: 'SET_PHASE',
         phase: 'loading',
@@ -639,7 +769,7 @@ export function TranslationSessionProvider({
         entries
       })
     },
-    []
+    [clearEditHistory]
   )
 
   const updateEntry = useCallback(
@@ -658,17 +788,36 @@ export function TranslationSessionProvider({
           setDailyProgress(nextDaily)
         }
       }
+      if (currentEntry) recordEdit(rowId, 'target', currentEntry.target, target)
       dispatch({ type: 'UPDATE_ENTRY', rowId, target })
     },
-    [state.entries]
+    [recordEdit, state.entries]
   )
 
   const updateGenderVariant = useCallback(
     (rowId: string, variant: GenderVariant, target: string) => {
+      const currentEntry = state.entries.find((entry) => entry.rowId === rowId)
+      recordEdit(rowId, variant, currentEntry?.genderTargets?.[variant] ?? '', target)
       dispatch({ type: 'UPDATE_GENDER_VARIANT', rowId, variant, target })
     },
-    []
+    [recordEdit, state.entries]
   )
+
+  const undo = useCallback(() => {
+    const edit = popLatestEditForScope(undoStack.current, activeEditScope.current)
+    if (!edit) return
+    redoStack.current.push(edit)
+    dispatch({ type: 'RESTORE_EDIT', rowId: edit.rowId, field: edit.field, value: edit.before })
+    updateEditHistoryState()
+  }, [updateEditHistoryState])
+
+  const redo = useCallback(() => {
+    const edit = popLatestEditForScope(redoStack.current, activeEditScope.current)
+    if (!edit) return
+    undoStack.current.push(edit)
+    dispatch({ type: 'RESTORE_EDIT', rowId: edit.rowId, field: edit.field, value: edit.after })
+    updateEditHistoryState()
+  }, [updateEditHistoryState])
 
   const markManual = useCallback((rowId: string) => {
     dispatch({ type: 'MARK_MANUAL', rowId })
@@ -773,14 +922,28 @@ export function TranslationSessionProvider({
   }, [])
 
   const resetSession = useCallback(() => {
+    clearEditHistory()
     dispatch({ type: 'RESET' })
-  }, [])
+  }, [clearEditHistory])
+
+  const canUndo = useMemo(
+    () => undoStack.current.some((edit) => edit.scope === location.pathname),
+    [editHistoryVersion, location.pathname]
+  )
+  const canRedo = useMemo(
+    () => redoStack.current.some((edit) => edit.scope === location.pathname),
+    [editHistoryVersion, location.pathname]
+  )
 
   return (
     <Context.Provider
       value={{
         ...state,
         todayProgress: dailyProgress.count,
+        canUndo,
+        canRedo,
+        undo,
+        redo,
         selectAllMatching,
         selectRows,
         toggleEntry,

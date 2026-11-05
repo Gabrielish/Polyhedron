@@ -20,6 +20,17 @@ export function extractLarianTags(source: string): LarianTag[] {
   return tags
 }
 
+export function larianTagSignature(value: string): string {
+  return JSON.stringify(extractLarianTags(value))
+}
+
+export function hasLarianTagMismatch(source: string, target: string): boolean {
+  if (!target.trim()) return false
+  const sourceSignature = larianTagSignature(source)
+  const targetSignature = larianTagSignature(target)
+  return (sourceSignature !== '[]' || targetSignature !== '[]') && sourceSignature !== targetSignature
+}
+
 export function wrapSelectionWithTag(
   value: string,
   selection: TextSelection,

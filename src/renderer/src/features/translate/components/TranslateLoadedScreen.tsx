@@ -123,7 +123,15 @@ export function TranslateLoadedScreen({ session }: TranslateLoadedScreenProps): 
     if (selected.length === 0) return
     try {
       await navigator.clipboard.writeText(formatSelectionForClipboard(selected, format))
-      const label = format === 'ids' ? `content ${selected.length === 1 ? 'ID' : 'IDs'}` : `source ${selected.length === 1 ? 'entry' : 'entries'} with IDs`
+      const label = format === 'ids'
+        ? `content ${selected.length === 1 ? 'ID' : 'IDs'}`
+        : format === 'source'
+          ? `source ${selected.length === 1 ? 'text' : 'texts'}`
+          : format === 'source-target'
+            ? `source and translation ${selected.length === 1 ? 'text' : 'texts'}`
+            : format === 'source-target-ids'
+              ? `source, translation, and IDs for ${selected.length} ${selected.length === 1 ? 'entry' : 'entries'}`
+          : `source ${selected.length === 1 ? 'entry' : 'entries'} with IDs`
       toast.success(`${selected.length} ${label} copied to clipboard`, { position: 'bottom-right' })
     } catch {
       toast.error('Could not copy the selected entries to clipboard.', { position: 'bottom-right' })

@@ -1,0 +1,4543 @@
+{
+  "sourceUrl": "https://bg3.wiki/wiki/Books",
+  "sourceRevision": 439385,
+  "license": "CC BY-NC-SA 4.0 or CC BY-SA 4.0 (see source page)",
+  "entries": [
+    {
+      "name": "Flora of the Dalelands",
+      "description": "A volume detailing the many plants found in the  Dalelands of north Faerûn.",
+      "wikiTitle": "Flora of the Dalelands",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Flumph Mating Rituals",
+      "description": "The cover features an embossed image of two  flumphs with their tendrils entwined.",
+      "wikiTitle": "Flumph Mating Rituals",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Grey Scout's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Grey Scout's Journal",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Grimoire Bound in Imp Skin",
+      "description": "Grimoire Bound in Imp Skin is a book of the Spells to Hell. Opens the way to the House of Hope.",
+      "wikiTitle": "Grimoire Bound in Imp Skin",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Halsin's Journal, Vol II",
+      "description": "A well-thumbed little book filled with cramped handwritting",
+      "wikiTitle": "Halsin's Journal, Vol II",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Hide-Bound Journal",
+      "description": "The memories and plans of a displaced drow.",
+      "wikiTitle": "Hide-Bound Journal",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "In Search of the Nightsong",
+      "description": "This tome appears fairly new-printed; it can't be more than a decade or two old.",
+      "wikiTitle": "In Search of the Nightsong",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Kozakuran Dictionary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Kozakuran Dictionary",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Madeline's Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Madeline's Ledger",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Necromancy of Thay",
+      "description": "It. Is. Not. Too. Late.",
+      "wikiTitle": "Necromancy of Thay",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "On Antidotes",
+      "description": "Part 2 of the Basics of Alchemy series by  Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "On Antidotes",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Property of Zanner Toobin",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Property of Zanner Toobin",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Regarding the Slayer",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Regarding the Slayer",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "The Great Furnace of Grymforge",
+      "description": "Information on the use of an adamantine forge is transcribed on this book's pages.",
+      "wikiTitle": "The Great Furnace of Grymforge",
+      "section": "Story Item",
+      "category": "Book"
+    },
+    {
+      "name": "Caution Before the Seelie",
+      "description": "A text dealing with the seelie courts of the fae realms:  summer,  winter, and sarcastic octopus. This last may not be entirely accurate.",
+      "wikiTitle": "Caution Before the Seelie",
+      "section": "Legendary",
+      "category": "Book"
+    },
+    {
+      "name": "The Annals of Karsus",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Annals of Karsus",
+      "section": "Legendary",
+      "category": "Book"
+    },
+    {
+      "name": "The Red Knight's Final Strategem",
+      "description": "A volume rife with ploys, feints, gambits - and a smattering of elemental strategy, of course.",
+      "wikiTitle": "The Red Knight's Final Strategem",
+      "section": "Legendary",
+      "category": "Book"
+    },
+    {
+      "name": "The Tharchiate Codex",
+      "description": "WARNING: Extremely powerful knowledge. May include curses.",
+      "wikiTitle": "The Tharchiate Codex",
+      "section": "Legendary",
+      "category": "Book"
+    },
+    {
+      "name": "A Breakthrough at Last",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Breakthrough at Last",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Fall of Netheril",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Fall of Netheril",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Father's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Father's Diary",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Guide to Avernus - One Hellish Holiday",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Guide to Avernus - One Hellish Holiday",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A History of the Flaming Fist",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A History of the Flaming Fist",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Hunter's Guide to Hags",
+      "description": "A beautiful manuscript made from expensive, high-quality parchment.",
+      "wikiTitle": "A Hunter's Guide to Hags",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods I",
+      "description": "A collection of children's rhymes about the gods Amaunator, Asmodeus, and Auril.",
+      "wikiTitle": "A is for Azuth, and other Gods I",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods II",
+      "description": "A collection of children's rhymes about the gods Azuth, Bane, and Beshaba.",
+      "wikiTitle": "A is for Azuth, and other Gods II",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods III",
+      "description": "A collection of children's rhymes about the gods Bhaal, Chauntea, and Cyric.",
+      "wikiTitle": "A is for Azuth, and other Gods III",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods IX",
+      "description": "A collection of children's rhymes about the gods Milil, Myrkul, and Mystra.",
+      "wikiTitle": "A is for Azuth, and other Gods IX",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods VI",
+      "description": "A collection of children's rhymes about the gods Ilmater, Jergal, and Kelemvor.",
+      "wikiTitle": "A is for Azuth, and other Gods VI",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods VII",
+      "description": "A collection of children's rhymes about the gods Leira, Lliira, and Loviatar.",
+      "wikiTitle": "A is for Azuth, and other Gods VII",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A is for Azuth, and other Gods XI",
+      "description": "A collection of children's rhymes about the gods Selûne, Shar, and Silvanus.",
+      "wikiTitle": "A is for Azuth, and other Gods XI",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A List of Essential Personnel",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A List of Essential Personnel",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Little Djinni Ditty",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Little Djinni Ditty",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Modest Guide To Sword Coast Wine",
+      "description": "A Modest Guide To Sword Coast Wine is a sommelier's guide detailing various wines throughout  Sword Coast, containing both praises and declaims.",
+      "wikiTitle": "A Modest Guide To Sword Coast Wine",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Mummy's Memories",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Mummy's Memories",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Pleasurable Deal",
+      "description": "This play is well-worn and tattered. It has clearly been read many, many times.",
+      "wikiTitle": "A Pleasurable Deal",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Promising Candidate",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Promising Candidate",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Primer on Mythical Beasts",
+      "description": "This thick, gold-trimmed tome is embossed with decorative outlines of fantastical beasts.",
+      "wikiTitle": "A Primer on Mythical Beasts",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Sprinter's Guide to Goblins",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Sprinter's Guide to Goblins",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Study of Ores",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Study of Ores",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Study of Spores and their Supraterranean Effects",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Study of Spores and their Supraterranean Effects",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Swift and Sudden Death",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Swift and Sudden Death",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Tour of Tempest",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "A Tour of Tempest",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Traveller's Guide to Baldur's Gate",
+      "description": "An older book on Baldur's Gate, well-travelled and read.",
+      "wikiTitle": "A Traveller's Guide to Baldur's Gate",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "A Wizard's Tasklist",
+      "description": "Scribbled with inscrutable instructions and lists, this page is written in Lorroakan's elaborate hand",
+      "wikiTitle": "A Wizard's Tasklist",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Abandoned Journal (Gauntlet of Shar)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Abandoned Journal (Gauntlet of Shar)",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Abandoned Journal (Lower City)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Abandoned Journal (Lower City)",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "ABC, the Liches and Me",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "ABC, the Liches and Me",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "About Creation of Orphic Hammer",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "About Creation of Orphic Hammer",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Absolutely Unnerving",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Absolutely Unnerving",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Absolving the Wayward Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Absolving the Wayward Heart",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Accelerated Grand Design",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Accelerated Grand Design",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Accounting Book - I",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Accounting Book - I",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Accounting Book - II",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Accounting Book - II",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Accounting Book - III",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Accounting Book - III",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Acquisitions",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Acquisitions",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Address Book",
+      "description": "A large book containing the addresses of important people and buisinesses in the city.",
+      "wikiTitle": "Address Book",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Adopters of Culture",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Adopters of Culture",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Adventures on the Sea of Fallen Stars",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Adventures on the Sea of Fallen Stars",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "After the Interdeium",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "After the Interdeium",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Alchemical Extracts",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Alchemical Extracts",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Alturiak 1477",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Alturiak 1477",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Always Hungry",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Always Hungry",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Amaps' Memoirs",
+      "description": "The reflections of Paul Amaps, a halfling ⁠humanist whose writings advised fair and peaceful ends to vicious conflicts.",
+      "wikiTitle": "Amaps' Memoirs",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "An End to Suffering",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "An End to Suffering",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "An History of the Society of Brilliance as Told by Its Members",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "An History of the Society of Brilliance as Told by Its Members",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Ancient Selûnite Journal",
+      "description": "A densely scrawled journal. Only a few pages have been spared the ravages of time.",
+      "wikiTitle": "Ancient Selûnite Journal",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Annotated Ship's Manifest",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Annotated Ship's Manifest",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Apothecary's Ledger",
+      "description": "A notebook with cultivation techniques for a variety of plants.",
+      "wikiTitle": "Apothecary's Ledger",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Apprentice's Journal",
+      "description": "A meandering read, documenting an apprentice's flight from his homeland and struggles in his new life.",
+      "wikiTitle": "Apprentice's Journal",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Arfur's Private Musings",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Arfur's Private Musings",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Armbrust's Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Armbrust's Ledger",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Art Appraisal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Art Appraisal",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Art Show Schedule",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Art Show Schedule",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Attention Acolytes",
+      "description": "A collection of notes written by Balthazar.",
+      "wikiTitle": "Attention Acolytes",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Attracting Drow Exiles",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Attracting Drow Exiles",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Avernus Survival Guide",
+      "description": "Part 5 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "Avernus Survival Guide",
+      "section": "Common / A",
+      "category": "Book"
+    },
+    {
+      "name": "Baelen's Alchemical Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Baelen's Alchemical Notes",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bagida's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bagida's Diary",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Baldur's Bones",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Baldur's Bones",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Baldur's Gate and the Dialectics of Plunder",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Baldur's Gate and the Dialectics of Plunder",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Baldur's Gate Protectors",
+      "description": "An outlandish book describing the adventures of a vigilante Flaming Fist patrolling the streets of Baldur's Gate.",
+      "wikiTitle": "Baldur's Gate Protectors",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Baldur's Gate Temple Of Bhaal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Baldur's Gate Temple Of Bhaal",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Balduran the Sailor",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Balduran the Sailor",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Balthazar's Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Balthazar's Notes",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "BAN LIST",
+      "description": "A list of customers banned from the Waning Moon distillery.",
+      "wikiTitle": "BAN LIST",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bane's Book of Admonitions",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bane's Book of Admonitions",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Barcus' Log",
+      "description": "A well-maintained but evidently weather-worn journal containing the notes of Barcus Wroot.",
+      "wikiTitle": "Barcus' Log",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Barkskin Recipe",
+      "description": "Imbibing a chunky, wood-grain tasting broth of Barkskin will make the drinker's flesh as hard as oak.",
+      "wikiTitle": "Barkskin Recipe",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Basics of Beginner's Dwarvish",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Basics of Beginner's Dwarvish",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Battle Plans",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Battle Plans",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Beheading the Bitterroots",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Beheading the Bitterroots",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bhaal Cult Resurgence",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bhaal Cult Resurgence",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Blood Bank Log",
+      "description": "Crimson fingerprints mar this catalogue of donors to Reithwin's blood bank.",
+      "wikiTitle": "Blood Bank Log",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Blood-Envy for the Unworthy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Blood-Envy for the Unworthy",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Blood-Smeared Logbook",
+      "description": "A bloody ledger, filled with records of precious gems.",
+      "wikiTitle": "Blood-Smeared Logbook",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bloodied Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bloodied Journal",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bloody Journal",
+      "description": "The regrets of a surface elf, penned on a bloody screed on Lolth.",
+      "wikiTitle": "Bloody Journal",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bombasto's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bombasto's Journal",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bonded By Love - Husband's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bonded By Love - Husband's Diary",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bonded By Love - Wife's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bonded By Love - Wife's Diary",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book Draft - Volume I",
+      "description": "The name on the inside of this faded journal suggests it belonged to a 'Roan Featherway', a druid of Silvanus.",
+      "wikiTitle": "Book Draft - Volume I",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book Draft - Volume II",
+      "description": "Formed from several journals, paper scraps and, in one case, the back of an envelope, this book has been carefully glued together to form the second in a series of romance novels.",
+      "wikiTitle": "Book Draft - Volume II",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book Draft - Volume III",
+      "description": "The third book in a series of romance novels, this once beautifully bound book has had pages ripped out, glued back in and even tied to the book's spine using a piece of twine.",
+      "wikiTitle": "Book Draft - Volume III",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book Draft - Volume IV",
+      "description": "The fourth volume and final novel, this book has had almost every single page ripped out, except for the last twenty or so pages.",
+      "wikiTitle": "Book Draft - Volume IV",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book of Dead Gods",
+      "description": "A hefty, gold-embossed tome, listing gods immemorial.",
+      "wikiTitle": "Book of Dead Gods",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book of Final Breath",
+      "description": "A slim ledger packed with rows of text. No matter how many pages are turned, there always seems to be another.",
+      "wikiTitle": "Book of Final Breath",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Book of Poetry",
+      "description": "This is a self published book of poetry. It's extremely horny.",
+      "wikiTitle": "Book of Poetry",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Born to be Wild",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Born to be Wild",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Brainchant",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Brainchant",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Broom and Bucket",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Broom and Bucket",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Bundle of Letters (book)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Bundle of Letters (book)",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Burnt Journal",
+      "description": "Thick, fibrous webbing mats the cover, as if to seal the volume shut.",
+      "wikiTitle": "Burnt Journal",
+      "section": "Common / B",
+      "category": "Book"
+    },
+    {
+      "name": "Calishem Awaits",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Calishem Awaits",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Canticles of the Dark Mistress",
+      "description": "A collection of hymns and chants sung in praise of the goddess Shar.",
+      "wikiTitle": "Canticles of the Dark Mistress",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Captives of Shar",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Captives of Shar",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Care for Creatures of the Astral Plane",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Care for Creatures of the Astral Plane",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Ceremonial Practices for Initiate Umberlants",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ceremonial Practices for Initiate Umberlants",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Chapel Records",
+      "description": "An annal of the dead, listing hundreds of departed souls.",
+      "wikiTitle": "Chapel Records",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Charred Prayer Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Charred Prayer Book",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Cheese Record",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Cheese Record",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Chronicles of the Gur People",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Chronicles of the Gur People",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Clasped Book (Moonrise Towers)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Clasped Book (Moonrise Towers)",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Clasped Book (The Glitter Gala)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Clasped Book (The Glitter Gala)",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Client List",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Client List",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Cobbler's Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Cobbler's Ledger",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Codicilliary Rules of Engagements for the Flaming Fist",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Codicilliary Rules of Engagements for the Flaming Fist",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Colfax's Compendium of Consecrated Creatures",
+      "description": "A chronicle of the various creatures from Mount Celestia's gold-tinged peaks.",
+      "wikiTitle": "Colfax's Compendium of Consecrated Creatures",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Concerning Orin the Red",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Concerning Orin the Red",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Confessions, Vol. 1, Father Lorgan",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Confessions, Vol. 1, Father Lorgan",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Confidant of a Duke",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Confidant of a Duke",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Confiscated Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Confiscated Book",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Confronting the False Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Confronting the False Heart",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Control Centre Guards",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Control Centre Guards",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Corsairs of Luskan",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Corsairs of Luskan",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Counting House Family Vault List",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Counting House Family Vault List",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Counting the Conchs",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Counting the Conchs",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Court Register",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Court Register",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Crawler Mucus Poison Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Crawler Mucus Poison Recipe",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Credo of the Rack-Stricken Lord",
+      "description": "A primer on Ilmater's teachings and how to follow his word.",
+      "wikiTitle": "Credo of the Rack-Stricken Lord",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Crumbling File",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Crumbling File",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Crumbling Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Crumbling Journal",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Curfew (Confidential Orders)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Curfew (Confidential Orders)",
+      "section": "Common / C",
+      "category": "Book"
+    },
+    {
+      "name": "Dalyria's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dalyria's Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Damaged Journal",
+      "description": "The text within flows in neat cursive, elegant and perfect as if it were printed.",
+      "wikiTitle": "Damaged Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dammon's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dammon's Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dangerous Tunes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dangerous Tunes",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dark Journal",
+      "description": "The journal of Ilyn Toth.",
+      "wikiTitle": "Dark Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dark Justiciar's Journal",
+      "description": "A thin diary, smelling faintly of prayer-smoke.",
+      "wikiTitle": "Dark Justiciar's Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dark Justiciar's Plea",
+      "description": "A gasp of regret from a repentant Sharran.",
+      "wikiTitle": "Dark Justiciar's Plea",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dawsen Kiltmaker's Confession",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dawsen Kiltmaker's Confession",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "De Hurst's Diary",
+      "description": "The otherwise plain book has the words 'L. De Hurst' and 'Diary' written on the front in faded silver ink.",
+      "wikiTitle": "De Hurst's Diary",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dead Druid's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dead Druid's Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Denying the Prying Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Denying the Prying Heart",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Derryth's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Derryth's Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Detainee Census",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Detainee Census",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Devil Don't Rhyme - A Verse Epic",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Devil Don't Rhyme - A Verse Epic",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Devil's Fee Observer's Report",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Devil's Fee Observer's Report",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Diary of Ketheric Thorm, Vol 1",
+      "description": "A diary stamped with seven stars on its inner cover.",
+      "wikiTitle": "Diary of Ketheric Thorm, Vol 1",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Diary of Ketheric Thorm, Vol 2",
+      "description": "A diary decorated with countless black circles.",
+      "wikiTitle": "Diary of Ketheric Thorm, Vol 2",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Diary of Ketheric Thorm, Vol 3",
+      "description": "A diary with no decoration at all.",
+      "wikiTitle": "Diary of Ketheric Thorm, Vol 3",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Diary, 1492DR, Ffion Goldgrind",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Diary, 1492DR, Ffion Goldgrind",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Discarded Journal",
+      "description": "A diary detailing the daily life of a Gnomish village in the Underdark.",
+      "wikiTitle": "Discarded Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Diseases of the Blood",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Diseases of the Blood",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Disintegrating Journal",
+      "description": "An old journal, recently updated with details of an investigation into an old and 'grim' place.",
+      "wikiTitle": "Disintegrating Journal",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dispatches Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dispatches Ledger",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Divine Rapture of Ilmater",
+      "description": "A religious text detailing the trials of the Broken God.",
+      "wikiTitle": "Divine Rapture of Ilmater",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Don't Prod the Specimen",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Don't Prod the Specimen",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Don't Sniff the Specimen",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Don't Sniff the Specimen",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Don't Swallow the Specimen",
+      "description": "This paper is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Don't Swallow the Specimen",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Donation Record",
+      "description": "A list of recent donations to the refugee camp in Wyrm's Crossing.",
+      "wikiTitle": "Donation Record",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dorghan's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dorghan's Diary",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Downfall of the Iron Throne",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Downfall of the Iron Throne",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Druid Notebook",
+      "description": "An ageing notebook telling the fragmented story of an accidental death and a cursed blade.",
+      "wikiTitle": "Druid Notebook",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Druids' Ledger",
+      "description": "A detailed records of the druids' food and medical supplies.",
+      "wikiTitle": "Druids' Ledger",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dufay's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dufay's Diary",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dusty Book",
+      "description": "An ancient log, written in the flowing lines and deep grooves of a fanatic.",
+      "wikiTitle": "Dusty Book",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dusty Book (Campsite)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dusty Book (Campsite)",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dusty Prayerbook",
+      "description": "Dusty Prayerbook is an old prayerbook for the Church of Lathander.",
+      "wikiTitle": "Dusty Prayerbook",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Dwarven Taxonomy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Dwarven Taxonomy",
+      "section": "Common / D",
+      "category": "Book"
+    },
+    {
+      "name": "Easy Furnitures DIY",
+      "description": "A book on how to make table, chairs and chests.",
+      "wikiTitle": "Easy Furnitures DIY",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Efficacious Brain Removal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Efficacious Brain Removal",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Elder Brain Domination",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Elder Brain Domination",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Elder's Journal",
+      "description": "This thick journal details the life and times of a duergar elder.",
+      "wikiTitle": "Elder's Journal",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Elminster by Cherish Holdomen",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Elminster by Cherish Holdomen",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Emboldening the Craven Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Emboldening the Craven Heart",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Employee Pay Log",
+      "description": "The pay slips of all the employees of the Post-House. Capitalism at its most... capitally.",
+      "wikiTitle": "Employee Pay Log",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Enchanted Me",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Enchanted Me",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Encyclopaedia Apotheca, by Sandre Toliar",
+      "description": "A treaty on uncommon potions and poisons, how to treat them, or recognize them in a pinch.",
+      "wikiTitle": "Encyclopaedia Apotheca, by Sandre Toliar",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Enhanced' Weapons - Sales Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Enhanced' Weapons - Sales Ledger",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Enver... Is your blood sweet?",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Enver... Is your blood sweet?",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Estra's Insights",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Estra's Insights",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Ethical Review of the Flaming Fist",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ethical Review of the Flaming Fist",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Evading the Elder Brain",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Evading the Elder Brain",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Evil's Ascent",
+      "description": "An academic print of a literary play, complete with extensive notes and annotations.",
+      "wikiTitle": "Evil's Ascent",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Excavation of the Enclave of Nhalloth",
+      "description": "A carefully kept journal, filled with concise prose and technical diagrams of a lost, once-submerged city.",
+      "wikiTitle": "Excavation of the Enclave of Nhalloth",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Exile",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Exile",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Experiment on Cruor",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Experiment on Cruor",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Exploits of the Order of Keen Strike",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Exploits of the Order of Keen Strike",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Extracts - The Rule of Three",
+      "description": "The back cover of this book proudly proclaims: 'The most famed and comprehensive beginner's guide to all things alchemy, in a beautiful 50th anniversary edition. Now with foreword by Adynn Ilvar.'",
+      "wikiTitle": "Extracts - The Rule of Three",
+      "section": "Common / E",
+      "category": "Book"
+    },
+    {
+      "name": "Fables of Rashemi",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Fables of Rashemi",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Facemaker, Tastemaker",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Facemaker, Tastemaker",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Faded Logbook (Selûnite, 124)",
+      "description": "A faded logbook. Only the first few pages are filled in.",
+      "wikiTitle": "Faded Logbook (Selûnite, 124)",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Faded Logbook (Selûnite, 182)",
+      "description": "More a collection of sewn-together pages than a book, the paper almost too faded to read.",
+      "wikiTitle": "Faded Logbook (Selûnite, 182)",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Ffion's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ffion's Journal",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Fiendish Alchemy",
+      "description": "Part 14 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "Fiendish Alchemy",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Fiendish Bestiary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Fiendish Bestiary",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Findings from the Hinterlands - New Edition",
+      "description": "This quarterly journal appears to have been recently published and rapidly passed through several hands, its front and back cover grimy and soft with use. Most of its pages have been ripped out.",
+      "wikiTitle": "Findings from the Hinterlands - New Edition",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Five (Or Six) Heroes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Five (Or Six) Heroes",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flaming Fist History",
+      "description": "A rousing welcome to new recruits to the Flaming Fist Mercenary Company.",
+      "wikiTitle": "Flaming Fist History",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flaming Fist New Recruit Booklet",
+      "description": "A brief survival guide for new Flaming Fist recruits.",
+      "wikiTitle": "Flaming Fist New Recruit Booklet",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flask of Light",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Flask of Light",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flintdigger's Abridged Dwarven History",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Flintdigger's Abridged Dwarven History",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flophouse Issues",
+      "description": "A book on the many issues and repairs needed in the flophouse.",
+      "wikiTitle": "Flophouse Issues",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flophouse Rules",
+      "description": "A list of rules tenants need to follow when living in the flophouse.",
+      "wikiTitle": "Flophouse Rules",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flophouse Tenants Logs",
+      "description": "A list of current tenants.",
+      "wikiTitle": "Flophouse Tenants Logs",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flow of the Chionthar",
+      "description": "This book is redolent with the enticing small of paper and ink.",
+      "wikiTitle": "Flow of the Chionthar",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Flower Preservation Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Flower Preservation Notes",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Folksongs of Faerûn",
+      "description": "Music tablature and song lyrics populate the pages of this unfinished bardic tome.",
+      "wikiTitle": "Folksongs of Faerûn",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Forge Construction Log",
+      "description": "Rigorous and obscure analytics recorded by one Silouv Yali.",
+      "wikiTitle": "Forge Construction Log",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Forging Success",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Forging Success",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Fringe Philosophy, Vol. V",
+      "description": "A dense academic volume, printed with no eye for design or delight.",
+      "wikiTitle": "Fringe Philosophy, Vol. V",
+      "section": "Common / F",
+      "category": "Book"
+    },
+    {
+      "name": "Garlow's Retirement Plan",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Garlow's Retirement Plan",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gerringothe's Logbook",
+      "description": "An unofficial record of taxes collected by the Reithwin tollhouse.",
+      "wikiTitle": "Gerringothe's Logbook",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Ghustil Stornugoss' Research Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ghustil Stornugoss' Research Notes",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Glory of the Absolute",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Glory of the Absolute",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Glory to the House of Oblodra",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Glory to the House of Oblodra",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gnomefather",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gnomefather",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gond and Gripping Life By The Tongs",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gond and Gripping Life By The Tongs",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gondian Automaton Conversion",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gondian Automaton Conversion",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gondian Autoprinter Manual",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gondian Autoprinter Manual",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gondian Research Report",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gondian Research Report",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Grave-dusty Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Grave-dusty Diary",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Gravekeeper's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Gravekeeper's Journal",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Graveyard Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Graveyard Diary",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Guest Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Guest Book",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Guest Log",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Guest Log",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Guestbook of Rosymorn Abbey",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Guestbook of Rosymorn Abbey",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Guide to Taming Worgs",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Guide to Taming Worgs",
+      "section": "Common / G",
+      "category": "Book"
+    },
+    {
+      "name": "Habits of Patriars",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Habits of Patriars",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Hag Research Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Hag Research Notes",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Hairy Henry's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Hairy Henry's Journal",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Halfred's Note",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Halfred's Note",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Halsin's Journal, Vol I",
+      "description": "A log of the druids' encounter with a goblin detachment and a parasite-infected drow.",
+      "wikiTitle": "Halsin's Journal, Vol I",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Harper Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Harper Journal",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Harper's Notebook",
+      "description": "Various accounts of impiety and blasphemy among locals, all bound in one ragged book.",
+      "wikiTitle": "Harper's Notebook",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Harvest of Memory",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Harvest of Memory",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Havkelaag's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Havkelaag's Journal",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Havkelaag's Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Havkelaag's Notes",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Healer's Log",
+      "description": "The forgotten journal of a small-town healer.",
+      "wikiTitle": "Healer's Log",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Healers' Ledger",
+      "description": "An inventory of various poultices, tonics, and potions.",
+      "wikiTitle": "Healers' Ledger",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Heavy Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Heavy Book",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Helm-Embossed Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Helm-Embossed Journal",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Helsik's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Helsik's Diary",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Her Love For it Was Like A Plum",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Her Love For it Was Like A Plum",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Highcliff's Journal",
+      "description": "The private thoughts of an ambitious apprentice.",
+      "wikiTitle": "Highcliff's Journal",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "His Holy Blood, Vol. 1, Dawnmaster Dovaer",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "His Holy Blood, Vol. 1, Dawnmaster Dovaer",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "His Holy Blood, Vol. 2, Paladin Vaseid",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "His Holy Blood, Vol. 2, Paladin Vaseid",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "His Holy Blood, Vol. 3, Dawnmaster Vaseid",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "His Holy Blood, Vol. 3, Dawnmaster Vaseid",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Hostage Census",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Hostage Census",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Hostel Registry",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Hostel Registry",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "House Rules of the Bee Hive",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "House Rules of the Bee Hive",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "How to Build a Watcher",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "How to Build a Watcher",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "How to Track an Illithid",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "How to Track an Illithid",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "Hymns for the Gone",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Hymns for the Gone",
+      "section": "Common / H",
+      "category": "Book"
+    },
+    {
+      "name": "I Talk to the Bones",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "I Talk to the Bones",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "I Told Jorkens",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "I Told Jorkens",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Ideas for New Outfits",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ideas for New Outfits",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Ilmatari Combat Manual",
+      "description": "A set of dispatch orders followed by the Ilmatari monks residing in the Open Hand Temple.",
+      "wikiTitle": "Ilmatari Combat Manual",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Impractical Magic, Volume 1",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Impractical Magic, Volume 1",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Impractical Magic, Volume 2",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Impractical Magic, Volume 2",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "In the Mode of Masters",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "In the Mode of Masters",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Incomplete Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Incomplete Journal",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Infernal Armoury",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Infernal Armoury",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Infernal Contracts And Bargains",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Infernal Contracts And Bargains",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Infirmary Records",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Infirmary Records",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Ink-Spattered Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ink-Spattered Journal",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Inklings",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Inklings",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Innkeeper's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Innkeeper's Journal",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Inroads by Arms Dealer Gortash",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Inroads by Arms Dealer Gortash",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Inscrutable Journal",
+      "description": "This worn, leather-bound journal smells of moisture and rotting vegetation. Only a few loose pages are legible, blood having soaked through the others.",
+      "wikiTitle": "Inscrutable Journal",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Interrogation in Three Levels",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Interrogation in Three Levels",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Into the Feywild",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Into the Feywild",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Invasion Plans for the Sword Coast",
+      "description": "A plain, unadorned note.",
+      "wikiTitle": "Invasion Plans for the Sword Coast",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Inventory Report",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Inventory Report",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Investigation Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink",
+      "wikiTitle": "Investigation Notes",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Iron Throne - Windup and Shutdown",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Iron Throne - Windup and Shutdown",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Isobel's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Isobel's Diary",
+      "section": "Common / I",
+      "category": "Book"
+    },
+    {
+      "name": "Jake's Encyclopaedia of Eels",
+      "description": "Loosely bound, uneven pages hang out of this book. The script is uneven, and seems to be written in whatever colour ink the author had to hand at the time.",
+      "wikiTitle": "Jake's Encyclopaedia of Eels",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Jhessem's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Jhessem's Journal",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Journal",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal Log of True Soul Korliss",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Journal Log of True Soul Korliss",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal of a Novice Monk",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Journal of a Novice Monk",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal of Enver Gortash",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Journal of Enver Gortash",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal of Gyldro Angleiron",
+      "description": "Gyldro Angleiron's journal.",
+      "wikiTitle": "Journal of Gyldro Angleiron",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal of High Initiate Jarrus",
+      "description": "A battered journal, its pages largely blank.",
+      "wikiTitle": "Journal of High Initiate Jarrus",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journal of Magthew Budj",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Journal of Magthew Budj",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Journey Through The Jungle",
+      "description": "The adventures of one Baron von Barron and his goblin guide Jaw as they brave the thick jungles of Chult.",
+      "wikiTitle": "Journey Through The Jungle",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Judge of the Damned",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Judge of the Damned",
+      "section": "Common / J",
+      "category": "Book"
+    },
+    {
+      "name": "Keepings of the Vaults",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Keepings of the Vaults",
+      "section": "Common / K",
+      "category": "Book"
+    },
+    {
+      "name": "Kobold Journal",
+      "description": "A tattered book of drawings, stained with wine and reeking of bodily fluids of all sorts.",
+      "wikiTitle": "Kobold Journal",
+      "section": "Common / K",
+      "category": "Book"
+    },
+    {
+      "name": "Labour-Free Fishing!",
+      "description": "A plain, unadorned note.",
+      "wikiTitle": "Labour-Free Fishing!",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lacie and the Modrons",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lacie and the Modrons",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lady Jannath's Journal",
+      "description": "Lady Jannath's Journal is a book containing the journal of  Lady Jannath. It details the timeline of Oskar's disappearance.",
+      "wikiTitle": "Lady Jannath's Journal",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Larethian",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Larethian",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Last Notes of a Monk",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Last Notes of a Monk",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Leather-Bound Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Leather-Bound Book",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Legacy Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Legacy Ledger",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Legal Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Legal Notes",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Legal Notice on Import Restrictions",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Legal Notice on Import Restrictions",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Leon's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Leon's Diary",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lesser Oil of Sharpness Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lesser Oil of Sharpness Recipe",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lessons from the Boiler",
+      "description": "A series of letters are attached to this installation manual for a machine named 'The Boiler'.",
+      "wikiTitle": "Lessons from the Boiler",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lessons of Helm",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lessons of Helm",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Letter concerning Gravenhollow",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Letter concerning Gravenhollow",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Level Up Your Life",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Level Up Your Life",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Life of Beaky",
+      "description": "An account of the life of Beaky, the oldest pigeon on the Post House.",
+      "wikiTitle": "Life of Beaky",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lo! A Most Joyous Sensation!",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lo! A Most Joyous Sensation!",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Log of Visitors to Rosymorn Monastery",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Log of Visitors to Rosymorn Monastery",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Logbook of Sendings",
+      "description": "An ancient record detailing correspondence between Selûnite priests.",
+      "wikiTitle": "Logbook of Sendings",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lower City and Upper City",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lower City and Upper City",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lunar Dark Lies",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lunar Dark Lies",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Lute String Tests",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Lute String Tests",
+      "section": "Common / L",
+      "category": "Book"
+    },
+    {
+      "name": "Maggie's Recipe for Perfect Cookies",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Maggie's Recipe for Perfect Cookies",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Magic of the Weave - An Introduction",
+      "description": "A hefty book for beginning spellcasters. Though mostly truthful, the author, clearly a wizard himself, seemed to possess quite a particular bias.",
+      "wikiTitle": "Magic of the Weave - An Introduction",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Magmar's Record",
+      "description": "A duergar's drinking journal.",
+      "wikiTitle": "Magmar's Record",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Manifesto",
+      "description": "Frequent exposure to blood and other visceral discharge over decades has imbued the leather bindings of this document with a ripe scent.",
+      "wikiTitle": "Manifesto",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mantras and Meditations of the Sun Soul",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mantras and Meditations of the Sun Soul",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Manual of Hilaritie for the Trulie Unfunnie",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Manual of Hilaritie for the Trulie Unfunnie",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Manuscript",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Manuscript",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mason's Journal (Murder Tribunal)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mason's Journal (Murder Tribunal)",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mason's Journal (Reithwin Tollhouse)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mason's Journal (Reithwin Tollhouse)",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mason's Log",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mason's Log",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Masters of the Painterly Arts",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Masters of the Painterly Arts",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mastodonian Memoirs, Vol. 1, Investigator Valeria",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mastodonian Memoirs, Vol. 1, Investigator Valeria",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Meditations of a Vampire Lord",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Meditations of a Vampire Lord",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Meditations, Vol. 1, Father Lorgan",
+      "description": "Father Lorgan's memoirs, focused on the troubled city of Baldur's Gate.",
+      "wikiTitle": "Meditations, Vol. 1, Father Lorgan",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Memoir Notes with Recent Addenda",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Memoir Notes with Recent Addenda",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Memoirs of My Death",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Memoirs of My Death",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Memoirs, Vol 1, Sister Clarwen",
+      "description": "A simple, plain tome detailing the daily routines and meditations of a monastic novice.",
+      "wikiTitle": "Memoirs, Vol 1, Sister Clarwen",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Memory Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Memory Book",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Meticulous Notes",
+      "description": "The hand applied to these notes is unusual - almost smaller than should be possible.",
+      "wikiTitle": "Meticulous Notes",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Missives of Candlekeep",
+      "description": "This book is packed full of meticulously copied letters, preserving even the handwriting of the originals.",
+      "wikiTitle": "Missives of Candlekeep",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mistress of Souls' Research Log",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mistress of Souls' Research Log",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mistress of the Night and Friends",
+      "description": "A series of stories distributed among children to encourage the worship of the goddess Shar.",
+      "wikiTitle": "Mistress of the Night and Friends",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Moonhaven Logbook",
+      "description": "A detailed record of the travellers sighted in Moonhaven village.",
+      "wikiTitle": "Moonhaven Logbook",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mother of Halflings",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mother of Halflings",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Moxy's Mixology Manual",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Moxy's Mixology Manual",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Murder, Be My Muse",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Murder, Be My Muse",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "My Own Deal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "My Own Deal",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Mysterious Moonshae",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Mysterious Moonshae",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Myth Drannan Amphigory",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Myth Drannan Amphigory",
+      "section": "Common / M",
+      "category": "Book"
+    },
+    {
+      "name": "Necromantic Codexes, Their Enigmas",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Necromantic Codexes, Their Enigmas",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Night-Night, Pirate Ship",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Night-Night, Pirate Ship",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "NO CAUSE FOR ALARM",
+      "description": "Every page of this clumsily assembled book is filled with large, blocky text.",
+      "wikiTitle": "NO CAUSE FOR ALARM",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "No Price Too High",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "No Price Too High",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Nocturne's Journal",
+      "description": "Nocturne's Journal is a journal written by Nocturne.",
+      "wikiTitle": "Nocturne's Journal",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Note About the Shield of Silvam",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Note About the Shield of Silvam",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Notes from a Soothsayer",
+      "description": "Embossed with a unique personal seal in the Waterdhavian style, this book's author appears to be someone of high status within that city.",
+      "wikiTitle": "Notes from a Soothsayer",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Notes on Mind Flayer Anatomy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Notes on Mind Flayer Anatomy",
+      "section": "Common / N",
+      "category": "Book"
+    },
+    {
+      "name": "Observations on the Shadow Curse",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Observations on the Shadow Curse",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Official Will",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Official Will",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Officially Unofficial Circus History",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Officially Unofficial Circus History",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Olam's Journal",
+      "description": "A chilling account of an aasimar Harper's final tendays in the cursed lands.",
+      "wikiTitle": "Olam's Journal",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Old Architectural Collection",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Old Architectural Collection",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Old Maintenance Records",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Old Maintenance Records",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Old Schoolbook",
+      "description": "A weather-worn and faded school attendance book.",
+      "wikiTitle": "Old Schoolbook",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Oliver's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Oliver's Diary",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Death & Resurrection",
+      "description": "A thin and pliable volume, smelling faintly of dust.",
+      "wikiTitle": "On Death & Resurrection",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Educating the Faithful",
+      "description": "This slender, tightly-bound manuscript has had the spider engraved on the front of it scratched into oblivion.",
+      "wikiTitle": "On Educating the Faithful",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Illithids, Volume XXVI",
+      "description": "This tome is bound with deep rothé leather with the head of a mind flayer carved deep into the hide.",
+      "wikiTitle": "On Illithids, Volume XXVI",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Potions and Elixirs",
+      "description": "Part 9 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "On Potions and Elixirs",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Psionic Manipulations and Countermeasures",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "On Psionic Manipulations and Countermeasures",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Receiving Her Grace",
+      "description": "A book of worship to the goddess Loviatar. There are bloody fingerprints on several pages.",
+      "wikiTitle": "On Receiving Her Grace",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Serpent Venom Toxin",
+      "description": "Part 13 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "On Serpent Venom Toxin",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Sloth, Gluttony, and Vice",
+      "description": "This protracted screed by author Fynris Flatrock preaches abstinence and industry, and warns against fleshly desires.",
+      "wikiTitle": "On Sloth, Gluttony, and Vice",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On The Greater Healing Potion",
+      "description": "Part 11 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "On The Greater Healing Potion",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On the Inevitability of Moral Decay and its Benefits",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "On the Inevitability of Moral Decay and its Benefits",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On the Origins of Evil",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "On the Origins of Evil",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On the Origins of the Zhentarim",
+      "description": "A loose sheaf of paper, printed with an eye for quantity over quality.",
+      "wikiTitle": "On the Origins of the Zhentarim",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On the Weary, Vol. 1, Father Lorgan",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "On the Weary, Vol. 1, Father Lorgan",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "On Weapon Coatings",
+      "description": "Part 10 of the Basics of Alchemy series by Haskinn Xhesilaphin, a descaled dragonborn who lived a life of difficult pain and commendable selflessness.",
+      "wikiTitle": "On Weapon Coatings",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "One Becomes Many",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "One Becomes Many",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "One Foot, Two Feet, Well Met, We'll Meet",
+      "description": "A popular book of halfling children's rhymes and mnemonics compiled and archived by one Euphadora Greatquill",
+      "wikiTitle": "One Foot, Two Feet, Well Met, We'll Meet",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "One Night in Nashkel",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "One Night in Nashkel",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "One-Eye",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "One-Eye",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Ongoing Murder Investigations",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ongoing Murder Investigations",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Order of Ilmatari Service",
+      "description": "Psalms of Service and Sacrifice",
+      "wikiTitle": "Order of Ilmatari Service",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Our Enemies' Fate",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Our Enemies' Fate",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Out of the Sausage Tube Into The Shadow",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Out of the Sausage Tube Into The Shadow",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Overlapping Lines",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Overlapping Lines",
+      "section": "Common / O",
+      "category": "Book"
+    },
+    {
+      "name": "Paladin Oaths and their Tenets",
+      "description": "A book, setting out in terms as solid as concrete the many Oaths and tenets Paladins hold.",
+      "wikiTitle": "Paladin Oaths and their Tenets",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Pandirna's Diary",
+      "description": "A description of Pandirna's daily life, addressed to her wife.",
+      "wikiTitle": "Pandirna's Diary",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Park Keeper's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Park Keeper's Journal",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Party Planner",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Party Planner",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Passage of Penitence",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Passage of Penitence",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Patients' Registry",
+      "description": "A thorough record of Reithwin's sick and injured.",
+      "wikiTitle": "Patients' Registry",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Patriars Journal",
+      "description": "A log of the subject of today's Patriars' meeting and a list of patriars present.",
+      "wikiTitle": "Patriars Journal",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Patriars, A Homegrown Aristocracy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Patriars, A Homegrown Aristocracy",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Patrons of our Hero",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Patrons of our Hero",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Peer Review",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Peer Review",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Perfumed Days, Passionate Nights",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Perfumed Days, Passionate Nights",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Plea of Rest",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Plea of Rest",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Post House Delivery Complaints",
+      "description": "A record of all the complaints the post-house has received recently.",
+      "wikiTitle": "Post House Delivery Complaints",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Post-House Dog's Log",
+      "description": "A well kept account of the dogs kept in the kennel and their health.",
+      "wikiTitle": "Post-House Dog's Log",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Potion Catalogue",
+      "description": "A catalogue of potions.",
+      "wikiTitle": "Potion Catalogue",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Potion of Animal Speaking Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Potion of Animal Speaking Recipe",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Potion of Healing Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Potion of Healing Recipe",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Potion of Mind Reading Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Potion of Mind Reading Recipe",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Power Structure of Baldur's Gate",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Power Structure of Baldur's Gate",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Prayers of Repent",
+      "description": "A book of repentful prayers. Sin is like spicy food - too much of it makes you wish for the favour of higher powers.",
+      "wikiTitle": "Prayers of Repent",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Primer on Calimshan",
+      "description": "A primer on Calimshan language. Covered in notes and clumsy attempts at the foreign alphabet.",
+      "wikiTitle": "Primer on Calimshan",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Prison Log",
+      "description": "Every last offender interned in Wyrm's Rock Prison is logged in this well-worn ledger.",
+      "wikiTitle": "Prison Log",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Prisoner's Journal",
+      "description": "The mouldering journal reeks of damp and is slightly soft to the touch.",
+      "wikiTitle": "Prisoner's Journal",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Profiling Methods",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Profiling Methods",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Provender Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Provender Ledger",
+      "section": "Common / P",
+      "category": "Book"
+    },
+    {
+      "name": "Queen of Kingpins",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Queen of Kingpins",
+      "section": "Common / Q",
+      "category": "Book"
+    },
+    {
+      "name": "Queen of Ravens",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Queen of Ravens",
+      "section": "Common / Q",
+      "category": "Book"
+    },
+    {
+      "name": "Ragged Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ragged Diary",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Ramazith (book)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ramazith (book)",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Raphael's Diary - Chapter 1",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Raphael's Diary - Chapter 1",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Raphael's Diary - Chapter 2",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Raphael's Diary - Chapter 2",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Raphael's Diary - Chapter 3",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Raphael's Diary - Chapter 3",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recipe of Drow Poison",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recipe of Drow Poison",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recipe of Elixir of Arcane Cultivation",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recipe of Elixir of Arcane Cultivation",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recipe of Elixir of Darkvision",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recipe of Elixir of Darkvision",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recipe of Elixir of Necrotic Resistance",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recipe of Elixir of Necrotic Resistance",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recipe of Wyvern Toxin",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recipe of Wyvern Toxin",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Reconciling the Jealous Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Reconciling the Jealous Heart",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Record of Complaints",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Record of Complaints",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Record of the Honoured",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Record of the Honoured",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Records of the Deceased",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Records of the Deceased",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Recruiting Gnolls",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Recruiting Gnolls",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Redhammer's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Redhammer's Journal",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Reflections of a Gullible Prick",
+      "description": "An agoraphobic and cantankerous refugee's journal.",
+      "wikiTitle": "Reflections of a Gullible Prick",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Reflections Upon the Mirror of Loss",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Reflections Upon the Mirror of Loss",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Refugee Arrival Record",
+      "description": "An overwhelming list of refugee names and their dates of arrival. If they keep coming at this rate, there's no way Rivington can take them all in.",
+      "wikiTitle": "Refugee Arrival Record",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Refugee's Journal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Refugee's Journal",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Register of Goods Received",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Register of Goods Received",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Register of Temple Deadspeakers",
+      "description": "A retelling of the Initiation process in temples of  Ilmater",
+      "wikiTitle": "Register of Temple Deadspeakers",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Registry of Citizens' Complaints",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Registry of Citizens' Complaints",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Research Notes (Waning Moon)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Research Notes (Waning Moon)",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Research Notes (House of Healing)",
+      "description": "A spellcaster's log of attempts to dispel the shadow curse.",
+      "wikiTitle": "Research Notes (House of Healing)",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Research Notes (Balthazar)",
+      "description": "The private research notes of one Disciple Balthazar.",
+      "wikiTitle": "Research Notes (Balthazar)",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Ribald Shanties for the Discerning Whoreson",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ribald Shanties for the Discerning Whoreson",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Rives' Failures as a Banite",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Rives' Failures as a Banite",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Rolan's Journal",
+      "description": "A school notebook filled with scribblings ranging from a youth's fanciful musings to an adult's disciplined records.",
+      "wikiTitle": "Rolan's Journal",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Rules for Elfsong Customers",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Rules for Elfsong Customers",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Runepowder and the Modern Gnome",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Runepowder and the Modern Gnome",
+      "section": "Common / R",
+      "category": "Book"
+    },
+    {
+      "name": "Sacred Shark Recipes",
+      "description": "The private thoughts of an ambitious apprentice.",
+      "wikiTitle": "Sacred Shark Recipes",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scaled Scions of Abeir",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scaled Scions of Abeir",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Schematic Compendium",
+      "description": "A compendium of Gortash's fiendishly clever creations.",
+      "wikiTitle": "Schematic Compendium",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Schematics for Subsurface Vessel",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Schematics for Subsurface Vessel",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scorched Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scorched Book",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scorching Street - A Flaming Fist Ruleset",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scorching Street - A Flaming Fist Ruleset",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scouting for Kingpins",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scouting for Kingpins",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scrapbook of Letters",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scrapbook of Letters",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scrapbook of Love Letters",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scrapbook of Love Letters",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Scrappy Order Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Scrappy Order Book",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Secrets of the Talis",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Secrets of the Talis",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Security Guidelines",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Security Guidelines",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Selûne's Devotee",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Selûne's Devotee",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Selûnite Journal",
+      "description": "An aged journal.",
+      "wikiTitle": "Selûnite Journal",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Selûnite Prayer Book",
+      "description": "Pages of worshipful psalms and prayers dedicated to the Lady of Silver.",
+      "wikiTitle": "Selûnite Prayer Book",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Shanties for the Bitch Queen",
+      "description": "A salt-stained collection of sea shanties meant to honour Umberlee, goddess of the sea.",
+      "wikiTitle": "Shanties for the Bitch Queen",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Sharess' Caress Finances",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Sharess' Caress Finances",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Sharran Registry",
+      "description": "A scuffed and battered tome, clearly passed through many hands down the years.",
+      "wikiTitle": "Sharran Registry",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Sharran's Journal",
+      "description": "A dusty old prayer-book, scripture hastily overwritten by scrawled diary entries.",
+      "wikiTitle": "Sharran's Journal",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Shipment Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Shipment Ledger",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Shipments Registry",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Shipments Registry",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Simple Poison Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Simple Poison Recipe",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Skeletons in Patriar Closets",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Skeletons in Patriar Closets",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Sod The Maimed God",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Sod The Maimed God",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Songs for Sailors, Soldiers, and Sirens",
+      "description": "A well-worn collection of drinking songs, with lyrics and chords.",
+      "wikiTitle": "Songs for Sailors, Soldiers, and Sirens",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Songs of the Wind",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Songs of the Wind",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Soothing the Violent Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Soothing the Violent Heart",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Soul Cage Research",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Soul Cage Research",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "SOUPS OF THE REALMS BY BROTHER DONNICK",
+      "description": "Oil stained pages and the musty smell of kitchen-damp mark this frequently consulted recipe book.",
+      "wikiTitle": "SOUPS OF THE REALMS BY BROTHER DONNICK",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Spattered Diary",
+      "description": "A sturdy book lined with lists, ponderings, and enumerations.",
+      "wikiTitle": "Spattered Diary",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Speak your Loss",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Speak your Loss",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Stained Book (Night Orchid Cave)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Stained Book (Night Orchid Cave)",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Stained Book (Thorm Mausoleum)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Stained Book (Thorm Mausoleum)",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Stained Book (Waukeen's Rest)",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Stained Book (Waukeen's Rest)",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Stedd's Virtues of Unions",
+      "description": "An advisory text suggesting that when powerful forces attack, union is the most appropriate goal.",
+      "wikiTitle": "Stedd's Virtues of Unions",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Stock Haul For Armoury",
+      "description": "A list of items the Armoury of Wyrm's Fortress requires.",
+      "wikiTitle": "Stock Haul For Armoury",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Studies of the Elder Brains",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Studies of the Elder Brains",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Study of the Sword Coast",
+      "description": "More a scrapbook than a study, this records maps and snippets of knowledge.",
+      "wikiTitle": "Study of the Sword Coast",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Submersible Maintenance",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Submersible Maintenance",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Suelto's Ethics of War",
+      "description": "A treatise by Cristina Suelto proposing harsh retaliation against political adversaries.",
+      "wikiTitle": "Suelto's Ethics of War",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Superior Potion of Healing Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Superior Potion of Healing Recipe",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Supplication Scrapbook",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Supplication Scrapbook",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Supplications to Umberlee",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Supplications to Umberlee",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Surgeon's Research Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Surgeon's Research Notes",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Surveillance Notes",
+      "description": "In this journal, a member of the Harpers organisation details a period of observation in cold, clinical language. She and her fellows were observing a captive infested with a tadpole - some tattooed hulk of a man who said little and who would sometimes smile at his observers with a strange gleam in his eye.",
+      "wikiTitle": "Surveillance Notes",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Suspended Ceremorphosis",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Suspended Ceremorphosis",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Sword Coast Songbook",
+      "description": "A collection of sheet music compiled by the bard Silke Roserna.",
+      "wikiTitle": "Sword Coast Songbook",
+      "section": "Common / S",
+      "category": "Book"
+    },
+    {
+      "name": "Tales Of The Hells",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tales Of The Hells",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Talis",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Talis",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Talis Tactics - Ultimate Trick Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Talis Tactics - Ultimate Trick Book",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tamia Domina",
+      "description": "This paper is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tamia Domina",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tarbell's Guide to Distractions",
+      "description": "A much-read guide to chicanery, stagecraft, and earning a quick coin.",
+      "wikiTitle": "Tarbell's Guide to Distractions",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tattered Journal",
+      "description": "Use to read.",
+      "wikiTitle": "Tattered Journal",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tattered Notes",
+      "description": "This timeworn note is thin and ragged. A harsh touch might cause it to disintegrate.",
+      "wikiTitle": "Tattered Notes",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Teachings of Ilmater",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Teachings of Ilmater",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tenets of the Broken God",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tenets of the Broken God",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Test Mission with Gortash",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Test Mission with Gortash",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Absolute End",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Absolute End",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Amiable Art of Necromancy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Amiable Art of Necromancy",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Annals of Baldur's Gate",
+      "description": "A history of the city of Baldur's Gate, as told with a bard's flair. Printed for the masses, this is no scholarly record.",
+      "wikiTitle": "The Annals of Baldur's Gate",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Apprentice's Companion, Book the Fifth",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Apprentice's Companion, Book the Fifth",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Apprentice's Companion, Book the First",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Apprentice's Companion, Book the First",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Apprentice's Companion, Book the Fourth",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Apprentice's Companion, Book the Fourth",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Apprentice's Companion, Book the Second",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Apprentice's Companion, Book the Second",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Apprentice's Companion, Book the Third",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Apprentice's Companion, Book the Third",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 1",
+      "description": "A neatly-bound journal recording Rian Forbeck's travels across the land.",
+      "wikiTitle": "The Approachable East, Vol. 1",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 2",
+      "description": "A slightly battered journal recording Rian Forbeck's travels across the land.",
+      "wikiTitle": "The Approachable East, Vol. 2",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 3",
+      "description": "A stained journal, recording Rian Forbeck's travels across the land.",
+      "wikiTitle": "The Approachable East, Vol. 3",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 4",
+      "description": "A neatly bound journal, written by Rian Forbeck. A purple dragon is firmly embossed on the cover.",
+      "wikiTitle": "The Approachable East, Vol. 4",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 5",
+      "description": "A journal written by Rian Forbeck. It is distinctly waterlogged.",
+      "wikiTitle": "The Approachable East, Vol. 5",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 6",
+      "description": "Printed on delicate paper, this journal records Rian Forbeck's travels across the land.",
+      "wikiTitle": "The Approachable East, Vol. 6",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Approachable East, Vol. 7",
+      "description": "This journal is bound in beautiful black leather, although the handwriting is jagged and childish.",
+      "wikiTitle": "The Approachable East, Vol. 7",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Astral Prism Heist",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Astral Prism Heist",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Bibliophile Recommends",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Bibliophile Recommends",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Big Book of Little Drinking Games",
+      "description": "A surprisingly thick volume of drinking games attributed to 'Ko Bold'.",
+      "wikiTitle": "The Big Book of Little Drinking Games",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Blood War",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Blood War",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Book of Cheesomancy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Book of Cheesomancy",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Book of Suitors",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Book of Suitors",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Book of Willing Souls",
+      "description": "The book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Book of Willing Souls",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Butler's Cane Has A Knob On The End",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Butler's Cane Has A Knob On The End",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Collectanea Rubrum",
+      "description": "A compendium of dark arcana.",
+      "wikiTitle": "The Collectanea Rubrum",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Curse of the Vampyr",
+      "description": "An ancient text, written on dry, cracking paper. Its cover is inscribed with every holy symbol you've ever seen and some you haven't.",
+      "wikiTitle": "The Curse of the Vampyr",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Demonic Crisis",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Demonic Crisis",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Diary of Lump the Enlightened",
+      "description": "The considered thoughts of the silver-quilled Lump.",
+      "wikiTitle": "The Diary of Lump the Enlightened",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Dukes of Baldur's Gate",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Dukes of Baldur's Gate",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Easy Life",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Easy Life",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Egg-Duty Clan-Call",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Egg-Duty Clan-Call",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Elf Song",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Elf Song",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Enigmatic Art of Hemomancy",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Enigmatic Art of Hemomancy",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Evil Eye",
+      "description": "If one looks at the eyes etched into this cover long enough, they appear to blink.",
+      "wikiTitle": "The Evil Eye",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Forgotten Forest",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Forgotten Forest",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Founding of Baldur's Gate",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Founding of Baldur's Gate",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Gate's Pub Crawl Guide",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Gate's Pub Crawl Guide",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Gauntlet of Shar",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Gauntlet of Shar",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Genesis of Selûne and Shar",
+      "description": "A book of religious lore.",
+      "wikiTitle": "The Genesis of Selûne and Shar",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Glitter Gala - Glittering Baldur's Gate for over Twenty Years",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Glitter Gala - Glittering Baldur's Gate for over Twenty Years",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Glories of the Nightsinger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Glories of the Nightsinger",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Grand Design",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Grand Design",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Hag's Bane",
+      "description": "A loosely bound collection of notes and diagrams.",
+      "wikiTitle": "The Hag's Bane",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Harpers",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Harpers",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Hells Unleashed",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Hells Unleashed",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Hound and the Hand",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Hound and the Hand",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The House of Wonders",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The House of Wonders",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The House on Drench Lane and Other Stories",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The House on Drench Lane and Other Stories",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Hunter's Piercing Gaze",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Hunter's Piercing Gaze",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Illustrated Adventures of Balduran",
+      "description": "The drawings in this book are crude, but enthusiastic. While the ink is faded and the pages ragged, the author's gusto remains.",
+      "wikiTitle": "The Illustrated Adventures of Balduran",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Landed Families of Tethyr",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Landed Families of Tethyr",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Leadership of the Zhentarim",
+      "description": "A battered manuscript, inconsistent in colour and construction. The content appears to be following up on previous material.",
+      "wikiTitle": "The Leadership of the Zhentarim",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Legend of Ansur",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Legend of Ansur",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Lord of Murder's Songbook",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Lord of Murder's Songbook",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Lost Tomb of Khaem",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Lost Tomb of Khaem",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Lustrous Lass",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Lustrous Lass",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Many Faces of Gond",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Many Faces of Gond",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Many Tales of Mother Campestri",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Many Tales of Mother Campestri",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Most Holy Sermons of Lashbearer Catrine",
+      "description": "A memoirs by Father Lorgan's predecessor.",
+      "wikiTitle": "The Most Holy Sermons of Lashbearer Catrine",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Mountain Is You",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Mountain Is You",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Needled Book",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Needled Book",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The One that Got A Thay",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The One that Got A Thay",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Parables of Dawnmaster Vaseid",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Parables of Dawnmaster Vaseid",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Pilgrimage to Gravenhollow",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Pilgrimage to Gravenhollow",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Power of the Crown",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Power of the Crown",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Ptarian Code",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Ptarian Code",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Purged Palate, Midwinter Edition",
+      "description": "A widely-printed series of dwarven recipes.",
+      "wikiTitle": "The Purged Palate, Midwinter Edition",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Quarta Sune",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Quarta Sune",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Realm According to Bumpo",
+      "description": "A mass-printed paperback detailing the adventuring experiences of the fictional rube Gabbin Bumpo.",
+      "wikiTitle": "The Realm According to Bumpo",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Rest of My Life",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Rest of My Life",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Roads to Darkness",
+      "description": "This play tells the epic tragedy of three  elven friends who kill each other in their quest for power.",
+      "wikiTitle": "The Roads to Darkness",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Rumour of Reithwin",
+      "description": "Black ash and flecks of dead skin coat the spine and cover of this decaying tome.",
+      "wikiTitle": "The Rumour of Reithwin",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Screed of the Willing",
+      "description": "The spine of this ancient book is cracked and broken, but its pages have kept a sharp, cutting edge.",
+      "wikiTitle": "The Screed of the Willing",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Sea Queen's Wrath",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Sea Queen's Wrath",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Shadow Weave",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Shadow Weave",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Shattered Seldarine",
+      "description": "A finely-bound tome of black leather, inscribed with silver ink.",
+      "wikiTitle": "The Shattered Seldarine",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Soul Forger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Soul Forger",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Stone Lord's Sketches",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Stone Lord's Sketches",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Suffering Masses",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Suffering Masses",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Superior Durability of Hardwood",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Superior Durability of Hardwood",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Surprising Habits of Kara-Turian Warlords",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Surprising Habits of Kara-Turian Warlords",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Tourmaline Depths",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Tourmaline Depths",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Triad for Children",
+      "description": "A picture book for children. It's got pictures of demonic scorpions in it.",
+      "wikiTitle": "The Triad for Children",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 1",
+      "description": "The manuscript is eye-catching, if only for its lurid and jarring colour scheme.",
+      "wikiTitle": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 1",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 2",
+      "description": "A compact volume, clearly cheaply-made.",
+      "wikiTitle": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 2",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 3",
+      "description": "A thin volume, creased from use. The cover features a crude drawing of a flying ship.",
+      "wikiTitle": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 3",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 4",
+      "description": "A brightly illustrated volume, kept in immaculate condition.",
+      "wikiTitle": "The True and Impossible Adventures of Tenebrux Morrow, Vol. 4",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Ultimate State",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Ultimate State",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Unburdening",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Unburdening",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Unclaimed",
+      "description": "The sturdily-bound story of a cleric of Shar whose soul was never claimed from the City of Judgement.",
+      "wikiTitle": "The Unclaimed",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Velkynvelve Pursuit",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Velkynvelve Pursuit",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The War between Selûne and Shar",
+      "description": "A book of religious lore.",
+      "wikiTitle": "The War between Selûne and Shar",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Warrior of Love",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Warrior of Love",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Watch and the Steel Watch",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Watch and the Steel Watch",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Way of the Wanderer",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Way of the Wanderer",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Well-Tended Garden",
+      "description": "A book on how to cultivate plants useful for dietary and medicinal purposes.",
+      "wikiTitle": "The Well-Tended Garden",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Wonders of Phandalin",
+      "description": "Aged, dry pages crack at your touch, but this book is otherwise well preserved.",
+      "wikiTitle": "The Wonders of Phandalin",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "The Would-Be Saint",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "The Would-Be Saint",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Therapeutics",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Therapeutics",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Threadbare Book",
+      "description": "Stained and torn, most of this book has been lost to time.",
+      "wikiTitle": "Threadbare Book",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "To Take Control",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "To Take Control",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tollhouse Ledger (Risen Road)",
+      "description": "Its edges are charred and stained with a liquid of suspicious origin.",
+      "wikiTitle": "Tollhouse Ledger (Risen Road)",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tollhouse Ledger (Reithwin)",
+      "description": "A fastidious record of imports and exports.",
+      "wikiTitle": "Tollhouse Ledger (Reithwin)",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tombstone Shop Notes",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tombstone Shop Notes",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tome of the Faith-leap Trial",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tome of the Faith-leap Trial",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tome of the Self-Same Trial",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tome of the Self-Same Trial",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tome of the Soft-Step Trial",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tome of the Soft-Step Trial",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Treatise on the Antimagic Properties of Sussur Tree Flowers",
+      "description": "A research paper on sussur tree flowers. Only the first paragraph is finished.",
+      "wikiTitle": "Treatise on the Antimagic Properties of Sussur Tree Flowers",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tusky Grins",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tusky Grins",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tym's Notebook",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tym's Notebook",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Tymora, Lady Luck",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Tymora, Lady Luck",
+      "section": "Common / T",
+      "category": "Book"
+    },
+    {
+      "name": "Unpublished Portents",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Unpublished Portents",
+      "section": "Common / U",
+      "category": "Book"
+    },
+    {
+      "name": "Urban Exploration - The Undercity!",
+      "description": "This paper is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Urban Exploration - The Undercity!",
+      "section": "Common / U",
+      "category": "Book"
+    },
+    {
+      "name": "Valarken's Failed Coup",
+      "description": "A summary of Valarken's failed attempt to become the sole ruler of Baldur's Gate.",
+      "wikiTitle": "Valarken's Failed Coup",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Valmorba's Notebook",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Valmorba's Notebook",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Vampiric Duality",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Vampiric Duality",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Vault Pass Ledger",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Vault Pass Ledger",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Vault Visitor Log",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Vault Visitor Log",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Veronica Hamperclips and her Adventures Beyond The Washbasin",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Veronica Hamperclips and her Adventures Beyond The Washbasin",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Veterinary Log",
+      "description": "The Reithwin stable's register of steeds.",
+      "wikiTitle": "Veterinary Log",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Violet's Diary",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Violet's Diary",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Volo's Complete Guide to the Behaviour of Nymphs",
+      "description": "The heavily edited draft of a book that examines the activities of nymphs in GREAT detail.",
+      "wikiTitle": "Volo's Complete Guide to the Behaviour of Nymphs",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Volo's Guide to Baldur's Gate",
+      "description": "This very accurate book is packed full of tales of the grimy streets, raucous taverns, and outlandish characters of Baldur's Gate.",
+      "wikiTitle": "Volo's Guide to Baldur's Gate",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Volo's Guide to Baldur's Gate (Signed)",
+      "description": "With a dedication written with an extravagant hand, this book is packed full of tales of the grimy streets, raucous taverns, and outlandish characters of Baldur's Gate.",
+      "wikiTitle": "Volo's Guide to Baldur's Gate (Signed)",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Volo's Guide to Spirits and Spectres",
+      "description": "The working draft of a book on... spirits?",
+      "wikiTitle": "Volo's Guide to Spirits and Spectres",
+      "section": "Common / V",
+      "category": "Book"
+    },
+    {
+      "name": "Wall of the Faithless",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Wall of the Faithless",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Warming the Melancholy Heart",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Warming the Melancholy Heart",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Waukeen's Guide to Commerce",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Waukeen's Guide to Commerce",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Waukeen's Imprisonment",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Waukeen's Imprisonment",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Wealth Offering to Bhaal",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Wealth Offering to Bhaal",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Web-Covered Journal",
+      "description": "The pages of this tome are marred with stains - some blood or unknown ichor.",
+      "wikiTitle": "Web-Covered Journal",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "What Abides Below",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "What Abides Below",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "When Love Fumbles",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "When Love Fumbles",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Whipping Up Booms",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Whipping Up Booms",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Winery Records",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Winery Records",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Wizardsbane Oil Recipe",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Wizardsbane Oil Recipe",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Writin Exorcises",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Writin Exorcises",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Writings of a Wroot",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Writings of a Wroot",
+      "section": "Common / W",
+      "category": "Book"
+    },
+    {
+      "name": "Ye Follye of Karsus",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Ye Follye of Karsus",
+      "section": "Common / Y",
+      "category": "Book"
+    },
+    {
+      "name": "Yearning for the Moon",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Yearning for the Moon",
+      "section": "Common / Y",
+      "category": "Book"
+    },
+    {
+      "name": "Yoshimo is Willing",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Yoshimo is Willing",
+      "section": "Common / Y",
+      "category": "Book"
+    },
+    {
+      "name": "You've Got Friends in the Guild",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "You've Got Friends in the Guild",
+      "section": "Common / Y",
+      "category": "Book"
+    },
+    {
+      "name": "Your Kind of Curiosity",
+      "description": "This book is redolent with the enticing smell of paper and ink.",
+      "wikiTitle": "Your Kind of Curiosity",
+      "section": "Common / Y",
+      "category": "Book"
+    }
+  ]
+}
