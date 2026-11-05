@@ -551,19 +551,12 @@ export function CloudSyncMenu(): React.JSX.Element {
               </button>
             </div>
             <div className="p-4">
-              <p id="cloud-sync-confirm-description" className="m-0 text-sm leading-5 text-neutral-400">
+              <p id="cloud-sync-confirm-description" className="m-0 whitespace-nowrap text-[13px] text-neutral-400">
                 {confirmAction === 'download'
-                  ? 'This will replace the current local workspace with the version from Google Drive. Polyhedron will need to restart after the download.'
-                  : 'This will save the current workspace to Google Drive and replace its existing cloud copy.'}
+                  ? 'Replace this workspace with the cloud copy?'
+                  : 'Overwrite the cloud workspace with this one?'}
               </p>
-              <div className="mt-4 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setConfirmAction(null)}
-                  className="rounded-md border border-[#34343e] px-3 py-2 text-xs font-semibold text-neutral-300 transition-colors hover:bg-white/5 hover:text-neutral-100"
-                >
-                  Cancel
-                </button>
+              <div className="mt-4 flex justify-end">
                 <button
                   type="button"
                   onClick={() => {
@@ -575,7 +568,7 @@ export function CloudSyncMenu(): React.JSX.Element {
                   className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400"
                 >
                   {confirmAction === 'download' ? <Download size={13} /> : <Upload size={13} />}
-                  {confirmAction === 'download' ? 'Download workspace' : 'Upload workspace'}
+                  {confirmAction === 'download' ? 'Download now' : 'Upload now'}
                 </button>
               </div>
             </div>
