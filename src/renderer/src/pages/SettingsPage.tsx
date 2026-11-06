@@ -145,6 +145,7 @@ export function SettingsPage(): React.JSX.Element {
   const [appVersion, setAppVersion] = useState('')
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
   const [checkingForUpdates, setCheckingForUpdates] = useState(false)
+  const [forceUpdateBusy, setForceUpdateBusy] = useState(false)
   const manualUpdateCheck = useRef(false)
   const [cloudAccount, setCloudAccount] = useState<CloudAccount | null>(null)
   const [cloudAccountBusy, setCloudAccountBusy] = useState(false)
@@ -213,6 +214,37 @@ export function SettingsPage(): React.JSX.Element {
     await window.api.update.download()
   }
 
+  const handleForceUpdate = async () => {
+    if (typeof window.api.update.forceDownload !== 'function') {
+      toast.error('Restart pnpm dev to load the Force update action.')
+      return
+    }
+    setForceUpdateBusy(true)
+    manualUpdateCheck.current = true
+    setUpdateState({ status: 'checking' })
+    try {
+      const result = await window.api.update.forceDownload()
+      if (result === 'opened-release') {
+        manualUpdateCheck.current = false
+        setUpdateState(null)
+        toast.info('Opened the latest release page.')
+      }
+    } catch (error) {
+      manualUpdateCheck.current = false
+      setUpdateState({ status: 'error', message: error instanceof Error ? error.message : 'Unable to download the latest installer.' })
+    } finally {
+      setForceUpdateBusy(false)
+    }
+  }
+
+  const handleInstallForceUpdate = async () => {
+    try {
+      await window.api.update.installForceUpdate()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to start the installer.')
+    }
+  }
+
   const handleOpenLog = async () => {
     try {
       await window.api.log.open()
@@ -264,13 +296,24 @@ export function SettingsPage(): React.JSX.Element {
         <div className="grid items-stretch gap-6 lg:grid-cols-2">
         <SettingsCard title="Application updates" className="order-2" bodyClassName="flex flex-col">
           <div className="flex flex-1 flex-col items-start gap-5">
-            <div className="settings-top-card-intro flex items-start gap-3">
-              <RefreshCw size={18} className="mt-0.5 shrink-0 text-amber-400" />
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-neutral-200">Check for updates</p>
-                <p className="mt-1 text-xs text-neutral-500">
-                  Check GitHub for a newer Polyhedron release.
-                </p>
+            <div className="settings-top-card-intro flex w-full items-start justify-between gap-3">
+              <div className="flex min-w-0 items-start gap-3">
+                <RefreshCw size={18} className="mt-0.5 shrink-0 text-amber-400" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-neutral-200">Check for updates</p>
+                  <p className="mt-1 text-xs text-neutral-500">Check GitHub for a newer release.</p>
+                </div>
+              </div>
+              <div className="w-[144px] shrink-0">
+                <button
+                  type="button"
+                  aria-label="Force update"
+                  disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
+                  onClick={() => void handleForceUpdate()}
+                  className="inline-flex h-[38px] w-[144px] items-center justify-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 text-xs font-medium text-neutral-300 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 hover:text-neutral-100 disabled:cursor-wait disabled:opacity-60"
+                >
+                  <Download size={13} /> Force update
+                </button>
               </div>
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-[#0f1114] p-4">
@@ -283,16 +326,18 @@ export function SettingsPage(): React.JSX.Element {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                disabled={checkingForUpdates || updateState?.status === 'downloading'}
-                onClick={() => void handleCheckForUpdates()}
-                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
-              >
-                <RefreshCw size={14} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates
-              </button>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
+                  onClick={() => void handleCheckForUpdates()}
+                  className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
+                >
+                  <RefreshCw size={14} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates
+                </button>
+              </div>
             </div>
-            {(updateState?.status === 'available' || updateState?.status === 'downloaded') && <div className="flex flex-wrap gap-2">
+            {(updateState?.status === 'available' || updateState?.status === 'downloaded' || updateState?.status === 'force-downloaded') && <div className="flex flex-wrap gap-2">
               {updateState?.status === 'available' && (
                 <button
                   type="button"
@@ -311,6 +356,15 @@ export function SettingsPage(): React.JSX.Element {
                   <RefreshCw size={15} /> Restart to update
                 </button>
               )}
+              {updateState?.status === 'force-downloaded' && (
+                <button
+                  type="button"
+                  onClick={() => void handleInstallForceUpdate()}
+                  className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"
+                >
+                  <Download size={15} /> Install latest build
+                </button>
+              )}
             </div>}
             <div role="status" className="settings-update-feedback mt-auto flex min-h-5 w-full items-center text-[11px] leading-5 tracking-tight">
               {updateState?.status === 'checking' && (
@@ -327,6 +381,9 @@ export function SettingsPage(): React.JSX.Element {
               )}
               {updateState?.status === 'downloaded' && (
                 <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is ready to install.</AppMessage>
+              )}
+              {updateState?.status === 'force-downloaded' && (
+                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">The latest installer is ready. Run it to replace the current build.</AppMessage>
               )}
               {updateState?.status === 'error' && (
                 <AppMessage tone="error" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">{updateState.message}</AppMessage>

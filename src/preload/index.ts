@@ -494,6 +494,8 @@ const api: AppApi = {
   update: {
     check: (): Promise<void> => ipcRenderer.invoke('update:check'),
     download: (): Promise<void> => ipcRenderer.invoke('update:download'),
+    forceDownload: (): Promise<'downloaded' | 'opened-release'> => ipcRenderer.invoke('update:force-download'),
+    installForceUpdate: (): Promise<void> => ipcRenderer.invoke('update:force-install'),
     install: (): Promise<void> => ipcRenderer.invoke('update:install'),
     onState: (cb: (state: import('./api-types').UpdateState) => void): UnsubscribeFn =>
       on('update:state', cb)

@@ -699,11 +699,14 @@ export type UpdateState =
   | { status: 'not-available'; version: string }
   | { status: 'downloading'; percent: number }
   | { status: 'downloaded'; version: string }
+  | { status: 'force-downloaded'; version: string }
   | { status: 'error'; message: string }
 
 export interface UpdateApi {
   check(): Promise<void>
   download(): Promise<void>
+  forceDownload(): Promise<'downloaded' | 'opened-release'>
+  installForceUpdate(): Promise<void>
   install(): Promise<void>
   onState(callback: (state: UpdateState) => void): UnsubscribeFn
 }

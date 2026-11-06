@@ -21,6 +21,18 @@ export function UpdateNotifier(): null {
           duration: Infinity,
           action: { label: 'Restart', onClick: () => void window.api.update.install() }
         })
+      } else if (state.status === 'force-downloaded') {
+        toast.success(`Latest installer for ${state.version} is ready`, {
+          id: 'app-update',
+          description: 'Install it to replace the current build.',
+          duration: Infinity,
+          action: {
+            label: 'Install',
+            onClick: () => void window.api.update.installForceUpdate().catch((error) => {
+              toast.error(error instanceof Error ? error.message : 'Unable to start the installer.')
+            })
+          }
+        })
       } else if (state.status === 'error') {
         toast.error('Update failed', { id: 'app-update', description: state.message })
       }
