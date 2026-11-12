@@ -4,6 +4,7 @@ export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Sp
 export type ReferenceCatalogEntry = {
   name: string
   description: string
+  content?: string[]
   category: ReferenceCategory
   id?: string
   icon?: string
@@ -29,7 +30,7 @@ const entries = catalog as ReferenceCatalogEntry[]
 const normalized = (value: string) => value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLocaleLowerCase()
 const byText = new Map<string, ReferenceCatalogEntry[]>()
 for (const entry of entries) {
-  for (const value of [entry.name, entry.description]) {
+  for (const value of [entry.name, entry.description, ...(entry.content ?? [])]) {
     const key = normalized(value)
     if (!key) continue
     const list = byText.get(key) ?? []

@@ -740,16 +740,20 @@ function ItemTreeList({
   )
 }
 function normalize(value: string): string {
-  const cached = normalizedSources.get(value)
+  const cacheKey = `${SOURCE_NORMALIZATION_VERSION}:${value}`
+  const cached = normalizedSources.get(cacheKey)
   if (cached !== undefined) return cached
   const normalized = normalizeSearchText(
-    value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+    // `<br>` separates paragraphs; inline formatting such as `<i>` should
+    // disappear without adding spaces around the words it styles.
+    value.replace(/<br\b[^>]*>/gi, ' ').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
   )
   if (normalizedSources.size >= 50000) normalizedSources.clear()
-  normalizedSources.set(value, normalized)
+  normalizedSources.set(cacheKey, normalized)
   return normalized
 }
 const normalizedSources = new Map<string, string>()
+const SOURCE_NORMALIZATION_VERSION = 3
 const SOURCE_PREFIX_LENGTH = 32
 function rowsForReferenceText(
   text: string,
@@ -764,6 +768,16 @@ function rowsForReferenceText(
   return candidates
     .filter((source) => source.startsWith(`${key} `))
     .flatMap((source) => rowsBySource.get(source) ?? [])
+}
+function rowsForReferenceContent(
+  entry: ReferenceCatalogEntry,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): TranslationSessionEntry[] {
+  const rows = (entry.content ?? []).flatMap((text) =>
+    rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
+  )
+  return [...new Map(rows.map((row) => [row.rowId, row])).values()]
 }
 const catalogRowKeys = new WeakMap(getReferenceCatalog().map((entry, index) => [entry, `${entry.category}:${entry.name}:${index}`] as const))
 function LocalTranslationInput({
@@ -1219,7 +1233,8 @@ function GameDataList({
     for (const entry of allEntries) {
       const rows = [
         ...(entry.name.trim() ? referenceTitleRows(entry, rowsBySource) : []),
-        ...(entry.description.trim() ? rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix) : [])
+        ...(entry.description.trim() ? rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix) : []),
+        ...rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix)
       ]
       const stats = emptyReferenceStatusCounts()
       for (const row of rows) {
@@ -1235,9 +1250,11 @@ function GameDataList({
     for (const item of getReferenceCatalog()) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
+      const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
       if (
         titleRows.some((row) => row.target.trim()) &&
-        descriptionRows.some((row) => row.target.trim())
+        descriptionRows.some((row) => row.target.trim()) &&
+        (!contentRows.length || contentRows.every((row) => row.target.trim()))
       )
         result.add(`${item.category}:${item.name}`)
     }
@@ -1248,7 +1265,8 @@ function GameDataList({
     for (const item of getReferenceCatalog()) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
-      const rows = [...titleRows, ...descriptionRows]
+      const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
+      const rows = [...titleRows, ...descriptionRows, ...contentRows]
       if (
         rows.length > 0 &&
         rows.every((row) => row.target.trim() && row.reviewStatus === 'verified')
@@ -1464,7 +1482,7 @@ export function ReferencePage(): React.JSX.Element {
     () =>
       allEntries.map((entry) => ({
         entry,
-        searchText: `${entry.name} ${entry.description} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
+        searchText: `${entry.name} ${entry.description} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
       })),
     [allEntries, showContentUid, uidBySource]
   )
@@ -1484,7 +1502,7 @@ export function ReferencePage(): React.JSX.Element {
       else map.set(key, [row.rowId])
     }
     return map
-  }, [sourceEntries])
+  }, [sourceEntries, SOURCE_NORMALIZATION_VERSION])
   const sourceKeysByPrefix = useRetainedMemo('game-data:source-prefixes', () => {
     const prefixes = new Map<string, string[]>()
     for (const source of sourceMembership.keys()) {
@@ -1494,11 +1512,11 @@ export function ReferencePage(): React.JSX.Element {
       else prefixes.set(prefix, [source])
     }
     return prefixes
-  }, [sourceMembership])
+  }, [sourceMembership, SOURCE_NORMALIZATION_VERSION])
   const rowsBySource = useRetainedMemo('game-data:rows', () => {
     const current = new Map(session.entries.map(entry => [entry.rowId, entry]))
     return new Map([...sourceMembership].map(([source, ids]) => [source, ids.map(id => current.get(id)!)]))
-  }, [sourceMembership, session.entries])
+  }, [sourceMembership, session.entries, SOURCE_NORMALIZATION_VERSION])
   const requestedSpell = searchParams.get('spell')?.trim()
   const requestedEntry = requestedSpell
     ? (getReferenceCatalog('Spell').find(
@@ -1517,6 +1535,12 @@ export function ReferencePage(): React.JSX.Element {
     : []
   const linkedDescription = current
     ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
+    : []
+  const linkedBookContent = current?.category === 'Book'
+    ? (current.content ?? []).map((text) => ({
+        text,
+        rows: rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
+      })).filter((item) => item.rows.length > 0)
     : []
   const Icon = iconFor(current?.category ?? category ?? 'Weapon')
   const wikiUrl = current
@@ -1610,7 +1634,7 @@ export function ReferencePage(): React.JSX.Element {
           <div>
             <h1 className="text-base font-semibold text-neutral-100">Game Data</h1>
               <p className="text-xs text-neutral-500">
-                {filtered.length.toLocaleString()} entries · names and descriptions
+                {filtered.length.toLocaleString()} entries · names, descriptions{category === 'Book' ? ' and book text' : ''}
               </p>
           </div>
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -1747,6 +1771,33 @@ export function ReferencePage(): React.JSX.Element {
                       termGlossary={termGlossary}
                     />
                   )}
+                  {linkedBookContent.map(({ text, rows }, index) => (
+                    <TranslationField
+                      key={`${current.name}:book-content:${index}`}
+                      label="Book text"
+                      source={text}
+                      entries={rows}
+                      targetLang={session.targetLang.toUpperCase()}
+                      update={update}
+                      copy={copy(text)}
+                      paste={paste}
+                      showContentUid={showContentUid}
+                      onGemini={setAiEntry}
+                      onSimilarity={setSimilarityEntry}
+                      onHistory={setHistoryEntry}
+                      onTag={applyNextSourceTag}
+                      inputRefFor={(rowId, element) => {
+                        if (element) translationInputRefs.current.set(rowId, element)
+                        else translationInputRefs.current.delete(rowId)
+                      }}
+                      onSelectionChange={(rowId, selection) =>
+                        tagSelections.current.set(rowId, selection)
+                      }
+                      toggleNeedsReview={session.toggleNeedsReview}
+                      setReviewStatus={session.setReviewStatus}
+                      termGlossary={termGlossary}
+                    />
+                  ))}
                 </>
               ) : (
                 <p className="text-sm text-neutral-500">Select an entry from the list.</p>

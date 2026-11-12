@@ -24,6 +24,27 @@ function plainText(value) {
   return decodeHtml(value.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim())
 }
 
+function bookTextToParagraphs(value) {
+  const text = value
+    .replace(/<!-- [\s\S]*? -->/g, '')
+    .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
+    .replace(/\[\[([^\]]+)\]\]/g, '$1')
+    .replace(/\{\{(?:FRWiki|FRWikiLink|SmRarityItem|Quest)\|([^|{}]+)(?:\|[^{}]*)?\}\}/g, '$1')
+    .replace(/\{\{[^{}]*\}\}/g, '')
+    .replace(/'''?([^']+?)'''?/g, '$1')
+    .replace(/<br\s*\/?\s*>/gi, ' <br> ')
+    .replace(/<(?!br\b)[^>]*>/gi, '')
+    .split(/\n\s*\n+/)
+    .map((paragraph) => plainText(paragraph))
+    .filter(Boolean)
+  return [...new Set(text)]
+}
+
+function templateParameter(wikitext, name) {
+  const match = wikitext.match(new RegExp(`\\|\\s*${name}\\s*=([\\s\\S]*?)(?=\\n\\s*\\|[^|\\n]+\\s*=|\\n\\s*}})`, 'i'))
+  return match?.[1]?.trim() ?? ''
+}
+
 function attribute(tag, name) {
   return tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'))?.[1]
 }
@@ -71,6 +92,7 @@ for (let index = 0; index < headings.length; index += 1) {
       books.set(name, {
         name,
         description: '',
+        content: [],
         wikiTitle: name,
         section: currentSection,
         category: 'Book'
@@ -96,8 +118,32 @@ for (let offset = 0; offset < entries.length; offset += 20) {
     if (!entry) continue
     const paragraphs = (article.extract ?? '').split(/\n\s*\n/).map((item) => item.trim()).filter(Boolean)
     // The second lead paragraph is the in-game book quote; the first is wiki metadata.
-    entry.description = paragraphs[1] ?? paragraphs[0] ?? ''
+    // Correct a typo on the wiki so this reference text can match the game's
+    // localization source (`handwriting`) and show its translation field.
+    entry.description = (paragraphs[1] ?? paragraphs[0] ?? '').replace(/handwritting/gi, 'handwriting')
     entry.wikiTitle = article.title
+  }
+}
+
+// The text displayed inside a readable book is stored as the `book text`
+// parameter in its wiki item template. Fetch revisions in batches to avoid
+// one request per book.
+for (let offset = 0; offset < entries.length; offset += 20) {
+  const batch = entries.slice(offset, offset + 20)
+  const result = await fetchJson({
+    action: 'query',
+    prop: 'revisions',
+    rvprop: 'content',
+    rvslots: 'main',
+    redirects: '1',
+    titles: batch.map((entry) => entry.wikiTitle).join('|'),
+    format: 'json'
+  })
+  for (const article of Object.values(result.query?.pages ?? {})) {
+    const entry = books.get(article.title) ?? batch.find((item) => item.wikiTitle === article.title)
+    const wikitext = article.revisions?.[0]?.slots?.main?.['*'] ?? ''
+    if (!entry || !wikitext) continue
+    entry.content = bookTextToParagraphs(templateParameter(wikitext, 'book text'))
   }
 }
 
