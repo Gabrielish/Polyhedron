@@ -90,13 +90,19 @@ const normalizeItemName = (value) =>
     .trim()
     .toLocaleLowerCase()
 const entriesByName = new Map(entries.map((entry) => [normalizeItemName(entry.name), entry]))
+const itemEntriesByName = new Map(
+  entries
+    .filter((entry) => entry.category === 'Object')
+    .map((entry) => [normalizeItemName(entry.name), entry])
+)
 for (const entry of entries) {
   if (entry.category === 'Book') {
     entry.itemGroups = [{ section: 'Miscellaneous', type: 'Books' }]
   }
 }
 for (const item of itemReference.entries) {
-  const existing = entriesByName.get(normalizeItemName(item.name))
+  const normalizedName = normalizeItemName(item.name)
+  const existing = itemEntriesByName.get(normalizedName) ?? entriesByName.get(normalizedName)
   if (existing) {
     existing.itemGroups = [...(existing.itemGroups ?? [])]
     const detailedWeaponGroups = new Set(
@@ -125,6 +131,27 @@ for (const item of itemReference.entries) {
   }
   entries.push(item)
   entriesByName.set(normalizeItemName(item.name), item)
+}
+// Many item effects are exposed by the game as attached tooltip spells. The
+// object and spell stat IDs use the same suffix for these records (for example
+// OBJ_ArrowOfSmokepowder -> Projectile_ArrowOfSmokepowder). Only attach an
+// effect when that ID match is unique and the spell is explicitly shown in
+// item tooltips, so unrelated abilities aren't guessed onto items.
+const tooltipSpellsById = new Map()
+const cleanStatId = (id) => id?.replace(/_DUPE_ENTRY_\d+$/i, '')
+for (const spell of entries.filter(
+  (entry) => entry.category === 'Spell' && /\bDisplayInItemTooltip\b/i.test(entry.flags ?? '')
+)) {
+  const suffix = cleanStatId(spell.id)?.replace(/^[^_]+_/, '').toLocaleLowerCase()
+  if (!suffix || !spell.description) continue
+  const matches = tooltipSpellsById.get(suffix) ?? []
+  matches.push(spell)
+  tooltipSpellsById.set(suffix, matches)
+}
+for (const item of entries.filter((entry) => entry.category === 'Object' && entry.itemGroups?.length)) {
+  const suffix = cleanStatId(item.id)?.replace(/^[^_]+_/, '').toLocaleLowerCase()
+  const matches = suffix ? tooltipSpellsById.get(suffix) : undefined
+  if (matches?.length === 1) item.effect = [matches[0].description]
 }
 const npcReference = JSON.parse(
   fs.readFileSync(path.join(root, 'resources/reference/BG3 NPCs.json'), 'utf8')

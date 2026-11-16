@@ -4,6 +4,7 @@ export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Sp
 export type ReferenceCatalogEntry = {
   name: string
   description: string
+  effect?: string[]
   content?: string[]
   category: ReferenceCategory
   id?: string

@@ -1234,6 +1234,7 @@ function GameDataList({
       const rows = [
         ...(entry.name.trim() ? referenceTitleRows(entry, rowsBySource) : []),
         ...(entry.description.trim() ? rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix) : []),
+        ...(entry.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)),
         ...rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix)
       ]
       const stats = emptyReferenceStatusCounts()
@@ -1250,10 +1251,12 @@ function GameDataList({
     for (const item of getReferenceCatalog()) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
+      const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
       if (
         titleRows.some((row) => row.target.trim()) &&
         descriptionRows.some((row) => row.target.trim()) &&
+        effectRows.every((row) => row.target.trim()) &&
         (!contentRows.length || contentRows.every((row) => row.target.trim()))
       )
         result.add(`${item.category}:${item.name}`)
@@ -1265,8 +1268,9 @@ function GameDataList({
     for (const item of getReferenceCatalog()) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
+      const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
-      const rows = [...titleRows, ...descriptionRows, ...contentRows]
+      const rows = [...titleRows, ...descriptionRows, ...effectRows, ...contentRows]
       if (
         rows.length > 0 &&
         rows.every((row) => row.target.trim() && row.reviewStatus === 'verified')
@@ -1482,7 +1486,7 @@ export function ReferencePage(): React.JSX.Element {
     () =>
       allEntries.map((entry) => ({
         entry,
-        searchText: `${entry.name} ${entry.description} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
+        searchText: `${entry.name} ${entry.description} ${(entry.effect ?? []).join(' ')} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
       })),
     [allEntries, showContentUid, uidBySource]
   )
@@ -1535,6 +1539,12 @@ export function ReferencePage(): React.JSX.Element {
     : []
   const linkedDescription = current
     ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
+    : []
+  const linkedEffects = current
+    ? (current.effect ?? []).map((text) => ({
+        text,
+        rows: rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
+      }))
     : []
   const linkedBookContent = current?.category === 'Book'
     ? (current.content ?? []).map((text) => ({
@@ -1771,6 +1781,33 @@ export function ReferencePage(): React.JSX.Element {
                       termGlossary={termGlossary}
                     />
                   )}
+                  {linkedEffects.map(({ text, rows }, index) => (
+                    <TranslationField
+                      key={`${current.name}:effect:${index}`}
+                      label="Effect EN"
+                      source={text}
+                      entries={rows}
+                      targetLang={session.targetLang.toUpperCase()}
+                      update={update}
+                      copy={copy(text)}
+                      paste={paste}
+                      showContentUid={showContentUid}
+                      onGemini={setAiEntry}
+                      onSimilarity={setSimilarityEntry}
+                      onHistory={setHistoryEntry}
+                      onTag={applyNextSourceTag}
+                      inputRefFor={(rowId, element) => {
+                        if (element) translationInputRefs.current.set(rowId, element)
+                        else translationInputRefs.current.delete(rowId)
+                      }}
+                      onSelectionChange={(rowId, selection) =>
+                        tagSelections.current.set(rowId, selection)
+                      }
+                      toggleNeedsReview={session.toggleNeedsReview}
+                      setReviewStatus={session.setReviewStatus}
+                      termGlossary={termGlossary}
+                    />
+                  ))}
                   {linkedBookContent.map(({ text, rows }, index) => (
                     <TranslationField
                       key={`${current.name}:book-content:${index}`}
