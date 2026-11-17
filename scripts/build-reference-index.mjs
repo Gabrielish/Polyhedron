@@ -104,6 +104,7 @@ for (const item of itemReference.entries) {
   const normalizedName = normalizeItemName(item.name)
   const existing = itemEntriesByName.get(normalizedName) ?? entriesByName.get(normalizedName)
   if (existing) {
+    if (item.description?.trim()) existing.description = item.description
     existing.itemGroups = [...(existing.itemGroups ?? [])]
     const detailedWeaponGroups = new Set(
       (item.itemGroups ?? []).filter((group) => group.subtype).map((group) => group.type)

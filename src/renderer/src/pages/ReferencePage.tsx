@@ -1540,11 +1540,14 @@ export function ReferencePage(): React.JSX.Element {
   const linkedDescription = current
     ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
     : []
+  const descriptionIsItem = current
+    ? category === 'Item' || (current.itemGroups?.length ?? 0) > 0
+    : false
   const linkedEffects = current
     ? (current.effect ?? []).map((text) => ({
         text,
         rows: rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
-      }))
+      })).filter(({ rows }) => rows.length > 0)
     : []
   const linkedBookContent = current?.category === 'Book'
     ? (current.content ?? []).map((text) => ({
@@ -1755,7 +1758,10 @@ export function ReferencePage(): React.JSX.Element {
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
                   />
-                  {((current.category !== 'NPC' && current.category !== 'Location' && current.category !== 'Character Creation') || linkedDescription.length > 0) && (
+                  {(descriptionIsItem
+                    ? linkedDescription.length > 0
+                    : (current.description.trim() || linkedDescription.length > 0) &&
+                      ((current.category !== 'NPC' && current.category !== 'Location' && current.category !== 'Character Creation') || linkedDescription.length > 0)) && (
                     <TranslationField
                       label={current.category === 'NPC' ? 'Source' : 'Description EN'}
                       source={current.description}

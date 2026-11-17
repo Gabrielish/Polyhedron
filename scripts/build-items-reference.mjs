@@ -107,6 +107,82 @@ function plainText(value) {
   )
 }
 
+function localizationKey(value) {
+  return decodeHtml(
+    value
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  ).toLocaleLowerCase()
+}
+
+function readEnglishLocalizationTexts() {
+  const locaPath = path.join(
+    root,
+    'resources/localization-template/Localization/English/english.loca'
+  )
+  const buffer = fs.readFileSync(locaPath)
+  const count = buffer.readUInt32LE(4)
+  const textOffset = buffer.readUInt32LE(8)
+  const entrySize = 70
+  if (buffer.readUInt32LE(0) !== 0x41434f4c || textOffset !== 12 + count * entrySize) {
+    throw new Error(`Invalid English localization file: ${locaPath}`)
+  }
+  const texts = new Map()
+  let cursor = textOffset
+  for (let index = 0; index < count; index += 1) {
+    const rowOffset = 12 + index * entrySize
+    const length = buffer.readUInt32LE(rowOffset + 66)
+    if (length === 0 || cursor + length > buffer.length) break
+    const rawText = buffer.subarray(cursor, cursor + length)
+    cursor += length
+    const nul = rawText.indexOf(0)
+    const text = rawText.subarray(0, nul >= 0 ? nul : rawText.length).toString('utf8')
+    const key = localizationKey(text)
+    if (key && !texts.has(key)) texts.set(key, text)
+  }
+  return texts
+}
+
+function editDistanceWithin(left, right, limit) {
+  if (Math.abs(left.length - right.length) > limit) return limit + 1
+  let previous = Array.from({ length: right.length + 1 }, (_, index) => index)
+  for (let row = 1; row <= left.length; row += 1) {
+    const current = new Array(right.length + 1)
+    current[0] = row
+    let rowMinimum = current[0]
+    for (let column = 1; column <= right.length; column += 1) {
+      current[column] = Math.min(
+        previous[column] + 1,
+        current[column - 1] + 1,
+        previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1)
+      )
+      rowMinimum = Math.min(rowMinimum, current[column])
+    }
+    if (rowMinimum > limit) return limit + 1
+    previous = current
+  }
+  return previous[right.length]
+}
+
+function findLocalizedText(value, localizedTexts, localizedPrefixes) {
+  const key = localizationKey(value)
+  const exact = localizedTexts.get(key)
+  if (exact) return exact
+  if (key.length < 50) return undefined
+
+  const limit = Math.max(1, Math.floor(key.length * 0.015))
+  const candidates = (localizedPrefixes.get(key.slice(0, 16)) ?? [])
+    .filter(([candidate]) => Math.abs(candidate.length - key.length) <= limit)
+    .map(([candidate, text]) => ({ text, distance: editDistanceWithin(key, candidate, limit) }))
+    .filter((candidate) => candidate.distance <= limit)
+    .sort((left, right) => left.distance - right.distance)
+  if (!candidates.length) return undefined
+  if (candidates[1]?.distance === candidates[0]?.distance) return undefined
+  return candidates[0].text
+}
+
 function attribute(tag, name) {
   return tag.match(new RegExp(`\\b${name}="([^"]*)"`, 'i'))?.[1]
 }
@@ -259,6 +335,15 @@ function applyTableRarities(pageHtml) {
 }
 
 const byWikiTitle = new Map()
+const englishLocalizationTexts = readEnglishLocalizationTexts()
+const englishLocalizationPrefixes = new Map()
+for (const [key, text] of englishLocalizationTexts) {
+  if (key.length < 16) continue
+  const prefix = key.slice(0, 16)
+  const candidates = englishLocalizationPrefixes.get(prefix) ?? []
+  candidates.push([key, text])
+  englishLocalizationPrefixes.set(prefix, candidates)
+}
 const itemsOverview = await parsePage('Items')
 const categoryOverrides = {
   Instruments: 'Musical_Instruments',
@@ -409,8 +494,7 @@ async function enrichWorker() {
     const result = await fetchJson({
       action: 'query',
       prop: 'extracts',
-      exintro: '1',
-      explaintext: '1',
+      exintro: '0',
       redirects: '1',
       titles: batch.map((item) => item.wikiTitle).join('|'),
       format: 'json'
@@ -420,11 +504,16 @@ async function enrichWorker() {
         byWikiTitle.get(article.title) ?? batch.find((entry) => entry.wikiTitle === article.title)
       if (!item) continue
       item.wikiTitle = article.title
+      const extract = article.extract ?? ''
+      const quote = extract.match(
+        /class="bg3wiki-blockquote-text"[^>]*>\s*<p>([\s\S]*?)<\/p>/i
+      )?.[1]
+      const articleLead = extract.match(/<p>([\s\S]*?)<\/p>/i)?.[1]
+      const candidates = [quote, articleLead].filter((text) => typeof text === 'string')
       item.description =
-        (article.extract ?? '')
-          .split(/\n\s*\n/)
-          .map((text) => text.trim())
-          .find(Boolean) ?? ''
+        candidates
+          .map((text) => findLocalizedText(text, englishLocalizationTexts, englishLocalizationPrefixes))
+          .find((text) => typeof text === 'string') ?? ''
     }
   }
 }
