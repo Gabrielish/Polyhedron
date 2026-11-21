@@ -659,11 +659,42 @@ export function TranslationGrid({
     return () => window.cancelAnimationFrame(frame)
   }, [])
   useEffect(() => {
+    type RevealSearchRequest = {
+      query: string
+      wholeWord?: boolean
+      searchField?: 'all' | 'source' | 'target'
+    }
+    const applyRequestedSearch = (request: RevealSearchRequest) => {
+      setSearch(request.query)
+      if (request.wholeWord !== undefined) setWholeWord(request.wholeWord)
+      if (request.searchField) setSearchField(request.searchField)
+      setExactMatch(false)
+      setStartsWith(false)
+      setFilter('all')
+      setXmlTagFilter('all')
+      setBracketFilter('all')
+      setReviewFilter('all')
+      setSpeakerFilter('all')
+      setDialogueScope(null)
+      window.setTimeout(() => searchInputRef.current?.focus(), 0)
+    }
+
     const pendingSearch = window.sessionStorage.getItem('polyhedron:reveal-search')
     if (pendingSearch) {
       window.sessionStorage.removeItem('polyhedron:reveal-search')
-      setSearch(pendingSearch)
-      window.setTimeout(() => searchInputRef.current?.focus(), 0)
+      const pendingOptions = window.sessionStorage.getItem('polyhedron:reveal-search-options')
+      window.sessionStorage.removeItem('polyhedron:reveal-search-options')
+      if (pendingOptions) {
+        try {
+          applyRequestedSearch({ query: pendingSearch, ...JSON.parse(pendingOptions) })
+        } catch {
+          setSearch(pendingSearch)
+          window.setTimeout(() => searchInputRef.current?.focus(), 0)
+        }
+      } else {
+        setSearch(pendingSearch)
+        window.setTimeout(() => searchInputRef.current?.focus(), 0)
+      }
     }
     const pendingUid = window.sessionStorage.getItem('polyhedron:reveal-uid')
     if (pendingUid) {
@@ -676,8 +707,19 @@ export function TranslationGrid({
       setSearch(uid)
       window.setTimeout(() => searchInputRef.current?.focus(), 0)
     }
+    const revealSearchWithOptions = (event: Event) => {
+      const request = (event as CustomEvent<RevealSearchRequest>).detail
+      if (!request?.query) return
+      window.sessionStorage.removeItem('polyhedron:reveal-search')
+      window.sessionStorage.removeItem('polyhedron:reveal-search-options')
+      applyRequestedSearch(request)
+    }
     window.addEventListener('polyhedron:reveal-translation', reveal)
-    return () => window.removeEventListener('polyhedron:reveal-translation', reveal)
+    window.addEventListener('polyhedron:reveal-search-with-options', revealSearchWithOptions)
+    return () => {
+      window.removeEventListener('polyhedron:reveal-translation', reveal)
+      window.removeEventListener('polyhedron:reveal-search-with-options', revealSearchWithOptions)
+    }
   }, [])
   const effectiveSearch = useDeferredValue(search)
   const deferredExactMatch = useDeferredValue(exactMatch)
@@ -2405,7 +2447,7 @@ export function TranslationGrid({
                   ? isXmlTagFilter
                     ? 'border-purple-400/50 bg-purple-400/10 text-purple-200'
                     : 'border-cyan-400/50 bg-cyan-400/10 text-cyan-200'
-                  : 'cursor-pointer text-neutral-400 hover:border-[#2a2f37] hover:bg-[#181b1f] hover:text-neutral-200'
+          : 'cursor-pointer text-neutral-400 hover:border-[#2a2f37] hover:bg-[#181b1f] hover:text-neutral-200'
               )}
             >
               <span
@@ -2414,7 +2456,7 @@ export function TranslationGrid({
                   isXmlTagFilter ? 'bg-purple-400' : 'bg-cyan-400'
                 )}
               />
-              <span>{isXmlTagFilter ? 'XML' : 'PL'}</span>
+              <span>{isXmlTagFilter ? '</>' : '[...]'}</span>
               <span
                 className={cn(
                   'rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums',
@@ -2424,7 +2466,7 @@ export function TranslationGrid({
                           ? 'bg-purple-400/20 text-purple-200'
                           : 'bg-cyan-400/20 text-cyan-200'
                       )
-                    : 'text-neutral-500'
+                    : 'bg-[#181b1f] text-neutral-500'
                 )}
               >
                 {item.count}
@@ -2438,7 +2480,7 @@ export function TranslationGrid({
                 }}
                 aria-haspopup="menu"
                 aria-expanded={openSpecialFilter === item.mode}
-                aria-label={`${isXmlTagFilter ? 'XML' : 'PL'} ${selectedFilter}`}
+                aria-label={`${isXmlTagFilter ? 'XML' : 'Placeholders'} ${selectedFilter}`}
                 className={cn(
                   'inline-flex cursor-pointer items-center gap-1 bg-transparent text-[11px] font-semibold outline-none',
                   isXmlTagFilter ? 'text-purple-200' : 'text-cyan-200'
@@ -2538,9 +2580,13 @@ export function TranslationGrid({
                         ? 'bg-rose-400/20 text-rose-200'
                         : active
                           ? 'bg-orange-400/20 text-orange-200'
-                          : item.mode === 'needs-review'
-                            ? 'bg-[#181b1f] text-rose-400/80'
-                            : 'bg-[#181b1f] text-neutral-500'
+                          : item.mode === 'untranslated'
+                            ? 'bg-[#181b1f] text-neutral-500'
+                            : item.mode === 'translated'
+                              ? 'bg-[#181b1f] text-neutral-500'
+                              : item.mode === 'needs-review'
+                                ? 'bg-[#181b1f] text-rose-400/80'
+                                : 'bg-[#181b1f] text-neutral-500'
               )}
             >
               {item.count}

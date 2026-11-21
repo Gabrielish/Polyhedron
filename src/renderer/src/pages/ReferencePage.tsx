@@ -11,6 +11,8 @@ import {
   ClipboardPaste,
   Code2,
   Copy,
+  CirclePlus,
+  FolderPlus,
   ExternalLink,
   Eye,
   Flag,
@@ -20,14 +22,20 @@ import {
   Languages,
   MapPin,
   Package,
+  Pencil,
   ScrollText,
   Shield,
   Sparkles,
   Swords,
+  Trash2,
   UsersRound,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useSearchParams } from 'react-router-dom'
+import { GameDataFolderModal } from '@/components/reference/GameDataFolderModal'
+import { GameDataSourceModal } from '@/components/reference/GameDataSourceModal'
+import { ModalShell } from '@/components/shared/ModalShell'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
 import { AppTooltip } from '@/components/shared/AppTooltip'
 import { StyledWebview } from '@/components/shared/StyledWebview'
@@ -45,6 +53,12 @@ import {
   type ReferenceCatalogEntry,
   type ReferenceCategory
 } from '@/data/gameReference'
+import {
+  loadGameDataOverrides,
+  mergeGameDataEntries,
+  referenceEntryKey,
+  saveGameDataOverrides
+} from '@/data/gameDataOverrides'
 import { SessionSaveButton } from '@/features/translate/components/SessionSaveButton'
 import { btnGhostIcon } from '@/features/translate/components/styles'
 import { TermGlossaryModal } from '@/features/translate/components/TermGlossaryModal'
@@ -86,14 +100,6 @@ function readGameDataUiState(): GameDataUiState {
   } catch {
     return {}
   }
-}
-
-function findGameDataEntry(category: ReferenceCategory, name?: string): ReferenceCatalogEntry | null {
-  if (!name) return null
-  return getReferenceCatalog()
-    .find((entry) => entry.name === name && (category === 'Item'
-      ? (entry.itemGroups?.length ?? 0) > 0
-      : entry.category === category)) ?? null
 }
 
 function usePersistedSet(key: string, initial: Set<string>): [Set<string>, React.Dispatch<React.SetStateAction<Set<string>>>] {
@@ -307,6 +313,7 @@ function QuestTreeList({
             type="button"
             onClick={() => onSelect(entry)}
             data-game-data-selected={selected ? 'true' : undefined}
+            data-game-data-entry-key={referenceEntryKey(entry)}
             className={cn(
               'min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors',
               selected
@@ -403,7 +410,9 @@ function NpcTreeList({
   statusByEntry,
   searching,
   rowsBySource,
-  showTranslatedTitles
+  showTranslatedTitles,
+  customFolders,
+  onAddToFolder
 }: {
   stateKey: string
   entries: ReferenceCatalogEntry[]
@@ -413,6 +422,8 @@ function NpcTreeList({
   searching: boolean
   rowsBySource: Map<string, TranslationSessionEntry[]>
   showTranslatedTitles: boolean
+  customFolders: string[]
+  onAddToFolder: (path: string, action: 'folder' | 'entry') => void
 }): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null)
   const hasAutoExpanded = useRef(false)
@@ -437,8 +448,17 @@ function NpcTreeList({
         if (node && !node.entries.some((item) => item.name === entry.name)) node.entries.push(entry)
       }
     }
+    for (const folderPath of customFolders) {
+      const path = folderPath.split(' / ').filter(Boolean)
+      let siblings = roots
+      for (const part of path) {
+        let node = siblings.get(part)
+        if (!node) { node = { entries: [], children: new Map() }; siblings.set(part, node) }
+        siblings = node.children
+      }
+    }
     return roots
-  }, [entries])
+  }, [customFolders, entries])
   useEffect(() => {
     if (hasAutoExpanded.current) return
     const groupPaths = current?.npcGroups ?? []
@@ -476,7 +496,7 @@ function NpcTreeList({
   }
   const countEntries = (node: NpcGroupNode): number =>
     node.entries.length + [...node.children.values()].reduce((total, child) => total + countEntries(child), 0)
-  const renderEntry = (entry: ReferenceCatalogEntry, key: string, depth: number): React.JSX.Element => {
+  const renderEntry = (entry: ReferenceCatalogEntry, key: string, depth: number, groupPath: string): React.JSX.Element => {
     const titleRows = referenceTitleRows(entry, rowsBySource)
     const translatedTitle = showTranslatedTitles
       ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
@@ -487,6 +507,8 @@ function NpcTreeList({
       onClick={() => onSelect(entry)}
       title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}
       data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
+      data-game-data-entry-key={referenceEntryKey(entry)}
+      data-game-data-group-path={groupPath.replaceAll('/', ' / ')}
       className={cn(
         'flex min-h-8 w-full items-center rounded-md text-left text-[11px] transition-colors',
         depth === 0 ? 'px-2' : 'px-2',
@@ -500,21 +522,39 @@ function NpcTreeList({
   }
   const renderGroup = (label: string, node: NpcGroupNode, path: string, depth: number): React.JSX.Element => {
     const open = searching || (depth === 0 ? !collapsed.has(path) : expanded.has(path))
+    const addSubfolder = node.children.size > 0 && node.entries.length === 0
     const headerClass = depth === 0
       ? 'sticky top-0 z-10 bg-[#0c0d0f] px-2 py-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500'
       : 'px-3 py-1.5 text-[11px] text-neutral-400'
     return (
       <div key={path}>
+        <div className={cn('game-data-folder-row group flex w-full items-center gap-1.5 rounded', headerClass)}>
         <button
           type="button"
           aria-expanded={open}
           onClick={() => toggle(path, depth)}
-          className={cn('flex w-full items-center gap-1.5 rounded text-left hover:bg-[#14181d] hover:text-neutral-200', headerClass)}
+          className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left hover:text-neutral-200"
         >
           {open ? <ChevronDown size={depth === 0 ? 12 : 11} /> : <ChevronRight size={depth === 0 ? 12 : 11} />}
           <span className="flex-1">{label}</span>
-          <span className="text-[9px] font-normal normal-case tracking-normal text-neutral-600">{countEntries(node)}</span>
         </button>
+        <AppTooltip
+          label={addSubfolder ? 'Add subfolder' : 'Add entry'}
+          focusable={false}
+        >
+          <button
+            type="button"
+            aria-label={`${addSubfolder ? 'Add subfolder to' : 'Add entry to'} ${label}`}
+            onClick={() => onAddToFolder(path, addSubfolder ? 'folder' : 'entry')}
+            className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+          >
+            {addSubfolder
+              ? <FolderPlus size={14} className="block shrink-0" />
+              : <CirclePlus size={14} className="block shrink-0" />}
+          </button>
+        </AppTooltip>
+        <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{countEntries(node)}</span>
+        </div>
         {open && (
           <div className={depth === 0 ? '' : 'ml-2 border-l border-[#24282f]'}>
             {sortNpcGroups(path, [...node.children.keys()]).map((childLabel) => {
@@ -525,7 +565,7 @@ function NpcTreeList({
             })}
             {node.entries
               .sort((a, b) => a.name.localeCompare(b.name))
-              .map((entry) => renderEntry(entry, `${path}/${entry.name}`, depth + 1))}
+              .map((entry) => renderEntry(entry, `${path}/${entry.name}`, depth + 1, path))}
           </div>
         )}
       </div>
@@ -681,6 +721,7 @@ function ItemTreeList({
                     onClick={() => onSelect(entry)}
                     title={entry.name}
                     data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
+                    data-game-data-entry-key={referenceEntryKey(entry)}
                     className={cn(
                       'ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded px-2 text-left text-[11px] transition-colors',
                       current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#1c1f24]'
@@ -881,11 +922,8 @@ const REFERENCE_STATUS_ITEMS: Array<{ key: ReferenceStatusKey; label: string; co
 function emptyReferenceStatusCounts(): ReferenceStatusCounts {
   return { untranslated: 0, 'not-verified': 0, 'needs-review': 0, verified: 0, total: 0 }
 }
-function referenceEntryKey(entry: ReferenceCatalogEntry): string {
-  return `${entry.category}:${entry.name}`
-}
-
 function referenceTitleSource(entry: ReferenceCatalogEntry): string {
+  if (entry.sourceName?.trim()) return entry.sourceName.trim()
   // The game localization uses the origin character's display name without the
   // wiki's disambiguation suffix.
   if (entry.category === 'NPC' && normalize(entry.name) === normalize('The Dark Urge (Origin)')) {
@@ -907,6 +945,10 @@ function referenceTitleRows(
   entry: ReferenceCatalogEntry,
   rowsBySource: Map<string, TranslationSessionEntry[]>
 ): TranslationSessionEntry[] {
+  if (entry.sourceName?.trim()) {
+    const associatedRows = rowsBySource.get(normalize(entry.sourceName))
+    if (associatedRows?.length) return associatedRows
+  }
   const exactRows = rowsBySource.get(normalize(entry.name))
   if (exactRows?.length) return exactRows
   const fallbackSource = referenceTitleSource(entry)
@@ -1206,6 +1248,8 @@ function GameDataList({
   rowsBySource,
   sourceKeysByPrefix,
   showTranslatedTitles,
+  customFolders,
+  onAddToFolder,
   searching = false
 }: {
   stateKey: string
@@ -1217,6 +1261,8 @@ function GameDataList({
   rowsBySource: Map<string, TranslationSessionEntry[]>
   sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
+  customFolders: string[]
+  onAddToFolder: (path: string, action: 'folder' | 'entry') => void
   searching?: boolean
 }): React.JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
@@ -1225,7 +1271,7 @@ function GameDataList({
     count: entries.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 56,
-    getItemKey: index => catalogRowKeys.get(entries[index]!)!,
+    getItemKey: index => catalogRowKeys.get(entries[index]!) ?? referenceEntryKey(entries[index]!),
     overscan: 8
   })
   const statusByEntry = useMemo(() => {
@@ -1248,7 +1294,7 @@ function GameDataList({
   }, [allEntries, rowsBySource, sourceKeysByPrefix])
   const translatedKeys = useMemo(() => {
     const result = new Set<string>()
-    for (const item of getReferenceCatalog()) {
+    for (const item of allEntries) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
@@ -1262,10 +1308,10 @@ function GameDataList({
         result.add(`${item.category}:${item.name}`)
     }
     return result
-  }, [rowsBySource, sourceKeysByPrefix])
+  }, [allEntries, rowsBySource, sourceKeysByPrefix])
   const verifiedKeys = useMemo(() => {
     const result = new Set<string>()
-    for (const item of getReferenceCatalog()) {
+    for (const item of allEntries) {
       const titleRows = referenceTitleRows(item, rowsBySource)
       const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
@@ -1279,7 +1325,7 @@ function GameDataList({
       }
     }
     return result
-  }, [rowsBySource, sourceKeysByPrefix])
+  }, [allEntries, rowsBySource, sourceKeysByPrefix])
   if (category === 'Item') {
     return <ItemTreeList
       stateKey={stateKey}
@@ -1293,7 +1339,7 @@ function GameDataList({
     />
   }
   if (category === 'NPC') {
-    return <NpcTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} showTranslatedTitles={showTranslatedTitles} />
+    return <NpcTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} showTranslatedTitles={showTranslatedTitles} customFolders={customFolders} onAddToFolder={onAddToFolder} />
   }
   if (category === 'Quest' || category === 'Book' || category === 'Location' || category === 'Character Creation') {
     return (
@@ -1333,6 +1379,7 @@ function GameDataList({
                 type="button"
                 onClick={() => onSelect(entry)}
                 data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
+                data-game-data-entry-key={referenceEntryKey(entry)}
                 className={cn(
                   'game-data-list-row translation-special-filter-option flex h-[52px] w-full cursor-pointer items-start gap-2 rounded-md px-2.5 py-2 text-left transition-colors focus:outline-none focus-visible:outline-none',
                   current === entry
@@ -1371,6 +1418,27 @@ function GameDataList({
 export function ReferencePage(): React.JSX.Element {
   const session = useTranslationSession()
   const [searchParams] = useSearchParams()
+  const [userOverrides, setUserOverrides] = useState(loadGameDataOverrides)
+  const sourceNameByUid = useMemo(
+    () => new Map(session.entries.map((entry) => [normalize(entry.uid), entry.source] as const)),
+    [session.entries]
+  )
+  const [folderModal, setFolderModal] = useState<{ path: string } | null>(null)
+  const [sourceModal, setSourceModal] = useState<{ mode: 'add' | 'edit'; path: string; entry?: ReferenceCatalogEntry } | null>(null)
+  const [pendingEntryDelete, setPendingEntryDelete] = useState<{ entry: ReferenceCatalogEntry; path: string } | null>(null)
+  const [entryContextMenu, setEntryContextMenu] = useState<{
+    x: number
+    y: number
+    entry: ReferenceCatalogEntry
+    path: string
+  } | null>(null)
+  const catalogEntries = useMemo(() => mergeGameDataEntries(getReferenceCatalog(), userOverrides).map((entry) => {
+    if (entry.sourceName?.trim()) return entry
+    const sourceUid = entry.sourceUid ?? entry.id
+    if (!sourceUid) return entry
+    const sourceName = sourceNameByUid.get(normalize(sourceUid))
+    return sourceName ? { ...entry, sourceUid, sourceName } : entry
+  }), [sourceNameByUid, userOverrides])
   const [category, setCategory] = useState<ReferenceCategory>(() => {
     const saved = readGameDataUiState().category
     return saved && CATEGORIES.some((item) => item.value === saved) ? saved : 'Quest'
@@ -1391,7 +1459,10 @@ export function ReferencePage(): React.JSX.Element {
   const [selected, setSelected] = useState<ReferenceCatalogEntry | null>(() => {
     const saved = readGameDataUiState()
     const savedCategory = saved.category ?? 'Quest'
-    return findGameDataEntry(savedCategory, saved.selectedByCategory?.[savedCategory])
+    const name = saved.selectedByCategory?.[savedCategory]
+    return catalogEntries.find((entry) =>
+      entry.name === name && (savedCategory === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === savedCategory)
+    ) ?? null
   })
   const [showContentUid, setShowContentUid] = useState(() => readGameDataUiState().showContentUid ?? false)
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
@@ -1440,6 +1511,9 @@ export function ReferencePage(): React.JSX.Element {
     }
   }, [termGlossary, termGlossaryKey])
   useEffect(() => {
+    saveGameDataOverrides(userOverrides)
+  }, [userOverrides])
+  useEffect(() => {
     if (session.phase !== 'loaded') return
     const spellName = searchParams.get('spell')?.trim()
     if (!spellName) return
@@ -1457,7 +1531,7 @@ export function ReferencePage(): React.JSX.Element {
   }, [searchParams, session.phase])
   const allEntries = useMemo(
     () =>
-      getReferenceCatalog()
+      catalogEntries
         .filter((entry) =>
           !category || (category === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === category)
         )
@@ -1468,7 +1542,7 @@ export function ReferencePage(): React.JSX.Element {
           !/\|[^|\n]{1,120}\|/.test(entry.name) &&
           !/\|[^|\n]{1,120}\|/.test(entry.description)
         ),
-    [category]
+    [category, catalogEntries]
   )
   const sourceEntries = useSessionStructure(session.entries)
   const uidBySource = useRetainedMemo('game-data:uids', () => {
@@ -1533,9 +1607,7 @@ export function ReferencePage(): React.JSX.Element {
       ? selected
       : (filtered[0] ?? null))
   const linkedTitle = current
-    ? (rowsBySource.get(normalize(current.name))?.length
-        ? rowsBySource.get(normalize(current.name))!
-        : rowsBySource.get(normalize(referenceTitleSource(current))) ?? [])
+    ? (referenceTitleRows(current, rowsBySource))
     : []
   const linkedDescription = current
     ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
@@ -1557,8 +1629,101 @@ export function ReferencePage(): React.JSX.Element {
     : []
   const Icon = iconFor(current?.category ?? category ?? 'Weapon')
   const wikiUrl = current
-    ? `https://bg3.wiki${wikiPath(current.category, current.wikiTitle ?? current.name)}`
+    ? (current.wikiUrl ?? `https://bg3.wiki${wikiPath(current.category, current.wikiTitle ?? current.name)}`)
     : `https://bg3.wiki${wikiPath(category ?? 'Weapon')}`
+  const openFolderAction = (path: string, action: 'folder' | 'entry') => {
+    const normalizedPath = path.split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
+    if (action === 'folder') setFolderModal({ path: normalizedPath })
+    else setSourceModal({ mode: 'add', path: normalizedPath })
+  }
+  const saveFolder = (name: string) => {
+    if (!folderModal) return
+    const path = `${folderModal.path} / ${name}`
+    if (userOverrides.npcFolders.some((existing) => normalize(existing) === normalize(path))) {
+      toast.error('A subfolder with that name already exists here.')
+      return
+    }
+    setUserOverrides((previous) => ({ ...previous, npcFolders: [...previous.npcFolders, path] }))
+    setFolderModal(null)
+  }
+  const saveSourceAssociation = (uid: string) => {
+    if (!sourceModal) return
+    const sourceRow = session.entries.find((entry) => entry.uid === uid)
+    if (!sourceRow) { toast.error('That Source ID is no longer present in the loaded XML.'); return }
+    const entry = sourceModal.mode === 'edit'
+      ? sourceModal.entry
+      : getReferenceCatalog('NPC').find((candidate) => (
+          (candidate.id && normalize(candidate.id) === normalize(uid)) ||
+          normalize(candidate.name) === normalize(sourceRow.source) ||
+          normalize(referenceTitleSource(candidate)) === normalize(sourceRow.source) ||
+          (candidate.sourceName && normalize(candidate.sourceName) === normalize(sourceRow.source))
+        ))
+    if (!entry) {
+      toast.error('No existing Wiki NPC matches this Source ID or source text. No Game Data entry was created.')
+      return
+    }
+    const key = referenceEntryKey(entry)
+    setUserOverrides((previous) => ({
+      ...previous,
+      sourceUidByEntry: { ...previous.sourceUidByEntry, [key]: sourceRow.uid },
+      sourceNameByEntry: { ...previous.sourceNameByEntry, [key]: sourceRow.source },
+      ...(sourceModal.mode === 'add' ? {
+        npcGroupsByEntry: {
+          ...previous.npcGroupsByEntry,
+          [key]: [...new Set([...(previous.npcGroupsByEntry[key] ?? entry.npcGroups ?? []), sourceModal.path])]
+        },
+        hiddenNpcEntries: previous.hiddenNpcEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {})
+    }))
+    setCategory('NPC')
+    const selectedEntry = {
+      ...entry,
+      sourceUid: sourceRow.uid,
+      sourceName: sourceRow.source,
+      ...(sourceModal.mode === 'add'
+        ? { npcGroups: [...new Set([...(entry.npcGroups ?? []), sourceModal.path])] }
+        : {})
+    }
+    setSelected(selectedEntry)
+    setSelectedByCategory((previous) => ({ ...previous, NPC: entry.name }))
+    setSourceModal(null)
+  }
+  const openEditEntry = (entry: ReferenceCatalogEntry) => {
+    setEntryContextMenu(null)
+    setSourceModal({ mode: 'edit', path: entry.npcGroups?.[0] ?? '', entry })
+  }
+  const deleteGameDataEntry = () => {
+    if (!pendingEntryDelete) return
+    const { entry, path } = pendingEntryDelete
+    const key = referenceEntryKey(entry)
+    const existingPaths = userOverrides.npcGroupsByEntry[key] ?? entry.npcGroups ?? []
+    const remainingPaths = existingPaths.filter((candidate) => normalize(candidate) !== normalize(path))
+    setUserOverrides((previous) => ({
+      ...previous,
+      npcGroupsByEntry: { ...previous.npcGroupsByEntry, [key]: remainingPaths },
+      hiddenNpcEntries: remainingPaths.length ? previous.hiddenNpcEntries : [...new Set([...previous.hiddenNpcEntries, key])]
+    }))
+    if (selected && referenceEntryKey(selected) === key) setSelected(null)
+    setEntryContextMenu(null)
+    setPendingEntryDelete(null)
+  }
+  const handleGameDataContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    const row = (event.target as HTMLElement).closest<HTMLElement>('[data-game-data-entry-key]')
+    const key = row?.dataset.gameDataEntryKey
+    if (!key) {
+      setEntryContextMenu(null)
+      return
+    }
+    const entry = catalogEntries.find((candidate) => referenceEntryKey(candidate) === key)
+    if (!entry) return
+    if (entry.category !== 'NPC') return
+    event.preventDefault()
+    setSelected(entry)
+    const listCategory = entry.itemGroups?.length ? 'Item' : entry.category
+    setSelectedByCategory((previous) => ({ ...previous, [listCategory]: entry.name }))
+    const path = (row?.dataset.gameDataGroupPath ?? entry.npcGroups?.[0] ?? '').split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
+    setEntryContextMenu({ x: event.clientX, y: event.clientY, entry, path })
+  }
   const update = (rowId: string, value: string) => {
     session.updateEntry(rowId, value)
     session.setReviewStatus(rowId, value.trim() ? 'needs-review' : 'untranslated')
@@ -1641,7 +1806,48 @@ export function ReferencePage(): React.JSX.Element {
         onChange={setTermGlossary}
         onClose={() => setTermGlossaryOpen(false)}
       />
-      <div className="flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200">
+      <GameDataFolderModal
+        open={folderModal !== null}
+        parentPath={folderModal?.path ?? ''}
+        onClose={() => setFolderModal(null)}
+        onSubmit={saveFolder}
+      />
+      <GameDataSourceModal
+        open={sourceModal !== null}
+        title={sourceModal?.mode === 'edit' ? 'Edit Source association' : 'Add existing Game Data entry'}
+        description={sourceModal?.mode === 'edit'
+          ? `Choose the existing XML string for Wiki entry “${sourceModal.entry?.name ?? ''}”. Its Wiki name and link will stay unchanged.`
+          : `Choose an existing Source string for ${sourceModal?.path ?? ''}. It will only be added if it matches an existing Wiki NPC.`}
+        sourceEntries={session.entries}
+        initialUid={sourceModal?.entry?.sourceUid}
+        onClose={() => setSourceModal(null)}
+        onSubmit={saveSourceAssociation}
+      />
+      <ModalShell
+        open={pendingEntryDelete !== null}
+        title="Delete Game Data entry?"
+        sizeClassName="max-w-md"
+        icon={<CircleAlert size={18} />}
+        onClose={() => setPendingEntryDelete(null)}
+      >
+        <p className="text-sm leading-6 text-neutral-300">
+          Remove “{pendingEntryDelete?.entry.name ?? ''}” from “{pendingEntryDelete?.path ?? ''}”?
+        </p>
+        <div className="mt-4 flex justify-end">
+          <button
+            type="button"
+            onClick={deleteGameDataEntry}
+            className="accent-solid-control inline-flex items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-3 py-2 text-xs font-semibold"
+          >
+            <Trash2 size={13} aria-hidden="true" />
+            Delete
+          </button>
+        </div>
+      </ModalShell>
+      <div
+        className="flex h-full min-h-0 flex-col bg-[#0c0d0f] text-neutral-200"
+        onContextMenu={handleGameDataContextMenu}
+      >
         <header className="app-page-header flex shrink-0 flex-wrap items-center gap-3 border-b border-[#1f2329] bg-[#0f1114] px-6 py-5">
           <Icon size={20} className="text-amber-400" />
           <div>
@@ -1693,7 +1899,9 @@ export function ReferencePage(): React.JSX.Element {
               onCategoryChange={(value) => {
                 setCategory(value)
                 const rememberedName = selectedByCategory[value]
-                setSelected(findGameDataEntry(value, rememberedName))
+                setSelected(catalogEntries.find((entry) =>
+                  entry.name === rememberedName && (value === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === value)
+                ) ?? null)
               }}
               matchCase={matchCase}
               onMatchCaseChange={setMatchCase}
@@ -1717,6 +1925,8 @@ export function ReferencePage(): React.JSX.Element {
               sourceKeysByPrefix={sourceKeysByPrefix}
               searching={query.trim().length > 0}
               showTranslatedTitles={showTranslatedTitles}
+              customFolders={userOverrides.npcFolders}
+              onAddToFolder={openFolderAction}
             />
           </aside>
           <main className={cn(
@@ -1736,7 +1946,7 @@ export function ReferencePage(): React.JSX.Element {
                   </div>
                   <TranslationField
                     label={current.category === 'NPC' ? 'Source' : 'Title EN'}
-                    source={current.name}
+                    source={current.category === 'NPC' ? referenceTitleSource(current) : current.name}
                     entries={linkedTitle}
                     targetLang={session.targetLang.toUpperCase()}
                     update={update}
@@ -1858,6 +2068,42 @@ export function ReferencePage(): React.JSX.Element {
             </div>
           </main>
         </div>
+        {entryContextMenu && (
+          <div
+            className="fixed inset-0 z-[4000]"
+            onMouseDown={() => setEntryContextMenu(null)}
+          >
+            <div
+              role="menu"
+              className="fixed z-[4001] w-32 max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl"
+              style={{
+                left: Math.max(8, Math.min(entryContextMenu.x, window.innerWidth - 144)),
+                top: Math.max(8, Math.min(entryContextMenu.y, window.innerHeight - 80))
+              }}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => openEditEntry(entryContextMenu.entry)}
+                className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+              >
+                <Pencil size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" /> Edit
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                    setPendingEntryDelete({ entry: entryContextMenu.entry, path: entryContextMenu.path })
+                  setEntryContextMenu(null)
+                }}
+                className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+              >
+                <Trash2 size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" /> Delete
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   )

@@ -1,6 +1,6 @@
 {
   "name": "polyhedron",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Polyhedron — desktop translator for Baldur's Gate 3 localization.",
   "main": "./out/main/index.js",

@@ -82,6 +82,72 @@ html[data-theme="polyhedron-green"], html[data-theme="duolingo-dark"] {
   border-color: transparent !important;
   box-shadow: none !important;
 }
+/* Match the simple search field and entry cards used in Term Glossary. */
+.app-modal-panel.game-data-source-modal .game-data-source-search,
+.app-modal-panel.game-data-source-modal .game-data-source-search:focus,
+.app-modal-panel.game-data-source-modal .game-data-source-search:focus-visible {
+  background: #101010 !important;
+  border-color: #34343e !important;
+}
+.app-modal-panel.game-data-source-modal .quick-search-search-shell:focus-within {
+  border-color: #34343e !important;
+  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+}
+.app-modal-panel.game-data-source-modal input.quick-search-input,
+.app-modal-panel.game-data-source-modal input.quick-search-input:focus,
+.app-modal-panel.game-data-source-modal input.quick-search-input:focus-visible {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.app-modal-panel.game-data-source-modal .game-data-source-result.is-selected {
+  border-color: var(--poly-accent) !important;
+  box-shadow: none !important;
+}
+.app-modal-panel.game-data-source-modal button.quick-search-result:hover {
+  background-color: #1b1c21 !important;
+  border-color: #2c2e37 !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+.app-modal-panel.game-data-source-modal button:not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):not([class*="bg-amber-"]):not(.accent-solid-button):not(.accent-solid-control):not([class*="bg-red-"]):not([aria-pressed="true"]):hover.quick-search-result {
+  background-color: #1b1c21 !important;
+  border-color: #2c2e37 !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+.app-modal-panel.game-data-source-modal button:not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):not([class*="bg-amber-"]):not(.accent-solid-button):not(.accent-solid-control):not([class*="bg-red-"]):not([aria-pressed="true"]):hover.quick-search-options-trigger,
+.app-modal-panel.game-data-source-modal button:not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):not([class*="bg-amber-"]):not(.accent-solid-button):not(.accent-solid-control):not([class*="bg-red-"]):not([aria-pressed="true"]):hover.quick-search-field-toggle {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: var(--poly-accent) !important;
+  box-shadow: none !important;
+}
+.app-modal-panel.game-data-source-modal button:not(:disabled):not([aria-disabled="true"]):not(.cursor-not-allowed):not([role="switch"]):not([class*="bg-amber-"]):not(.accent-solid-button):not(.accent-solid-control):not([class*="bg-red-"]):not([aria-pressed="true"]):hover.quick-search-option {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: var(--color-amber-400) !important;
+  box-shadow: none !important;
+}
+.app-modal-panel.game-data-source-modal button.quick-search-option[aria-pressed="true"]:hover {
+  background-color: color-mix(in srgb, var(--color-amber-400) 10%, transparent) !important;
+  border-color: transparent !important;
+  color: var(--color-amber-400) !important;
+  box-shadow: none !important;
+}
+.game-data-source-modal > div:nth-child(2) {
+  display: flex;
+  min-height: 0;
+  flex: 0 1 auto;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+.game-data-source-action {
+  border-top: 1px solid var(--app-panel-divider);
+  padding-top: 1rem;
+}
 .app-modal-panel button:not(:disabled):not([aria-disabled="true"]) {
   transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
@@ -204,6 +270,18 @@ input:not(:disabled):is(:not([type]), [type="text"], [type="search"], [type="ema
   background: transparent !important;
   outline: 0 !important;
   box-shadow: none !important;
+}
+
+/* Keep search focus rings in the active theme color, never default blue. */
+:is(input[type="search"], input[class*="search"], input[class*="Search"]):is(:focus, :focus-visible) {
+  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%) !important;
+  --tw-ring-color: var(--poly-accent, #ed1c24) !important;
+  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+  outline: none !important;
+}
+:is(.text-search-input-shell, .translation-search-bar, .game-data-source-search, .manage-mod-search):focus-within {
+  --tw-ring-color: var(--poly-accent, #ed1c24) !important;
+  outline-color: var(--poly-accent, #ed1c24) !important;
 }
 
 .manage-mod-search,
@@ -675,6 +753,30 @@ html[data-theme="liquid-glass"] .app-content-shell main button:not(:disabled):ho
   background-color: rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
   border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 38%);
   box-shadow: 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%);
+}
+html[data-theme] .app-content-shell main button.game-data-folder-toggle:hover {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+html[data-theme] .app-content-shell main .game-data-folder-row:hover {
+  background-color: #181818 !important;
+}
+html[data-theme] .app-content-shell main button.game-data-folder-add:hover {
+  background-color: color-mix(in srgb, var(--poly-accent) 15%, transparent) !important;
+  border-color: #343a33 !important;
+  color: var(--poly-accent) !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+html[data-theme] .app-content-shell main button.game-data-entry-context-menu-option:hover,
+html[data-theme] .app-content-shell main button.game-data-entry-context-menu-option:focus,
+html[data-theme] .app-content-shell main button.game-data-entry-context-menu-option:focus-visible {
+  background-color: #262626 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 /* Workspace import/export cards use the same quiet surface as Settings cards;
    they are action containers, not hoverable navigation cards. */

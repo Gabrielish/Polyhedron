@@ -4,6 +4,29 @@ export interface TermGlossaryEntry {
   translation: string
 }
 
+export function countTermOccurrencesInCorpus(term: string, corpus: string): number {
+  const needle = term.trim().toLocaleLowerCase()
+  if (!needle) return 0
+
+  let count = 0
+  const isWordCharacter = (character: string | undefined): boolean =>
+    Boolean(character && /[\p{L}\p{N}_]/u.test(character))
+  let from = 0
+  while (from < corpus.length) {
+    const index = corpus.indexOf(needle, from)
+    if (index < 0) break
+    const end = index + needle.length
+    if (!isWordCharacter(corpus[index - 1]) && !isWordCharacter(corpus[end])) {
+      count += 1
+      from = end
+    } else {
+      from = index + 1
+    }
+  }
+
+  return count
+}
+
 export function getTermGlossaryStorageKey(
   projectKey: string,
   sourceLang: string,

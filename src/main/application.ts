@@ -1,6 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { join } from 'path'
+import { version } from '../../package.json'
 import { eq } from 'drizzle-orm'
 import iconWin from '../../resources/installer/icon.ico?asset'
 import icon from '../../resources/installer/icon.png?asset'
@@ -152,7 +153,7 @@ app.whenReady().then(() => {
   app.setName('Polyhedron')
   migrateLegacyUserData()
   installIpcSecurity(getWindow)
-  ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle('app:version', () => version)
   electronApp.setAppUserModelId('com.polyhedron.bg3-mod-translator')
   const repos = createRepositoryRegistry(getDb())
 

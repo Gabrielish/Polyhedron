@@ -10,6 +10,10 @@ interface ModalShellProps {
   icon?: ReactNode
   sizeClassName?: string
   panelClassName?: string
+  headerClassName?: string
+  iconClassName?: string
+  descriptionClassName?: string
+  contentClassName?: string
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
@@ -22,6 +26,10 @@ export function ModalShell({
   icon,
   sizeClassName = 'max-w-3xl',
   panelClassName,
+  headerClassName,
+  iconClassName,
+  descriptionClassName,
+  contentClassName,
   onClose,
   children,
   footer
@@ -58,15 +66,15 @@ export function ModalShell({
           panelClassName
         )}
       >
-        <div className="flex items-start gap-3 border-b border-[#2a2c34] px-5 py-4">
+        <div className={cn('flex items-start gap-3 border-b border-[#2a2c34] px-5 py-4', headerClassName)}>
           {icon && (
-            <div className="mt-0.5 flex shrink-0 items-center justify-center text-amber-400">
+            <div className={cn('mt-0.5 flex shrink-0 items-center justify-center text-amber-400', iconClassName)}>
               {icon}
             </div>
           )}
           <div className="min-w-0 flex-1">
             <div className="app-modal-title text-sm font-medium text-neutral-200">{title}</div>
-            {description && <div className="mt-1 text-xs text-neutral-500">{description}</div>}
+            {description && <div className={cn('mt-1 text-xs text-neutral-500', descriptionClassName)}>{description}</div>}
           </div>
           <button
             type="button"
@@ -78,7 +86,7 @@ export function ModalShell({
           </button>
         </div>
 
-        <div className="px-5 py-5">{children}</div>
+        <div className={cn('px-5 py-5', contentClassName)}>{children}</div>
 
         {footer && (
           <div className="flex items-center justify-end gap-2 border-t border-[#2a2c34] bg-[#101115] px-5 py-4">

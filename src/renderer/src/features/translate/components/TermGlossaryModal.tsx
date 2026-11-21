@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { BookText, PawPrint, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslationSession } from '@/context/TranslationSession'
 import type { TermGlossaryEntry } from '@/utils/termGlossary'
 import { normalizeSearchText } from '@/utils/search'
 import { RomanianDiacritics } from './RomanianDiacritics'
@@ -24,12 +26,21 @@ export function TermGlossaryModal({
   onOpenCreatureGuide,
   onClose
 }: TermGlossaryModalProps): React.JSX.Element | null {
+  const navigate = useNavigate()
+  const session = useTranslationSession()
   const [source, setSource] = useState('')
   const [translation, setTranslation] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [duplicateMessage, setDuplicateMessage] = useState('')
   const [showRomanianDiacritics, setShowRomanianDiacritics] = useState(false)
+  const [occurrenceCounts, setOccurrenceCounts] = useState<
+    Readonly<Record<string, number>> | null | undefined
+  >(undefined)
+  const occurrenceCache = useRef<{
+    key: string
+    counts: Readonly<Record<string, number>>
+  } | null>(null)
   const isRomanianTarget = /^(?:ro|romanian)(?:[-_]|$)/i.test(targetLang.trim())
 
   useEffect(() => {
@@ -43,6 +54,52 @@ export function TermGlossaryModal({
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isRomanianTarget, open, onClose])
+
+  useEffect(() => {
+    if (!open) return
+
+    const terms = entries.map(({ id, source }) => ({ id, source }))
+    const cacheKey = JSON.stringify({
+      project: session.storedPath ?? session.inputPath ?? session.modName,
+      sourceLang: session.sourceLang,
+      targetLang: session.targetLang,
+      entryCount: session.entries.length,
+      terms
+    })
+    if (occurrenceCache.current?.key === cacheKey) {
+      setOccurrenceCounts(occurrenceCache.current.counts)
+      return
+    }
+    if (terms.length === 0) {
+      occurrenceCache.current = { key: cacheKey, counts: {} }
+      setOccurrenceCounts({})
+      return
+    }
+
+    setOccurrenceCounts(null)
+    const worker = new Worker(new URL('./termGlossaryCounter.worker.ts', import.meta.url), {
+      type: 'module'
+    })
+    worker.addEventListener('message', (event: MessageEvent<Readonly<Record<string, number>>>) => {
+      occurrenceCache.current = { key: cacheKey, counts: event.data }
+      setOccurrenceCounts(event.data)
+    })
+    worker.postMessage({
+      sourceTexts: session.entries.map((entry) => entry.source),
+      terms
+    })
+
+    return () => worker.terminate()
+  }, [
+    entries,
+    open,
+    session.entries,
+    session.inputPath,
+    session.modName,
+    session.sourceLang,
+    session.storedPath,
+    session.targetLang
+  ])
 
   const sortedEntries = useMemo(() => {
     const query = normalizeSearchText(search.trim())
@@ -106,6 +163,19 @@ export function TermGlossaryModal({
     setEditingId(entry.id)
     setSource(entry.source)
     setTranslation(entry.translation)
+  }
+
+  const searchSourceInTranslate = (term: string) => {
+    const request = { query: term, wholeWord: true, searchField: 'source' as const }
+    window.sessionStorage.setItem('polyhedron:reveal-search', term)
+    window.sessionStorage.setItem('polyhedron:reveal-search-options', JSON.stringify(request))
+    onClose()
+    navigate('/translate')
+    window.requestAnimationFrame(() => {
+      window.dispatchEvent(
+        new CustomEvent('polyhedron:reveal-search-with-options', { detail: request })
+      )
+    })
   }
 
   return createPortal(
@@ -267,6 +337,16 @@ export function TermGlossaryModal({
                       <span className="mx-2 text-neutral-600">→</span>
                       <span className="text-amber-300">{entry.translation}</span>
                     </div>
+                    {occurrenceCounts !== undefined && (
+                      <button
+                        type="button"
+                        onClick={() => searchSourceInTranslate(entry.source)}
+                        aria-label={`Search Source for “${entry.source}” as a whole word`}
+                        className="shrink-0 cursor-pointer rounded-full border border-[#34343e] bg-[#111216] px-2 py-1 text-[11px] tabular-nums text-neutral-400 transition hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-200"
+                      >
+                        {occurrenceCounts === null ? '…' : (occurrenceCounts[entry.id] ?? 0)}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => startEdit(entry)}

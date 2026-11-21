@@ -17,6 +17,10 @@ export type ReferenceCatalogEntry = {
   conditions?: string[]
   hasUnresolvedFields?: boolean
   wikiTitle?: string
+  wikiUrl?: string
+  /** User-selected localization source association; Wiki identity remains `name`/`wikiTitle`. */
+  sourceName?: string
+  sourceUid?: string
   section?: string
   subquests?: string[]
   subLocations?: string[]

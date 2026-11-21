@@ -9,6 +9,7 @@ import {
   Download,
   FileText,
   FolderOpen,
+  Info,
   LoaderCircle,
   LogIn,
   LogOut,
@@ -20,9 +21,12 @@ import {
   Settings,
   Sparkles,
   Trash2,
-  UserRound
+  UserRound,
+  X
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { toast } from 'sonner'
 import { ThemedSelect } from '@/components/shared/ThemedSelect'
 import { AppMessage } from '@/components/shared/AppMessage'
@@ -138,6 +142,7 @@ function SettingsCard({ title, children, className = '', bodyClassName = '' }: {
 }
 
 export function SettingsPage(): React.JSX.Element {
+  const { onOpenWhatsNew } = useOutletContext<{ onOpenWhatsNew: () => void }>()
   const { config, loading, set } = useConfig()
   const { theme, setTheme, accent, accentForeground, setAccentForeground } = useTheme()
   const [logPath, setLogPath] = useState('')
@@ -146,17 +151,29 @@ export function SettingsPage(): React.JSX.Element {
   const [updateState, setUpdateState] = useState<UpdateState | null>(null)
   const [checkingForUpdates, setCheckingForUpdates] = useState(false)
   const [forceUpdateBusy, setForceUpdateBusy] = useState(false)
+  const [forceUpdateConfirmOpen, setForceUpdateConfirmOpen] = useState(false)
   const manualUpdateCheck = useRef(false)
   const [cloudAccount, setCloudAccount] = useState<CloudAccount | null>(null)
   const [cloudAccountBusy, setCloudAccountBusy] = useState(false)
   const [lastCloudUpload, setLastCloudUpload] = useState<string | null>(null)
   const [lastCloudDownload, setLastCloudDownload] = useState<string | null>(null)
   const isMacOS = navigator.platform.toLowerCase().includes('mac')
+  const isAdministrator = cloudAccount?.connected === true &&
+    cloudAccount.emailAddress?.trim().toLowerCase() === 'gabrielbundea1@gmail.com'
   const { t } = useAppTranslation(['settings', 'common', 'toasts'])
 
   useEffect(() => {
     if (previewClicks === 10) toast.success('Debug logs enabled.')
   }, [previewClicks])
+
+  useEffect(() => {
+    if (!forceUpdateConfirmOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setForceUpdateConfirmOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [forceUpdateConfirmOpen])
 
   useEffect(() => {
     window.api.log.getPath().then(setLogPath)
@@ -304,25 +321,36 @@ export function SettingsPage(): React.JSX.Element {
                   <p className="mt-1 text-xs text-neutral-500">Check GitHub for a newer release.</p>
                 </div>
               </div>
-              <div className="w-[144px] shrink-0">
-                <button
-                  type="button"
-                  aria-label="Force update"
-                  disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
-                  onClick={() => void handleForceUpdate()}
-                  className="inline-flex h-[38px] w-[144px] items-center justify-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-900 px-2.5 text-xs font-medium text-neutral-300 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 hover:text-neutral-100 disabled:cursor-wait disabled:opacity-60"
-                >
-                  <Download size={13} /> Force update
-                </button>
-              </div>
             </div>
             <div className="flex w-full flex-wrap items-center justify-between gap-4 rounded-lg border border-neutral-800 bg-[#0f1114] p-4">
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                <PolyhedronMark className="h-9 w-9 shrink-0 text-amber-400" />
+                {isAdministrator ? (
+                  <button
+                    type="button"
+                    aria-label="Force update"
+                    disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
+                    onClick={() => setForceUpdateConfirmOpen(true)}
+                    className="shrink-0 cursor-pointer rounded-full"
+                  >
+                    <PolyhedronMark className="h-9 w-9 text-amber-400" />
+                  </button>
+                ) : (
+                  <PolyhedronMark className="h-9 w-9 shrink-0 text-amber-400" />
+                )}
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-neutral-200">Polyhedron</p>
                   <p className="mt-1 text-xs text-neutral-500">
-                    Installed version: <span className="text-neutral-300">{appVersion || '—'}</span>
+                    Installed version: <span className="text-neutral-300">{appVersion || '—'}</span>{' '}
+                    <AppTooltip label="What's new" placement="top">
+                      <button
+                        type="button"
+                        aria-label={`What's new in v${appVersion || '1.0.2'}`}
+                        onClick={onOpenWhatsNew}
+                        className="inline-flex h-4 w-4 translate-y-0.5 cursor-pointer items-center justify-center rounded-full text-neutral-500 transition-colors hover:text-[var(--poly-accent)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--poly-accent)]"
+                      >
+                        <Info size={14} />
+                      </button>
+                    </AppTooltip>
                   </p>
                 </div>
               </div>
@@ -356,7 +384,7 @@ export function SettingsPage(): React.JSX.Element {
                   <RefreshCw size={15} /> Restart to update
                 </button>
               )}
-              {updateState?.status === 'force-downloaded' && (
+              {updateState?.status === 'force-downloaded' && isAdministrator && (
                 <button
                   type="button"
                   onClick={() => void handleInstallForceUpdate()}
@@ -382,7 +410,7 @@ export function SettingsPage(): React.JSX.Element {
               {updateState?.status === 'downloaded' && (
                 <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is ready to install.</AppMessage>
               )}
-              {updateState?.status === 'force-downloaded' && (
+              {updateState?.status === 'force-downloaded' && isAdministrator && (
                 <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">The latest installer is ready. Run it to replace the current build.</AppMessage>
               )}
               {updateState?.status === 'error' && (
@@ -784,6 +812,57 @@ export function SettingsPage(): React.JSX.Element {
         </section>
 
       </div>
+      {forceUpdateConfirmOpen && createPortal(
+        <div
+          className="app-modal-overlay fixed inset-0 z-[5000] flex items-center justify-center bg-black/55"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setForceUpdateConfirmOpen(false)
+          }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="force-update-confirm-title"
+            aria-describedby="force-update-confirm-description"
+            className="app-modal-panel w-[360px] overflow-hidden rounded-xl border border-neutral-800/80 bg-[#141416]"
+          >
+            <div className="flex items-start justify-between border-b border-[#2b2e36] px-4 py-3.5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+                <Download size={17} className="text-amber-300" />
+                <span id="force-update-confirm-title">Force update</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setForceUpdateConfirmOpen(false)}
+                aria-label="Close"
+                className="rounded-lg border border-[#34343e] p-1.5 text-neutral-400 transition-colors hover:border-neutral-500 hover:bg-white/5 hover:text-neutral-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-4">
+              <p id="force-update-confirm-description" className="m-0 whitespace-nowrap text-[13px] text-neutral-400">
+                Download the latest build from GitHub.
+              </p>
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  disabled={forceUpdateBusy}
+                  onClick={() => {
+                    setForceUpdateConfirmOpen(false)
+                    void handleForceUpdate()
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-2 text-xs font-semibold text-black hover:bg-amber-400 disabled:cursor-wait disabled:opacity-60"
+                >
+                  <Download size={13} />
+                  Update now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
