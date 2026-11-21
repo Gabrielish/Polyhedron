@@ -32,6 +32,13 @@ module.exports = async context => {
     await fs.mkdir(path.join(ui, 'out/preload'), { recursive: true })
     await fs.mkdir(path.join(ui, 'out/renderer'), { recursive: true })
     await fs.copyFile(path.join(root, 'out/main/installer.js'), path.join(ui, 'out/main/installer.js'))
+    // The installer entry can share generated chunks with the main application
+    // (for example package metadata). Include them in the lightweight setup UI.
+    const mainChunks = path.join(root, 'out/main/chunks')
+    const mainChunksStat = await fs.stat(mainChunks).catch(() => null)
+    if (mainChunksStat?.isDirectory()) {
+      await fs.cp(mainChunks, path.join(ui, 'out/main/chunks'), { recursive: true })
+    }
     await fs.copyFile(path.join(root, 'out/preload/installer.js'), path.join(ui, 'out/preload/installer.js'))
     await fs.copyFile(path.join(root, 'out/renderer/installer.html'), path.join(ui, 'out/renderer/installer.html'))
     // Shared renderer chunks/styles are small; retaining all assets avoids
