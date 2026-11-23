@@ -116,7 +116,7 @@ export function GameDataSourceModal({ open, title, description, sourceEntries, i
         )}
       </div>
       <div className="flex shrink-0 justify-end">
-        <button type="button" disabled={!selectedUid} onClick={() => onSubmit(selectedUid)} className="accent-solid-control inline-flex h-10 items-center gap-1.5 rounded-lg border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-4 text-sm font-semibold disabled:opacity-40"><Check size={15}/>Select</button>
+        <button type="button" disabled={!selectedUid} onClick={() => onSubmit(selectedUid)} className="app-compact-action accent-solid-control inline-flex h-10 items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-4 text-xs font-medium disabled:opacity-40"><Check size={15}/>Select</button>
       </div>
     </div>
   </ModalShell>

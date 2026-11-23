@@ -9,7 +9,6 @@ import {
   Download,
   FileText,
   FolderOpen,
-  Info,
   LoaderCircle,
   LogIn,
   LogOut,
@@ -182,6 +181,13 @@ export function SettingsPage(): React.JSX.Element {
       // Background startup checks must not populate this manual feedback row.
       if (!manualUpdateCheck.current) return
       setUpdateState(state)
+      if (state.status === 'available' && !isMacOS) {
+        void window.api.update.download().catch(error => {
+          manualUpdateCheck.current = false
+          setUpdateState({ status: 'error', message: error instanceof Error ? error.message : 'Unable to download the update.' })
+        })
+        return
+      }
       if (state.status !== 'checking' && state.status !== 'downloading') manualUpdateCheck.current = false
     })
   }, [])
@@ -226,9 +232,20 @@ export function SettingsPage(): React.JSX.Element {
     }
   }
 
-  const handleDownloadUpdate = async () => {
-    if (!isMacOS) manualUpdateCheck.current = true
-    await window.api.update.download()
+  const handleOpenLatestRelease = async () => {
+    try {
+      await window.api.update.download()
+    } catch (error) {
+      setUpdateState({ status: 'error', message: error instanceof Error ? error.message : 'Unable to open the GitHub release.' })
+    }
+  }
+
+  const handleInstallUpdate = async () => {
+    try {
+      await window.api.update.install()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to restart and install the update.')
+    }
   }
 
   const handleForceUpdate = async () => {
@@ -317,7 +334,7 @@ export function SettingsPage(): React.JSX.Element {
               <div className="flex min-w-0 items-start gap-3">
                 <RefreshCw size={18} className="mt-0.5 shrink-0 text-amber-400" />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-neutral-200">Check for updates</p>
+                  <p className="text-sm font-medium text-neutral-200">Application updates</p>
                   <p className="mt-1 text-xs text-neutral-500">Check GitHub for a newer release.</p>
                 </div>
               </div>
@@ -328,7 +345,7 @@ export function SettingsPage(): React.JSX.Element {
                   <button
                     type="button"
                     aria-label="Force update"
-                    disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
+                    disabled={forceUpdateBusy || updateState?.status === 'downloading'}
                     onClick={() => setForceUpdateConfirmOpen(true)}
                     className="shrink-0 cursor-pointer rounded-full"
                   >
@@ -340,15 +357,15 @@ export function SettingsPage(): React.JSX.Element {
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-neutral-200">Polyhedron</p>
                   <p className="mt-1 text-xs text-neutral-500">
-                    Installed version: <span className="text-neutral-300">{appVersion || '—'}</span>{' '}
-                    <AppTooltip label="What's new" placement="top">
+                    Installed version: {' '}
+                    <AppTooltip label="What's new" placement="top" focusable={false}>
                       <button
                         type="button"
                         aria-label={`What's new in v${appVersion || '1.0.2'}`}
                         onClick={onOpenWhatsNew}
-                        className="inline-flex h-4 w-4 translate-y-0.5 cursor-pointer items-center justify-center rounded-full text-neutral-500 transition-colors hover:text-[var(--poly-accent)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--poly-accent)]"
+                        className="cursor-pointer text-neutral-300 transition-colors hover:text-neutral-100 focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--poly-accent)]"
                       >
-                        <Info size={14} />
+                        {appVersion || '—'}
                       </button>
                     </AppTooltip>
                   </p>
@@ -357,66 +374,51 @@ export function SettingsPage(): React.JSX.Element {
               <div className="flex shrink-0 items-center gap-2">
                 <button
                   type="button"
-                  disabled={checkingForUpdates || forceUpdateBusy || updateState?.status === 'downloading'}
-                  onClick={() => void handleCheckForUpdates()}
-                  className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-200 transition-colors hover:border-amber-500/50 hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
+                  onClick={() => {
+                    if (updateState?.status === 'downloaded') void handleInstallUpdate()
+                    else if (isMacOS && updateState?.status === 'available') void handleOpenLatestRelease()
+                    else if (!checkingForUpdates && updateState?.status !== 'downloading') void handleCheckForUpdates()
+                  }}
+                  disabled={checkingForUpdates || updateState?.status === 'checking' || updateState?.status === 'downloading' || (updateState?.status === 'available' && !isMacOS)}
+                  className={`relative isolate inline-flex h-9 min-w-40 items-center ${updateState?.status === 'downloading' || (updateState?.status === 'available' && !isMacOS) ? 'justify-start' : 'justify-center'} gap-2 overflow-hidden rounded-md border border-neutral-700 bg-neutral-900 px-3 text-xs font-medium text-neutral-100 transition-colors disabled:cursor-wait ${updateState?.status === 'downloaded' ? 'settings-update-restart-button' : ''}`}
+                  style={updateState?.status === 'downloading' || (updateState?.status === 'available' && !isMacOS) ? {
+                    background: `linear-gradient(to right, var(--poly-accent) ${updateState.status === 'downloading' ? updateState.percent : 0}%, #17191c ${updateState.status === 'downloading' ? updateState.percent : 0}%)`
+                  } : updateState?.status === 'downloaded' ? {
+                    backgroundColor: 'var(--poly-accent)',
+                    borderColor: 'var(--poly-accent)',
+                    color: accentForeground
+                  } : undefined}
                 >
-                  <RefreshCw size={14} className={checkingForUpdates ? 'animate-spin' : ''} /> Check for updates
+                  {updateState?.status === 'checking' && <><LoaderCircle size={14} className="animate-spin" /> Checking…</>}
+                  {(updateState?.status === 'downloading' || (updateState?.status === 'available' && !isMacOS)) && (() => {
+                    const percent = updateState.status === 'downloading' ? Math.round(updateState.percent) : 0
+                    return <>
+                      <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-3" style={{ clipPath: `inset(0 0 0 ${percent}%)` }}>
+                        <span className="flex items-center gap-2"><Download size={14} /> Downloading…</span>
+                        <span className="tabular-nums">{percent}%</span>
+                      </span>
+                      <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-3" style={{ clipPath: `inset(0 ${100 - percent}% 0 0)`, color: accentForeground }}>
+                        <span className="flex items-center gap-2"><Download size={14} /> Downloading…</span>
+                        <span className="tabular-nums">{percent}%</span>
+                      </span>
+                    </>
+                  })()}
+                  {updateState?.status === 'downloaded' && <><RefreshCw size={14} /> Restart to update</>}
+                  {isMacOS && updateState?.status === 'available' && <><Download size={14} /> Open latest release</>}
+                  {(!updateState || updateState.status === 'not-available' || updateState.status === 'error' || updateState.status === 'force-downloaded') && <><RefreshCw size={14} /> Check for updates</>}
                 </button>
               </div>
             </div>
-            {(updateState?.status === 'available' || updateState?.status === 'downloaded' || updateState?.status === 'force-downloaded') && <div className="flex flex-wrap gap-2">
-              {updateState?.status === 'available' && (
-                <button
-                  type="button"
-                  onClick={() => void handleDownloadUpdate()}
-                  className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"
-                >
-                  <Download size={15} /> {isMacOS ? 'Download new version' : 'Download update'}
-                </button>
-              )}
-              {updateState?.status === 'downloaded' && (
-                <button
-                  type="button"
-                  onClick={() => void window.api.update.install()}
-                  className="inline-flex items-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-neutral-950 hover:bg-amber-400"
-                >
-                  <RefreshCw size={15} /> Restart to update
-                </button>
-              )}
-              {updateState?.status === 'force-downloaded' && isAdministrator && (
-                <button
-                  type="button"
-                  onClick={() => void handleInstallForceUpdate()}
-                  className="accent-solid-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"
-                >
-                  <Download size={15} /> Install latest build
-                </button>
-              )}
-            </div>}
             <div role="status" className="settings-update-feedback mt-auto flex min-h-5 w-full items-center text-[11px] leading-5 tracking-tight">
-              {updateState?.status === 'checking' && (
-                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Checking for updates…</AppMessage>
-              )}
-              {updateState?.status === 'not-available' && (
-                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">You are up to date.</AppMessage>
-              )}
-              {updateState?.status === 'available' && (
-                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is available.</AppMessage>
-              )}
-              {updateState?.status === 'downloading' && (
-                <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Downloading… {Math.round(updateState.percent)}%</AppMessage>
-              )}
-              {updateState?.status === 'downloaded' && (
-                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is ready to install.</AppMessage>
-              )}
-              {updateState?.status === 'force-downloaded' && isAdministrator && (
-                <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">The latest installer is ready. Run it to replace the current build.</AppMessage>
-              )}
-              {updateState?.status === 'error' && (
-                <AppMessage tone="error" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">{updateState.message}</AppMessage>
-              )}
+              {updateState?.status === 'checking' && <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Checking for updates…</AppMessage>}
+              {updateState?.status === 'not-available' && <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">You are up to date.</AppMessage>}
+              {updateState?.status === 'available' && <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is available.</AppMessage>}
+              {updateState?.status === 'downloading' && <AppMessage iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Downloading… {Math.round(updateState.percent)}%</AppMessage>}
+              {updateState?.status === 'downloaded' && <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">Version {updateState.version} is ready to install.</AppMessage>}
+              {updateState?.status === 'force-downloaded' && isAdministrator && <AppMessage tone="success" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">The latest installer is ready. Run it to replace the current build.</AppMessage>}
+              {updateState?.status === 'error' && <AppMessage tone="error" iconClassName="mt-0 self-center" className="app-message-plain border-0 bg-transparent p-0 text-[11px] leading-5">{updateState.message}</AppMessage>}
             </div>
+            {updateState?.status === 'force-downloaded' && isAdministrator && <button type="button" onClick={() => void handleInstallForceUpdate()} className="accent-solid-button inline-flex w-fit items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold text-white"><Download size={15} /> Install latest build</button>}
           </div>
         </SettingsCard>
 

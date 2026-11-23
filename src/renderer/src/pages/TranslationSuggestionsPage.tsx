@@ -79,7 +79,7 @@ export function TranslationSuggestionsPage({ onReady }: { onReady?: () => void }
       <footer className="flex shrink-0 items-center justify-end border-t border-neutral-800/50 px-6 py-4">
         <button type="button" disabled={busy || loading}
           onClick={() => void run(() => window.api.translationSuggestions.add())}
-          className="accent-solid-control inline-flex h-[34px] shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-45">
+          className="app-compact-action accent-solid-control inline-flex h-[34px] shrink-0 cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-45">
           {busy ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />} Add files
         </button>
       </footer>

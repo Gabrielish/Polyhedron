@@ -323,7 +323,7 @@ export function CreatureGuideModal({
                   type="button"
                   onClick={saveTranslation}
                   disabled={!translation.trim()}
-                  className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-amber-500 px-3 text-sm font-semibold text-[color:var(--poly-accent-foreground)] transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="app-compact-action inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md bg-amber-500 px-3 text-xs font-medium text-[color:var(--poly-accent-foreground)] transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Save size={14} /> Save
                 </button>

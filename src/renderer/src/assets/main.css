@@ -272,11 +272,12 @@ input:not(:disabled):is(:not([type]), [type="text"], [type="search"], [type="ema
   box-shadow: none !important;
 }
 
-/* Keep search focus rings in the active theme color, never default blue. */
+/* Search fields use their outer container for focus feedback. Keep the input
+   itself borderless so it does not draw a second colored rectangle inside. */
 :is(input[type="search"], input[class*="search"], input[class*="Search"]):is(:focus, :focus-visible) {
-  border-color: rgb(var(--poly-accent-rgb, 237 28 36) / 72%) !important;
-  --tw-ring-color: var(--poly-accent, #ed1c24) !important;
-  box-shadow: 0 0 0 3px rgb(var(--poly-accent-rgb, 237 28 36) / 12%) !important;
+  border-color: transparent !important;
+  --tw-ring-color: transparent !important;
+  box-shadow: none !important;
   outline: none !important;
 }
 :is(.text-search-input-shell, .translation-search-bar, .game-data-source-search, .manage-mod-search):focus-within {
@@ -4627,14 +4628,40 @@ html body button.titlebar-close-button:focus-visible svg {
 
 /* One SAVE-style hover for solid accent actions, including body portals.
    Exact class tokens deliberately exclude tinted selections and switches. */
-/* PAK / Export / SAVE use Lucide's 24px viewbox and 2-unit stroke.
-   Keep every solid action icon at that size, including loading spinners;
-   scope to direct button icons so card headings and switches stay untouched. */
+/* Solid accent action icons, scoped to direct button children. */
 button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) > svg.lucide {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
   stroke-width: 2;
+}
+.app-compact-action {
+  border-radius: 6px !important;
+  min-height: 36px !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+  font-weight: 500 !important;
+}
+.app-compact-action > svg.lucide {
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0;
+}
+.prompt-slot-action {
+  box-sizing: border-box !important;
+  width: auto !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  font-weight: 500 !important;
+}
+.prompt-slot-action > svg.lucide {
+  width: 13px !important;
+  height: 13px !important;
+  flex: 0 0 13px !important;
 }
 html:root[data-theme] button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) {
   background-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
@@ -4647,6 +4674,14 @@ html:root[data-theme] button:is([class~="bg-amber-500"], [class~="bg-amber-500/9
   border-color: var(--color-amber-400, #ff454c) !important;
   box-shadow: var(--solid-accent-hover-shadow, 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%)) !important;
   filter: none !important;
+}
+html:root[data-theme] button.settings-update-restart-button {
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+html:root[data-theme] button.settings-update-restart-button:hover {
+  background-color: var(--color-amber-400, #ff454c) !important;
+  border-color: var(--color-amber-400, #ff454c) !important;
+  box-shadow: var(--solid-accent-hover-shadow, 0 0 22px rgb(var(--poly-accent-rgb, 237 28 36) / 12%)) !important;
 }
 html:root[data-theme="liquid-glass"] {
   --solid-accent-hover-shadow: 0 0 24px rgb(var(--poly-accent-rgb, 237 28 36) / 32%);
@@ -4823,4 +4858,8 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
   background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
   color: var(--poly-accent-foreground, #101010) !important;
   border-color: color-mix(in srgb, var(--poly-accent-foreground, #101010) 30%, transparent) !important;
+}
+html[data-theme] .app-content-shell main button.app-compact-action,
+html[data-theme] .app-modal-panel button.app-compact-action {
+  border-radius: 6px !important;
 }

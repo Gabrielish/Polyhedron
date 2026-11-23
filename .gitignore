@@ -14,6 +14,8 @@ PLANNING.md
 *.md
 !SECURITY.md
 data/
+!src/renderer/src/data/
+src/renderer/src/data/*.generated.json
 *.txt
 *.xml
 
