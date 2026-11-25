@@ -286,14 +286,14 @@ export function PromptSlotsCard(): React.JSX.Element {
               type="button"
               onClick={() => void saveSlot()}
               disabled={!dirty || varsInvalid}
-              className="prompt-slot-action accent-solid-control inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 text-neutral-950 transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className="prompt-slot-save-action accent-solid-control inline-flex cursor-pointer items-center gap-1.5 rounded-md bg-amber-500/90 px-4 py-2 text-sm font-medium text-neutral-950 transition-colors hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Check size={13} /> {t('slots.save')}
             </button>
             <button
               type="button"
               onClick={() => void deleteSlot()}
-              className="prompt-slot-action inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-neutral-800 text-sm text-neutral-300 transition-colors hover:bg-neutral-800"
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-neutral-800 px-4 py-2 text-sm text-neutral-300 transition-colors hover:bg-neutral-800"
             >
               <Trash2 size={13} /> {t('slots.delete')}
             </button>

@@ -34,6 +34,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useSearchParams } from 'react-router-dom'
 import { GameDataFolderModal } from '@/components/reference/GameDataFolderModal'
+import characterCreationSourceIndex from '@/data/characterCreationSources.json'
 import { GameDataSourceModal } from '@/components/reference/GameDataSourceModal'
 import { ModalShell } from '@/components/shared/ModalShell'
 import { HighlightedTextarea } from '@/components/shared/HighlightedTextarea'
@@ -83,6 +84,7 @@ const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [
   { label: 'Char. Creation', value: 'Character Creation' }
 ]
 const TITLE_TRANSLATION_PREFERENCE = 'polyhedron:game-data:show-translated-item-titles'
+const CHARACTER_CREATION_UNCOMPLETED_ONLY_PREFERENCE = 'polyhedron:game-data:character-creation-uncompleted-only'
 const GAME_DATA_STATE_KEY = 'polyhedron:game-data:ui-state'
 
 interface GameDataUiState {
@@ -102,10 +104,17 @@ function readGameDataUiState(): GameDataUiState {
   }
 }
 
-function usePersistedSet(key: string, initial: Set<string>): [Set<string>, React.Dispatch<React.SetStateAction<Set<string>>>] {
+function usePersistedSet(key: string, initial: Set<string>): [Set<string>, React.Dispatch<React.SetStateAction<Set<string>>>, boolean] {
+  const [hasSavedState] = useState(() => {
+    try {
+      return window.localStorage.getItem(key) !== null
+    } catch {
+      return false
+    }
+  })
   const [value, setValue] = useState<Set<string>>(() => {
     try {
-      const saved = window.sessionStorage.getItem(key)
+      const saved = window.localStorage.getItem(key)
       return saved ? new Set(JSON.parse(saved) as string[]) : initial
     } catch {
       return initial
@@ -113,12 +122,12 @@ function usePersistedSet(key: string, initial: Set<string>): [Set<string>, React
   })
   useEffect(() => {
     try {
-      window.sessionStorage.setItem(key, JSON.stringify([...value]))
+      window.localStorage.setItem(key, JSON.stringify([...value]))
     } catch {
-      // Preserve the state for this mounted route when session storage is unavailable.
+      // Preserve the state for this mounted route when local storage is unavailable.
     }
   }, [key, value])
-  return [value, setValue]
+  return [value, setValue, hasSavedState]
 }
 
 function useScrollSelectedEntry(
@@ -196,8 +205,10 @@ function QuestTreeList({
   onSelect,
   statusByEntry,
   rowsBySource,
+  sourceKeysByPrefix,
   showTranslatedTitles,
-  collapseSectionsByDefault = false
+  collapseSectionsByDefault = false,
+  onAddToSection
 }: {
   stateKey: string
   entries: ReferenceCatalogEntry[]
@@ -206,14 +217,16 @@ function QuestTreeList({
   onSelect: (entry: ReferenceCatalogEntry) => void
   statusByEntry: Map<string, ReferenceStatusCounts>
   rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
   collapseSectionsByDefault?: boolean
+  onAddToSection?: (section: string) => void
 }): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null)
   const hasAutoExpanded = useRef(false)
   const [expanded, setExpanded] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded`, new Set())
-  const [expandedSections, setExpandedSections] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded-sections`, new Set())
-  const [collapsedSections, setCollapsedSections] = usePersistedSet(`polyhedron:game-data:${stateKey}:collapsed-sections`, new Set())
+  const [expandedSections, setExpandedSections, expandedSectionsWereSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded-sections`, new Set())
+  const [collapsedSections, setCollapsedSections, collapsedSectionsWereSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:collapsed-sections`, new Set())
   const byName = useMemo(() => new Map(allEntries.map((entry) => [entry.name, entry])), [allEntries])
   const referenced = useMemo(
     () => new Set(entries.flatMap((entry) => entry.category === 'Location' ? entry.subLocations ?? [] : entry.subquests ?? [])),
@@ -223,6 +236,7 @@ function QuestTreeList({
   useEffect(() => {
     if (!current || hasAutoExpanded.current) return
     hasAutoExpanded.current = true
+    if (collapseSectionsByDefault ? expandedSectionsWereSaved : collapsedSectionsWereSaved) return
     const allReferenced = new Set(allEntries.flatMap((entry) => entry.category === 'Location' ? entry.subLocations ?? [] : entry.subquests ?? []))
     const allRoots = allEntries.filter((entry) => !allReferenced.has(entry.name))
     const findPath = (entry: ReferenceCatalogEntry, ancestors: Set<string>): string[] | null => {
@@ -251,7 +265,7 @@ function QuestTreeList({
         return next
       })
     }
-  }, [allEntries, byName, collapseSectionsByDefault, current?.name, setCollapsedSections, setExpanded, setExpandedSections])
+  }, [allEntries, byName, collapseSectionsByDefault, current?.name, collapsedSectionsWereSaved, expandedSectionsWereSaved, setCollapsedSections, setExpanded, setExpandedSections])
   useScrollSelectedEntry(listRef, current?.name, `${[...expanded].join('|')}:${[...expandedSections].join('|')}:${[...collapsedSections].join('|')}`)
   const sections = useMemo(() => {
     const groups = new Map<string, ReferenceCatalogEntry[]>()
@@ -314,6 +328,7 @@ function QuestTreeList({
             onClick={() => onSelect(entry)}
             data-game-data-selected={selected ? 'true' : undefined}
             data-game-data-entry-key={referenceEntryKey(entry)}
+            data-game-data-group-path={entry.section || 'Other quests'}
             className={cn(
               'min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors',
               selected
@@ -324,6 +339,7 @@ function QuestTreeList({
           >
             <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
           </button>
+          <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
           <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
         </div>
         {open && hasChildren && (
@@ -344,20 +360,35 @@ function QuestTreeList({
         return (
         <section key={section} className="mb-3">
           {collapseSectionsByDefault ? (
-            <button
-              type="button"
-              aria-expanded={open}
-              onClick={() => toggleSection(section)}
-              className="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-[#0c0d0f] px-2 py-1.5 text-left text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
-            >
-              {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
-              <span>{section.replaceAll(' / ', ' · ')}</span>
-              <span className="ml-auto text-neutral-700">{group.length}</span>
-            </button>
+            <div className="game-data-folder-row group sticky top-0 z-10 flex items-center rounded bg-[#0c0d0f] px-2 py-1.5">
+              <button
+                type="button"
+                aria-expanded={open}
+                onClick={() => toggleSection(section)}
+                className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
+              >
+                {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                <span className="min-w-0 flex-1 truncate">{section.replaceAll(' / ', ' · ')}</span>
+              </button>
+              {onAddToSection && <AppTooltip label="Add entry" focusable={false}>
+                <button type="button" aria-label={`Add entry to ${section}`} onClick={() => onAddToSection(section)} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+                  <CirclePlus size={13} />
+                </button>
+              </AppTooltip>}
+              <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{group.length}</span>
+            </div>
           ) : (
-            <h3 className="sticky top-0 z-10 bg-[#0c0d0f] px-2 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
-              {section.replaceAll(' / ', ' · ')}
-            </h3>
+            <div className="game-data-folder-row group sticky top-0 z-10 flex items-center rounded bg-[#0c0d0f] px-2 py-1.5">
+              <h3 className="min-w-0 flex-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-600">
+                {section.replaceAll(' / ', ' · ')}
+              </h3>
+              {onAddToSection && <AppTooltip label="Add entry" focusable={false}>
+                <button type="button" aria-label={`Add entry to ${section}`} onClick={() => onAddToSection(section)} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+                  <CirclePlus size={13} />
+                </button>
+              </AppTooltip>}
+              <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{group.length}</span>
+            </div>
           )}
           {open && <div className="space-y-0.5">{group.map((entry) => renderQuest(entry))}</div>}
         </section>
@@ -370,6 +401,93 @@ function QuestTreeList({
 interface NpcGroupNode {
   entries: ReferenceCatalogEntry[]
   children: Map<string, NpcGroupNode>
+}
+
+interface CharacterCreationFolderNode {
+  children: Map<string, CharacterCreationFolderNode>
+  entries: ReferenceCatalogEntry[]
+}
+
+const compareCharacterCreationLabel = (left: string, right: string): number =>
+  left.localeCompare(right, undefined, { numeric: true, sensitivity: 'base' })
+
+function CharacterCreationTreeList({
+  stateKey, entries, current, onSelect, statusByEntry, rowsBySource, sourceKeysByPrefix,
+  showTranslatedTitles, customFolders, onAddToFolder
+}: {
+  stateKey: string
+  entries: ReferenceCatalogEntry[]
+  current: ReferenceCatalogEntry | null
+  onSelect: (entry: ReferenceCatalogEntry) => void
+  statusByEntry: Map<string, ReferenceStatusCounts>
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
+  showTranslatedTitles: boolean
+  customFolders: string[]
+  onAddToFolder: (path: string, action: 'folder' | 'entry') => void
+}): React.JSX.Element {
+  const listRef = useRef<HTMLDivElement>(null)
+  const [expanded, setExpanded] = usePersistedSet(
+    `polyhedron:game-data:${stateKey}:folders`,
+    new Set(entries.map((entry) => (entry.section || 'Other').split('/')[0]!.trim()))
+  )
+  const tree = useMemo(() => {
+    const root: CharacterCreationFolderNode = { children: new Map(), entries: [] }
+    const ensure = (path: string) => {
+      let node = root
+      for (const part of path.split('/').map((item) => item.trim()).filter(Boolean)) {
+        let child = node.children.get(part)
+        if (!child) { child = { children: new Map(), entries: [] }; node.children.set(part, child) }
+        node = child
+      }
+      return node
+    }
+    for (const folder of customFolders) ensure(folder)
+    for (const entry of entries) ensure(entry.section || 'Other').entries.push(entry)
+    return root
+  }, [customFolders, entries])
+  useScrollSelectedEntry(listRef, current?.name, [...expanded].join('|'))
+  const count = (node: CharacterCreationFolderNode): number => node.entries.length + [...node.children.values()].reduce((total, child) => total + count(child), 0)
+  const toggle = (path: string) => setExpanded((previous) => {
+    const next = new Set(previous)
+    if (next.has(path)) next.delete(path)
+    else next.add(path)
+    return next
+  })
+  const renderNode = (label: string, node: CharacterCreationFolderNode, parentPath: string, depth: number): React.JSX.Element => {
+    const path = parentPath ? `${parentPath} / ${label}` : label
+    const open = expanded.has(path)
+    const folderCount = count(node)
+    return <section key={path} className="mb-1">
+      <div className="game-data-folder-row group sticky top-0 z-10 flex items-center rounded bg-[#0c0d0f] px-2 py-1.5" style={{ paddingLeft: 8 + depth * 12 }}>
+        <button type="button" aria-expanded={open} onClick={() => toggle(path)} className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300">
+          {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+        </button>
+        <AppTooltip label="Add subfolder" focusable={false}><button type="button" aria-label={`Add subfolder to ${path}`} onClick={() => onAddToFolder(path, 'folder')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100"><FolderPlus size={13} /></button></AppTooltip>
+        <AppTooltip label="Add entry" focusable={false}><button type="button" aria-label={`Add entry to ${path}`} onClick={() => onAddToFolder(path, 'entry')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100"><CirclePlus size={13} /></button></AppTooltip>
+        <span className="ml-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{folderCount}</span>
+      </div>
+      {open && <div>
+        {[...node.children].sort(([a], [b]) => compareCharacterCreationLabel(a, b)).map(([childLabel, child]) => renderNode(childLabel, child, path, depth + 1))}
+        <div className="space-y-0.5">{[...node.entries].sort((a, b) => compareCharacterCreationLabel(a.name, b.name)).map((entry) => {
+          const selected = current?.name === entry.name
+          const titleRows = referenceTitleRows(entry, rowsBySource)
+          const translatedTitle = showTranslatedTitles
+            ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+            : undefined
+          return <div key={referenceEntryKey(entry)} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: 9 + depth * 12 }}>
+            <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={path} className={cn('min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100')} title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}>
+              {entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}
+            </button>
+            <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+            <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+          </div>
+        })}</div>
+      </div>}
+    </section>
+  }
+  return <div ref={listRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">{[...tree.children].sort(([a], [b]) => compareCharacterCreationLabel(a, b)).map(([label, node]) => renderNode(label, node, '', 0))}{entries.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No character creation entries found in the loaded localization.</p>}</div>
 }
 
 const NPC_GROUP_ORDER: Record<string, string[]> = {
@@ -410,6 +528,7 @@ function NpcTreeList({
   statusByEntry,
   searching,
   rowsBySource,
+  sourceKeysByPrefix,
   showTranslatedTitles,
   customFolders,
   onAddToFolder
@@ -421,14 +540,15 @@ function NpcTreeList({
   statusByEntry: Map<string, ReferenceStatusCounts>
   searching: boolean
   rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
   customFolders: string[]
   onAddToFolder: (path: string, action: 'folder' | 'entry') => void
 }): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null)
   const hasAutoExpanded = useRef(false)
-  const [collapsed, setCollapsed] = usePersistedSet(`polyhedron:game-data:${stateKey}:collapsed`, new Set())
-  const [expanded, setExpanded] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded`, new Set())
+  const [collapsed, setCollapsed, collapsedWasSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:collapsed`, new Set())
+  const [expanded, setExpanded, expandedWasSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded`, new Set())
   const groups = useMemo(() => {
     const roots = new Map<string, NpcGroupNode>()
     for (const entry of entries) {
@@ -464,6 +584,7 @@ function NpcTreeList({
     const groupPaths = current?.npcGroups ?? []
     if (!groupPaths.length) return
     hasAutoExpanded.current = true
+    if (collapsedWasSaved || expandedWasSaved) return
     setCollapsed((previous) => {
       const next = new Set(previous)
       for (const groupPath of groupPaths) {
@@ -482,7 +603,7 @@ function NpcTreeList({
       }
       return next
     })
-  }, [current?.name, current?.npcGroups, setCollapsed, setExpanded])
+  }, [collapsedWasSaved, current?.name, current?.npcGroups, expandedWasSaved, setCollapsed, setExpanded])
   useScrollSelectedEntry(listRef, current?.name, `${[...collapsed].join('|')}:${[...expanded].join('|')}`)
 
   const toggle = (path: string, depth: number): void => {
@@ -517,6 +638,7 @@ function NpcTreeList({
       style={{ paddingLeft: `${12 + depth * 12}px`, paddingRight: 8 }}
     >
       <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
+      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
       <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
     </button>
   }
@@ -583,6 +705,11 @@ function NpcTreeList({
   )
 }
 
+interface ItemFolderNode {
+  entries: ReferenceCatalogEntry[]
+  children: Map<string, ItemFolderNode>
+}
+
 function ItemTreeList({
   stateKey,
   entries,
@@ -591,7 +718,11 @@ function ItemTreeList({
   searching,
   statusByEntry,
   rowsBySource,
-  showTranslatedTitles
+  sourceKeysByPrefix,
+  showTranslatedTitles,
+  onAddToFolder,
+  customFolders,
+  customGroupsByEntry
 }: {
   stateKey: string
   entries: ReferenceCatalogEntry[]
@@ -600,15 +731,20 @@ function ItemTreeList({
   searching: boolean
   statusByEntry: Map<string, ReferenceStatusCounts>
   rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
+  onAddToFolder: (path: string, action: 'folder' | 'entry') => void
+  customFolders: string[]
+  customGroupsByEntry: Record<string, string[]>
 }): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null)
   const hasAutoExpanded = useRef(false)
-  const [expandedSections, setExpandedSections] = usePersistedSet(
+  const hasCheckedCustomSelection = useRef(false)
+  const [expandedSections, setExpandedSections, expandedSectionsWereSaved] = usePersistedSet(
     `polyhedron:game-data:${stateKey}:expanded-sections`,
     new Set(['Equipment types', 'Magic equipment', 'Consumables', 'Miscellaneous'])
   )
-  const [expandedTypes, setExpandedTypes] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded-types`, new Set())
+  const [expandedTypes, setExpandedTypes, expandedTypesWereSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded-types`, new Set())
   const groups = useMemo(() => {
     const result = new Map<
       string,
@@ -640,11 +776,70 @@ function ItemTreeList({
         if (!items.some((item) => item.name === entry.name)) items.push(entry)
       }
     }
+    // User-added entries can be associated directly with an existing item type
+    // or subtype. Place them in that list instead of creating a duplicate folder.
+    for (const entry of entries) {
+      for (const groupPath of customGroupsByEntry[referenceEntryKey(entry)] ?? []) {
+        const [section, type, subtype] = groupPath.split(' / ').map((part) => part.trim()).filter(Boolean)
+        if (!section || !type) continue
+        const typeGroup = result.get(section)?.get(type)
+        if (!typeGroup) continue
+        const items = subtype
+          ? typeGroup.subtypes.get(subtype) ?? (() => {
+              const created: ReferenceCatalogEntry[] = []
+              typeGroup.subtypes.set(subtype, created)
+              return created
+            })()
+          : typeGroup.items
+        if (!items.some((item) => item.name === entry.name)) items.push(entry)
+      }
+    }
     return result
-  }, [entries])
+  }, [customGroupsByEntry, entries])
+  const customGroups = useMemo(() => {
+    const roots = new Map<string, Map<string, ItemFolderNode>>()
+    const ensurePath = (section: string, folderPath: string) => {
+      const parts = folderPath.split(' / ').map((part) => part.trim()).filter(Boolean)
+      if (!parts.length) return
+      let siblings = roots.get(section)
+      if (!siblings) roots.set(section, (siblings = new Map()))
+      let node: ItemFolderNode | undefined
+      for (const part of parts) {
+        node = siblings.get(part)
+        if (!node) {
+          node = { entries: [], children: new Map() }
+          siblings.set(part, node)
+        }
+        siblings = node.children
+      }
+    }
+    for (const folder of customFolders) {
+      const [section, ...parts] = folder.split(' / ').map((part) => part.trim()).filter(Boolean)
+      if (section && parts.length) ensurePath(section, parts.join(' / '))
+    }
+    for (const entry of entries) {
+      for (const folder of customGroupsByEntry[referenceEntryKey(entry)] ?? []) {
+        const [section, ...parts] = folder.split(' / ').map((part) => part.trim()).filter(Boolean)
+        if (!section || !parts.length) continue
+        if (parts.length <= 2 && groups.get(section)?.has(parts[0]!)) continue
+        if (parts.length === 3 && groups.get(section)?.get(parts[0]!)?.subtypes.has(parts[1]!)) continue
+        ensurePath(section, parts.join(' / '))
+        let siblings = roots.get(section)
+        let node: ItemFolderNode | undefined
+        for (let index = 0; index < parts.length; index += 1) {
+          node = siblings?.get(parts[index]!)
+          if (!node) break
+          if (index === parts.length - 1) node.entries.push(entry)
+          siblings = node.children
+        }
+      }
+    }
+    return roots
+  }, [customFolders, customGroupsByEntry, entries])
   useEffect(() => {
     if (hasAutoExpanded.current || !current?.itemGroups?.length) return
     hasAutoExpanded.current = true
+    if (expandedSectionsWereSaved || expandedTypesWereSaved) return
     setExpandedSections((previous) => {
       const next = new Set(previous)
       for (const group of current.itemGroups ?? []) next.add(group.section)
@@ -658,7 +853,7 @@ function ItemTreeList({
       }
       return next
     })
-  }, [current?.name, current?.itemGroups, setExpandedSections, setExpandedTypes])
+  }, [current?.name, current?.itemGroups, expandedSectionsWereSaved, expandedTypesWereSaved, setExpandedSections, setExpandedTypes])
   useScrollSelectedEntry(listRef, current?.name, `${[...expandedSections].join('|')}:${[...expandedTypes].join('|')}`)
   const toggleSection = (section: string) =>
     setExpandedSections((previous) => {
@@ -674,6 +869,41 @@ function ItemTreeList({
       else next.add(key)
       return next
     })
+  const previousCustomFolders = useRef(customFolders)
+  useEffect(() => {
+    const added = customFolders.filter((folder) => !previousCustomFolders.current.includes(folder))
+    previousCustomFolders.current = customFolders
+    if (!added.length) return
+    setExpandedSections((previous) => new Set([...previous, ...added.map((folder) => folder.split(' / ')[0]!).filter(Boolean)]))
+    setExpandedTypes((previous) => {
+      const next = new Set(previous)
+      for (const folder of added) {
+        const [section, ...parts] = folder.split(' / ').map((part) => part.trim()).filter(Boolean)
+        if (!section) continue
+        for (let index = 1; index <= parts.length; index += 1) next.add(`custom:${section}/${parts.slice(0, index).join('/')}`)
+      }
+      return next
+    })
+  }, [customFolders, setExpandedSections, setExpandedTypes])
+  useEffect(() => {
+    if (!current) return
+    if (!hasCheckedCustomSelection.current) {
+      hasCheckedCustomSelection.current = true
+      if (expandedSectionsWereSaved || expandedTypesWereSaved) return
+    }
+    const groups = customGroupsByEntry[referenceEntryKey(current)] ?? []
+    if (!groups.length) return
+    setExpandedSections((previous) => new Set([...previous, ...groups.map((group) => group.split(' / ')[0]!).filter(Boolean)]))
+    setExpandedTypes((previous) => {
+      const next = new Set(previous)
+      for (const group of groups) {
+        const [section, ...parts] = group.split(' / ').map((part) => part.trim()).filter(Boolean)
+        if (!section) continue
+        for (let index = 1; index <= parts.length; index += 1) next.add(`custom:${section}/${parts.slice(0, index).join('/')}`)
+      }
+      return next
+    })
+  }, [current?.name, customGroupsByEntry, expandedSectionsWereSaved, expandedTypesWereSaved, setExpandedSections, setExpandedTypes])
   const rarityColor = (rarity?: string): string => {
     switch (rarity?.toLowerCase()) {
       case 'uncommon': return 'text-green-400'
@@ -684,6 +914,56 @@ function ItemTreeList({
       default: return 'text-neutral-300'
     }
   }
+  const renderItemEntry = (entry: ReferenceCatalogEntry, entryKey: string, groupPath?: string): React.JSX.Element => {
+    const titleRows = referenceTitleRows(entry, rowsBySource)
+    const titleTranslation = showTranslatedTitles
+      ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+      : undefined
+    return <button
+      key={entryKey}
+      type="button"
+      onClick={() => onSelect(entry)}
+      title={entry.name}
+      data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
+      data-game-data-entry-key={referenceEntryKey(entry)}
+      data-game-data-group-path={groupPath}
+      className={cn(
+        'ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded px-2 text-left text-[11px] transition-colors',
+        current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#1c1f24]'
+      )}
+    >
+      <span className={cn('min-w-0 flex-1 truncate', rarityColor(entry.rarity))} style={entry.rarity?.toLowerCase() === 'story item' ? { color: '#fb923c' } : undefined}>
+        {entry.name}{titleTranslation && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{titleTranslation}</span></>}
+      </span>
+      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+    </button>
+  }
+  const countFolderEntries = (node: ItemFolderNode): number =>
+    node.entries.length + [...node.children.values()].reduce((total, child) => total + countFolderEntries(child), 0)
+  const renderCustomFolder = (label: string, node: ItemFolderNode, path: string, depth: number): React.JSX.Element => {
+    const key = `custom:${path.replaceAll(' / ', '/')}`
+    const open = searching || expandedTypes.has(key)
+    const addSubfolder = node.children.size > 0 && node.entries.length === 0
+    return <div key={key}>
+      <div className="game-data-folder-row group flex items-center gap-1.5 rounded px-2 py-1.5" style={{ paddingLeft: `${12 + depth * 12}px` }}>
+        <button type="button" aria-expanded={open} onClick={() => toggleType(key)} className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[11px] text-neutral-400 hover:text-neutral-200">
+          {open ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+          <span className="flex-1 truncate">{label}</span>
+          <span className="text-[9px] text-neutral-600">{countFolderEntries(node)}</span>
+        </button>
+        <AppTooltip label={addSubfolder ? 'Add subfolder' : 'Add entry'} focusable={false}>
+          <button type="button" aria-label={`${addSubfolder ? 'Add subfolder to' : 'Add entry to'} ${label}`} onClick={() => onAddToFolder(path, addSubfolder ? 'folder' : 'entry')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+            {addSubfolder ? <FolderPlus size={13} /> : <CirclePlus size={13} />}
+          </button>
+        </AppTooltip>
+      </div>
+      {open && <div className="ml-2 border-l border-[#24282f]">
+        {[...node.children].sort(([a], [b]) => a.localeCompare(b)).map(([childLabel, child]) => renderCustomFolder(childLabel, child, `${path} / ${childLabel}`, depth + 1))}
+        {node.entries.map((entry) => renderItemEntry(entry, `${path}/${entry.name}`, path))}
+      </div>}
+    </div>
+  }
   return (
     <div ref={listRef} className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
       {[...groups].map(([section, types]) => {
@@ -691,88 +971,82 @@ function ItemTreeList({
         const count = [...types.values()].reduce(
           (total, group) => total + group.items.length + [...group.subtypes.values()].reduce((sum, items) => sum + items.length, 0),
           0
-        )
+        ) + [...(customGroups.get(section)?.values() ?? [])].reduce((total, node) => total + countFolderEntries(node), 0)
         return (
           <section key={section} className="mb-1">
-            <button
-              type="button"
-              aria-expanded={sectionOpen}
-              onClick={() => toggleSection(section)}
-              className="sticky top-0 z-10 flex w-full items-center gap-1.5 bg-[#0c0d0f] px-2 py-2 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
-            >
-              {sectionOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-              <span className="flex-1">{section}</span>
-              <span className="text-[9px] font-normal normal-case tracking-normal text-neutral-600">{count}</span>
-            </button>
-            {sectionOpen && [...types].map(([type, typeGroup]) => {
+            <div className="game-data-folder-row group sticky top-0 z-10 flex items-center gap-1.5 rounded bg-[#0c0d0f] px-2 py-2">
+              <button
+                type="button"
+                aria-expanded={sectionOpen}
+                onClick={() => toggleSection(section)}
+                className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300"
+              >
+                {sectionOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+                <span className="flex-1">{section}</span>
+              </button>
+              <AppTooltip label="Add subfolder" focusable={false}>
+                <button type="button" aria-label={`Add subfolder to ${section}`} onClick={() => onAddToFolder(section, 'folder')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+                  <FolderPlus size={13} />
+                </button>
+              </AppTooltip>
+              <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{count}</span>
+            </div>
+            {sectionOpen && <>
+            {[...types].map(([type, typeGroup]) => {
               const key = `${section}/${type}`
               const typeOpen = searching || expandedTypes.has(key)
               const typeCount = typeGroup.items.length + [...typeGroup.subtypes.values()].reduce((sum, items) => sum + items.length, 0)
-              const renderEntry = (entry: ReferenceCatalogEntry, entryKey: string) => {
-                const titleRows = referenceTitleRows(entry, rowsBySource)
-                const titleTranslation = showTranslatedTitles
-                  ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ??
-                    titleRows.find((row) => row.target.trim()))?.target.trim()
-                  : undefined
-                return (
-                  <button
-                    key={entryKey}
-                    type="button"
-                    onClick={() => onSelect(entry)}
-                    title={entry.name}
-                    data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
-                    data-game-data-entry-key={referenceEntryKey(entry)}
-                    className={cn(
-                      'ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded px-2 text-left text-[11px] transition-colors',
-                      current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#1c1f24]'
-                    )}
-                  >
-                    <span
-                      className={cn('min-w-0 flex-1 truncate', rarityColor(entry.rarity))}
-                      style={entry.rarity?.toLowerCase() === 'story item' ? { color: '#fb923c' } : undefined}
-                    >
-                      {entry.name}
-                      {titleTranslation && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{titleTranslation}</span></>}
-                    </span>
-                    <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
-                  </button>
-                )
-              }
               return (
                 <div key={key}>
-                  <button
-                    type="button"
-                    aria-expanded={typeOpen}
-                    onClick={() => toggleType(key)}
-                    className="flex w-full items-center gap-1.5 rounded px-3 py-1.5 text-left text-[11px] text-neutral-400 hover:bg-[#14181d] hover:text-neutral-200"
-                  >
-                    {typeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
-                    <span className="flex-1">{type}</span>
-                    <span className="text-[9px] text-neutral-600">{typeCount}</span>
-                  </button>
-                  {typeOpen && typeGroup.subtypes.size === 0 && typeGroup.items.map((entry) => renderEntry(entry, `${key}/${entry.name}`))}
+                  <div className="game-data-folder-row group flex items-center gap-1.5 rounded px-3 py-1.5">
+                    <button
+                      type="button"
+                      aria-expanded={typeOpen}
+                      onClick={() => toggleType(key)}
+                      className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[11px] text-neutral-400 hover:text-neutral-200"
+                    >
+                      {typeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                      <span className="flex-1">{type}</span>
+                    </button>
+                    <AppTooltip label="Add entry" focusable={false}>
+                      <button type="button" aria-label={`Add entry to ${type}`} onClick={() => onAddToFolder(`${section} / ${type}`, 'entry')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+                        <CirclePlus size={14} className="block shrink-0" />
+                      </button>
+                    </AppTooltip>
+                    <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{typeCount}</span>
+                  </div>
+                  {typeOpen && typeGroup.subtypes.size === 0 && typeGroup.items.map((entry) => renderItemEntry(entry, `${key}/${entry.name}`, section))}
                   {typeOpen && [...typeGroup.subtypes].map(([subtype, items]) => {
                     const subtypeKey = `${key}/${subtype}`
                     const subtypeOpen = searching || expandedTypes.has(subtypeKey)
                     return (
                       <div key={subtypeKey}>
-                        <button
-                          type="button"
-                          aria-expanded={subtypeOpen}
-                          onClick={() => toggleType(subtypeKey)}
-                          className="ml-3 flex w-[calc(100%-0.75rem)] items-center gap-1.5 rounded px-3 py-1.5 text-left text-[11px] text-neutral-400 hover:bg-[#14181d] hover:text-neutral-200"
-                        >
-                          {subtypeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
-                          <span className="flex-1">{subtype}</span>
-                          <span className="text-[9px] text-neutral-600">{items.length}</span>
-                        </button>
-                        {subtypeOpen && items.map((entry) => renderEntry(entry, `${subtypeKey}/${entry.name}`))}
+                        <div className="game-data-folder-row group ml-3 flex w-[calc(100%-0.75rem)] items-center gap-1.5 rounded px-3 py-1.5">
+                          <button
+                            type="button"
+                            aria-expanded={subtypeOpen}
+                            onClick={() => toggleType(subtypeKey)}
+                            className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[11px] text-neutral-400 hover:text-neutral-200"
+                          >
+                            {subtypeOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                            <span className="flex-1">{subtype}</span>
+                          </button>
+                          <AppTooltip label="Add entry" focusable={false}>
+                            <button type="button" aria-label={`Add entry to ${subtype}`} onClick={() => onAddToFolder(`${section} / ${type} / ${subtype}`, 'entry')} className="game-data-folder-add inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100">
+                              <CirclePlus size={14} className="block shrink-0" />
+                            </button>
+                          </AppTooltip>
+                          <span className="mr-1 min-w-4 text-right text-[9px] font-normal normal-case tracking-normal text-neutral-600">{items.length}</span>
+                        </div>
+                        {subtypeOpen && items.map((entry) => renderItemEntry(entry, `${subtypeKey}/${entry.name}`, section))}
                       </div>
                     )
                   })}
                 </div>
               )
             })}
+            {[...(customGroups.get(section) ?? new Map<string, ItemFolderNode>())].sort(([a], [b]) => a.localeCompare(b)).map(([label, node]) => renderCustomFolder(label, node, `${section} / ${label}`, 0))}
+            </>}
           </section>
         )
       })}
@@ -810,15 +1084,35 @@ function rowsForReferenceText(
     .filter((source) => source.startsWith(`${key} `))
     .flatMap((source) => rowsBySource.get(source) ?? [])
 }
+function rowsForEntryDescription(
+  entry: ReferenceCatalogEntry,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): TranslationSessionEntry[] {
+  if (entry.descriptionSourceName?.trim()) return rowsBySource.get(normalize(entry.descriptionSourceName)) ?? []
+  return rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix)
+}
 function rowsForReferenceContent(
   entry: ReferenceCatalogEntry,
   rowsBySource: Map<string, TranslationSessionEntry[]>,
   sourceKeysByPrefix: Map<string, string[]>
 ): TranslationSessionEntry[] {
-  const rows = (entry.content ?? []).flatMap((text) =>
-    rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
+  const rows = linkedBookContentSourceTexts(entry, rowsBySource, sourceKeysByPrefix).flatMap((text) =>
+    entry.contentSourceNames?.length
+      ? rowsBySource.get(normalize(text)) ?? []
+      : rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
   )
   return [...new Map(rows.map((row) => [row.rowId, row])).values()]
+}
+function linkedBookContentSourceTexts(
+  entry: ReferenceCatalogEntry,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): string[] {
+  const contentTexts = entry.contentSourceNames?.length ? entry.contentSourceNames : entry.content ?? []
+  return contentTexts.filter((text) => entry.contentSourceNames?.length
+    ? (rowsBySource.get(normalize(text))?.length ?? 0) > 0
+    : rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix).length > 0)
 }
 const catalogRowKeys = new WeakMap(getReferenceCatalog().map((entry, index) => [entry, `${entry.category}:${entry.name}:${index}`] as const))
 function LocalTranslationInput({
@@ -887,25 +1181,27 @@ function GameDataSearch({
   onShowTranslatedTitlesChange: (value: boolean) => void
 }): React.JSX.Element {
   return (
-    <TextSearchInput
-      value={query}
-      onChange={onSearch}
-      placeholder="Search game data..."
-      matchCase={matchCase}
-      onMatchCaseChange={onMatchCaseChange}
-      matchWholeWord={wholeWord}
-      onMatchWholeWordChange={onWholeWordChange}
-      leadingToggle={{
-        label: 'Translation',
-        active: showTranslatedTitles,
-        onClick: () => onShowTranslatedTitlesChange(!showTranslatedTitles),
-        icon: <Languages size={14} />
-      }}
-      scopeValue={category}
-      onScopeChange={(value) => onCategoryChange(value as ReferenceCategory)}
-      scopeOptions={CATEGORIES.map((item) => ({ value: item.value ?? 'all', label: item.label }))}
-      className="mb-2 w-full"
-    />
+    <div className="mb-2 flex min-w-0 items-center gap-2">
+      <TextSearchInput
+        value={query}
+        onChange={onSearch}
+        placeholder="Search game data..."
+        matchCase={matchCase}
+        onMatchCaseChange={onMatchCaseChange}
+        matchWholeWord={wholeWord}
+        onMatchWholeWordChange={onWholeWordChange}
+        leadingToggle={{
+          label: 'Translation',
+          active: showTranslatedTitles,
+          onClick: () => onShowTranslatedTitlesChange(!showTranslatedTitles),
+          icon: <Languages size={14} />
+        }}
+        scopeValue={category}
+        onScopeChange={(value) => onCategoryChange(value as ReferenceCategory)}
+        scopeOptions={CATEGORIES.map((item) => ({ value: item.value ?? 'all', label: item.label }))}
+        className="mb-0 min-w-0 flex-1"
+      />
+    </div>
   )
 }
 function entryReviewStatus(entry: TranslationSessionEntry): ReviewStatus {
@@ -953,6 +1249,40 @@ function referenceTitleRows(
   if (exactRows?.length) return exactRows
   const fallbackSource = referenceTitleSource(entry)
   return fallbackSource === entry.name ? [] : rowsBySource.get(normalize(fallbackSource)) ?? []
+}
+function ReferenceMissingFields({
+  entry,
+  rowsBySource,
+  sourceKeysByPrefix
+}: {
+  entry: ReferenceCatalogEntry
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
+}): React.JSX.Element | null {
+  const missing: Array<{ marker: string; label: string }> = []
+  if (!referenceTitleRows(entry, rowsBySource).length) missing.push({ marker: 'T', label: 'Title EN is missing from the loaded XML' })
+  if (entry.category !== 'NPC' && entry.category !== 'Character Creation' && !rowsForEntryDescription(entry, rowsBySource, sourceKeysByPrefix).length) {
+    missing.push({ marker: 'D', label: 'Description EN is missing from the loaded XML' })
+  }
+  if (entry.category === 'Book' && !rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix).length) {
+    missing.push({ marker: 'X', label: 'Book text EN is missing from the loaded XML' })
+  }
+  if (!missing.length) return null
+  return (
+    <span className="ml-1 inline-flex shrink-0 items-center gap-1">
+      {missing.map(({ marker, label }) => (
+        <AppTooltip key={marker} label={label}>
+          <span
+            role="img"
+            aria-label={label}
+            className="inline-flex h-3.5 min-w-3.5 cursor-default select-none items-center justify-center rounded border border-rose-400/30 bg-rose-500/10 px-0.5 text-[8px] font-bold leading-none text-rose-300"
+          >
+            {marker}
+          </span>
+        </AppTooltip>
+      ))}
+    </span>
+  )
 }
 function ReferenceStatusRings({ stats }: { stats: ReferenceStatusCounts }): React.JSX.Element {
   return (
@@ -1250,6 +1580,10 @@ function GameDataList({
   showTranslatedTitles,
   customFolders,
   onAddToFolder,
+  customCharacterCreationFolders,
+  customItemFolders,
+  customItemGroupsByEntry,
+  onAddToSection,
   searching = false
 }: {
   stateKey: string
@@ -1263,6 +1597,10 @@ function GameDataList({
   showTranslatedTitles: boolean
   customFolders: string[]
   onAddToFolder: (path: string, action: 'folder' | 'entry') => void
+  customCharacterCreationFolders: string[]
+  customItemFolders: string[]
+  customItemGroupsByEntry: Record<string, string[]>
+  onAddToSection: (section: string) => void
   searching?: boolean
 }): React.JSX.Element {
   const parentRef = useRef<HTMLDivElement>(null)
@@ -1279,7 +1617,7 @@ function GameDataList({
     for (const entry of allEntries) {
       const rows = [
         ...(entry.name.trim() ? referenceTitleRows(entry, rowsBySource) : []),
-        ...(entry.description.trim() ? rowsForReferenceText(entry.description, rowsBySource, sourceKeysByPrefix) : []),
+        ...(entry.category !== 'Character Creation' && entry.description.trim() ? rowsForEntryDescription(entry, rowsBySource, sourceKeysByPrefix) : []),
         ...(entry.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)),
         ...rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix)
       ]
@@ -1296,12 +1634,12 @@ function GameDataList({
     const result = new Set<string>()
     for (const item of allEntries) {
       const titleRows = referenceTitleRows(item, rowsBySource)
-      const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
+      const descriptionRows = item.category === 'Character Creation' ? [] : rowsForEntryDescription(item, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
       if (
         titleRows.some((row) => row.target.trim()) &&
-        descriptionRows.some((row) => row.target.trim()) &&
+        (item.category === 'Character Creation' || descriptionRows.some((row) => row.target.trim())) &&
         effectRows.every((row) => row.target.trim()) &&
         (!contentRows.length || contentRows.every((row) => row.target.trim()))
       )
@@ -1313,7 +1651,7 @@ function GameDataList({
     const result = new Set<string>()
     for (const item of allEntries) {
       const titleRows = referenceTitleRows(item, rowsBySource)
-      const descriptionRows = rowsForReferenceText(item.description, rowsBySource, sourceKeysByPrefix)
+      const descriptionRows = item.category === 'Character Creation' ? [] : rowsForEntryDescription(item, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
       const rows = [...titleRows, ...descriptionRows, ...effectRows, ...contentRows]
@@ -1335,13 +1673,20 @@ function GameDataList({
       searching={searching}
       statusByEntry={statusByEntry}
       rowsBySource={rowsBySource}
+      sourceKeysByPrefix={sourceKeysByPrefix}
       showTranslatedTitles={showTranslatedTitles}
+      onAddToFolder={onAddToFolder}
+      customFolders={customItemFolders}
+      customGroupsByEntry={customItemGroupsByEntry}
     />
   }
   if (category === 'NPC') {
-    return <NpcTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} showTranslatedTitles={showTranslatedTitles} customFolders={customFolders} onAddToFolder={onAddToFolder} />
+    return <NpcTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} showTranslatedTitles={showTranslatedTitles} customFolders={customFolders} onAddToFolder={onAddToFolder} />
   }
-  if (category === 'Quest' || category === 'Book' || category === 'Location' || category === 'Character Creation') {
+  if (category === 'Character Creation') {
+    return <CharacterCreationTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} showTranslatedTitles={showTranslatedTitles} customFolders={customCharacterCreationFolders} onAddToFolder={onAddToFolder} />
+  }
+  if (category === 'Quest' || category === 'Book' || category === 'Location') {
     return (
       <QuestTreeList
         stateKey={stateKey}
@@ -1351,8 +1696,10 @@ function GameDataList({
         onSelect={onSelect}
         statusByEntry={statusByEntry}
         rowsBySource={rowsBySource}
+        sourceKeysByPrefix={sourceKeysByPrefix}
         showTranslatedTitles={showTranslatedTitles}
         collapseSectionsByDefault={category === 'Book'}
+        onAddToSection={onAddToSection}
       />
     )
   }
@@ -1407,6 +1754,7 @@ function GameDataList({
                     {entry.category}
                   </span>
                 </span>
+                <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
               </button>
             </div>
           )
@@ -1423,8 +1771,12 @@ export function ReferencePage(): React.JSX.Element {
     () => new Map(session.entries.map((entry) => [normalize(entry.uid), entry.source] as const)),
     [session.entries]
   )
-  const [folderModal, setFolderModal] = useState<{ path: string } | null>(null)
-  const [sourceModal, setSourceModal] = useState<{ mode: 'add' | 'edit'; path: string; entry?: ReferenceCatalogEntry } | null>(null)
+  const sourceRowByUid = useMemo(
+    () => new Map(session.entries.map((entry) => [normalize(entry.uid), entry] as const)),
+    [session.entries]
+  )
+  const [folderModal, setFolderModal] = useState<{ path: string; category: 'NPC' | 'Item' | 'Character Creation' } | null>(null)
+  const [sourceModal, setSourceModal] = useState<{ mode: 'add' | 'edit'; path: string; entry?: ReferenceCatalogEntry; category: 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Character Creation'; field: 'title' | 'description' | 'content'; contentIndex?: number } | null>(null)
   const [pendingEntryDelete, setPendingEntryDelete] = useState<{ entry: ReferenceCatalogEntry; path: string } | null>(null)
   const [entryContextMenu, setEntryContextMenu] = useState<{
     x: number
@@ -1432,13 +1784,28 @@ export function ReferencePage(): React.JSX.Element {
     entry: ReferenceCatalogEntry
     path: string
   } | null>(null)
-  const catalogEntries = useMemo(() => mergeGameDataEntries(getReferenceCatalog(), userOverrides).map((entry) => {
+  const catalogEntries = useMemo(() => {
+    const existing = getReferenceCatalog()
+    const knownNames = new Set(existing.filter((entry) => entry.category === 'Character Creation').map((entry) => normalize(entry.name)))
+    const dynamicOptions: ReferenceCatalogEntry[] = []
+    const seen = new Set<string>()
+    for (const option of characterCreationSourceIndex.entries as Array<{ id: string; section: string }>) {
+      const sourceRow = sourceRowByUid.get(normalize(option.id))
+      const sourceName = sourceRow?.source.trim()
+      if (!sourceRow || !sourceName) continue
+      const key = normalize(sourceName)
+      if (knownNames.has(key) || seen.has(key)) continue
+      seen.add(key)
+      dynamicOptions.push({ category: 'Character Creation', id: sourceRow.uid, sourceUid: sourceRow.uid, sourceName, name: sourceName, description: '', section: option.section })
+    }
+    return mergeGameDataEntries([...existing, ...dynamicOptions], userOverrides).map((entry) => {
     if (entry.sourceName?.trim()) return entry
     const sourceUid = entry.sourceUid ?? entry.id
     if (!sourceUid) return entry
     const sourceName = sourceNameByUid.get(normalize(sourceUid))
     return sourceName ? { ...entry, sourceUid, sourceName } : entry
-  }), [sourceNameByUid, userOverrides])
+  })
+  }, [sourceNameByUid, sourceRowByUid, userOverrides])
   const [category, setCategory] = useState<ReferenceCategory>(() => {
     const saved = readGameDataUiState().category
     return saved && CATEGORIES.some((item) => item.value === saved) ? saved : 'Quest'
@@ -1452,6 +1819,13 @@ export function ReferencePage(): React.JSX.Element {
   const [showTranslatedTitles, setShowTranslatedTitles] = useState(() => {
     try {
       return window.localStorage.getItem(TITLE_TRANSLATION_PREFERENCE) === 'true'
+    } catch {
+      return false
+    }
+  })
+  const [showCharacterCreationUncompletedOnly, setShowCharacterCreationUncompletedOnly] = useState(() => {
+    try {
+      return window.localStorage.getItem(CHARACTER_CREATION_UNCOMPLETED_ONLY_PREFERENCE) === 'true'
     } catch {
       return false
     }
@@ -1503,6 +1877,13 @@ export function ReferencePage(): React.JSX.Element {
       // Keep the preference for this session if storage is unavailable.
     }
   }, [showTranslatedTitles])
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CHARACTER_CREATION_UNCOMPLETED_ONLY_PREFERENCE, String(showCharacterCreationUncompletedOnly))
+    } catch {
+      // Keep the chosen order for this session if browser storage is unavailable.
+    }
+  }, [showCharacterCreationUncompletedOnly])
   useEffect(() => {
     try {
       window.localStorage.setItem(termGlossaryKey, JSON.stringify(termGlossary))
@@ -1560,7 +1941,7 @@ export function ReferencePage(): React.JSX.Element {
     () =>
       allEntries.map((entry) => ({
         entry,
-        searchText: `${entry.name} ${entry.description} ${(entry.effect ?? []).join(' ')} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
+        searchText: `${entry.name} ${entry.description} ${entry.sourceName ?? ''} ${entry.descriptionSourceName ?? ''} ${(entry.effect ?? []).join(' ')} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
       })),
     [allEntries, showContentUid, uidBySource]
   )
@@ -1606,11 +1987,15 @@ export function ReferencePage(): React.JSX.Element {
     (selected && (!category || selected.category === category || (category === 'Item' && selected.itemGroups?.length))
       ? selected
       : (filtered[0] ?? null))
-  const linkedTitle = current
+  const linkedTitleUnsorted = current
     ? (referenceTitleRows(current, rowsBySource))
     : []
+  const linkedTitle = current?.category === 'Character Creation' && showCharacterCreationUncompletedOnly
+    ? linkedTitleUnsorted.filter((row) => !row.target.trim())
+    : linkedTitleUnsorted
+  const uncompletedTitleCount = linkedTitleUnsorted.filter((row) => !row.target.trim()).length
   const linkedDescription = current
-    ? rowsForReferenceText(current.description, rowsBySource, sourceKeysByPrefix)
+    ? rowsForEntryDescription(current, rowsBySource, sourceKeysByPrefix)
     : []
   const descriptionIsItem = current
     ? category === 'Item' || (current.itemGroups?.length ?? 0) > 0
@@ -1622,28 +2007,75 @@ export function ReferencePage(): React.JSX.Element {
       })).filter(({ rows }) => rows.length > 0)
     : []
   const linkedBookContent = current?.category === 'Book'
-    ? (current.content ?? []).map((text) => ({
+    ? linkedBookContentSourceTexts(current, rowsBySource, sourceKeysByPrefix).map((text) => ({
         text,
-        rows: rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
+        rows: current.contentSourceNames?.length
+          ? rowsBySource.get(normalize(text)) ?? []
+          : rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
       })).filter((item) => item.rows.length > 0)
     : []
+  const contextBookTextSources = entryContextMenu?.entry.category === 'Book'
+    ? linkedBookContentSourceTexts(entryContextMenu.entry, rowsBySource, sourceKeysByPrefix)
+    : []
+  const contextBookTextIndex = entryContextMenu?.entry.category === 'Book'
+    ? (contextBookTextSources.length > 0 ? 0 : -1)
+    : -1
+  const contextHasBookText = contextBookTextIndex >= 0
+  const contextHasTitle = entryContextMenu
+    ? referenceTitleRows(entryContextMenu.entry, rowsBySource).length > 0
+    : false
+  const contextHasDescription = entryContextMenu
+    ? rowsForEntryDescription(entryContextMenu.entry, rowsBySource, sourceKeysByPrefix).length > 0
+    : false
+  const sourceModalInitialUid = sourceModal?.entry
+    ? sourceModal.field === 'content'
+      ? (() => {
+          if (sourceModal.contentIndex === undefined) return undefined
+          const contentSources = linkedBookContentSourceTexts(sourceModal.entry!, rowsBySource, sourceKeysByPrefix)
+          const text = contentSources[sourceModal.contentIndex]
+          if (!text) return undefined
+          return (sourceModal.entry?.contentSourceNames?.length
+            ? rowsBySource.get(normalize(text)) ?? []
+            : rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))[0]?.uid
+        })()
+      : (
+        (sourceModal.field === 'description'
+          ? session.entries.find((row) => normalize(row.source) === normalize(sourceModal.entry?.descriptionSourceName ?? sourceModal.entry?.description ?? ''))
+          : session.entries.find((row) => row.uid === sourceModal.entry?.sourceUid)) ??
+        (sourceModal.field === 'description'
+          ? rowsForEntryDescription(sourceModal.entry, rowsBySource, sourceKeysByPrefix)[0]
+          : referenceTitleRows(sourceModal.entry, rowsBySource)[0])
+      )?.uid
+    : undefined
   const Icon = iconFor(current?.category ?? category ?? 'Weapon')
   const wikiUrl = current
     ? (current.wikiUrl ?? `https://bg3.wiki${wikiPath(current.category, current.wikiTitle ?? current.name)}`)
     : `https://bg3.wiki${wikiPath(category ?? 'Weapon')}`
   const openFolderAction = (path: string, action: 'folder' | 'entry') => {
     const normalizedPath = path.split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
-    if (action === 'folder') setFolderModal({ path: normalizedPath })
-    else setSourceModal({ mode: 'add', path: normalizedPath })
+    const folderCategory = category === 'Item' ? 'Item' : category === 'Character Creation' ? 'Character Creation' : 'NPC'
+    if (action === 'folder') setFolderModal({ path: normalizedPath, category: folderCategory })
+    else setSourceModal({ mode: 'add', path: normalizedPath, category: folderCategory, field: 'title' })
   }
+  const openAddSectionEntry = (section: string) => setSourceModal({
+    mode: 'add',
+    path: section,
+    category: category === 'Location' || category === 'Book' || category === 'Item' || category === 'Character Creation' ? category : 'Quest',
+    field: 'title'
+  })
   const saveFolder = (name: string) => {
     if (!folderModal) return
     const path = `${folderModal.path} / ${name}`
-    if (userOverrides.npcFolders.some((existing) => normalize(existing) === normalize(path))) {
+    const existingFolders = folderModal.category === 'NPC' ? userOverrides.npcFolders : folderModal.category === 'Item' ? userOverrides.itemFolders : userOverrides.characterCreationFolders
+    if (existingFolders.some((existing) => normalize(existing) === normalize(path))) {
       toast.error('A subfolder with that name already exists here.')
       return
     }
-    setUserOverrides((previous) => ({ ...previous, npcFolders: [...previous.npcFolders, path] }))
+    setUserOverrides((previous) => folderModal.category === 'NPC'
+      ? { ...previous, npcFolders: [...previous.npcFolders, path] }
+      : folderModal.category === 'Item'
+        ? { ...previous, itemFolders: [...previous.itemFolders, path] }
+        : { ...previous, characterCreationFolders: [...previous.characterCreationFolders, path] })
     setFolderModal(null)
   }
   const saveSourceAssociation = (uid: string) => {
@@ -1652,50 +2084,108 @@ export function ReferencePage(): React.JSX.Element {
     if (!sourceRow) { toast.error('That Source ID is no longer present in the loaded XML.'); return }
     const entry = sourceModal.mode === 'edit'
       ? sourceModal.entry
-      : getReferenceCatalog('NPC').find((candidate) => (
-          (candidate.id && normalize(candidate.id) === normalize(uid)) ||
-          normalize(candidate.name) === normalize(sourceRow.source) ||
-          normalize(referenceTitleSource(candidate)) === normalize(sourceRow.source) ||
-          (candidate.sourceName && normalize(candidate.sourceName) === normalize(sourceRow.source))
+      : catalogEntries.find((candidate) => candidate.category === sourceModal.category && (
+          (sourceModal.category !== 'Item' || (candidate.itemGroups?.length ?? 0) > 0) &&
+          ((candidate.id && normalize(candidate.id) === normalize(uid)) ||
+            normalize(candidate.name) === normalize(sourceRow.source) ||
+            normalize(referenceTitleSource(candidate)) === normalize(sourceRow.source) ||
+            (candidate.sourceName && normalize(candidate.sourceName) === normalize(sourceRow.source)))
         ))
     if (!entry) {
-      toast.error('No existing Wiki NPC matches this Source ID or source text. No Game Data entry was created.')
+      toast.error(`No existing Wiki ${sourceModal.category} matches this Source ID or source text. No Game Data entry was created.`)
       return
     }
     const key = referenceEntryKey(entry)
+    const currentContentSources = userOverrides.contentSourceNamesByEntry[key] ?? entry.contentSourceNames ?? linkedBookContentSourceTexts(entry, rowsBySource, sourceKeysByPrefix)
+    const nextContentSources = sourceModal.field === 'content'
+      ? sourceModal.contentIndex === undefined
+        ? [...new Set([...currentContentSources, sourceRow.source])]
+        : currentContentSources.map((text, index) => index === sourceModal.contentIndex ? sourceRow.source : text)
+      : currentContentSources
     setUserOverrides((previous) => ({
       ...previous,
-      sourceUidByEntry: { ...previous.sourceUidByEntry, [key]: sourceRow.uid },
-      sourceNameByEntry: { ...previous.sourceNameByEntry, [key]: sourceRow.source },
-      ...(sourceModal.mode === 'add' ? {
+      ...(sourceModal.field === 'description'
+        ? { descriptionSourceNameByEntry: { ...previous.descriptionSourceNameByEntry, [key]: sourceRow.source } }
+        : sourceModal.field === 'content'
+          ? { contentSourceNamesByEntry: { ...previous.contentSourceNamesByEntry, [key]: nextContentSources } }
+        : {
+            sourceUidByEntry: { ...previous.sourceUidByEntry, [key]: sourceRow.uid },
+            sourceNameByEntry: { ...previous.sourceNameByEntry, [key]: sourceRow.source }
+          }),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'NPC' ? {
         npcGroupsByEntry: {
           ...previous.npcGroupsByEntry,
           [key]: [...new Set([...(previous.npcGroupsByEntry[key] ?? entry.npcGroups ?? []), sourceModal.path])]
         },
         hiddenNpcEntries: previous.hiddenNpcEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {}),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'Quest' ? {
+        questSectionByEntry: { ...previous.questSectionByEntry, [key]: sourceModal.path },
+        hiddenEntries: previous.hiddenEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {}),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'Location' ? {
+        locationSectionByEntry: { ...previous.locationSectionByEntry, [key]: sourceModal.path },
+        hiddenEntries: previous.hiddenEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {}),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'Book' ? {
+        bookSectionByEntry: { ...previous.bookSectionByEntry, [key]: sourceModal.path },
+        hiddenEntries: previous.hiddenEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {}),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'Item' ? {
+        itemGroupsByEntry: { ...previous.itemGroupsByEntry, [key]: [...new Set([...(previous.itemGroupsByEntry[key] ?? []), sourceModal.path])] },
+        hiddenEntries: previous.hiddenEntries.filter((hiddenKey) => hiddenKey !== key)
+      } : {}),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'Character Creation' ? {
+        characterCreationSectionByEntry: { ...previous.characterCreationSectionByEntry, [key]: sourceModal.path },
+        hiddenEntries: previous.hiddenEntries.filter((hiddenKey) => hiddenKey !== key)
       } : {})
     }))
-    setCategory('NPC')
+    setCategory(sourceModal.category)
     const selectedEntry = {
       ...entry,
-      sourceUid: sourceRow.uid,
-      sourceName: sourceRow.source,
-      ...(sourceModal.mode === 'add'
+      ...(sourceModal.field === 'description'
+        ? { descriptionSourceName: sourceRow.source }
+        : sourceModal.field === 'content'
+          ? { contentSourceNames: nextContentSources }
+        : { sourceUid: sourceRow.uid, sourceName: sourceRow.source }),
+      ...(sourceModal.mode === 'add' && sourceModal.category === 'NPC'
         ? { npcGroups: [...new Set([...(entry.npcGroups ?? []), sourceModal.path])] }
-        : {})
+        : {}),
+      ...(sourceModal.mode === 'add' && (sourceModal.category === 'Quest' || sourceModal.category === 'Location' || sourceModal.category === 'Book' || sourceModal.category === 'Character Creation') ? { section: sourceModal.path } : {})
     }
     setSelected(selectedEntry)
-    setSelectedByCategory((previous) => ({ ...previous, NPC: entry.name }))
+    setSelectedByCategory((previous) => ({ ...previous, [sourceModal.category]: entry.name }))
     setSourceModal(null)
   }
-  const openEditEntry = (entry: ReferenceCatalogEntry) => {
+  const openEditEntry = (entry: ReferenceCatalogEntry, field: 'title' | 'description' | 'content' = 'title', contentIndex?: number) => {
     setEntryContextMenu(null)
-    setSourceModal({ mode: 'edit', path: entry.npcGroups?.[0] ?? '', entry })
+    const sourceCategory = (category === 'Item' ? 'Item' : entry.category) as 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Character Creation'
+    setSourceModal({ mode: 'edit', path: entry.npcGroups?.[0] ?? entry.section ?? '', entry, category: sourceCategory, field, contentIndex })
   }
   const deleteGameDataEntry = () => {
     if (!pendingEntryDelete) return
     const { entry, path } = pendingEntryDelete
     const key = referenceEntryKey(entry)
+    if (entry.category === 'Item' && userOverrides.itemGroupsByEntry[key]?.includes(path)) {
+      setUserOverrides((previous) => ({
+        ...previous,
+        itemGroupsByEntry: {
+          ...previous.itemGroupsByEntry,
+          [key]: (previous.itemGroupsByEntry[key] ?? []).filter((groupPath) => normalize(groupPath) !== normalize(path))
+        }
+      }))
+      if (selected && referenceEntryKey(selected) === key) setSelected(null)
+      setEntryContextMenu(null)
+      setPendingEntryDelete(null)
+      return
+    }
+    if (entry.category !== 'NPC') {
+      setUserOverrides((previous) => ({ ...previous, hiddenEntries: [...new Set([...previous.hiddenEntries, key])] }))
+      if (selected && referenceEntryKey(selected) === key) setSelected(null)
+      setEntryContextMenu(null)
+      setPendingEntryDelete(null)
+      return
+    }
     const existingPaths = userOverrides.npcGroupsByEntry[key] ?? entry.npcGroups ?? []
     const remainingPaths = existingPaths.filter((candidate) => normalize(candidate) !== normalize(path))
     setUserOverrides((previous) => ({
@@ -1716,12 +2206,13 @@ export function ReferencePage(): React.JSX.Element {
     }
     const entry = catalogEntries.find((candidate) => referenceEntryKey(candidate) === key)
     if (!entry) return
-    if (entry.category !== 'NPC') return
+    const isItemEntry = (entry.itemGroups?.length ?? 0) > 0
+    if (!isItemEntry && entry.category !== 'NPC' && entry.category !== 'Quest' && entry.category !== 'Location' && entry.category !== 'Book' && entry.category !== 'Item' && entry.category !== 'Character Creation') return
     event.preventDefault()
     setSelected(entry)
-    const listCategory = entry.itemGroups?.length ? 'Item' : entry.category
+    const listCategory = category === 'Item' ? 'Item' : entry.category
     setSelectedByCategory((previous) => ({ ...previous, [listCategory]: entry.name }))
-    const path = (row?.dataset.gameDataGroupPath ?? entry.npcGroups?.[0] ?? '').split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
+    const path = (row?.dataset.gameDataGroupPath ?? entry.npcGroups?.[0] ?? entry.section ?? '').split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
     setEntryContextMenu({ x: event.clientX, y: event.clientY, entry, path })
   }
   const update = (rowId: string, value: string) => {
@@ -1814,12 +2305,14 @@ export function ReferencePage(): React.JSX.Element {
       />
       <GameDataSourceModal
         open={sourceModal !== null}
-        title={sourceModal?.mode === 'edit' ? 'Edit Source association' : 'Add existing Game Data entry'}
+        title={sourceModal?.mode === 'edit' ? sourceModal.field === 'content' ? 'Add book text' : `Edit ${sourceModal.field} Source association` : 'Add existing Game Data entry'}
         description={sourceModal?.mode === 'edit'
-          ? `Choose the existing XML string for Wiki entry “${sourceModal.entry?.name ?? ''}”. Its Wiki name and link will stay unchanged.`
-          : `Choose an existing Source string for ${sourceModal?.path ?? ''}. It will only be added if it matches an existing Wiki NPC.`}
+          ? sourceModal.field === 'content'
+            ? `Choose a Source string to add as text for “${sourceModal.entry?.name ?? ''}”.`
+            : `Choose the correct localization string for “${sourceModal.entry?.name ?? ''}”. Its Wiki name and link will stay unchanged.`
+          : `Choose a Source string for ${sourceModal?.path ?? ''}. It will be added only when it matches an existing Wiki ${sourceModal?.category ?? 'NPC'}.`}
         sourceEntries={session.entries}
-        initialUid={sourceModal?.entry?.sourceUid}
+        initialUid={sourceModalInitialUid}
         onClose={() => setSourceModal(null)}
         onSubmit={saveSourceAssociation}
       />
@@ -1831,7 +2324,9 @@ export function ReferencePage(): React.JSX.Element {
         onClose={() => setPendingEntryDelete(null)}
       >
         <p className="text-sm leading-6 text-neutral-300">
-          Remove “{pendingEntryDelete?.entry.name ?? ''}” from “{pendingEntryDelete?.path ?? ''}”?
+          Remove “{pendingEntryDelete?.entry.name ?? ''}” from {pendingEntryDelete?.entry.category === 'NPC'
+            ? `“${pendingEntryDelete?.path ?? ''}”`
+            : `${pendingEntryDelete?.entry.category === 'Quest' ? 'Quests' : pendingEntryDelete?.entry.category === 'Location' ? 'Locations' : pendingEntryDelete?.entry.category === 'Book' ? 'Books' : 'Items'}`}?
         </p>
         <div className="mt-4 flex justify-end">
           <button
@@ -1927,6 +2422,10 @@ export function ReferencePage(): React.JSX.Element {
               showTranslatedTitles={showTranslatedTitles}
               customFolders={userOverrides.npcFolders}
               onAddToFolder={openFolderAction}
+              customCharacterCreationFolders={userOverrides.characterCreationFolders}
+              customItemFolders={userOverrides.itemFolders}
+              customItemGroupsByEntry={userOverrides.itemGroupsByEntry}
+              onAddToSection={openAddSectionEntry}
             />
           </aside>
           <main className={cn(
@@ -1943,14 +2442,25 @@ export function ReferencePage(): React.JSX.Element {
                     <span className="rounded border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-300">
                       {current.category}
                     </span>
+                    {current.category === 'Character Creation' && <label className="ml-auto inline-flex cursor-pointer items-center gap-2 text-xs text-neutral-300">
+                      <input
+                        type="checkbox"
+                        checked={showCharacterCreationUncompletedOnly}
+                        onChange={(event) => setShowCharacterCreationUncompletedOnly(event.target.checked)}
+                        className="h-3.5 w-3.5 accent-[var(--poly-accent)]"
+                      />
+                      <span>Uncompleted ({uncompletedTitleCount})</span>
+                    </label>}
                   </div>
-                  <TranslationField
+                  {current.category === 'Character Creation' && showCharacterCreationUncompletedOnly && linkedTitle.length === 0
+                    ? <div className="rounded border border-[#252a31] bg-[#0c0d0f] px-3 py-4 text-xs text-neutral-500">No uncompleted title translations found for this entry.</div>
+                    : <TranslationField
                     label={current.category === 'NPC' ? 'Source' : 'Title EN'}
-                    source={current.category === 'NPC' ? referenceTitleSource(current) : current.name}
+                    source={referenceTitleSource(current)}
                     entries={linkedTitle}
                     targetLang={session.targetLang.toUpperCase()}
                     update={update}
-                    copy={copy(linkedTitle[0]?.source ?? current.name)}
+                    copy={copy(linkedTitle[0]?.source ?? referenceTitleSource(current))}
                     paste={paste}
                     showContentUid={showContentUid}
                     onGemini={setAiEntry}
@@ -1967,18 +2477,18 @@ export function ReferencePage(): React.JSX.Element {
                     toggleNeedsReview={session.toggleNeedsReview}
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
-                  />
-                  {(descriptionIsItem
+                  />}
+                  {current.category !== 'Character Creation' && (descriptionIsItem
                     ? linkedDescription.length > 0
                     : (current.description.trim() || linkedDescription.length > 0) &&
-                      ((current.category !== 'NPC' && current.category !== 'Location' && current.category !== 'Character Creation') || linkedDescription.length > 0)) && (
+                      (current.category !== 'NPC' || linkedDescription.length > 0)) && (
                     <TranslationField
                       label={current.category === 'NPC' ? 'Source' : 'Description EN'}
-                      source={current.description}
+                      source={current.descriptionSourceName ?? current.description}
                       entries={linkedDescription}
                       targetLang={session.targetLang.toUpperCase()}
                       update={update}
-                      copy={copy(current.description)}
+                      copy={copy(current.descriptionSourceName ?? current.description)}
                       paste={paste}
                       showContentUid={showContentUid}
                       onGemini={setAiEntry}
@@ -2075,10 +2585,10 @@ export function ReferencePage(): React.JSX.Element {
           >
             <div
               role="menu"
-              className="fixed z-[4001] w-32 max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl"
+              className={cn('fixed z-[4001] max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl', entryContextMenu.entry.category !== 'NPC' ? 'w-48' : 'w-32')}
               style={{
-                left: Math.max(8, Math.min(entryContextMenu.x, window.innerWidth - 144)),
-                top: Math.max(8, Math.min(entryContextMenu.y, window.innerHeight - 80))
+                left: Math.max(8, Math.min(entryContextMenu.x, window.innerWidth - (entryContextMenu.entry.category !== 'NPC' ? 208 : 144))),
+                top: Math.max(8, Math.min(entryContextMenu.y, window.innerHeight - (entryContextMenu.entry.category === 'Book' ? 152 : entryContextMenu.entry.category !== 'NPC' ? 120 : 80)))
               }}
               onMouseDown={(event) => event.stopPropagation()}
             >
@@ -2088,8 +2598,45 @@ export function ReferencePage(): React.JSX.Element {
                 onClick={() => openEditEntry(entryContextMenu.entry)}
                 className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
               >
-                <Pencil size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" /> Edit
+                {contextHasTitle || entryContextMenu.entry.category === 'NPC'
+                  ? <Pencil size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                  : entryContextMenu.entry.category === 'Quest'
+                    ? <ScrollText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : entryContextMenu.entry.category === 'Location'
+                      ? <MapPin size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : category === 'Item'
+                      ? <Package size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : <BookText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />}
+                {entryContextMenu.entry.category === 'NPC' ? 'Edit' : `${contextHasTitle ? 'Edit' : 'Add'} title`}
               </button>
+              {entryContextMenu.entry.category !== 'NPC' && entryContextMenu.entry.category !== 'Character Creation' && <button
+                type="button"
+                role="menuitem"
+                onClick={() => openEditEntry(entryContextMenu.entry, 'description')}
+                className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+              >
+                {contextHasDescription
+                  ? <Pencil size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                  : entryContextMenu.entry.category === 'Quest'
+                    ? <ScrollText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : entryContextMenu.entry.category === 'Location'
+                      ? <MapPin size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : category === 'Item'
+                      ? <Package size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                    : <BookText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />}
+                {contextHasDescription ? 'Edit description' : 'Add description'}
+              </button>}
+              {entryContextMenu.entry.category === 'Book' && <button
+                type="button"
+                role="menuitem"
+                onClick={() => openEditEntry(entryContextMenu.entry, 'content', contextHasBookText ? contextBookTextIndex : undefined)}
+                className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+              >
+                {contextHasBookText
+                  ? <Pencil size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                  : <BookText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />}
+                {contextHasBookText ? 'Edit text' : 'Add text'}
+              </button>}
               <button
                 type="button"
                 role="menuitem"

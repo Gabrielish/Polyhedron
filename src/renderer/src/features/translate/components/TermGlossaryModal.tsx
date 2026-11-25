@@ -265,7 +265,7 @@ export function TermGlossaryModal({
               <button
                 type="button"
                 onClick={submit}
-                className="app-compact-action inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-amber-500 px-3 text-xs font-medium text-[color:var(--poly-accent-foreground)] transition hover:bg-amber-400"
+                className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-amber-500 px-3 text-sm font-semibold text-[color:var(--poly-accent-foreground)] transition hover:bg-amber-400"
               >
                 {editingId ? <Pencil size={15} /> : <Plus size={16} />}
                 {editingId ? 'Update' : 'Add'}

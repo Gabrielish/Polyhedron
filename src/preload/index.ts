@@ -469,18 +469,24 @@ const api: AppApi = {
     }> => ipcRenderer.invoke('cloud:connect'),
     disconnect: (): Promise<{ connected: false }> => ipcRenderer.invoke('cloud:disconnect'),
     upload: (
-      params: { sessionKey?: string } = {}
+      params: {
+        sessionKey?: string
+        termGlossary?: { key: string; entries: Array<{ id: string; source: string; translation: string }> }
+        gameDataOverrides?: Record<string, unknown>
+      } = {}
     ): Promise<{
       fileName: string
       modifiedTime?: string
       stats: { translated: number; total: number; fingerprint: string }
     }> => ipcRenderer.invoke('cloud:upload', params),
     download: (
-      params: { sessionKey?: string } = {}
+      params: { sessionKey?: string; termGlossaryKey?: string } = {}
     ): Promise<{
       fileName: string
       restartRequired: boolean
       stats: { translated: number; total: number; fingerprint: string }
+      termGlossary?: Array<{ id: string; source: string; translation: string }>
+      gameDataOverrides?: Record<string, unknown>
     }> => ipcRenderer.invoke('cloud:download', params),
     syncStamp: (): Promise<string | null> => ipcRenderer.invoke('cloud:syncStamp'),
     status: (): Promise<{

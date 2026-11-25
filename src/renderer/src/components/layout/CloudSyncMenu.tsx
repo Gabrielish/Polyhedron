@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { useTranslationSession } from '@/context/TranslationSession'
 import { useConfig } from '@/hooks/useConfig'
 import { getTermGlossaryStorageKey, loadTermGlossary } from '@/utils/termGlossary'
+import { loadGameDataOverrides, parseGameDataOverrides, saveGameDataOverrides } from '@/data/gameDataOverrides'
 import { calculateSessionFingerprint } from '@/utils/sessionFingerprint'
 import { formatSyncDate } from '@/utils/formatSyncDate'
 
@@ -335,7 +336,8 @@ export function CloudSyncMenu(): React.JSX.Element {
         termGlossary: {
           key: termGlossaryKey,
           entries: loadTermGlossary(termGlossaryKey)
-        }
+        },
+        gameDataOverrides: { ...loadGameDataOverrides() }
       })
       // The in-memory session is the source of truth for the status badge. The
       // workspace archive may normalize its persisted payload, so comparing its
@@ -384,6 +386,9 @@ export function CloudSyncMenu(): React.JSX.Element {
       const result = await window.api.cloud.download({ sessionKey, termGlossaryKey })
       if (result.termGlossary) {
         localStorage.setItem(termGlossaryKey, JSON.stringify(result.termGlossary))
+      }
+      if (result.gameDataOverrides) {
+        saveGameDataOverrides(parseGameDataOverrides(result.gameDataOverrides))
       }
       localStorage.setItem(syncKey, 'download-pending')
       setSavedFingerprint('download-pending')

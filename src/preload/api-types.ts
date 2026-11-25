@@ -765,6 +765,7 @@ export interface CloudApi {
       key: string
       entries: Array<{ id: string; source: string; translation: string }>
     }
+    gameDataOverrides?: Record<string, unknown>
   }): Promise<{
     fileName: string
     modifiedTime?: string
@@ -775,6 +776,7 @@ export interface CloudApi {
     restartRequired: boolean
     stats: { translated: number; total: number; fingerprint: string }
     termGlossary?: Array<{ id: string; source: string; translation: string }>
+    gameDataOverrides?: Record<string, unknown>
   }>
   syncStamp(): Promise<string | null>
   status(): Promise<{

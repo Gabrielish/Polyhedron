@@ -79,7 +79,7 @@ export function InjectLocalizationPage({
                   onClick={() => {
                     if (!isMacOS) void inject('windows')
                   }}
-                  className="app-compact-action accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {running === 'windows' ? <Loader2 size={13} className="animate-spin" /> : <HardDriveDownload size={13} aria-hidden="true" />}
                   {running === 'windows'
@@ -106,7 +106,7 @@ export function InjectLocalizationPage({
                   onClick={() => {
                     if (isMacOS) void inject('macos')
                   }}
-                  className="app-compact-action accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {running === 'macos' ? <Loader2 size={13} className="animate-spin" /> : <HardDriveDownload size={13} aria-hidden="true" />}
                   {running === 'macos'

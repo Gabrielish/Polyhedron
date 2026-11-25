@@ -117,7 +117,7 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null}
                 onClick={() => void importWorkspace()}
-                className="app-compact-action accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {running === 'import' ? <Loader2 size={13} className="animate-spin" /> : <FileDown size={13} aria-hidden="true" />}
                 {running === 'import' ? 'Importing…' : 'Choose Workspace'}
@@ -142,7 +142,7 @@ export function WorkspacePage(): React.JSX.Element {
                 type="button"
                 disabled={running !== null || !canExport}
                 onClick={() => void exportWorkspace()}
-                className="workspace-export-button app-compact-action accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
+                className="workspace-export-button accent-solid-control mt-5 inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-md border border-amber-500 bg-amber-500 px-4 py-0 text-xs font-semibold transition-colors hover:border-amber-400 hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {running === 'export' ? <Loader2 size={13} className="animate-spin" /> : <FileUp size={13} aria-hidden="true" />}
                 {running === 'export'

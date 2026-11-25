@@ -29,7 +29,19 @@ export function GameDataSourceModal({ open, title, description, sourceEntries, i
   const optionsMenuRef = useRef<HTMLDivElement>(null)
   const optionsTriggerRef = useRef<HTMLButtonElement>(null)
   const rowsById = useMemo(() => new Map(sourceEntries.map((entry) => [entry.rowId, entry] as const)), [sourceEntries])
-  useEffect(() => { if (open) { setQuery(''); setSelectedUid(initialUid ?? ''); setMatchCase(false); setWholeWord(false); setExactMatch(false); setStartsWith(false); setEndsWith(false); setShowContentId(false); setOptionsOpen(false) } }, [initialUid, open])
+  useEffect(() => {
+    if (!open) return
+    const initialEntry = sourceEntries.find((entry) => entry.uid === initialUid)
+    setQuery(initialEntry?.source ?? '')
+    setSelectedUid(initialEntry?.uid ?? '')
+    setMatchCase(false)
+    setWholeWord(false)
+    setExactMatch(false)
+    setStartsWith(false)
+    setEndsWith(false)
+    setShowContentId(false)
+    setOptionsOpen(false)
+  }, [initialUid, open, sourceEntries])
   useEffect(() => {
     if (!open || workerRef.current) return
     const worker = new Worker(new URL('./gameDataSourceSearch.worker.ts', import.meta.url), { type: 'module' })
@@ -68,6 +80,10 @@ export function GameDataSourceModal({ open, title, description, sourceEntries, i
       return row ? [row] : []
     })
   }, [resultRowIds, rowsById])
+  const initialEntry = useMemo(
+    () => sourceEntries.find((entry) => entry.uid === initialUid),
+    [initialUid, sourceEntries]
+  )
   const virtualizer = useVirtualizer({
     count: filtered.length,
     getScrollElement: () => resultsRef.current,
@@ -78,6 +94,11 @@ export function GameDataSourceModal({ open, title, description, sourceEntries, i
   if (!open) return null
   return <ModalShell open title={title} description={description} sizeClassName="max-w-3xl" panelClassName="game-data-source-modal flex max-h-[min(720px,90vh)] flex-col" headerClassName="items-center" iconClassName="mt-0" descriptionClassName="mt-0" icon={<Link2 size={21} />} onClose={onClose}>
     <div className="flex min-h-0 flex-col gap-3">
+      {initialEntry && <div className="shrink-0 rounded-lg border border-[var(--poly-accent)]/25 bg-[var(--poly-accent)]/5 px-3 py-2">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--poly-accent)]">Currently associated</div>
+        <div className="mt-1 break-words text-sm text-neutral-100">{initialEntry.source || '(empty source)'}</div>
+        <div className="mt-1 break-all font-mono text-[10px] text-neutral-500">{initialEntry.uid}</div>
+      </div>}
       <div className="relative shrink-0">
         <div className="game-data-source-search quick-search-search-shell relative flex h-10 w-full items-center rounded-lg border border-[#34343e] bg-[#101010] px-3 transition">
           <Search className="mr-2 shrink-0 text-neutral-500" size={16} />
@@ -116,7 +137,7 @@ export function GameDataSourceModal({ open, title, description, sourceEntries, i
         )}
       </div>
       <div className="flex shrink-0 justify-end">
-        <button type="button" disabled={!selectedUid} onClick={() => onSubmit(selectedUid)} className="app-compact-action accent-solid-control inline-flex h-10 items-center gap-1.5 rounded-md border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-4 text-xs font-medium disabled:opacity-40"><Check size={15}/>Select</button>
+        <button type="button" disabled={!selectedUid} onClick={() => onSubmit(selectedUid)} className="accent-solid-control inline-flex h-10 items-center gap-1.5 rounded-lg border border-[var(--poly-accent)] bg-[var(--poly-accent)] px-4 text-sm font-semibold disabled:opacity-40"><Check size={15}/>Select</button>
       </div>
     </div>
   </ModalShell>

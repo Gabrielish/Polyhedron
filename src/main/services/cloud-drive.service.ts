@@ -23,6 +23,7 @@ const CLOUD_FILE_NAME = WORKSPACE_FILE_NAME
 const LEGACY_CLOUD_FILE_NAME = 'icosa-workspace.icws'
 const PWA_SYNC_FILE_NAME = 'polyhedron-workspace-sync.json'
 const TERM_GLOSSARY_FILE_NAME = 'polyhedron-term-glossary.json'
+const GAME_DATA_OVERRIDES_FILE_NAME = 'polyhedron-gamedata.json'
 
 export type CloudTermGlossaryEntry = { id: string; source: string; translation: string }
 export type CloudAccount = {
@@ -35,6 +36,11 @@ export type CloudAccount = {
 type CloudTermGlossaryDocument = {
   version: 1
   glossaries: Record<string, CloudTermGlossaryEntry[]>
+}
+type CloudGameDataOverridesDocument = {
+  version: 1
+  overrides: Record<string, unknown>
+  updatedAt: string
 }
 
 type PwaSyncEntry = {
@@ -464,6 +470,53 @@ async function downloadTermGlossaryFile(
   return resolveTermGlossaryEntries(document, glossaryKey)
 }
 
+async function uploadGameDataOverridesFile(
+  drive: drive_v3.Drive,
+  overrides: Record<string, unknown>
+): Promise<void> {
+  const result = await drive.files.list({
+    q: `name = '${GAME_DATA_OVERRIDES_FILE_NAME}' and trashed = false`,
+    fields: 'files(id)',
+    spaces: 'drive',
+    pageSize: 1
+  })
+  const fileId = result.data.files?.[0]?.id
+  const document: CloudGameDataOverridesDocument = {
+    version: 1,
+    overrides,
+    updatedAt: new Date().toISOString()
+  }
+  const media = { mimeType: 'application/json', body: JSON.stringify(document) }
+  if (fileId) await drive.files.update({ fileId, media })
+  else await drive.files.create({
+    requestBody: { name: GAME_DATA_OVERRIDES_FILE_NAME, mimeType: 'application/json' },
+    media
+  })
+}
+
+async function downloadGameDataOverridesFile(
+  drive: drive_v3.Drive
+): Promise<Record<string, unknown> | undefined> {
+  const result = await drive.files.list({
+    q: `name = '${GAME_DATA_OVERRIDES_FILE_NAME}' and trashed = false`,
+    fields: 'files(id)',
+    spaces: 'drive',
+    pageSize: 1
+  })
+  const fileId = result.data.files?.[0]?.id
+  if (!fileId) return undefined
+  try {
+    const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'json' })
+    const value = response.data as Partial<CloudGameDataOverridesDocument>
+    if (value.version === 1 && value.overrides && typeof value.overrides === 'object' && !Array.isArray(value.overrides)) {
+      return value.overrides as Record<string, unknown>
+    }
+  } catch {
+    // Ignore missing or malformed optional metadata to keep older backups usable.
+  }
+  return undefined
+}
+
 function normalizeTermGlossaryKey(key: string): string {
   return key
     .replaceAll('\\', '/')
@@ -613,7 +666,8 @@ function dbModRows(): Array<{ name: string; lastFilePath: string | null }> {
 
 export async function uploadWorkspaceToDrive(
   sessionKey?: string,
-  termGlossary?: { key: string; entries: CloudTermGlossaryEntry[] }
+  termGlossary?: { key: string; entries: CloudTermGlossaryEntry[] },
+  gameDataOverrides?: Record<string, unknown>
 ): Promise<{ fileName: string; modifiedTime?: string; stats: WorkspaceTranslationStats }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
@@ -648,7 +702,10 @@ export async function uploadWorkspaceToDrive(
     const glossaryUpload = termGlossary
       ? uploadTermGlossaryFile(drive, termGlossary)
       : Promise.resolve()
-    await Promise.all([pwaSyncUpload, glossaryUpload])
+    const overridesUpload = gameDataOverrides
+      ? uploadGameDataOverridesFile(drive, gameDataOverrides)
+      : Promise.resolve()
+    await Promise.all([pwaSyncUpload, glossaryUpload, overridesUpload])
     return {
       fileName: response.data.name ?? CLOUD_FILE_NAME,
       modifiedTime: response.data.modifiedTime ?? undefined,
@@ -667,6 +724,7 @@ export async function downloadWorkspaceFromDrive(
   restartRequired: boolean
   stats: WorkspaceTranslationStats
   termGlossary?: CloudTermGlossaryEntry[]
+  gameDataOverrides?: Record<string, unknown>
 }> {
   const auth = await getAuth()
   const drive = google.drive({ version: 'v3', auth })
@@ -691,6 +749,7 @@ export async function downloadWorkspaceFromDrive(
     const importedWorkspace = await importWorkspace(workspacePath)
     const syncStats = await applyPwaSyncFromDrive(drive)
     const termGlossary = await downloadTermGlossaryFile(drive, termGlossaryKey)
+    const gameDataOverrides = await downloadGameDataOverridesFile(drive)
     // The archive may have been created on another machine, where the session
     // hash contains a different absolute file path. The sync file is the fast,
     // authoritative source for the confirmation stats. Fall back to the stats
@@ -701,7 +760,8 @@ export async function downloadWorkspaceFromDrive(
       stats: syncStats
         ? { ...syncStats, fingerprint: '' }
         : importedWorkspace.stats,
-      termGlossary
+      termGlossary,
+      gameDataOverrides
     }
   } finally {
     cleanupTempDir(tempDir)

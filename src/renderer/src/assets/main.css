@@ -4635,33 +4635,9 @@ button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-but
   flex-shrink: 0;
   stroke-width: 2;
 }
-.app-compact-action {
-  border-radius: 6px !important;
-  min-height: 36px !important;
-  font-size: 12px !important;
-  line-height: 20px !important;
-  font-weight: 500 !important;
-}
-.app-compact-action > svg.lucide {
-  width: 14px !important;
-  height: 14px !important;
-  flex-shrink: 0;
-}
-.prompt-slot-action {
-  box-sizing: border-box !important;
-  width: auto !important;
-  height: 36px !important;
-  min-height: 36px !important;
-  padding: 0 16px !important;
-  border-radius: 6px !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-  font-weight: 500 !important;
-}
-.prompt-slot-action > svg.lucide {
+button.prompt-slot-save-action > svg.lucide {
   width: 13px !important;
   height: 13px !important;
-  flex: 0 0 13px !important;
 }
 html:root[data-theme] button:is([class~="bg-amber-500"], [class~="bg-amber-500/90"], .accent-solid-button, .accent-solid-control):not([role="switch"]) {
   background-color: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
@@ -4858,8 +4834,4 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
   background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
   color: var(--poly-accent-foreground, #101010) !important;
   border-color: color-mix(in srgb, var(--poly-accent-foreground, #101010) 30%, transparent) !important;
-}
-html[data-theme] .app-content-shell main button.app-compact-action,
-html[data-theme] .app-modal-panel button.app-compact-action {
-  border-radius: 6px !important;
 }

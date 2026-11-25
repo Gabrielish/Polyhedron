@@ -21,6 +21,10 @@ export type ReferenceCatalogEntry = {
   /** User-selected localization source association; Wiki identity remains `name`/`wikiTitle`. */
   sourceName?: string
   sourceUid?: string
+  /** User-selected localization source for a manually corrected description association. */
+  descriptionSourceName?: string
+  /** User-selected localization source strings for manually associated book text. */
+  contentSourceNames?: string[]
   section?: string
   subquests?: string[]
   subLocations?: string[]
