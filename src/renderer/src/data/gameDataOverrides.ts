@@ -10,6 +10,7 @@ export interface GameDataOverrides {
   hiddenNpcEntries: string[]
   hiddenEntries: string[]
   descriptionSourceNameByEntry: Record<string, string>
+  questObjectiveSourceNamesByEntry: Record<string, Record<string, string>>
   questSectionByEntry: Record<string, string>
   locationSectionByEntry: Record<string, string>
   bookSectionByEntry: Record<string, string>
@@ -28,6 +29,7 @@ const emptyOverrides = (): GameDataOverrides => ({
   hiddenNpcEntries: [],
   hiddenEntries: [],
   descriptionSourceNameByEntry: {},
+  questObjectiveSourceNamesByEntry: {},
   questSectionByEntry: {},
   locationSectionByEntry: {},
   bookSectionByEntry: {},
@@ -67,6 +69,11 @@ function stringRecord(value: unknown): Record<string, string> {
   )
 }
 
+function nestedStringRecord(value: unknown): Record<string, Record<string, string>> {
+  if (!isRecord(value)) return {}
+  return Object.fromEntries(Object.entries(value).map(([key, entries]) => [key, stringRecord(entries)]).filter(([, entries]) => Object.keys(entries).length > 0))
+}
+
 export function parseGameDataOverrides(value: unknown): GameDataOverrides {
   if (!isRecord(value)) return emptyOverrides()
   return {
@@ -77,6 +84,7 @@ export function parseGameDataOverrides(value: unknown): GameDataOverrides {
     hiddenNpcEntries: stringArray(value.hiddenNpcEntries),
     hiddenEntries: stringArray(value.hiddenEntries),
     descriptionSourceNameByEntry: stringRecord(value.descriptionSourceNameByEntry),
+    questObjectiveSourceNamesByEntry: nestedStringRecord(value.questObjectiveSourceNamesByEntry),
     questSectionByEntry: stringRecord(value.questSectionByEntry),
     locationSectionByEntry: stringRecord(value.locationSectionByEntry),
     bookSectionByEntry: stringRecord(value.bookSectionByEntry),
@@ -121,19 +129,21 @@ export function mergeGameDataEntries(
     const sourceName = overrides.sourceNameByEntry[key]
     const sourceUid = overrides.sourceUidByEntry[key]
     const descriptionSourceName = overrides.descriptionSourceNameByEntry[key]
+    const questObjectiveSourceNames = overrides.questObjectiveSourceNamesByEntry[key]
     const contentSourceNames = overrides.contentSourceNamesByEntry[key]
     const npcGroups = overrides.npcGroupsByEntry[key]
     const section = overrides.questSectionByEntry[key]
     const locationSection = overrides.locationSectionByEntry[key]
     const bookSection = overrides.bookSectionByEntry[key]
     const characterCreationSection = overrides.characterCreationSectionByEntry[key]
-    if (!sourceName && !sourceUid && !descriptionSourceName && !contentSourceNames && (!npcGroups || entry.category !== 'NPC') && (!section || entry.category !== 'Quest') && (!locationSection || entry.category !== 'Location') && (!bookSection || entry.category !== 'Book') && (!characterCreationSection || entry.category !== 'Character Creation')) return [entry]
+    if (!sourceName && !sourceUid && !descriptionSourceName && !contentSourceNames && !questObjectiveSourceNames && (!npcGroups || entry.category !== 'NPC') && (!section || entry.category !== 'Quest') && (!locationSection || entry.category !== 'Location') && (!bookSection || entry.category !== 'Book') && (!characterCreationSection || entry.category !== 'Character Creation')) return [entry]
 
     return [{
       ...entry,
       ...(sourceName ? { sourceName } : {}),
       ...(sourceUid ? { sourceUid } : {}),
       ...(descriptionSourceName ? { descriptionSourceName } : {}),
+      ...(questObjectiveSourceNames ? { questObjectiveSourceNames } : {}),
       ...(contentSourceNames?.length ? { contentSourceNames } : {}),
       ...(section && entry.category === 'Quest' ? { section } : {}),
       ...(locationSection && entry.category === 'Location' ? { section: locationSection } : {}),

@@ -23,6 +23,7 @@
     "build:installer-splash": "node scripts/build-installer-splash.cjs",
     "build:dialog-index": "node scripts/build-dialog-index.mjs",
     "build:quest-reference": "node scripts/build-quest-reference.mjs",
+    "build:alchemy-reference": "node scripts/build-alchemy-reference.mjs",
     "build:books-reference": "node scripts/build-books-reference.mjs",
     "build:npc-reference": "node scripts/build-npc-reference.mjs",
     "build:items-reference": "node scripts/build-items-reference.mjs",

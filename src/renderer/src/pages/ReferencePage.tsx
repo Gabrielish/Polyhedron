@@ -1,5 +1,6 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
+  ArrowRight,
   BookOpen,
   BookText,
   ChevronDown,
@@ -52,7 +53,8 @@ import {
 import {
   getReferenceCatalog,
   type ReferenceCatalogEntry,
-  type ReferenceCategory
+  type ReferenceCategory,
+  type ReferenceQuestObjective
 } from '@/data/gameReference'
 import {
   loadGameDataOverrides,
@@ -80,6 +82,7 @@ const CATEGORIES: Array<{ label: string; value?: ReferenceCategory }> = [
   { label: 'Locations', value: 'Location' },
   { label: 'Books', value: 'Book' },
   { label: 'Items', value: 'Item' },
+  { label: 'Alchemy', value: 'Alchemy' },
   { label: 'NPCs', value: 'NPC' },
   { label: 'Char. Creation', value: 'Character Creation' }
 ]
@@ -167,6 +170,7 @@ function iconFor(category: string): typeof Swords {
   if (category === 'Quest') return ScrollText
   if (category === 'Book') return BookOpen
   if (category === 'Item') return Package
+  if (category === 'Alchemy') return FlaskConical
   if (category === 'NPC') return UsersRound
   if (category === 'Location') return MapPin
   if (category === 'Character Creation') return UsersRound
@@ -188,6 +192,7 @@ function wikiPath(category: ReferenceCategory, name?: string): string {
     Quest: 'Quests',
     Book: 'Books',
     Item: 'Items',
+    Alchemy: 'Alchemy',
     NPC: 'List_of_characters',
     Location: 'Locations',
     'Character Creation': 'Character_creation'
@@ -207,6 +212,8 @@ function QuestTreeList({
   rowsBySource,
   sourceKeysByPrefix,
   showTranslatedTitles,
+  selectedObjective,
+  onSelectObjective,
   collapseSectionsByDefault = false,
   onAddToSection
 }: {
@@ -219,12 +226,15 @@ function QuestTreeList({
   rowsBySource: Map<string, TranslationSessionEntry[]>
   sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
+  selectedObjective: { questName: string; objective: FlattenedQuestObjective } | null
+  onSelectObjective: (entry: ReferenceCatalogEntry, objective: FlattenedQuestObjective) => void
   collapseSectionsByDefault?: boolean
   onAddToSection?: (section: string) => void
 }): React.JSX.Element {
   const listRef = useRef<HTMLDivElement>(null)
   const hasAutoExpanded = useRef(false)
   const [expanded, setExpanded] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded`, new Set())
+  const [expandedObjectives, setExpandedObjectives] = usePersistedSet(`polyhedron:game-data:${stateKey}:objectives-expanded`, new Set())
   const [expandedSections, setExpandedSections, expandedSectionsWereSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded-sections`, new Set())
   const [collapsedSections, setCollapsedSections, collapsedSectionsWereSaved] = usePersistedSet(`polyhedron:game-data:${stateKey}:collapsed-sections`, new Set())
   const byName = useMemo(() => new Map(allEntries.map((entry) => [entry.name, entry])), [allEntries])
@@ -266,7 +276,7 @@ function QuestTreeList({
       })
     }
   }, [allEntries, byName, collapseSectionsByDefault, current?.name, collapsedSectionsWereSaved, expandedSectionsWereSaved, setCollapsedSections, setExpanded, setExpandedSections])
-  useScrollSelectedEntry(listRef, current?.name, `${[...expanded].join('|')}:${[...expandedSections].join('|')}:${[...collapsedSections].join('|')}`)
+  useScrollSelectedEntry(listRef, current?.name, `${[...expanded].join('|')}:${[...expandedObjectives].join('|')}:${[...expandedSections].join('|')}:${[...collapsedSections].join('|')}`)
   const sections = useMemo(() => {
     const groups = new Map<string, ReferenceCatalogEntry[]>()
     for (const entry of roots) {
@@ -277,13 +287,6 @@ function QuestTreeList({
     }
     return [...groups]
   }, [roots])
-  const toggle = (name: string) =>
-    setExpanded((previous) => {
-      const next = new Set(previous)
-      if (next.has(name)) next.delete(name)
-      else next.add(name)
-      return next
-    })
   const toggleSection = (section: string) => {
     const setSections = collapseSectionsByDefault ? setExpandedSections : setCollapsedSections
     setSections((previous) => {
@@ -300,8 +303,10 @@ function QuestTreeList({
       .map((name) => byName.get(name))
       .filter((child): child is ReferenceCatalogEntry => child !== undefined && !ancestors.has(child.name))
     const hasChildren = childEntries.length > 0
-    const open = expanded.has(entry.name)
     const selected = current?.name === entry.name
+    const objectiveNodes = entry.category === 'Quest' ? flattenQuestObjectiveNodes(entry.objectives ?? []) : []
+    const hasObjectives = objectiveNodes.length > 0
+    const open = expanded.has(entry.name) || expandedObjectives.has(entry.name)
     const titleRows = referenceTitleRows(entry, rowsBySource)
     const translatedTitle = showTranslatedTitles
       ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
@@ -310,12 +315,24 @@ function QuestTreeList({
     return (
       <div key={`${entry.name}:${depth}`}>
         <div className="flex min-w-0 items-center gap-1" style={{ paddingLeft: depth * 12 }}>
-          {hasChildren ? (
+          {hasChildren || hasObjectives ? (
             <button
               type="button"
               aria-label={`${open ? 'Collapse' : 'Expand'} ${entry.name}`}
               aria-expanded={open}
-              onClick={() => toggle(entry.name)}
+              onClick={() => {
+                const shouldOpen = !open
+                setExpanded((previous) => {
+                  const next = new Set(previous)
+                  shouldOpen ? next.add(entry.name) : next.delete(entry.name)
+                  return next
+                })
+                setExpandedObjectives((previous) => {
+                  const next = new Set(previous)
+                  shouldOpen ? next.add(entry.name) : next.delete(entry.name)
+                  return next
+                })
+              }}
               className="flex h-7 w-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:bg-[#1c1f24] hover:text-neutral-200"
             >
               {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
@@ -345,6 +362,35 @@ function QuestTreeList({
         {open && hasChildren && (
           <div className="mt-0.5 border-l border-[#24282f]" style={{ marginLeft: depth * 12 + 13 }}>
             {childEntries.map((child) => renderQuest(child, depth + 1, nextAncestors))}
+          </div>
+        )}
+        {entry.category === 'Quest' && open && hasObjectives && (
+          <div className="mt-0.5 space-y-0.5 border-l border-[#24282f] pl-1" style={{ marginLeft: depth * 12 + 28 }}>
+              {objectiveNodes.map((objective) => {
+                const objectiveTitleRows = rowsForQuestObjectiveText(entry, `${objective.key}:title`, objective.title, rowsBySource, sourceKeysByPrefix)
+                const translatedObjectiveTitle = showTranslatedTitles
+                  ? (objectiveTitleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? objectiveTitleRows.find((row) => row.target.trim()))?.target.trim()
+                  : undefined
+                const objectiveRows = [
+                  ...objectiveTitleRows,
+                  ...objective.journalEntries.flatMap((text, index) => rowsForQuestObjectiveText(entry, `${objective.key}:description:${index}`, text, rowsBySource, sourceKeysByPrefix))
+                ]
+                const fieldStats = emptyReferenceStatusCounts()
+                objectiveRows.forEach((row) => { fieldStats[entryReviewStatus(row)] += 1; fieldStats.total += 1 })
+                const active = selectedObjective?.questName === entry.name && selectedObjective.objective.key === objective.key
+                return <div key={objective.key} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: Math.min(objective.depth, 5) * 10 }}>
+                  <button
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => onSelectObjective(entry, objective)}
+                    className={cn('min-w-0 flex-1 truncate rounded px-2 py-1 text-left text-[10px] transition-colors', active ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-400 hover:bg-[#1c1f24] hover:text-neutral-200')}
+                  >
+                    <span className="mr-1 text-[9px] text-neutral-600">•</span>{objective.title}{translatedObjectiveTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedObjectiveTitle}</span></>}
+                  </button>
+                  <ObjectiveMissingFields entry={entry} objective={objective} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+                  <ReferenceStatusRings stats={fieldStats} />
+                </div>
+              })}
           </div>
         )}
       </div>
@@ -708,6 +754,141 @@ function NpcTreeList({
 interface ItemFolderNode {
   entries: ReferenceCatalogEntry[]
   children: Map<string, ItemFolderNode>
+}
+
+function AlchemyTreeList({
+  stateKey, entries, current, onSelect, statusByEntry, rowsBySource, sourceKeysByPrefix,
+  showTranslatedTitles, searching, categoryLabelSources
+}: {
+  stateKey: string
+  entries: ReferenceCatalogEntry[]
+  current: ReferenceCatalogEntry | null
+  onSelect: (entry: ReferenceCatalogEntry) => void
+  statusByEntry: Map<string, ReferenceStatusCounts>
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
+  showTranslatedTitles: boolean
+  searching: boolean
+  categoryLabelSources: Record<string, string>
+}): React.JSX.Element {
+  const listRef = useRef<HTMLDivElement>(null)
+  const [expanded, setExpanded] = usePersistedSet(`polyhedron:game-data:${stateKey}:expanded`, new Set(['Ingredients', 'Potions', 'Elixirs', 'Grenades', 'Coatings']))
+  const groups = useMemo(() => {
+    const result = new Map<string, Map<string, ReferenceCatalogEntry[]>>()
+    for (const entry of entries) {
+      const [parent = 'Other', child = ''] = (entry.alchemyGroup ?? 'Other').split(' / ', 2)
+      if (!result.has(parent)) result.set(parent, new Map())
+      const children = result.get(parent)!
+      if (child) {
+        if (!children.has(child)) children.set(child, [])
+        children.get(child)!.push(entry)
+      } else {
+        if (!children.has('')) children.set('', [])
+        children.get('')!.push(entry)
+      }
+    }
+    return result
+  }, [entries])
+  useScrollSelectedEntry(listRef, current?.name, [...expanded].join('|'))
+  const toggle = (key: string) => setExpanded((previous) => {
+    const next = new Set(previous)
+    if (next.has(key)) next.delete(key)
+    else next.add(key)
+    return next
+  })
+  const order = ['Ingredients', 'Extracts', 'Potions', 'Elixirs', 'Grenades', 'Coatings']
+  const displayChildLabel = (label: string) => label === 'Sublimates' ? 'Sublimate' : label === 'Vitriols' ? 'Vitriol' : label
+  const categoryLabelEntry = (name: string): ReferenceCatalogEntry => ({
+    name,
+    description: '',
+    category: 'Alchemy',
+    id: `ALCHEMY_CATEGORY_${name}`,
+    alchemyGroup: `Category labels / ${name}`,
+    alchemyCategoryLabel: true,
+    ...(categoryLabelSources[referenceEntryKey({ name, category: 'Alchemy' })]
+      ? { sourceName: categoryLabelSources[referenceEntryKey({ name, category: 'Alchemy' })] }
+      : {})
+  })
+  const renderCategoryLabel = (name: string, className: string) => {
+    const labelEntry = categoryLabelEntry(name)
+    const titleRows = referenceTitleRows(labelEntry, rowsBySource)
+    const translation = showTranslatedTitles
+      ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+      : undefined
+    return <>
+      <span className={cn('min-w-0 truncate', className)}>{name}</span>
+      {translation && <><span className="shrink-0 text-neutral-600"> · </span><span className="min-w-0 truncate font-normal normal-case tracking-normal text-[var(--poly-accent)]">{translation}</span></>}
+    </>
+  }
+  const renderCategoryEditButton = (name: string) => <AppTooltip label={`Translate ${name}`} focusable={false}>
+    <button type="button" aria-label={`Translate ${name}`} onClick={() => onSelect(categoryLabelEntry(name))} className="game-data-folder-add mr-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded text-neutral-500 opacity-0 transition hover:bg-[#1c1f24] hover:text-[var(--poly-accent)] group-hover:opacity-100 focus:opacity-100">
+      <ArrowRight size={12} className="block shrink-0" />
+    </button>
+  </AppTooltip>
+  const entryIcon = (entry?: ReferenceCatalogEntry, className = 'h-4 w-4') => entry?.icon
+    ? <img src={entry.icon} alt="" loading="lazy" className={cn('shrink-0 object-contain', className)} />
+    : <FlaskConical aria-hidden="true" className={cn('shrink-0 text-amber-300/70', className)} />
+  return <div ref={listRef} data-game-data-scroll-target="list" className="polyhedron-scroll min-h-0 flex-1 overflow-y-auto">
+    {[...groups].sort(([a], [b]) => {
+      const ai = order.indexOf(a); const bi = order.indexOf(b)
+      return (ai < 0 ? order.length : ai) - (bi < 0 ? order.length : bi) || a.localeCompare(b)
+    }).map(([parent, children]) => {
+      const parentCount = [...children.values()].reduce((sum, rows) => sum + rows.length, 0)
+      const hasNested = [...children.keys()].some(Boolean)
+      const parentOpen = searching || expanded.has(parent)
+      const parentIconEntry = [...children.values()].flat().sort((a, b) => a.name.localeCompare(b.name))[0]
+      const renderEntry = (entry: ReferenceCatalogEntry, depth = 0) => {
+        const selected = current?.name === entry.name
+        const titleRows = referenceTitleRows(entry, rowsBySource)
+        const translation = showTranslatedTitles
+          ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
+          : undefined
+        return <div key={referenceEntryKey(entry)} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: depth * 10 }}>
+          <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={entry.alchemyGroup ?? parent} className={cn('min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100')}>
+            <span className="inline-flex min-w-0 items-center gap-1.5">{entryIcon(entry, 'h-4 w-4')}<span className="truncate">{entry.name}</span>{translation && <><span className="shrink-0 text-neutral-500"> · </span><span className="truncate text-[var(--poly-accent)]">{translation}</span></>}</span>
+          </button>
+          <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+          <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+        </div>
+      }
+      return <section key={parent} className="mb-2">
+        <div className="game-data-folder-row group sticky top-0 z-10 flex items-center rounded bg-[#0c0d0f] px-2 py-1.5">
+          <button type="button" aria-expanded={parentOpen} onClick={() => toggle(parent)} className="game-data-folder-toggle flex min-w-0 flex-1 items-center gap-1.5 text-left text-[9px] font-semibold uppercase tracking-[0.1em] text-neutral-500 hover:text-neutral-300">
+            {parentOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}{entryIcon(parentIconEntry, 'h-4 w-4')}
+            {['Ingredients', 'Extracts', 'Potions', 'Elixirs', 'Grenades', 'Coatings'].includes(parent)
+              ? <span className="inline-flex min-w-0 flex-1 items-center gap-1">{renderCategoryLabel(parent, '')}</span>
+              : <span className="min-w-0 flex-1 truncate">{parent}</span>}
+          </button>
+          {['Ingredients', 'Extracts', 'Potions', 'Elixirs', 'Grenades', 'Coatings'].includes(parent) && <>
+            <ReferenceMissingFields entry={categoryLabelEntry(parent)} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+            {renderCategoryEditButton(parent)}
+          </>}
+          <span className="mr-1 min-w-4 text-right text-[9px] text-neutral-600">{parentCount}</span>
+        </div>
+        {parentOpen && <div className="space-y-0.5">
+          {[...children].sort(([a], [b]) => a.localeCompare(b)).map(([child, rows]) => child
+            ? <div key={child}>
+                {hasNested && <div className="group ml-4 flex h-7 w-[calc(100%-1rem)] items-center rounded text-[10px] text-neutral-400 hover:bg-[#1c1f24] hover:text-neutral-200">
+                  <button type="button" aria-expanded={searching || expanded.has(`${parent}/${child}`)} onClick={() => toggle(`${parent}/${child}`)} className="game-data-folder-toggle flex h-full min-w-0 flex-1 items-center gap-1.5 rounded px-2 text-left">
+                    {searching || expanded.has(`${parent}/${child}`) ? <ChevronDown size={11} /> : <ChevronRight size={11} />}{entryIcon(rows[0], 'h-4 w-4')}
+                    {parent === 'Extracts'
+                      ? <span className="inline-flex min-w-0 flex-1 items-center gap-1">{renderCategoryLabel(displayChildLabel(child), '')}</span>
+                      : <span className="min-w-0 flex-1 truncate">{child}</span>}
+                  </button>
+                  {parent === 'Extracts' && <>
+                    <ReferenceMissingFields entry={categoryLabelEntry(displayChildLabel(child))} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
+                    {renderCategoryEditButton(displayChildLabel(child))}
+                  </>}
+                  <span className="mr-2 text-[9px] text-neutral-600">{rows.length}</span>
+                </div>}
+                {(searching || expanded.has(`${parent}/${child}`)) && <div className="space-y-0.5 border-l border-[#24282f] ml-6 pl-1">{rows.map((entry) => renderEntry(entry))}</div>}
+              </div>
+            : rows.map((entry) => renderEntry(entry)))}
+        </div>}
+      </section>
+    })}
+    {entries.length === 0 && <p className="px-2 py-4 text-xs text-neutral-600">No alchemy entries found.</p>}
+  </div>
 }
 
 function ItemTreeList({
@@ -1104,6 +1285,69 @@ function rowsForReferenceContent(
   )
   return [...new Map(rows.map((row) => [row.rowId, row])).values()]
 }
+type FlattenedQuestField = { text: string; label: 'Objective' | 'Journal entry'; depth: number; key: string }
+type FlattenedQuestObjective = { title: string; journalEntries: string[]; depth: number; key: string }
+function flattenQuestObjectiveNodes(objectives: ReferenceQuestObjective[]): FlattenedQuestObjective[] {
+  const nodes: FlattenedQuestObjective[] = []
+  const visit = (items: ReferenceQuestObjective[], path: string, depth: number) => {
+    items.forEach((objective, index) => {
+      const key = `${path}${index}`
+      if (objective.title.trim() && !(objective.children.length > 0 && objective.journalEntries.length === 0)) {
+        nodes.push({ title: objective.title, journalEntries: objective.journalEntries, depth, key })
+      }
+      visit(objective.children, `${key}.`, depth + 1)
+    })
+  }
+  visit(objectives, '', 0)
+  return nodes
+}
+function flattenQuestObjectives(objectives: ReferenceQuestObjective[]): FlattenedQuestField[] {
+  const fields: FlattenedQuestField[] = []
+  const visit = (nodes: ReferenceQuestObjective[], path: string, depth: number) => {
+    nodes.forEach((objective, index) => {
+      const key = `${path}${index}`
+      if (objective.title.trim() && !(objective.children.length > 0 && objective.journalEntries.length === 0)) {
+        fields.push({ text: objective.title, label: 'Objective', depth, key: `${key}:title` })
+      }
+      objective.journalEntries.forEach((text, journalIndex) => {
+        if (text.trim()) fields.push({ text, label: 'Journal entry', depth: depth + 1, key: `${key}:description:${journalIndex}` })
+      })
+      visit(objective.children, `${key}.`, depth + 1)
+    })
+  }
+  visit(objectives, '', 0)
+  return fields
+}
+function rowsForQuestObjectives(
+  entry: ReferenceCatalogEntry,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): TranslationSessionEntry[] {
+  const rows = flattenQuestObjectives(entry.objectives ?? [])
+    .flatMap(({ text, key }) => rowsForQuestObjectiveText(entry, key, text, rowsBySource, sourceKeysByPrefix))
+  return [...new Map(rows.map((row) => [row.rowId, row])).values()]
+}
+function rowsForQuestObjectiveText(
+  entry: ReferenceCatalogEntry,
+  fieldKey: string,
+  fallbackText: string,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): TranslationSessionEntry[] {
+  const associatedSource = entry.questObjectiveSourceNames?.[fieldKey]
+  return associatedSource?.trim()
+    ? rowsBySource.get(normalize(associatedSource)) ?? []
+    : rowsForReferenceText(fallbackText, rowsBySource, sourceKeysByPrefix)
+}
+function questObjectiveSourcesLinked(
+  entry: ReferenceCatalogEntry,
+  rowsBySource: Map<string, TranslationSessionEntry[]>,
+  sourceKeysByPrefix: Map<string, string[]>
+): boolean {
+  return flattenQuestObjectives(entry.objectives ?? []).every(({ text, key }) =>
+    rowsForQuestObjectiveText(entry, key, text, rowsBySource, sourceKeysByPrefix).length > 0
+  )
+}
 function linkedBookContentSourceTexts(
   entry: ReferenceCatalogEntry,
   rowsBySource: Map<string, TranslationSessionEntry[]>,
@@ -1261,11 +1505,14 @@ function ReferenceMissingFields({
 }): React.JSX.Element | null {
   const missing: Array<{ marker: string; label: string }> = []
   if (!referenceTitleRows(entry, rowsBySource).length) missing.push({ marker: 'T', label: 'Title EN is missing from the loaded XML' })
-  if (entry.category !== 'NPC' && entry.category !== 'Character Creation' && !rowsForEntryDescription(entry, rowsBySource, sourceKeysByPrefix).length) {
+  if (entry.category !== 'NPC' && entry.category !== 'Character Creation' && !entry.alchemyCategoryLabel && !rowsForEntryDescription(entry, rowsBySource, sourceKeysByPrefix).length) {
     missing.push({ marker: 'D', label: 'Description EN is missing from the loaded XML' })
   }
   if (entry.category === 'Book' && !rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix).length) {
     missing.push({ marker: 'X', label: 'Book text EN is missing from the loaded XML' })
+  }
+  if (entry.category === 'Quest' && flattenQuestObjectives(entry.objectives ?? []).length > 0 && !questObjectiveSourcesLinked(entry, rowsBySource, sourceKeysByPrefix)) {
+    missing.push({ marker: 'O', label: 'Quest objectives are missing from the loaded XML' })
   }
   if (!missing.length) return null
   return (
@@ -1283,6 +1530,33 @@ function ReferenceMissingFields({
       ))}
     </span>
   )
+}
+function ObjectiveMissingFields({
+  entry,
+  objective,
+  rowsBySource,
+  sourceKeysByPrefix
+}: {
+  entry: ReferenceCatalogEntry
+  objective: FlattenedQuestObjective
+  rowsBySource: Map<string, TranslationSessionEntry[]>
+  sourceKeysByPrefix: Map<string, string[]>
+}): React.JSX.Element | null {
+  const missing: Array<{ marker: 'T' | 'D'; label: string }> = []
+  if (!rowsForQuestObjectiveText(entry, `${objective.key}:title`, objective.title, rowsBySource, sourceKeysByPrefix).length) {
+    missing.push({ marker: 'T', label: 'Objective title EN is missing from the loaded XML' })
+  }
+  if (!objective.journalEntries.length || objective.journalEntries.some((text, index) =>
+    !rowsForQuestObjectiveText(entry, `${objective.key}:description:${index}`, text, rowsBySource, sourceKeysByPrefix).length
+  )) {
+    missing.push({ marker: 'D', label: 'Objective description EN is missing from the loaded XML' })
+  }
+  if (!missing.length) return null
+  return <span className="ml-1 inline-flex shrink-0 items-center gap-1">
+    {missing.map(({ marker, label }) => <AppTooltip key={marker} label={label}>
+      <span role="img" aria-label={label} className="inline-flex h-3.5 min-w-3.5 cursor-default select-none items-center justify-center rounded border border-rose-400/30 bg-rose-500/10 px-0.5 text-[8px] font-bold leading-none text-rose-300">{marker}</span>
+    </AppTooltip>)}
+  </span>
 }
 function ReferenceStatusRings({ stats }: { stats: ReferenceStatusCounts }): React.JSX.Element {
   return (
@@ -1396,7 +1670,9 @@ function TranslationField({
   onSelectionChange,
   toggleNeedsReview,
   setReviewStatus,
-  termGlossary
+  termGlossary,
+  sourceAssociationLabel,
+  onSourceAssociation
 }: {
   label: string
   source: string
@@ -1415,6 +1691,8 @@ function TranslationField({
   toggleNeedsReview: (rowId: string) => void
   setReviewStatus: (rowId: string, status: ReviewStatus) => void
   termGlossary: TermGlossaryEntry[]
+  sourceAssociationLabel?: 'Add' | 'Edit'
+  onSourceAssociation?: () => void
 }): React.JSX.Element {
   const reveal = (uid: string) => {
     window.sessionStorage.setItem('polyhedron:reveal-uid', uid)
@@ -1446,6 +1724,12 @@ function TranslationField({
       </div>
     </div>
   )
+  const sourceAssociationControl = sourceAssociationLabel && onSourceAssociation ? (
+    <button type="button" onClick={onSourceAssociation} className="ml-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] normal-case tracking-normal text-neutral-400 transition-colors hover:bg-[#1c1f24] hover:text-neutral-100">
+      {sourceAssociationLabel === 'Edit' ? <Pencil size={10} /> : <BookText size={10} />}
+      {sourceAssociationLabel}
+    </button>
+  ) : null
 
   const translationCard = (entry: TranslationSessionEntry) => (
     <div className="min-w-0">
@@ -1460,6 +1744,7 @@ function TranslationField({
         >
           <ClipboardPaste size={11} />
         </button>
+        {entries[0]?.rowId === entry.rowId && sourceAssociationControl}
       </div>
       <LocalTranslationInput
         value={entry.target}
@@ -1546,8 +1831,9 @@ function TranslationField({
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {sourceCard(sourceText)}
             <div className="min-w-0">
-              <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
+              <div className="mb-1 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-400">
                 Translation · {targetLang}
+                {sourceAssociationControl}
               </div>
               <div className="flex min-h-10 items-center rounded border border-[#2a2f37] bg-[#0c0d0f] px-2 text-[11px] italic text-neutral-600">
                 This text is not present in the loaded XML.
@@ -1575,6 +1861,8 @@ function GameDataList({
   category,
   current,
   onSelect,
+  selectedObjective,
+  onSelectObjective,
   rowsBySource,
   sourceKeysByPrefix,
   showTranslatedTitles,
@@ -1583,6 +1871,7 @@ function GameDataList({
   customCharacterCreationFolders,
   customItemFolders,
   customItemGroupsByEntry,
+  alchemyCategorySources,
   onAddToSection,
   searching = false
 }: {
@@ -1592,6 +1881,8 @@ function GameDataList({
   category: ReferenceCategory | undefined
   current: ReferenceCatalogEntry | null
   onSelect: (entry: ReferenceCatalogEntry) => void
+  selectedObjective: { questName: string; objective: FlattenedQuestObjective } | null
+  onSelectObjective: (entry: ReferenceCatalogEntry, objective: FlattenedQuestObjective) => void
   rowsBySource: Map<string, TranslationSessionEntry[]>
   sourceKeysByPrefix: Map<string, string[]>
   showTranslatedTitles: boolean
@@ -1600,6 +1891,7 @@ function GameDataList({
   customCharacterCreationFolders: string[]
   customItemFolders: string[]
   customItemGroupsByEntry: Record<string, string[]>
+  alchemyCategorySources: Record<string, string>
   onAddToSection: (section: string) => void
   searching?: boolean
 }): React.JSX.Element {
@@ -1619,7 +1911,8 @@ function GameDataList({
         ...(entry.name.trim() ? referenceTitleRows(entry, rowsBySource) : []),
         ...(entry.category !== 'Character Creation' && entry.description.trim() ? rowsForEntryDescription(entry, rowsBySource, sourceKeysByPrefix) : []),
         ...(entry.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)),
-        ...rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix)
+        ...rowsForReferenceContent(entry, rowsBySource, sourceKeysByPrefix),
+        ...rowsForQuestObjectives(entry, rowsBySource, sourceKeysByPrefix)
       ]
       const stats = emptyReferenceStatusCounts()
       for (const row of rows) {
@@ -1637,11 +1930,13 @@ function GameDataList({
       const descriptionRows = item.category === 'Character Creation' ? [] : rowsForEntryDescription(item, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
+      const objectiveRows = rowsForQuestObjectives(item, rowsBySource, sourceKeysByPrefix)
       if (
         titleRows.some((row) => row.target.trim()) &&
         (item.category === 'Character Creation' || descriptionRows.some((row) => row.target.trim())) &&
         effectRows.every((row) => row.target.trim()) &&
-        (!contentRows.length || contentRows.every((row) => row.target.trim()))
+        (!contentRows.length || contentRows.every((row) => row.target.trim())) &&
+        (!item.objectives?.length || questObjectiveSourcesLinked(item, rowsBySource, sourceKeysByPrefix) && objectiveRows.length > 0 && objectiveRows.every((row) => row.target.trim()))
       )
         result.add(`${item.category}:${item.name}`)
     }
@@ -1654,9 +1949,11 @@ function GameDataList({
       const descriptionRows = item.category === 'Character Creation' ? [] : rowsForEntryDescription(item, rowsBySource, sourceKeysByPrefix)
       const effectRows = (item.effect ?? []).flatMap((text) => rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix))
       const contentRows = rowsForReferenceContent(item, rowsBySource, sourceKeysByPrefix)
-      const rows = [...titleRows, ...descriptionRows, ...effectRows, ...contentRows]
+      const objectiveRows = rowsForQuestObjectives(item, rowsBySource, sourceKeysByPrefix)
+      const rows = [...titleRows, ...descriptionRows, ...effectRows, ...contentRows, ...objectiveRows]
       if (
         rows.length > 0 &&
+        (!item.objectives?.length || questObjectiveSourcesLinked(item, rowsBySource, sourceKeysByPrefix)) &&
         rows.every((row) => row.target.trim() && row.reviewStatus === 'verified')
       ) {
         result.add(`${item.category}:${item.name}`)
@@ -1680,6 +1977,20 @@ function GameDataList({
       customGroupsByEntry={customItemGroupsByEntry}
     />
   }
+  if (category === 'Alchemy') {
+    return <AlchemyTreeList
+      stateKey={stateKey}
+      entries={entries}
+      current={current}
+      onSelect={onSelect}
+      statusByEntry={statusByEntry}
+      rowsBySource={rowsBySource}
+      sourceKeysByPrefix={sourceKeysByPrefix}
+      showTranslatedTitles={showTranslatedTitles}
+      categoryLabelSources={alchemyCategorySources}
+      searching={searching}
+    />
+  }
   if (category === 'NPC') {
     return <NpcTreeList stateKey={stateKey} entries={entries} current={current} onSelect={onSelect} statusByEntry={statusByEntry} searching={searching} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} showTranslatedTitles={showTranslatedTitles} customFolders={customFolders} onAddToFolder={onAddToFolder} />
   }
@@ -1694,6 +2005,8 @@ function GameDataList({
         allEntries={allEntries}
         current={current}
         onSelect={onSelect}
+        selectedObjective={selectedObjective}
+        onSelectObjective={onSelectObjective}
         statusByEntry={statusByEntry}
         rowsBySource={rowsBySource}
         sourceKeysByPrefix={sourceKeysByPrefix}
@@ -1776,7 +2089,7 @@ export function ReferencePage(): React.JSX.Element {
     [session.entries]
   )
   const [folderModal, setFolderModal] = useState<{ path: string; category: 'NPC' | 'Item' | 'Character Creation' } | null>(null)
-  const [sourceModal, setSourceModal] = useState<{ mode: 'add' | 'edit'; path: string; entry?: ReferenceCatalogEntry; category: 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Character Creation'; field: 'title' | 'description' | 'content'; contentIndex?: number } | null>(null)
+  const [sourceModal, setSourceModal] = useState<{ mode: 'add' | 'edit'; path: string; entry?: ReferenceCatalogEntry; category: 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Alchemy' | 'Character Creation'; field: 'title' | 'description' | 'content' | 'questObjective'; contentIndex?: number; objectiveFieldKey?: string; objectiveSource?: string } | null>(null)
   const [pendingEntryDelete, setPendingEntryDelete] = useState<{ entry: ReferenceCatalogEntry; path: string } | null>(null)
   const [entryContextMenu, setEntryContextMenu] = useState<{
     x: number
@@ -1838,6 +2151,7 @@ export function ReferencePage(): React.JSX.Element {
       entry.name === name && (savedCategory === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === savedCategory)
     ) ?? null
   })
+  const [selectedQuestObjective, setSelectedQuestObjective] = useState<{ questName: string; objective: FlattenedQuestObjective } | null>(null)
   const [showContentUid, setShowContentUid] = useState(() => readGameDataUiState().showContentUid ?? false)
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
@@ -1941,7 +2255,7 @@ export function ReferencePage(): React.JSX.Element {
     () =>
       allEntries.map((entry) => ({
         entry,
-        searchText: `${entry.name} ${entry.description} ${entry.sourceName ?? ''} ${entry.descriptionSourceName ?? ''} ${(entry.effect ?? []).join(' ')} ${(entry.content ?? []).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
+        searchText: `${entry.name} ${entry.description} ${entry.sourceName ?? ''} ${entry.descriptionSourceName ?? ''} ${(entry.effect ?? []).join(' ')} ${(entry.content ?? []).join(' ')} ${flattenQuestObjectives(entry.objectives ?? []).map(({ text }) => text).join(' ')} ${showContentUid ? `${uidBySource.get(normalize(entry.name)) ?? ''} ${uidBySource.get(normalize(entry.description)) ?? ''}` : ''}`
       })),
     [allEntries, showContentUid, uidBySource]
   )
@@ -2000,6 +2314,10 @@ export function ReferencePage(): React.JSX.Element {
   const descriptionIsItem = current
     ? category === 'Item' || (current.itemGroups?.length ?? 0) > 0
     : false
+  const isGameDataItem = current
+    ? category === 'Item' || current.category === 'Item'
+    : false
+  const isAlchemyEntry = current?.category === 'Alchemy' && !current.alchemyCategoryLabel
   const linkedEffects = current
     ? (current.effect ?? []).map((text) => ({
         text,
@@ -2014,6 +2332,9 @@ export function ReferencePage(): React.JSX.Element {
           : rowsForReferenceText(text, rowsBySource, sourceKeysByPrefix)
       })).filter((item) => item.rows.length > 0)
     : []
+  const activeQuestObjective = current?.category === 'Quest' && selectedQuestObjective?.questName === current.name
+    ? selectedQuestObjective.objective
+    : null
   const contextBookTextSources = entryContextMenu?.entry.category === 'Book'
     ? linkedBookContentSourceTexts(entryContextMenu.entry, rowsBySource, sourceKeysByPrefix)
     : []
@@ -2028,7 +2349,11 @@ export function ReferencePage(): React.JSX.Element {
     ? rowsForEntryDescription(entryContextMenu.entry, rowsBySource, sourceKeysByPrefix).length > 0
     : false
   const sourceModalInitialUid = sourceModal?.entry
-    ? sourceModal.field === 'content'
+    ? sourceModal.field === 'questObjective'
+      ? sourceModal.objectiveFieldKey
+        ? rowsForQuestObjectiveText(sourceModal.entry, sourceModal.objectiveFieldKey, sourceModal.objectiveSource ?? '', rowsBySource, sourceKeysByPrefix)[0]?.uid
+        : undefined
+      : sourceModal.field === 'content'
       ? (() => {
           if (sourceModal.contentIndex === undefined) return undefined
           const contentSources = linkedBookContentSourceTexts(sourceModal.entry!, rowsBySource, sourceKeysByPrefix)
@@ -2082,6 +2407,32 @@ export function ReferencePage(): React.JSX.Element {
     if (!sourceModal) return
     const sourceRow = session.entries.find((entry) => entry.uid === uid)
     if (!sourceRow) { toast.error('That Source ID is no longer present in the loaded XML.'); return }
+    if (sourceModal.field === 'questObjective') {
+      if (!sourceModal.entry || !sourceModal.objectiveFieldKey) {
+        toast.error('Could not identify the selected quest objective field.')
+        return
+      }
+      const key = referenceEntryKey(sourceModal.entry)
+      const objectiveSources = {
+        ...(sourceModal.entry.questObjectiveSourceNames ?? {}),
+        [sourceModal.objectiveFieldKey]: sourceRow.source
+      }
+      setUserOverrides((previous) => {
+        const entrySources = previous.questObjectiveSourceNamesByEntry[key] ?? {}
+        return {
+          ...previous,
+          questObjectiveSourceNamesByEntry: {
+            ...previous.questObjectiveSourceNamesByEntry,
+            [key]: { ...entrySources, [sourceModal.objectiveFieldKey!]: sourceRow.source }
+          }
+        }
+      })
+      // `current` prefers the selected entry object, which can predate the updated catalog.
+      // Refresh it too so the newly associated XML row is visible immediately.
+      setSelected({ ...sourceModal.entry, questObjectiveSourceNames: objectiveSources })
+      setSourceModal(null)
+      return
+    }
     const entry = sourceModal.mode === 'edit'
       ? sourceModal.entry
       : catalogEntries.find((candidate) => candidate.category === sourceModal.category && (
@@ -2159,8 +2510,11 @@ export function ReferencePage(): React.JSX.Element {
   }
   const openEditEntry = (entry: ReferenceCatalogEntry, field: 'title' | 'description' | 'content' = 'title', contentIndex?: number) => {
     setEntryContextMenu(null)
-    const sourceCategory = (category === 'Item' ? 'Item' : entry.category) as 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Character Creation'
+    const sourceCategory = (category === 'Item' ? 'Item' : entry.category) as 'NPC' | 'Quest' | 'Location' | 'Book' | 'Item' | 'Alchemy' | 'Character Creation'
     setSourceModal({ mode: 'edit', path: entry.npcGroups?.[0] ?? entry.section ?? '', entry, category: sourceCategory, field, contentIndex })
+  }
+  const openQuestObjectiveAssociation = (entry: ReferenceCatalogEntry, fieldKey: string, source: string) => {
+    setSourceModal({ mode: 'edit', path: '', entry, category: 'Quest', field: 'questObjective', objectiveFieldKey: fieldKey, objectiveSource: source })
   }
   const deleteGameDataEntry = () => {
     if (!pendingEntryDelete) return
@@ -2207,7 +2561,7 @@ export function ReferencePage(): React.JSX.Element {
     const entry = catalogEntries.find((candidate) => referenceEntryKey(candidate) === key)
     if (!entry) return
     const isItemEntry = (entry.itemGroups?.length ?? 0) > 0
-    if (!isItemEntry && entry.category !== 'NPC' && entry.category !== 'Quest' && entry.category !== 'Location' && entry.category !== 'Book' && entry.category !== 'Item' && entry.category !== 'Character Creation') return
+    if (!isItemEntry && entry.category !== 'NPC' && entry.category !== 'Quest' && entry.category !== 'Location' && entry.category !== 'Book' && entry.category !== 'Item' && entry.category !== 'Alchemy' && entry.category !== 'Character Creation') return
     event.preventDefault()
     setSelected(entry)
     const listCategory = category === 'Item' ? 'Item' : entry.category
@@ -2246,6 +2600,40 @@ export function ReferencePage(): React.JSX.Element {
   const paste = async (rowId: string) => {
     const text = await navigator.clipboard.readText()
     if (text) session.updateEntry(rowId, text)
+  }
+  const renderQuestTextField = (source: string, label: string, fieldKey: string) => {
+    const linkedRows = current?.category === 'Quest'
+      ? rowsForQuestObjectiveText(current, fieldKey, source, rowsBySource, sourceKeysByPrefix)
+      : rowsForReferenceText(source, rowsBySource, sourceKeysByPrefix)
+    const displaySource = current?.questObjectiveSourceNames?.[fieldKey] ?? source
+    return (
+      <div key={`${current?.name}:${fieldKey}`} className="min-w-0">
+        <TranslationField
+        label={label}
+        source={displaySource}
+        entries={linkedRows}
+        targetLang={session.targetLang.toUpperCase()}
+        update={update}
+        copy={copy(displaySource)}
+        paste={paste}
+        showContentUid={showContentUid}
+        onGemini={setAiEntry}
+        onSimilarity={setSimilarityEntry}
+        onHistory={setHistoryEntry}
+        onTag={applyNextSourceTag}
+        inputRefFor={(rowId, element) => {
+          if (element) translationInputRefs.current.set(rowId, element)
+          else translationInputRefs.current.delete(rowId)
+        }}
+        onSelectionChange={(rowId, selection) => tagSelections.current.set(rowId, selection)}
+        toggleNeedsReview={session.toggleNeedsReview}
+        setReviewStatus={session.setReviewStatus}
+        termGlossary={termGlossary}
+        sourceAssociationLabel={linkedRows.length > 0 ? 'Edit' : 'Add'}
+        onSourceAssociation={() => current && openQuestObjectiveAssociation(current, fieldKey, source)}
+      />
+      </div>
+    )
   }
   if (session.phase !== 'loaded') return (
     <div className="flex h-full items-center justify-center p-8 text-center">
@@ -2305,9 +2693,13 @@ export function ReferencePage(): React.JSX.Element {
       />
       <GameDataSourceModal
         open={sourceModal !== null}
-        title={sourceModal?.mode === 'edit' ? sourceModal.field === 'content' ? 'Add book text' : `Edit ${sourceModal.field} Source association` : 'Add existing Game Data entry'}
+        title={sourceModal?.field === 'questObjective'
+          ? 'Associate quest objective Source'
+          : sourceModal?.mode === 'edit' ? sourceModal.field === 'content' ? 'Add book text' : `Edit ${sourceModal.field} Source association` : 'Add existing Game Data entry'}
         description={sourceModal?.mode === 'edit'
-          ? sourceModal.field === 'content'
+          ? sourceModal.field === 'questObjective'
+            ? `Choose the correct localization string for “${sourceModal.objectiveSource ?? ''}”.`
+            : sourceModal.field === 'content'
             ? `Choose a Source string to add as text for “${sourceModal.entry?.name ?? ''}”.`
             : `Choose the correct localization string for “${sourceModal.entry?.name ?? ''}”. Its Wiki name and link will stay unchanged.`
           : `Choose a Source string for ${sourceModal?.path ?? ''}. It will be added only when it matches an existing Wiki ${sourceModal?.category ?? 'NPC'}.`}
@@ -2393,6 +2785,7 @@ export function ReferencePage(): React.JSX.Element {
               category={category}
               onCategoryChange={(value) => {
                 setCategory(value)
+                setSelectedQuestObjective(null)
                 const rememberedName = selectedByCategory[value]
                 setSelected(catalogEntries.find((entry) =>
                   entry.name === rememberedName && (value === 'Item' ? (entry.itemGroups?.length ?? 0) > 0 : entry.category === value)
@@ -2413,8 +2806,15 @@ export function ReferencePage(): React.JSX.Element {
               allEntries={allEntries}
               current={current}
               onSelect={(entry) => {
+                setSelectedQuestObjective(null)
                 setSelected(entry)
                 setSelectedByCategory((previous) => ({ ...previous, [category]: entry.name }))
+              }}
+              selectedObjective={selectedQuestObjective}
+              onSelectObjective={(entry, objective) => {
+                setSelected(entry)
+                setSelectedByCategory((previous) => ({ ...previous, Quest: entry.name }))
+                setSelectedQuestObjective({ questName: entry.name, objective })
               }}
               rowsBySource={rowsBySource}
               sourceKeysByPrefix={sourceKeysByPrefix}
@@ -2425,6 +2825,7 @@ export function ReferencePage(): React.JSX.Element {
               customCharacterCreationFolders={userOverrides.characterCreationFolders}
               customItemFolders={userOverrides.itemFolders}
               customItemGroupsByEntry={userOverrides.itemGroupsByEntry}
+              alchemyCategorySources={userOverrides.sourceNameByEntry}
               onAddToSection={openAddSectionEntry}
             />
           </aside>
@@ -2438,9 +2839,9 @@ export function ReferencePage(): React.JSX.Element {
                 <>
                   <div className="mb-2 flex items-center gap-2">
                     <Icon size={18} className="text-amber-400" />
-                    <h2 className="text-lg font-semibold">{current.name}</h2>
+                    <h2 className="text-lg font-semibold">{activeQuestObjective?.title ?? current.name}</h2>
                     <span className="rounded border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-300">
-                      {current.category}
+                      {activeQuestObjective ? 'Objective' : current.category}
                     </span>
                     {current.category === 'Character Creation' && <label className="ml-auto inline-flex cursor-pointer items-center gap-2 text-xs text-neutral-300">
                       <input
@@ -2452,7 +2853,7 @@ export function ReferencePage(): React.JSX.Element {
                       <span>Uncompleted ({uncompletedTitleCount})</span>
                     </label>}
                   </div>
-                  {current.category === 'Character Creation' && showCharacterCreationUncompletedOnly && linkedTitle.length === 0
+                  {!activeQuestObjective && (current.category === 'Character Creation' && showCharacterCreationUncompletedOnly && linkedTitle.length === 0
                     ? <div className="rounded border border-[#252a31] bg-[#0c0d0f] px-3 py-4 text-xs text-neutral-500">No uncompleted title translations found for this entry.</div>
                     : <TranslationField
                     label={current.category === 'NPC' ? 'Source' : 'Title EN'}
@@ -2477,9 +2878,11 @@ export function ReferencePage(): React.JSX.Element {
                     toggleNeedsReview={session.toggleNeedsReview}
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
-                  />}
-                  {current.category !== 'Character Creation' && (descriptionIsItem
-                    ? linkedDescription.length > 0
+                    sourceAssociationLabel={current.alchemyCategoryLabel || isGameDataItem ? (linkedTitle.length ? 'Edit' : 'Add') : undefined}
+                    onSourceAssociation={current.alchemyCategoryLabel || isGameDataItem ? () => openEditEntry(current) : undefined}
+                    />)}
+                  {!activeQuestObjective && current.category !== 'Character Creation' && (descriptionIsItem
+                    ? current.category === 'Item' || (current.itemGroups?.length ?? 0) > 0 || linkedDescription.length > 0
                     : (current.description.trim() || linkedDescription.length > 0) &&
                       (current.category !== 'NPC' || linkedDescription.length > 0)) && (
                     <TranslationField
@@ -2505,7 +2908,15 @@ export function ReferencePage(): React.JSX.Element {
                       toggleNeedsReview={session.toggleNeedsReview}
                       setReviewStatus={session.setReviewStatus}
                       termGlossary={termGlossary}
+                      sourceAssociationLabel={isGameDataItem || isAlchemyEntry ? (linkedDescription.length ? 'Edit' : 'Add') : undefined}
+                      onSourceAssociation={isGameDataItem || isAlchemyEntry ? () => openEditEntry(current, 'description') : undefined}
                     />
+                  )}
+                  {activeQuestObjective && (
+                    <div className="space-y-2">
+                      {renderQuestTextField(activeQuestObjective.title, 'Objective title', `${activeQuestObjective.key}:title`)}
+                      {activeQuestObjective.journalEntries.map((text, index) => renderQuestTextField(text, 'Description EN', `${activeQuestObjective.key}:description:${index}`))}
+                    </div>
                   )}
                   {linkedEffects.map(({ text, rows }, index) => (
                     <TranslationField
@@ -2606,6 +3017,8 @@ export function ReferencePage(): React.JSX.Element {
                       ? <MapPin size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
                     : category === 'Item'
                       ? <Package size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                      : entryContextMenu.entry.category === 'Alchemy'
+                        ? <FlaskConical size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
                     : <BookText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />}
                 {entryContextMenu.entry.category === 'NPC' ? 'Edit' : `${contextHasTitle ? 'Edit' : 'Add'} title`}
               </button>
@@ -2623,6 +3036,8 @@ export function ReferencePage(): React.JSX.Element {
                       ? <MapPin size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
                     : category === 'Item'
                       ? <Package size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
+                      : entryContextMenu.entry.category === 'Alchemy'
+                        ? <FlaskConical size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />
                     : <BookText size={14} className="transition-colors group-hover:text-[var(--color-amber-300)]" />}
                 {contextHasDescription ? 'Edit description' : 'Add description'}
               </button>}

@@ -38,6 +38,39 @@ function extractTemplates(text) {
   return templates
 }
 
+function templateAt(text, start) {
+  let depth = 0
+  let end = start
+  while (end < text.length) {
+    if (text.startsWith('{{', end)) {
+      depth += 1
+      end += 2
+    } else if (text.startsWith('}}', end)) {
+      depth -= 1
+      end += 2
+      if (depth === 0) break
+    } else {
+      end += 1
+    }
+  }
+  return depth === 0 ? { start, end, body: text.slice(start + 2, end - 2) } : null
+}
+
+function findDirectTemplates(text, name) {
+  const found = []
+  let index = 0
+  while (index < text.length) {
+    const start = text.indexOf('{{', index)
+    if (start < 0) break
+    const template = templateAt(text, start)
+    if (!template) break
+    const templateName = template.body.split('|', 1)[0].trim()
+    if (templateName.toLocaleLowerCase() === name.toLocaleLowerCase()) found.push(template)
+    index = template.end
+  }
+  return found
+}
+
 function splitTopLevel(value) {
   const parts = []
   let start = 0
@@ -81,6 +114,72 @@ function cleanWikitext(value) {
     .replace(/&#39;|&#x27;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+function unwrapJournalText(value) {
+  let text = cleanWikitext(value).replace(/^\\(?=["“”])/, '')
+  // Wiki puts quotation marks around journal excerpts for presentation; they are not part of the string.
+  if (text.startsWith('“') || text.startsWith('"')) text = text.slice(1).trim()
+  if (text.endsWith('”') || text.endsWith('"')) text = text.slice(0, -1).trim()
+  return text
+}
+
+function parseQuestObjectives(wikitext) {
+  const headings = [...wikitext.matchAll(/^(={2,6})\s*(.*?)\s*\1\s*$/gm)]
+  const objectiveHeadings = headings.filter((heading) => /^Objectives(?:\s*\([^)]*\))?$/i.test(heading[2].trim()))
+  if (objectiveHeadings.length === 0) return []
+
+  const parseTemplate = (template) => {
+    const parts = splitTopLevel(template.body)
+    const title = cleanWikitext(parts[1] ?? '')
+    const content = parts.slice(2).join('|')
+    const childTemplates = findDirectTemplates(content, 'Quest objective')
+    const children = childTemplates.map(parseTemplate)
+    let contentWithoutChildren = content
+    for (const child of childTemplates.reverse()) {
+      const relativeStart = child.start
+      contentWithoutChildren = `${contentWithoutChildren.slice(0, relativeStart)}\n${contentWithoutChildren.slice(child.end)}`
+    }
+    const journalEntries = [...contentWithoutChildren.matchAll(/^\s*\*+\s*(.+?)\s*$/gm)]
+      .map((match) => unwrapJournalText(match[1]))
+      .filter((entry) => entry && !/^If the /i.test(entry) && !/^Read .+?:?$/i.test(entry))
+    return { title, journalEntries: [...new Set(journalEntries)], children }
+  }
+  const parseLevel = (text) => findDirectTemplates(text, 'Quest objective')
+    .map(parseTemplate)
+    .filter((objective) => objective.title || objective.journalEntries.length || objective.children.length)
+
+  const objectives = objectiveHeadings.flatMap((heading) => {
+    const start = heading.index + heading[0].length
+    const nextHeading = headings.find((candidate) => candidate.index > heading.index && candidate[1].length <= heading[1].length)
+    return parseLevel(wikitext.slice(start, nextHeading?.index ?? wikitext.length))
+  })
+  // Companion quests can have separate Origin and Companion objective sections.
+  // Merge identical objective labels so the title appears once with all journal variants.
+  const mergeByTitle = (nodes) => {
+    const merged = new Map()
+    for (const node of nodes) {
+      const existing = merged.get(node.title)
+      if (!existing) {
+        merged.set(node.title, { ...node, children: mergeByTitle(node.children) })
+      } else {
+        existing.journalEntries = [...new Set([...existing.journalEntries, ...node.journalEntries])]
+        existing.children = mergeByTitle([...existing.children, ...node.children])
+      }
+    }
+    return [...merged.values()]
+  }
+  return mergeByTitle(objectives)
+}
+
+async function fetchQuestObjectives(title) {
+  const url = new URL('https://bg3.wiki/w/api.php')
+  url.search = new URLSearchParams({ action: 'parse', page: title, prop: 'wikitext', format: 'json', origin: '*' }).toString()
+  const response = await fetch(url, { headers: { 'user-agent': 'Polyhedron reference index' } })
+  if (!response.ok) return []
+  const payload = await response.json()
+  const wikitext = payload.parse?.wikitext?.['*']
+  return typeof wikitext === 'string' ? parseQuestObjectives(wikitext) : []
 }
 
 function headingAt(text, position) {
@@ -146,6 +245,23 @@ for (const quest of quests) {
   }
 }
 
+// Objectives live on individual quest pages, rather than in the Quests category index.
+// Fetch with a small concurrency limit so refreshing the reference does not hammer the Wiki.
+const questEntries = [...unique.values()]
+let nextQuestIndex = 0
+await Promise.all(Array.from({ length: 3 }, async () => {
+  while (nextQuestIndex < questEntries.length) {
+    const index = nextQuestIndex++
+    const quest = questEntries[index]
+    try {
+      quest.objectives = await fetchQuestObjectives(quest.wikiTitle.replaceAll(' ', '_'))
+    } catch (error) {
+      console.warn(`Could not load objectives for ${quest.wikiTitle}: ${error.message}`)
+      quest.objectives = []
+    }
+  }
+}))
+
 const output = {
   sourceUrl: 'https://bg3.wiki/wiki/Quests',
   sourceRevision: page.revid,
@@ -155,4 +271,4 @@ const output = {
 const outputPath = path.join(root, 'resources/reference/BG3 Quests.json')
 fs.mkdirSync(path.dirname(outputPath), { recursive: true })
 fs.writeFileSync(outputPath, `${JSON.stringify(output, null, 2)}\n`, 'utf8')
-console.log(`Quest reference: ${output.entries.length} quests from ${output.sourceUrl}`)
+console.log(`Quest reference: ${output.entries.length} quests from ${output.sourceUrl}; ${output.entries.filter((quest) => quest.objectives?.length).length} with objectives`)

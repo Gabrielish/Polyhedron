@@ -1,0 +1,2180 @@
+{
+  "sourceUrl": "https://bg3.wiki/wiki/Alchemy",
+  "license": "CC BY-NC-SA 4.0 or CC BY-SA 4.0 (see source page)",
+  "recipes": [
+    {
+      "name": "Antidote",
+      "group": "Potions",
+      "recipe": "Salts of Mugwort · Source ingredient: Mugwort · Any Suspension",
+      "rawIngredient": "Mugwort",
+      "specificExtract": "Salts of Mugwort",
+      "icon": "https://bg3.wiki/w/images/6/60/POT_Antidote_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Angelic Reprieve",
+      "group": "Potions",
+      "recipe": "Essence of Unicorn Horn · Source ingredient: Unicorn Horn · Any Salt",
+      "rawIngredient": "Unicorn Horn",
+      "specificExtract": "Essence of Unicorn Horn",
+      "icon": "https://bg3.wiki/w/images/5/5a/POT_Potion_of_Angelic_Reprieve_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Angelic Slumber",
+      "group": "Potions",
+      "recipe": "Essence of Planetar Feather · Source ingredient: Planetar Feather · Any Suspension",
+      "rawIngredient": "Planetar Feather",
+      "specificExtract": "Essence of Planetar Feather",
+      "icon": "https://bg3.wiki/w/images/6/62/POT_Potion_of_Angelic_Slumber_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Animal Speaking",
+      "group": "Potions",
+      "recipe": "Essence of Acorn Truffle · Source ingredient: Acorn Truffle · Any Salt",
+      "rawIngredient": "Acorn Truffle",
+      "specificExtract": "Essence of Acorn Truffle",
+      "icon": "https://bg3.wiki/w/images/c/c9/POT_Potion_of_Animal_Speaking_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Feather Fall",
+      "group": "Potions",
+      "recipe": "Sublimate of Autumn Crocus · Source ingredient: Autumncrocus · Any Essence",
+      "rawIngredient": "Autumncrocus",
+      "specificExtract": "Sublimate of Autumn Crocus",
+      "icon": "https://bg3.wiki/w/images/7/7a/POT_Potion_of_Feather_Fall_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Flying",
+      "group": "Potions",
+      "recipe": "Sublimate of Eagle Feathers · Source ingredient: Eagle Feather · Any Essence",
+      "rawIngredient": "Eagle Feather",
+      "specificExtract": "Sublimate of Eagle Feathers",
+      "icon": "https://bg3.wiki/w/images/6/63/POT_Potion_of_Flying_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Glorious Vaulting",
+      "group": "Potions",
+      "recipe": "Sublimate of Wispweed · Source ingredient: Wispweed · Any Ashes",
+      "rawIngredient": "Wispweed",
+      "specificExtract": "Sublimate of Wispweed",
+      "icon": "https://bg3.wiki/w/images/3/30/POT_Potion_of_Glorious_Vaulting_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Healing",
+      "group": "Potions",
+      "recipe": "Salts of Rogue's Morsel · Source ingredient: Rogue's Morsel · Any Suspension",
+      "rawIngredient": "Rogue's Morsel",
+      "specificExtract": "Salts of Rogue's Morsel",
+      "icon": "https://bg3.wiki/w/images/0/04/POT_Potion_of_Healing_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Greater Healing",
+      "group": "Potions",
+      "recipe": "Ashes of Balsam · Source ingredient: Balsam · Any Salt",
+      "rawIngredient": "Balsam",
+      "specificExtract": "Ashes of Balsam",
+      "icon": "https://bg3.wiki/w/images/3/3e/POT_Potion_of_Greater_Healing_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Superior Healing",
+      "group": "Potions",
+      "recipe": "Salts of Musk Creeper · Source ingredient: Yellow Musk Creeper Petals · Any Suspension",
+      "rawIngredient": "Yellow Musk Creeper Petals",
+      "specificExtract": "Salts of Musk Creeper",
+      "icon": "https://bg3.wiki/w/images/9/90/POT_Potion_of_Superior_Healing_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Supreme Healing",
+      "group": "Potions",
+      "recipe": "Sublimate of Ki-Rin Hair · Source ingredient: Ki-Rin Hair · Any Ashes",
+      "rawIngredient": "Ki-Rin Hair",
+      "specificExtract": "Sublimate of Ki-Rin Hair",
+      "icon": "https://bg3.wiki/w/images/a/a6/POT_Potion_of_Supreme_Healing_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Invisibility",
+      "group": "Potions",
+      "recipe": "Ashes of Imp Patagium · Source ingredient: Imp Patagium · Any Essence",
+      "rawIngredient": "Imp Patagium",
+      "specificExtract": "Ashes of Imp Patagium",
+      "icon": "https://bg3.wiki/w/images/8/89/POT_Potion_of_Invisibility_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Mind Reading",
+      "group": "Potions",
+      "recipe": "Suspension of Mergrass · Source ingredient: Mergrass · Any Sublimate",
+      "rawIngredient": "Mergrass",
+      "specificExtract": "Suspension of Mergrass",
+      "icon": "https://bg3.wiki/w/images/8/80/POT_Potion_of_Mind_Reading_Unfaded_Icon.png"
+    },
+    {
+      "name": "Potion of Speed",
+      "group": "Potions",
+      "recipe": "Ashes of Hyena Ear · Source ingredient: Hyena Ear · Any Salt",
+      "rawIngredient": "Hyena Ear",
+      "specificExtract": "Ashes of Hyena Ear",
+      "icon": "https://bg3.wiki/w/images/8/87/POT_Potion_of_Speed_Unfaded_Icon.png"
+    },
+    {
+      "name": "Remedial Potion",
+      "group": "Potions",
+      "recipe": "Salts of Xorn Scales · Source ingredient: Xorn Scales · Any Suspension",
+      "rawIngredient": "Xorn Scales",
+      "specificExtract": "Salts of Xorn Scales",
+      "icon": "https://bg3.wiki/w/images/5/5d/POT_Remedial_Potion_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Arcane Cultivation",
+      "group": "Elixirs",
+      "recipe": "Vitriol of Weavemoss · Source ingredient: Weavemoss · Any Sublimate",
+      "rawIngredient": "Weavemoss",
+      "specificExtract": "Vitriol of Weavemoss",
+      "icon": "https://bg3.wiki/w/images/c/c8/ELX_Elixir_of_Arcane_Cultivation_Unfaded_Icon.png"
+    },
+    {
+      "name": "Greater Elixir of Arcane Cultivation",
+      "group": "Elixirs",
+      "recipe": "Suspension of Laculite · Source ingredient: Laculite · Any Vitriol",
+      "rawIngredient": "Laculite",
+      "specificExtract": "Suspension of Laculite",
+      "icon": "https://bg3.wiki/w/images/1/12/ELX_Greater_Elixir_of_Arcane_Cultivation_Unfaded_Icon.png"
+    },
+    {
+      "name": "Superior Elixir of Arcane Cultivation",
+      "group": "Elixirs",
+      "recipe": "Solution of Night Orchid · Source ingredient: Night Orchid · Any Vitriol",
+      "rawIngredient": "Night Orchid",
+      "specificExtract": "Solution of Night Orchid",
+      "icon": "https://bg3.wiki/w/images/c/cf/ELX_Superior_Elixir_of_Arcane_Cultivation_Unfaded_Icon.png"
+    },
+    {
+      "name": "Supreme Elixir of Arcane Cultivation",
+      "group": "Elixirs",
+      "recipe": "Essence of Beholder Eye · Source ingredient: Beholder Iris · Any Suspension",
+      "rawIngredient": "Beholder Iris",
+      "specificExtract": "Essence of Beholder Eye",
+      "icon": "https://bg3.wiki/w/images/7/79/ELX_Supreme_Elixir_of_Arcane_Cultivation_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Barkskin",
+      "group": "Elixirs",
+      "recipe": "Salts of Tree Bark · Source ingredient: Wood Bark · Any Suspension",
+      "rawIngredient": "Wood Bark",
+      "specificExtract": "Salts of Tree Bark",
+      "icon": "https://bg3.wiki/w/images/3/36/ELX_Elixir_of_Barkskin_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Battlemage's Power",
+      "group": "Elixirs",
+      "recipe": "Suspension of Gauth Eye · Source ingredient: Gauth Eyestalk · Any Sublimate",
+      "rawIngredient": "Gauth Eyestalk",
+      "specificExtract": "Suspension of Gauth Eye",
+      "icon": "https://bg3.wiki/w/images/a/aa/ELX_Elixir_of_Battlemage%27s_Power_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Bloodlust",
+      "group": "Elixirs",
+      "recipe": "Ashes of Worg Fang · Source ingredient: Worg Fang · Any Salt",
+      "rawIngredient": "Worg Fang",
+      "specificExtract": "Ashes of Worg Fang",
+      "icon": "https://bg3.wiki/w/images/b/bd/POT_Potion_of_Vitality_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Darkvision",
+      "group": "Elixirs",
+      "recipe": "Essence of Crystalline Lens · Source ingredient: Crystalline Lens · Any Salt",
+      "rawIngredient": "Crystalline Lens",
+      "specificExtract": "Essence of Crystalline Lens",
+      "icon": "https://bg3.wiki/w/images/a/a4/ELX_Elixir_of_Darkvision_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Guileful Movement",
+      "group": "Elixirs",
+      "recipe": "Suspension of Ochre Jelly · Source ingredient: Ochre Jelly Slime · Any Sublimate",
+      "rawIngredient": "Ochre Jelly Slime",
+      "specificExtract": "Suspension of Ochre Jelly",
+      "icon": "https://bg3.wiki/w/images/6/66/ELX_Elixir_of_Guileful_Movement_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Heroism",
+      "group": "Elixirs",
+      "recipe": "Sublimate of Pegasus Feathers · Source ingredient: Pegasus Feather · Any Ashes",
+      "rawIngredient": "Pegasus Feather",
+      "specificExtract": "Sublimate of Pegasus Feathers",
+      "icon": "https://bg3.wiki/w/images/e/e5/ELX_Elixir_of_Heroism_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Peerless Focus",
+      "group": "Elixirs",
+      "recipe": "Sublimate of Belladonna · Source ingredient: Belladonna · Any Ashes",
+      "rawIngredient": "Belladonna",
+      "specificExtract": "Sublimate of Belladonna",
+      "icon": "https://bg3.wiki/w/images/f/f6/POT_Potion_Invulnerability_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Fire Resistance",
+      "group": "Elixirs",
+      "recipe": "Ashes of Dragon Egg Mushroom · Source ingredient: Dragon Egg Mushroom · Any Salt",
+      "rawIngredient": "Dragon Egg Mushroom",
+      "specificExtract": "Ashes of Dragon Egg Mushroom",
+      "icon": "https://bg3.wiki/w/images/2/23/ELX_Elixir_of_Fire_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Lightning Resistance",
+      "group": "Elixirs",
+      "recipe": "Salts of Copper Shavings · Source ingredient: Broken Machinery · Any Suspension",
+      "rawIngredient": "Broken Machinery",
+      "specificExtract": "Salts of Copper Shavings",
+      "icon": "https://bg3.wiki/w/images/3/3f/ELX_Elixir_of_Lightning_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Necrotic Resistance",
+      "group": "Elixirs",
+      "recipe": "Vitriol of Oleander · Source ingredient: Black Oleander · Any Sublimate",
+      "rawIngredient": "Black Oleander",
+      "specificExtract": "Vitriol of Oleander",
+      "icon": "https://bg3.wiki/w/images/8/87/ELX_Elixir_of_Necrotic_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Poison Resistance",
+      "group": "Elixirs",
+      "recipe": "Suspension of Muddy Goo · Source ingredient: Mud Mephit Wing · Any Sublimate",
+      "rawIngredient": "Mud Mephit Wing",
+      "specificExtract": "Suspension of Muddy Goo",
+      "icon": "https://bg3.wiki/w/images/c/cb/ELX_Elixir_of_Poison_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Psychic Resistance",
+      "group": "Elixirs",
+      "recipe": "Suspension of Cerebrospinal Fluid · Source ingredient: Intellect Devourer Cerebellum · Any Sublimate",
+      "rawIngredient": "Intellect Devourer Cerebellum",
+      "specificExtract": "Suspension of Cerebrospinal Fluid",
+      "icon": "https://bg3.wiki/w/images/0/0c/ELX_Elixir_of_Psychic_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Universal Resistance",
+      "group": "Elixirs",
+      "recipe": "Vitriol of Divine Miasma · Source ingredient: Divine Bone Shard · Any Sublimate",
+      "rawIngredient": "Divine Bone Shard",
+      "specificExtract": "Vitriol of Divine Miasma",
+      "icon": "https://bg3.wiki/w/images/b/bb/ELX_Elixir_of_Universal_Resistance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of See Invisibility",
+      "group": "Elixirs",
+      "recipe": "Suspension of Nothic Eye · Source ingredient: Nothic Eye · Any Vitriol",
+      "rawIngredient": "Nothic Eye",
+      "specificExtract": "Suspension of Nothic Eye",
+      "icon": "https://bg3.wiki/w/images/0/0f/ELX_Elixir_of_See_Invisibility_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Cloud Giant Strength",
+      "group": "Elixirs",
+      "recipe": "Salts of Cloud Giant Fingernails · Source ingredient: Cloud Giant Finger · Any Suspension",
+      "rawIngredient": "Cloud Giant Finger",
+      "specificExtract": "Salts of Cloud Giant Fingernails",
+      "icon": "https://bg3.wiki/w/images/4/40/ELX_Elixir_of_Cloud_Giant_Strength_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Hill Giant Strength",
+      "group": "Elixirs",
+      "recipe": "Salts of Hill Giant Fingernails · Source ingredient: Hill Giant Finger · Any Suspension",
+      "rawIngredient": "Hill Giant Finger",
+      "specificExtract": "Salts of Hill Giant Fingernails",
+      "icon": "https://bg3.wiki/w/images/7/74/ELX_Elixir_of_Hill_Giant_Strength_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of the Colossus",
+      "group": "Elixirs",
+      "recipe": "Salts of Chasm Creeper · Source ingredient: Chasm Creeper · Any Suspension",
+      "rawIngredient": "Chasm Creeper",
+      "specificExtract": "Salts of Chasm Creeper",
+      "icon": "https://bg3.wiki/w/images/0/07/ELX_Elixir_of_The_Colossus_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Viciousness",
+      "group": "Elixirs",
+      "recipe": "Vitriol of Shadowroot Sac · Source ingredient: Shadowroot Sac · Any Ashes",
+      "rawIngredient": "Shadowroot Sac",
+      "specificExtract": "Vitriol of Shadowroot Sac",
+      "icon": "https://bg3.wiki/w/images/a/ad/ELX_Elixir_of_Viciousness_Unfaded_Icon.png"
+    },
+    {
+      "name": "Elixir of Vigilance",
+      "group": "Elixirs",
+      "recipe": "Sublimate of Bloodstained Hook · Source ingredient: Hook · Any Ashes",
+      "rawIngredient": "Hook",
+      "specificExtract": "Sublimate of Bloodstained Hook",
+      "icon": "https://bg3.wiki/w/images/5/5f/ELX_Elixir_of_Vigilance_Unfaded_Icon.png"
+    },
+    {
+      "name": "Tadpole Elixir",
+      "group": "Elixirs",
+      "recipe": "Sublimate of Tongue of Madness · Source ingredient: Tongue of Madness · Any Essence",
+      "rawIngredient": "Tongue of Madness",
+      "specificExtract": "Sublimate of Tongue of Madness",
+      "icon": "https://bg3.wiki/w/images/e/ec/ELX_Tadpole_Elixir_Unfaded_Icon.png"
+    },
+    {
+      "name": "Alchemist's Fire",
+      "group": "Grenades",
+      "recipe": "Ashes of Fire Amber · Source ingredient: Fire Amber · Any Salt",
+      "rawIngredient": "Fire Amber",
+      "specificExtract": "Ashes of Fire Amber",
+      "icon": "https://bg3.wiki/w/images/2/29/GRN_Alchemist%27s_Fire_Unfaded_Icon.png"
+    },
+    {
+      "name": "Flashblinder",
+      "group": "Grenades",
+      "recipe": "Sublimate of Behir Scales · Source ingredient: Behir Scales · Any Ashes",
+      "rawIngredient": "Behir Scales",
+      "specificExtract": "Sublimate of Behir Scales",
+      "icon": "https://bg3.wiki/w/images/2/25/GRN_Flashblinder_Unfaded_Icon.png"
+    },
+    {
+      "name": "Fungal Bamboozler",
+      "group": "Grenades",
+      "recipe": "Essence of Timmask Spores · Source ingredient: Timmask Spores (ingredient) · Any Salt",
+      "rawIngredient": "Timmask Spores (ingredient)",
+      "specificExtract": "Essence of Timmask Spores",
+      "icon": "https://bg3.wiki/w/images/e/e2/GRN_Noxious_Spore_Grenade_Unfaded_Icon.png"
+    },
+    {
+      "name": "Hag's Bane",
+      "group": "Grenades",
+      "recipe": "Ashes of Dried Fey Flower · Any Essence",
+      "rawIngredient": "",
+      "specificExtract": "Ashes of Dried Fey Flower",
+      "icon": "https://bg3.wiki/w/images/5/53/GRN_Hag%27s_Bane_Unfaded_Icon.png"
+    },
+    {
+      "name": "Haste Spore Grenade",
+      "group": "Grenades",
+      "recipe": "Sublimate of Haste Spores · Source ingredient: Hastening Spores · Any Essence",
+      "rawIngredient": "Hastening Spores",
+      "specificExtract": "Sublimate of Haste Spores",
+      "icon": "https://bg3.wiki/w/images/6/6f/GRN_Haste_Spore_Grenade_Unfaded_Icon.png"
+    },
+    {
+      "name": "Hearthlight Bomb",
+      "group": "Grenades",
+      "recipe": "Essence of Nightlight · Source ingredient: Nightlight Frond · Any Suspension",
+      "rawIngredient": "Nightlight Frond",
+      "specificExtract": "Essence of Nightlight",
+      "icon": "https://bg3.wiki/w/images/5/5e/GRN_Hearthlight_Bomb_Unfaded_Icon.png"
+    },
+    {
+      "name": "Noxious Spore Grenade",
+      "group": "Grenades",
+      "recipe": "Sublimate of Poison Spores · Source ingredient: Poison Spore · Any Ashes",
+      "rawIngredient": "Poison Spore",
+      "specificExtract": "Sublimate of Poison Spores",
+      "icon": "https://bg3.wiki/w/images/e/e2/GRN_Noxious_Spore_Grenade_Unfaded_Icon.png"
+    },
+    {
+      "name": "Web Grenade",
+      "group": "Grenades",
+      "recipe": "Suspension of Spider Silk · Source ingredient: Silk Gland · Any Vitriol",
+      "rawIngredient": "Silk Gland",
+      "specificExtract": "Suspension of Spider Silk",
+      "icon": "https://bg3.wiki/w/images/6/61/GRN_Web_Grenade_Unfaded_Icon.png"
+    },
+    {
+      "name": "Arsonist's Oil",
+      "group": "Coatings",
+      "recipe": "Sublimate of Frosted Ears · Source ingredient: Frosted Ear · Any Ashes",
+      "rawIngredient": "Frosted Ear",
+      "specificExtract": "Sublimate of Frosted Ears",
+      "icon": "https://bg3.wiki/w/images/d/de/Coat_Arsonist%27s_Oil_Unfaded_Icon.png"
+    },
+    {
+      "name": "Basic Poison",
+      "group": "Coatings",
+      "recipe": "Vitriol of Bonecap · Source ingredient: Bonecap · Any Ashes",
+      "rawIngredient": "Bonecap",
+      "specificExtract": "Vitriol of Bonecap",
+      "icon": "https://bg3.wiki/w/images/0/0f/COAT_Basic_Poison_Unfaded_Icon.png"
+    },
+    {
+      "name": "Crawler Mucus",
+      "group": "Coatings",
+      "recipe": "Salts of Carrion Crawler Tentacle · Source ingredient: Carrion Crawler Tentacle · Any Vitriol",
+      "rawIngredient": "Carrion Crawler Tentacle",
+      "specificExtract": "Salts of Carrion Crawler Tentacle",
+      "icon": "https://bg3.wiki/w/images/8/83/COAT_Crawler_Mucus_Unfaded_Icon.png"
+    },
+    {
+      "name": "Diluted Oil of Sharpness",
+      "group": "Coatings",
+      "recipe": "Salts of Viridian Crystal · Source ingredient: Viridian Crystal · Any Vitriol",
+      "rawIngredient": "Viridian Crystal",
+      "specificExtract": "Salts of Viridian Crystal",
+      "icon": "https://bg3.wiki/w/images/0/06/COAT_Diluted_Oil_of_Sharpness_Unfaded_Icon.png"
+    },
+    {
+      "name": "Drow Poison",
+      "group": "Coatings",
+      "recipe": "Essence of Swarming Toadstool · Source ingredient: Swarming Toadstool · Any Salt",
+      "rawIngredient": "Swarming Toadstool",
+      "specificExtract": "Essence of Swarming Toadstool",
+      "icon": "https://bg3.wiki/w/images/8/8a/COAT_Drow_Poison_Unfaded_Icon.png"
+    },
+    {
+      "name": "Malice",
+      "group": "Coatings",
+      "recipe": "Vitriol of Lolth's Candle · Source ingredient: Lolth's Candle · Any Ashes",
+      "rawIngredient": "Lolth's Candle",
+      "specificExtract": "Vitriol of Lolth's Candle",
+      "icon": "https://bg3.wiki/w/images/9/93/COAT_Malice_Unfaded_Icon.png"
+    },
+    {
+      "name": "Oil of Accuracy",
+      "group": "Coatings",
+      "recipe": "Ashes of Daggerroot · Source ingredient: Daggerroot · Any Salt",
+      "rawIngredient": "Daggerroot",
+      "specificExtract": "Ashes of Daggerroot",
+      "icon": "https://bg3.wiki/w/images/5/52/COAT_Oil_of_Accuracy_Unfaded_Icon.png"
+    },
+    {
+      "name": "Oil of Bane",
+      "group": "Coatings",
+      "recipe": "Vitriol of Putrefied Tumour · Source ingredient: Putrefied Tumour · Any Sublimate",
+      "rawIngredient": "Putrefied Tumour",
+      "specificExtract": "Vitriol of Putrefied Tumour",
+      "icon": "https://bg3.wiki/w/images/4/4c/COAT_Oil_of_Bane_Unfaded_Icon.png"
+    },
+    {
+      "name": "Oil of Combustion",
+      "group": "Coatings",
+      "recipe": "Ashes of Mephit Magma · Source ingredient: Heart-Shaped Rock · Any Essence",
+      "rawIngredient": "Heart-Shaped Rock",
+      "specificExtract": "Ashes of Mephit Magma",
+      "icon": "https://bg3.wiki/w/images/5/57/COAT_Oil_of_Combustion_Unfaded_Icon.png"
+    },
+    {
+      "name": "Oil of Diminution",
+      "group": "Coatings",
+      "recipe": "Essence of Sylvan Stone · Source ingredient: Sylvan Stone · Any Suspension",
+      "rawIngredient": "Sylvan Stone",
+      "specificExtract": "Essence of Sylvan Stone",
+      "icon": "https://bg3.wiki/w/images/6/6f/COAT_Oil_of_Diminution_Unfaded_Icon.png"
+    },
+    {
+      "name": "Oil of Freezing",
+      "group": "Coatings",
+      "recipe": "Suspension of Frost Salamander Tongue · Source ingredient: Frost Salamander Tongue · Any Sublimate",
+      "rawIngredient": "Frost Salamander Tongue",
+      "specificExtract": "Suspension of Frost Salamander Tongue",
+      "icon": "https://bg3.wiki/w/images/f/f5/COAT_Oil_of_Freezing_Unfaded_Icon.png"
+    },
+    {
+      "name": "Purple Worm Toxin",
+      "group": "Coatings",
+      "recipe": "Suspension of Purple Worm Slime · Source ingredient: Purple Worm Gullet · Any Vitriol",
+      "rawIngredient": "Purple Worm Gullet",
+      "specificExtract": "Suspension of Purple Worm Slime",
+      "icon": "https://bg3.wiki/w/images/d/d0/COAT_Purple_Worm_Toxin_Unfaded_Icon.png"
+    },
+    {
+      "name": "Serpent Fang Toxin",
+      "group": "Coatings",
+      "recipe": "Suspension of Snake Venom · Source ingredient: Venomous Fang · Any Vitriol",
+      "rawIngredient": "Venomous Fang",
+      "specificExtract": "Suspension of Snake Venom",
+      "icon": "https://bg3.wiki/w/images/5/5b/COAT_Serpent_Fang_Toxin_Unfaded_Icon.png"
+    },
+    {
+      "name": "Simple Toxin",
+      "group": "Coatings",
+      "recipe": "Suspension of Bullywug Trumpet · Source ingredient: Bullywug Trumpet · Any Sublimate",
+      "rawIngredient": "Bullywug Trumpet",
+      "specificExtract": "Suspension of Bullywug Trumpet",
+      "icon": "https://bg3.wiki/w/images/c/c5/COAT_Simple_Toxin_Unfaded_Icon.png"
+    },
+    {
+      "name": "Thisobald's Brewed-Up Bellyglummer",
+      "group": "Coatings",
+      "recipe": "Salts of Corpse Rose · Source ingredient: Corpse Rose · Any Suspension",
+      "rawIngredient": "Corpse Rose",
+      "specificExtract": "Salts of Corpse Rose",
+      "icon": "https://bg3.wiki/w/images/0/0a/COAT_Thisobald%27s_Brewed-Up_Bellyglummer_Unfaded_Icon.png"
+    },
+    {
+      "name": "Wizardsbane Oil",
+      "group": "Coatings",
+      "recipe": "Essence of Gremishka Tail · Source ingredient: Gremishka Tail · Any Suspension",
+      "rawIngredient": "Gremishka Tail",
+      "specificExtract": "Essence of Gremishka Tail",
+      "icon": "https://bg3.wiki/w/images/c/c1/GRN_Holy_Water_Unfaded_Icon.png"
+    },
+    {
+      "name": "Wyvern Toxin",
+      "group": "Coatings",
+      "recipe": "Ashes of Wyvern Stinger · Source ingredient: Wyvern Stinger · Any Salt",
+      "rawIngredient": "Wyvern Stinger",
+      "specificExtract": "Ashes of Wyvern Stinger",
+      "icon": "https://bg3.wiki/w/images/3/36/COAT_Wyvern_Toxin_Unfaded_Icon.png"
+    }
+  ],
+  "entries": [
+    {
+      "name": "Acorn Truffle",
+      "description": "A favourite food of many forest animals, this hardy truffle is prized by druids and rangers.",
+      "category": "Alchemy",
+      "wikiTitle": "Acorn Truffle",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * In (some) barrels in the Apothecary's Cellar in Act 1",
+      "alchemyRecipes": [
+        "Potion of Animal Speaking"
+      ],
+      "alchemyExtract": "Essence of Acorn Truffle",
+      "icon": "https://bg3.wiki/w/images/1/11/Acorn_Truffle_Item_Icon.png"
+    },
+    {
+      "name": "Balsam",
+      "description": "Since balsam thrives on high mountaintops, the petals of this spindly flower can be carried for miles on a strong wind.",
+      "category": "Alchemy",
+      "wikiTitle": "Balsam",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Growing in the wild * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Potion of Greater Healing"
+      ],
+      "alchemyExtract": "Ashes of Balsam",
+      "icon": "https://bg3.wiki/w/images/0/09/Balsam_Item_Icon.png"
+    },
+    {
+      "name": "Autumncrocus",
+      "description": "Legend says the first crocus was created by Lathander, the Morninglord, which is why this delicate flower is always found stretching its petals towards the sun.",
+      "category": "Alchemy",
+      "wikiTitle": "Autumncrocus",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * Random loot throughout the game",
+      "alchemyRecipes": [
+        "Potion of Feather Fall"
+      ],
+      "icon": "https://bg3.wiki/w/images/c/cb/Autumncrocus_Item_Icon.png"
+    },
+    {
+      "name": "Behir Scales",
+      "description": "Parabolas of lightning spark around the corners of this hard, smooth scale.",
+      "category": "Alchemy",
+      "wikiTitle": "Behir Scales",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold in Act Three by: ** Horst at the Velveteen Elixir ** Popper at the Circus of the Last Days (occasionally)",
+      "alchemyRecipes": [
+        "Flashblinder"
+      ],
+      "alchemyExtract": "Sublimate of Behir Scales",
+      "icon": "https://bg3.wiki/w/images/7/75/Behir_Scales_Unfaded_Icon.png"
+    },
+    {
+      "name": "Beholder Iris",
+      "description": "Even glazed over in death, the eye's colour is vibrant and menacing.",
+      "category": "Alchemy",
+      "wikiTitle": "Beholder Iris",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by: ** Mystic Carrion ** Popper ** Stylin' Horst",
+      "alchemyRecipes": [
+        "Supreme Elixir of Arcane Cultivation"
+      ],
+      "icon": "https://bg3.wiki/w/images/e/e0/Beholder_Iris_Item_Icon.png"
+    },
+    {
+      "name": "Bixa Root",
+      "description": "This tough, inflexible reed grows in waterside clusters and makes for a fine building material.",
+      "category": "Alchemy",
+      "wikiTitle": "Bixa Root",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Three can be found in the garden of the House of Grief, along with two other Mergrass variants; Poppy Flower and Valerian Flower.",
+      "icon": "https://bg3.wiki/w/images/8/8c/Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Belladonna",
+      "description": "The old rhyme goes, 'If you fear the changer moon / If befall'd by curse or doom / If you're in the lycan's power / Seek the Belladonna flower.' Old rhymes are pretty but they get people killed more often than not. Belladonna blooms are poisonous.",
+      "category": "Alchemy",
+      "wikiTitle": "Belladonna",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants throughout the game, such as Derryth Bonecloak at the Myconid Colony in the Underdark * Growing in the wild throughout the game, including at 247.",
+      "alchemyRecipes": [
+        "Elixir of Peerless Focus"
+      ],
+      "alchemyExtract": "Sublimate of Belladonna",
+      "icon": "https://bg3.wiki/w/images/a/a9/Belladonna_Item_Icon.png"
+    },
+    {
+      "name": "Black Oleander",
+      "description": "Oft planted near graveyards and gifted to the sickest of patients, black oleander is believed to keep necrosis from spreading.",
+      "category": "Alchemy",
+      "wikiTitle": "Black Oleander",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Various places on the Ruined Battlefield",
+      "alchemyRecipes": [
+        "Elixir of Necrotic Resistance"
+      ],
+      "icon": "https://bg3.wiki/w/images/8/86/Black_Oleander_Item_Icon.png"
+    },
+    {
+      "name": "Bonecap",
+      "description": "An acidic, foul-tasting mushroom that can be found anywhere bodies have been buried. Or left to rot.",
+      "category": "Alchemy",
+      "wikiTitle": "Bonecap",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * On a dead Myconid at -146 * Various places in the wilderness",
+      "alchemyRecipes": [
+        "Basic Poison"
+      ],
+      "alchemyExtract": "Vitriol of Bonecap",
+      "icon": "https://bg3.wiki/w/images/4/49/Bonecap_Item_Icon.png"
+    },
+    {
+      "name": "Bullywug Trumpet",
+      "description": "A sour, unappetising mushroom, the Bullywug Trumpet is found anywhere dark and dank.",
+      "category": "Alchemy",
+      "wikiTitle": "Bullywug Trumpet",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Commonly in the underground and Underdark * In the Enclave Library * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Simple Toxin"
+      ],
+      "alchemyExtract": "Suspension of Bullywug Trumpet",
+      "icon": "https://bg3.wiki/w/images/1/13/Bullywug_Trumpet_Item_Icon.png"
+    },
+    {
+      "name": "Broken Machinery",
+      "description": "The cogs of this metal contraption are bent out of shape, the steel sheeting dented and cracked. Still, you can make out two sets of initials embossed into the copper: LDH and YTS.",
+      "category": "Alchemy",
+      "wikiTitle": "Broken Machinery",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In the Arcane Tower in the Underdark ** Five are out on the top floor of the tower ** The rest are in containers on the entry floor (including a container on the south balcony)",
+      "alchemyRecipes": [
+        "Elixir of Lightning Resistance"
+      ],
+      "icon": "https://bg3.wiki/w/images/8/8a/Broken_Machinery_C_Item_Icon.png"
+    },
+    {
+      "name": "Carrion Crawler Tentacle",
+      "description": "Waxy-white slime excretes from the pores of this prehensile tentacle.",
+      "category": "Alchemy",
+      "wikiTitle": "Carrion Crawler Tentacle",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In Balthazar's Outpost in the Gauntlet of Shar * Sold by merchants in Act Three (rarely) * Dead Crabs on the Grey Harbour Docks",
+      "alchemyRecipes": [
+        "Crawler Mucus"
+      ],
+      "alchemyExtract": "Salts of Carrion Crawler Tentacle",
+      "icon": "https://bg3.wiki/w/images/9/9f/Carrion_Crawler_Tentacle_Item_Icon.png"
+    },
+    {
+      "name": "Chasm Creeper",
+      "description": "These rare crystals can only be found at the edges of expansive chasms, where they cling stubbornly to vertical stone.",
+      "category": "Alchemy",
+      "wikiTitle": "Chasm Creeper",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Can be found around the paths of the Underdark, and are easily recognised as they emit a purple glow",
+      "alchemyRecipes": [
+        "Elixir of the Colossus"
+      ],
+      "alchemyExtract": "Salts of Chasm Creeper",
+      "icon": "https://bg3.wiki/w/images/1/11/Chasm_Creeper_Item_Icon.png"
+    },
+    {
+      "name": "Crystalline Lens",
+      "description": "When Held up to moonlight the lens seems to shift, as if its glass core reacts to the scant light of evening.",
+      "category": "Alchemy",
+      "wikiTitle": "Crystalline Lens",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Scrying Eye (creature) * At several points in the Arcane Tower * Sold by some merchants in Act Three",
+      "alchemyRecipes": [
+        "Elixir of Darkvision"
+      ],
+      "alchemyExtract": "Essence of Crystalline Lens",
+      "icon": "https://bg3.wiki/w/images/d/d7/Crystalline_Lens_Item_Icon.png"
+    },
+    {
+      "name": "Corpse Rose",
+      "description": "Missing its bottom jaw. And its body.",
+      "category": "Alchemy",
+      "wikiTitle": "Corpse Rose",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In the Brewer's Alchemist stash (4x) * Near a grave at 57 in Act Two * Carried by Balthazar in the Gauntlet of Shar * At the Graveyard (Lower City) * Sold by: ** Derryth Bonecloak in Myconid Colony in the Underdark (starting at Level 9){{verify}} ** Popper at the Circus of the Last Days ** Stylin' Horst in Wyrm's Crossing ** Zethino at the Circus of the Last Days",
+      "alchemyRecipes": [
+        "Thisobald's Brewed-Up Bellyglummer"
+      ],
+      "alchemyExtract": "Salts of Corpse Rose",
+      "icon": "https://bg3.wiki/w/images/4/4d/Corpse_Rose_Item_Icon.png"
+    },
+    {
+      "name": "Cloud Giant Finger",
+      "description": "The blood on this finger has clotted in strange swirling patterns - like a grotesque facsimile of cumulus clouds.",
+      "category": "Alchemy",
+      "wikiTitle": "Cloud Giant Finger",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants throughout the game, including (but not limited to): ** Act 1 *** Derryth Bonecloak at the Myconid Colony (Underdark) starting at Level 6 (25% chance) *** Blurg at the Myconid Colony (Underdark) after reaching Level 6 ** Act 2 *** Hoarding Merregon inside the Gauntlet of Shar *** In the Brewer's Alchemist stash ** Act 3 *** Mystic Carrion in the Lower City *** Stylin' Horst at his Potion Shop in Wyrm's Crossing *** Bareki, next to the Undercity Ruins waypoint",
+      "alchemyRecipes": [
+        "Elixir of Cloud Giant Strength"
+      ],
+      "icon": "https://bg3.wiki/w/images/8/88/Cloud_Giant_Finger_Item_Icon.png"
+    },
+    {
+      "name": "Daggerroot",
+      "description": "Known as 'the executioner's garnish', this herb flourishes in blood-fed soil and has flavoured countless final meals.",
+      "category": "Alchemy",
+      "wikiTitle": "Daggerroot",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Found growing in the wild on the Ravaged Beach, among various other locations. * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark and various other merchants later throughout the game",
+      "alchemyRecipes": [
+        "Oil of Accuracy"
+      ],
+      "alchemyExtract": "Ashes of Daggerroot",
+      "icon": "https://bg3.wiki/w/images/3/32/Daggerroot_Unfaded_Icon.png"
+    },
+    {
+      "name": "Divine Bone Shard",
+      "description": "The hairs on your arms stand on end each time you touch this remnant of a once-god.",
+      "category": "Alchemy",
+      "wikiTitle": "Divine Bone Shard",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* 1x {{-}} Carried by Zar'an in the Hatchery at Crèche Y'llek * 2x {{-}} in the Astral Plane upon entering it at Crèche Y'llek * 3x {{-}} in the Astral Plane upon entering it at the start of Act Three when being ambushed by Githyanki, two on islands floating around the skull, and one on the skull island where Orpheus is imprisoned * 1x {{-}} inside a wooden trunk in a shed north of The Velveteen Elixir at Wyrm's Crossing * Sold by various merchants once the party reaches sufficient level, including: ** Bareki at the Undercity Ruins in the Lower City Sewers ** Derryth Bonecloak (after Level 6) in the Underdark ** Helsik in the Devil's Fee in the Lower City ** Popper at the Circus of the Last Days in Rivington ** Thrumbo at Philgrave's Mansion in the Lower City",
+      "alchemyRecipes": [
+        "Elixir of Universal Resistance"
+      ],
+      "icon": "https://bg3.wiki/w/images/1/13/Divine_Bone_Shard_Item_Icon.png"
+    },
+    {
+      "name": "Dragon Egg Mushroom",
+      "description": "It's unclear whether the beautiful patterns on these mushrooms are the result of magic or nature, but the fungus is often sought out by smiths, who mix it into a paste to prevent burns.",
+      "category": "Alchemy",
+      "wikiTitle": "Dragon Egg Mushroom",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Found throughout the game * Sold by various merchants throughout the game including, Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Elixir of Fire Resistance"
+      ],
+      "alchemyExtract": "Ashes of Dragon Egg Mushroom",
+      "icon": "https://bg3.wiki/w/images/0/02/Dragon_Egg_Mushroom_Item_Icon.png"
+    },
+    {
+      "name": "Eagle Feather",
+      "description": "One of thousands of feathers adorning a giant eagle, you can only hope this graced an elegant part of the bird, such as the wing, and not an indignant part, such as the left armpit.",
+      "category": "Alchemy",
+      "wikiTitle": "Eagle Feather",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Giant Eagles and Ancient Giant Eagles",
+      "alchemyRecipes": [
+        "Potion of Flying"
+      ],
+      "icon": "https://bg3.wiki/w/images/6/60/Eagle_Feather_Item_Icon.png"
+    },
+    {
+      "name": "Fire Amber",
+      "description": "Lambent from within, these crystals are the very progenitors of flame.",
+      "category": "Alchemy",
+      "wikiTitle": "Fire Amber",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants after the party has sufficiently progressed throughout the game, such as Derryth Bonecloak at the Myconid Colony in the Underdark * In the basement and third floor of Felogyr's Fireworks",
+      "alchemyRecipes": [
+        "Alchemist's Fire"
+      ],
+      "alchemyExtract": "Ashes of Fire Amber",
+      "icon": "https://bg3.wiki/w/images/5/5d/Fire_Amber_Item_Icon.png"
+    },
+    {
+      "name": "Frost Salamander Tongue",
+      "description": "Thanks to their mindless appetite for heat, frost salamanders are often tricked by bronze-forged azers. The azers set a campfire blazing, and the salamanders slither toward it hungrily, only to be ripped apart for their alchemically valuable tongues.",
+      "category": "Alchemy",
+      "wikiTitle": "Frost Salamander Tongue",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Brewer's Alchemist stash - the exact location of which can be found in The Waning Moon from notes; it is dug up from under a Dirt Mound in a patch underneath a house between House of Healing and road to Baldur's Gate entrance to the south * Another tongue can be found in the \"Offering to Mystra\" box in the basement of Stormshore Tabernacle * Sold by Helsik at the Devil's Fee * Sold by Thrumbo at Philgrave's Mansion",
+      "alchemyRecipes": [
+        "Oil of Freezing"
+      ],
+      "alchemyExtract": "Suspension of Frost Salamander Tongue",
+      "icon": "https://bg3.wiki/w/images/8/8a/Frost_Salamander_Tongue_Item_Icon.png"
+    },
+    {
+      "name": "Frosted Ear",
+      "description": "Were it not for its determination not to melt and distinguishable (almost human) earlobe, this might well be a normal chunk of ice.",
+      "category": "Alchemy",
+      "wikiTitle": "Frosted Ear",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants",
+      "alchemyRecipes": [
+        "Arsonist's Oil"
+      ],
+      "icon": "https://bg3.wiki/w/images/1/13/Frosted_Ear_Item_Icon.png"
+    },
+    {
+      "name": "Gauth Eyestalk",
+      "description": "Though noticeably smaller than a beholder's, gauth's eyestalks can likewise shoot terrifying rays. Luckily this one has long perished.",
+      "category": "Alchemy",
+      "wikiTitle": "Gauth Eyestalk",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by merchants later in the game, including: ** Blurg in The Lodge of the Lower City ** Popper the kobold in Rivington ** Stylin' Horst in Rivington * One is located in Balthazar's room in the Gauntlet of Shar * One is located in a room north of Stylin' Horst's Potion Shop in Rivington",
+      "alchemyRecipes": [
+        "Elixir of Battlemage's Power"
+      ],
+      "icon": "https://bg3.wiki/w/images/f/f8/Gauth_Eyestalk_Item_Icon.png"
+    },
+    {
+      "name": "Gremsihka Tail",
+      "description": "When a feckless spellcaster attempts to create life and bungles it, the result is a gremishka. Spiteful and malformed, gremishkas hold a particular loathing for practitioners of the arcane arts, a dark reflection of typical parental love.",
+      "category": "Alchemy",
+      "wikiTitle": "Gremishka Tail",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Gremishka (creature) * Sold by merchants later in the game",
+      "icon": "https://bg3.wiki/w/images/a/a5/Gremishka_Tail_Item_Icon.png"
+    },
+    {
+      "name": "Harpy Feather",
+      "description": "This feather is surprisingly soft and well-maintained.",
+      "category": "Alchemy",
+      "wikiTitle": "Harpy Feather",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Three can be looted from Rocky's sarcophagus in the Durinbold Mausoleum. * One can be found near a large nest on the northwestern roof of the House of Healing, along with some other ingredients.",
+      "icon": "https://bg3.wiki/w/images/1/19/Pegasus_Feather_Item_Icon.png"
+    },
+    {
+      "name": "Hastening Spores",
+      "description": "These spores sprint about in lively cyclic patterns, tiny runners on a fungal track.",
+      "category": "Alchemy",
+      "wikiTitle": "Hastening Spores",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Sold by: * Derryth Bonecloak and Blurg at the Myconid Colony in the Underdark upon reaching Level 6 * Horst at The Velveteen Elixir in Wyrm's Crossing * Mystic Carrion and Thrumbo at Philgrave's Mansion in the Lower City * Sticky Dondo in the Guildhall in the Undercity",
+      "alchemyRecipes": [
+        "Haste Spore Grenade"
+      ],
+      "icon": "https://bg3.wiki/w/images/a/a8/Hastening_Spores_Item_Icon.png"
+    },
+    {
+      "name": "Heart-Shaped Rock",
+      "description": "Upon death, a magma mephit's cardiac system floods with sulphur, cooling and hardening it into a vulcanised geode aglitter with scarlet stone.",
+      "category": "Alchemy",
+      "wikiTitle": "Heart-Shaped Rock",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Magma Mephits * Carried by the Lava Elemental (creature)",
+      "alchemyRecipes": [
+        "Oil of Combustion"
+      ],
+      "icon": "https://bg3.wiki/w/images/a/a8/Heart-Shaped_Rock_Item_Icon.png"
+    },
+    {
+      "name": "Hill Giant Finger",
+      "description": "Thanks to the finger's vast size, each spot of fungus, mud, and flesh stuck beneath its fingernail is agonisingly clear.",
+      "category": "Alchemy",
+      "wikiTitle": "Hill Giant Finger",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants throughout the game, including (but not limited to) Derryth Bonecloak and Blurg at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Elixir of Hill Giant Strength"
+      ],
+      "icon": "https://bg3.wiki/w/images/0/0f/Hill_Giant_Finger_Item_Icon.png"
+    },
+    {
+      "name": "Hyena Ear",
+      "description": "Soft, patchy and ragged, the ears are one of the most appealing parts of a hyena's corpse.",
+      "category": "Alchemy",
+      "wikiTitle": "Hyena Ear",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In alchemy labs * Carried by Hyena and Gnoll * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Potion of Speed"
+      ],
+      "alchemyExtract": "Ashes of Hyena Ear",
+      "icon": "https://bg3.wiki/w/images/b/bd/Hyena_Ear_Item_Icon.png"
+    },
+    {
+      "name": "Imp Patagium",
+      "description": "A red membrance that once spanned an imp's wings. Up close, you can see tiny black veins that once supplied the fiend with blood and power.",
+      "category": "Alchemy",
+      "wikiTitle": "Imp Patagium",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Sold by:Stock randomly renews for these vendors over long rests. * Sticky Dondo in the Guildhall at 755 * Bareki in the Undercity Ruins at 936",
+      "alchemyRecipes": [
+        "Potion of Invisibility"
+      ],
+      "alchemyExtract": "Ashes of Imp Patagium",
+      "icon": "https://bg3.wiki/w/images/1/10/Imp_Patagium_Item_Icon.png"
+    },
+    {
+      "name": "Hook",
+      "description": "A bone hook splattered with blood. It is cold and sharp, like a whetted blade.",
+      "category": "Alchemy",
+      "wikiTitle": "Hook",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Hook Horror (creature) * Sold by Popper",
+      "alchemyRecipes": [
+        "Elixir of Vigilance"
+      ],
+      "icon": "https://bg3.wiki/w/images/5/57/Hook_Item_Icon.png"
+    },
+    {
+      "name": "Intellect Devourer Cerebellum",
+      "description": "Intellect Devourers are born of the brains of humanoid mind flayer thralls. So what is it, exactly, that you are holding in your hands?",
+      "category": "Alchemy",
+      "wikiTitle": "Intellect Devourer Cerebellum",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Omeluum at the Myconid Colony in the Underdark * On Intellect Devourers and Intellect Gluttons",
+      "alchemyRecipes": [
+        "Elixir of Psychic Resistance"
+      ],
+      "icon": "https://bg3.wiki/w/images/d/d4/Intellect_Devourer_Cerebellum_Item_Icon.png"
+    },
+    {
+      "name": "Laculite",
+      "description": "This crystal was formed in the twisting, murky waters within the Underdark. Often mined by Deep Gnomes, though considered less valuable than their preferred rubies.",
+      "category": "Alchemy",
+      "wikiTitle": "Laculite",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* On the beach at the Decrepit Village in the Underdark",
+      "alchemyRecipes": [
+        "Greater Elixir of Arcane Cultivation"
+      ],
+      "alchemyExtract": "Suspension of Laculite",
+      "icon": "https://bg3.wiki/w/images/7/72/Laculite_Item_Icon.png"
+    },
+    {
+      "name": "Lolth's Candle",
+      "description": "Glowing stones that flicker in the darkness. Some travellers find themselves following these lights, thinking they might have found a friendly fellow wanderer.",
+      "category": "Alchemy",
+      "wikiTitle": "Lolth's Candle",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Several can be found in the Bibberbang field west of the Myconid Colony in the Underdark * One can be found in the Arcane Tower on the table by the garden entrance to the tower * One can be found on the corpse of Xargrim at -90",
+      "alchemyRecipes": [
+        "Malice"
+      ],
+      "alchemyExtract": "Vitriol of Lolth's Candle",
+      "icon": "https://bg3.wiki/w/images/6/6d/Lolth%27s_Candle_Item_Icon.png"
+    },
+    {
+      "name": "Ki-Rin Hair",
+      "description": "Many view ki-rin as heralds of good fortune, and for good reason - even the tiniest strand of their hair holds a wealth of benevolent magic.",
+      "category": "Alchemy",
+      "wikiTitle": "Ki-Rin Hair",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants later in the game, such as Blurg and Derryth Bonecloak at the Myconid Colony in the Underdark, after reaching Level 6",
+      "alchemyRecipes": [
+        "Potion of Supreme Healing"
+      ],
+      "alchemyExtract": "Sublimate of Ki-Rin Hair",
+      "icon": "https://bg3.wiki/w/images/5/50/Ki-Rin_Hair_Item_Icon.png"
+    },
+    {
+      "name": "Mergrass",
+      "description": "This tough, inflexible reed grows in waterside clusters and makes for a fine building material.",
+      "category": "Alchemy",
+      "wikiTitle": "Mergrass",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * On the Ravaged Beach",
+      "alchemyRecipes": [
+        "Potion of Mind Reading"
+      ],
+      "alchemyExtract": "Suspension of Mergrass",
+      "icon": "https://bg3.wiki/w/images/8/8c/Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Night Orchid",
+      "description": "Night Orchid is an Alchemical Ingredient. Combine 3 of these to create a Solution of Night Orchid, which is used to make Superior Elixir of Arcane Cultivation.",
+      "category": "Alchemy",
+      "wikiTitle": "Night Orchid",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Throughout the Ruined Battlefield, including at 175, 35, and 104 * Sold by Popper * In the hidden Night Orchid Cave within the Cloister of Sombre Embrace",
+      "alchemyRecipes": [
+        "Superior Elixir of Arcane Cultivation"
+      ],
+      "alchemyExtract": "Solution of Night Orchid",
+      "icon": "https://bg3.wiki/w/images/0/02/Night_Orchid_Item_Icon.png"
+    },
+    {
+      "name": "Nightlight",
+      "description": "A mere remnant of a living light source.",
+      "category": "Alchemy",
+      "wikiTitle": "Nightlight Frond",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Harvested from Nightlight mushrooms in the Underdark with 12 * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * On a dead Myconid at -146",
+      "alchemyExtract": "Essence of Nightlight",
+      "icon": "https://bg3.wiki/w/images/f/f0/Nightlight_Frond_Item_Icon.png"
+    },
+    {
+      "name": "Mud Mephit Wing",
+      "description": "Formed out of soft clay and mud, this wing is already starting to fall apart.",
+      "category": "Alchemy",
+      "wikiTitle": "Mud Mephit Wing",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants throughout the game, including Blurg and Derryth Bonecloak at the Myconid Colony in the Underdark * Dropped by Mud Mephits",
+      "alchemyRecipes": [
+        "Elixir of Poison Resistance"
+      ],
+      "icon": "https://bg3.wiki/w/images/f/f3/Mud_Mephit_Wing_Item_Icon.png"
+    },
+    {
+      "name": "Mugwort",
+      "description": "A bane of farmers and gardeners, this quick-growing weed reappears mere days after being cut.",
+      "category": "Alchemy",
+      "wikiTitle": "Mugwort",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In alchemy labs and abandoned homes, such as Old Garlow's Place in the Lower City * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Antidote"
+      ],
+      "alchemyExtract": "Salts of Mugwort",
+      "icon": "https://bg3.wiki/w/images/3/35/Mugwort_Item_Icon.png"
+    },
+    {
+      "name": "Nothic Eye",
+      "description": "Gazing glassily up at you, bereft of humanity, this bulbous eye evokes the gruesome curse of the nothics. For they were not always monsters, but wizards who groped too greedily for power.",
+      "category": "Alchemy",
+      "wikiTitle": "Nothic Eye",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Elixir of See Invisibility"
+      ],
+      "alchemyExtract": "Suspension of Nothic Eye",
+      "icon": "https://bg3.wiki/w/images/e/e5/Nothic_Eye_Item_Icon.png"
+    },
+    {
+      "name": "Ochre Jelly Slime",
+      "description": "Undulations throb through this ooze, giving it the look of a larval sack imbued with hideous animation.",
+      "category": "Alchemy",
+      "wikiTitle": "Ochre Jelly Slime",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Ochre Jelly * Sold by some merchants later in the game",
+      "alchemyRecipes": [
+        "Elixir of Guileful Movement"
+      ],
+      "icon": "https://bg3.wiki/w/images/c/c8/GRN_Flammable_Slime_Bomb_Unfaded_Icon.png"
+    },
+    {
+      "name": "Owlbear Beak",
+      "description": "Careful, this owlbear still has some bite.",
+      "category": "Alchemy",
+      "wikiTitle": "Owlbear Beak",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* One can be looted from Zina's sarcophagus in the Durinbold Mausoleum.",
+      "icon": "https://bg3.wiki/w/images/2/26/Owlbear_Beak_Unfaded_Icon.png"
+    },
+    {
+      "name": "Pegasus Feather",
+      "description": "This feather would make the softest duck down feel like hedgehog quills.",
+      "category": "Alchemy",
+      "wikiTitle": "Pegasus Feather",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants once the party has sufficiently progressed in level in the game, including Blurg and Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Elixir of Heroism"
+      ],
+      "icon": "https://bg3.wiki/w/images/1/19/Pegasus_Feather_Item_Icon.png"
+    },
+    {
+      "name": "Poison Spore",
+      "description": "Although they abhor violence, myconids boast both poisonous gas pockets and pulverizing limbs - a clear indicator that the harsh reality of the Underdark has equipped them with defensive capabilities, should that abhorrence slacken.",
+      "category": "Alchemy",
+      "wikiTitle": "Poison Spore",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * On a dead Myconid at -146",
+      "alchemyRecipes": [
+        "Noxious Spore Grenade"
+      ],
+      "icon": "https://bg3.wiki/w/images/d/d3/Poison_Spore_Item_Icon.png"
+    },
+    {
+      "name": "Planetar Feather",
+      "description": "This ivory quill could be mistaken for a plain eagle feather, if not for the power pulsating off it in waves.",
+      "category": "Alchemy",
+      "wikiTitle": "Planetar Feather",
+      "alchemyGroup": "Ingredients",
+      "alchemyRecipes": [
+        "Potion of Angelic Slumber"
+      ],
+      "alchemyExtract": "Essence of Planetar Feather",
+      "icon": "https://bg3.wiki/w/images/b/bf/Planetar_Feather_Item_Icon.png"
+    },
+    {
+      "name": "Poppy Flower",
+      "description": "This tough, inflexible reed grows in waterside clusters and makes for a fine building material.",
+      "category": "Alchemy",
+      "wikiTitle": "Poppy Flower",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Three can be found in the garden of the House of Grief, along with two other Mergrass variants; Bixa Root and Valerian Flower. One can also be found at the base of the stairs leading to the Mortuary at the east end of the Graveyard (Lower City).",
+      "icon": "https://bg3.wiki/w/images/8/8c/Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Purple Worm Gullet",
+      "description": "Tiny veins of gemstone marble the gullet - evidence of the worm's unique (and highly toxic) digestive system.",
+      "category": "Alchemy",
+      "wikiTitle": "Purple Worm Gullet",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* In the backroom of the Waning Moon * Sold by Popper",
+      "alchemyRecipes": [
+        "Purple Worm Toxin"
+      ],
+      "icon": "https://bg3.wiki/w/images/2/22/Purple_Worm_Gullet_Item_Icon.png"
+    },
+    {
+      "name": "Shadowroot Sac",
+      "description": "A small sac harvested from a faintly glowing mushroom. It smells incomprehensibly vile.",
+      "category": "Alchemy",
+      "wikiTitle": "Shadowroot Sac",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Can be found throughout the Shadow-Cursed Lands",
+      "alchemyRecipes": [
+        "Elixir of Viciousness"
+      ],
+      "alchemyExtract": "Vitriol of Shadowroot Sac",
+      "icon": "https://bg3.wiki/w/images/2/25/Shadowroot_Sac_Item_Icon.png"
+    },
+    {
+      "name": "Putrefied Tumour",
+      "description": "Whatever corpse this fetid cancer was once attached to has long rotted away, leaving only its affliction behind.",
+      "category": "Alchemy",
+      "wikiTitle": "Putrefied Tumour",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by various creatures in the Shadow-Cursed Lands",
+      "alchemyRecipes": [
+        "Oil of Bane"
+      ],
+      "alchemyExtract": "Vitriol of Putrefied Tumour",
+      "icon": "https://bg3.wiki/w/images/0/07/Putrefied_Tumour_Item_Icon.png"
+    },
+    {
+      "name": "Silk Gland",
+      "description": "Thick and bloodied, this fleshy sack is plump and fresh.",
+      "category": "Alchemy",
+      "wikiTitle": "Silk Gland",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * Carried by Phase Spider and the Phase Spider Matriarch",
+      "alchemyRecipes": [
+        "Web Grenade"
+      ],
+      "icon": "https://bg3.wiki/w/images/2/2d/Silk_Gland_Item_Icon.png"
+    },
+    {
+      "name": "Rogue's Morsel",
+      "description": "Frequently referenced in tales of roguish adventures, this mushroom can be quite the boon for those who know how to use it.",
+      "category": "Alchemy",
+      "wikiTitle": "Rogue's Morsel",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * In alchemy labs and in the wilderness",
+      "alchemyRecipes": [
+        "Potion of Healing"
+      ],
+      "alchemyExtract": "Salts of Rogue's Morsel",
+      "icon": "https://bg3.wiki/w/images/a/aa/Rogue%27s_Morsel_Item_Icon.png"
+    },
+    {
+      "name": "Sylvan Stone",
+      "description": "Found where the Feywild touches the Material Plane, these crystals are warm to the touch, as if they've been basking in the Feywild's ever-setting sun.",
+      "category": "Alchemy",
+      "wikiTitle": "Sylvan Stone",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak and Blurg at the Myconid Colony in the Underdark * Overgrown Tunnel, the hag's lair; many of them can be found near the Mushroom Circle, which teleports its users to the Underdark",
+      "alchemyRecipes": [
+        "Oil of Diminution"
+      ],
+      "alchemyExtract": "Essence of Sylvan Stone",
+      "icon": "https://bg3.wiki/w/images/e/ee/Sylvan_Stone_Item_Icon.png"
+    },
+    {
+      "name": "Timmask Spores",
+      "description": "Spores are the Timmask's main defence system, poisoning and befuddling any who inhale them.",
+      "category": "Alchemy",
+      "wikiTitle": "Timmask Spores (ingredient)",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by: ** Omeluum at the Ebonlake Grotto in the Underdark ** Blurg at the Myconid Colony in the Underdark after reaching Level 6 * In the Arcane Tower in the Underdark * On Timmask mushrooms in the Underdark",
+      "alchemyExtract": "Essence of Timmask Spores",
+      "icon": "https://bg3.wiki/w/images/3/3f/Timmask_Spores_Item_Icon.png"
+    },
+    {
+      "name": "Tongue of Madness",
+      "description": "This long, slender mushroom is named both for its resemblance to an oversized human tongue and the effect it has on that organ when consumed.",
+      "category": "Alchemy",
+      "wikiTitle": "Tongue of Madness",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by the following merchants at higher character levels: ** Auntie Ethel at the Riverside Teahouse in the Wilderness ** Derryth Bonecloak at the Myconid Colony in the Underdark ** Omeluum at the Myconid Colony in the Underdark ** Popper at the Circus of the Last Days in Rivington * On the First floor (Greenhouse) and in the basement of the Arcane Tower in the Underdark",
+      "alchemyRecipes": [
+        "Tadpole Elixir"
+      ],
+      "alchemyExtract": "Sublimate of Tongue of Madness",
+      "icon": "https://bg3.wiki/w/images/3/35/Tongue_of_Madness_Item_Icon.png"
+    },
+    {
+      "name": "Swarming Toadstool",
+      "description": "Often found swarming around larger fungi, the Swarming Toadstool can grow anywhere it can find some company.",
+      "category": "Alchemy",
+      "wikiTitle": "Swarming Toadstool",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Throughout the game, most commonly in the Underdark * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark. * In the Brewer's Alchemist stash in a dirt mound in a patch underneath a house between the House of Healing and the road to Baldur's Gate entrance to the south of Reithwin",
+      "alchemyRecipes": [
+        "Drow Poison"
+      ],
+      "alchemyExtract": "Essence of Swarming Toadstool",
+      "icon": "https://bg3.wiki/w/images/7/71/Swarming_Toadstool_Item_Icon.png"
+    },
+    {
+      "name": "Venomous Fang",
+      "description": "A sheen of clear poison coats this fang, like a wasp's autumnal stinger.",
+      "category": "Alchemy",
+      "wikiTitle": "Venomous Fang",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark",
+      "alchemyRecipes": [
+        "Serpent Fang Toxin"
+      ],
+      "icon": "https://bg3.wiki/w/images/c/c1/Venomous_Fang_Item_Icon.png"
+    },
+    {
+      "name": "Viridian Crystal",
+      "description": "Known as 'Fool's Emerald', Viridian Crystal is a brittle, sharp crystal that is difficult to craft but has some uses in alchemy.",
+      "category": "Alchemy",
+      "wikiTitle": "Viridian Crystal",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Can be found in the Underdark * Sold by Derryth Bonecloak at the Myconid Colony in the Underdark.",
+      "alchemyRecipes": [
+        "Diluted Oil of Sharpness"
+      ],
+      "alchemyExtract": "Salts of Viridian Crystal",
+      "icon": "https://bg3.wiki/w/images/f/f0/Viridian_Crystal_Item_Icon.png"
+    },
+    {
+      "name": "Valerian Flower",
+      "description": "This tough, inflexible reed grows in waterside clusters and makes for a fine building material.",
+      "category": "Alchemy",
+      "wikiTitle": "Valerian Flower",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "Three can be found in the garden of the House of Grief, along with two other Mergrass variants; Bixa Root and Poppy Flower.",
+      "icon": "https://bg3.wiki/w/images/8/8c/Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Unicorn Horn",
+      "description": "The unicorn's blood is dried to the ivory base, defiling the holy magic of the beast's horn.",
+      "category": "Alchemy",
+      "wikiTitle": "Unicorn Horn",
+      "alchemyGroup": "Ingredients",
+      "alchemyRecipes": [
+        "Potion of Angelic Reprieve"
+      ],
+      "alchemyExtract": "Essence of Unicorn Horn",
+      "icon": "https://bg3.wiki/w/images/4/48/Unicorn_Horn_Unfaded_Icon.png"
+    },
+    {
+      "name": "Weavemoss",
+      "description": "Colloquially known as Wizard's Beard, this lichen can grow wherever the Weave is strong.",
+      "category": "Alchemy",
+      "wikiTitle": "Weavemoss",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by various merchants throughout the game, such as Derryth Bonecloak at the Myconid Colony in the Underdark * Random loot throughout the game",
+      "alchemyRecipes": [
+        "Elixir of Arcane Cultivation"
+      ],
+      "alchemyExtract": "Vitriol of Weavemoss",
+      "icon": "https://bg3.wiki/w/images/d/d5/Weavemoss_Item_Icon.png"
+    },
+    {
+      "name": "Wood Bark",
+      "description": "Twisted and knobbled in nodes of hardened sap, the grain of this bark manages to be both rough and smooth to the touch.",
+      "category": "Alchemy",
+      "wikiTitle": "Wood Bark",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by: ** Blurg and Derryth Bonecloak in the Myconid Colony in the Underdark ** Other merchants throughout the game * Carried by: ** Blight ** Shambling Mound ** Wood Woad",
+      "alchemyRecipes": [
+        "Elixir of Barkskin"
+      ],
+      "icon": "https://bg3.wiki/w/images/4/43/Wood_Bark_Item_Icon.png"
+    },
+    {
+      "name": "Wispweed",
+      "description": "Spurned by unrequited loves, young men often get drunk and wander into the swamps like Silverwisp along the Sword Coast. Some vanish. This plant is rumoured to be strands of hair from their drowned scalps.",
+      "category": "Alchemy",
+      "wikiTitle": "Wispweed",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Sold by Derryth Bonecloak at the Myconid Colony in the Underdark * Random loot throughout the game",
+      "alchemyRecipes": [
+        "Potion of Glorious Vaulting"
+      ],
+      "alchemyExtract": "Sublimate of Wispweed",
+      "icon": "https://bg3.wiki/w/images/7/72/Wispweed_Item_Icon.png"
+    },
+    {
+      "name": "Worg Fang",
+      "description": "This fang stinks of rotting flesh and death - the remnants of this worg's many hunts.",
+      "category": "Alchemy",
+      "wikiTitle": "Worg Fang",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Carried by Worgs * Sold by certain traders, such as Derryth Bonecloak in the Myconid Colony in the Underdark * Always restocked by Olak, Puce, Rindle, and Bal who are guarding the entrance to the Goblin Camp",
+      "alchemyRecipes": [
+        "Elixir of Bloodlust"
+      ],
+      "alchemyExtract": "Ashes of Worg Fang",
+      "icon": "https://bg3.wiki/w/images/0/09/Worg_Fang_Item_Icon.png"
+    },
+    {
+      "name": "Xorn Scales",
+      "description": "Though consisting mostly of plain rock, these thick scales have a crystalline shine no stone on the Material Plane possesses.",
+      "category": "Alchemy",
+      "wikiTitle": "Xorn Scales",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Various merchants",
+      "alchemyRecipes": [
+        "Remedial Potion"
+      ],
+      "alchemyExtract": "Salts of Xorn Scales",
+      "icon": "https://bg3.wiki/w/images/9/9a/Xorn_Scales_Item_Icon.png"
+    },
+    {
+      "name": "Wyvern Stinger",
+      "description": "Strings of dry gristly sinew cling to the attenuated stump of this stinger.",
+      "category": "Alchemy",
+      "wikiTitle": "Wyvern Stinger",
+      "alchemyGroup": "Ingredients",
+      "alchemyWhereToFind": "* Brewer's Alchemist stash in the Waning Moon",
+      "alchemyRecipes": [
+        "Wyvern Toxin"
+      ],
+      "alchemyExtract": "Ashes of Wyvern Stinger",
+      "icon": "https://bg3.wiki/w/images/7/73/Wyvern_Stinger_Item_Icon.png"
+    },
+    {
+      "name": "Yellow Musk Creeper Petals",
+      "description": "Don't be fooled by the attractive musky scent these petals produce - these flowers feast on humanoid corpses.",
+      "category": "Alchemy",
+      "wikiTitle": "Yellow Musk Creeper Petals",
+      "alchemyGroup": "Ingredients",
+      "alchemyRecipes": [
+        "Potion of Superior Healing"
+      ],
+      "icon": "https://bg3.wiki/w/images/0/09/Yellow_Musk_Creeper_Petals_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Balsam",
+      "description": "These partially burned balsam leaves exude a smoky, sweet fragrance.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Balsam",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Balsam",
+      "alchemyRecipes": [
+        "Potion of Greater Healing"
+      ],
+      "alchemyIngredient": "Balsam",
+      "icon": "https://bg3.wiki/w/images/7/74/Extract_Ashes_Blue_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Dried Fey Flower",
+      "description": "Floral needles of scent thread the air around this extract with the smell of honeysuckle, balmy eucalyptus, croacus and cyclamen.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Dried Fey Flower",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Inside a safe in Old Garlow's Place",
+      "alchemyRecipes": [
+        "Hag's Bane"
+      ],
+      "alchemyIngredient": "Dried Fey Flower",
+      "icon": "https://bg3.wiki/w/images/b/b8/Extract_Ashes_Blue-green_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Dragon Egg Mushroom",
+      "description": "It is one of life's small ironies that the first step in creating an Elixir of Fire Resistance includes burning its main ingredient.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Dragon Egg Mushroom",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Dragon Egg Mushrooms",
+      "alchemyRecipes": [
+        "Elixir of Fire Resistance"
+      ],
+      "alchemyIngredient": "Dragon Egg Mushroom",
+      "icon": "https://bg3.wiki/w/images/1/1a/Extract_Ashes_Green_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Fire Amber",
+      "description": "Crackling, stinging sparks leap from these cinder when you stir them with a finger - but the ashes themselves remain almost unnaturally cold.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Fire Amber",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Fire Ambers",
+      "alchemyRecipes": [
+        "Alchemist's Fire"
+      ],
+      "alchemyIngredient": "Fire Amber",
+      "icon": "https://bg3.wiki/w/images/3/35/Extract_Ashes_Orange_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Daggerroot",
+      "description": "Often fed with the blood of the fallen, daggerroot is said to help create new victims - a property that only intensifies once the plant has been dried and burned.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Daggerroot",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Daggerrouts.",
+      "alchemyRecipes": [
+        "Oil of Accuracy"
+      ],
+      "alchemyIngredient": "Daggerroot",
+      "icon": "https://bg3.wiki/w/images/3/35/Extract_Ashes_Orange_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Mephit Magma",
+      "description": "The oil refined from these ashes will act as a catalyst for the prettiest bursts of furnace-hot flame.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Mephit Magma",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Heart Shaped Rocks",
+      "alchemyRecipes": [
+        "Oil of Combustion"
+      ],
+      "alchemyIngredient": "Mephit Magma",
+      "icon": "https://bg3.wiki/w/images/3/35/Extract_Ashes_Orange_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Hyena Ear",
+      "description": "Molten earwax clings to the ashes, turning the whole into a sticky goo.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Hyena Ear",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Hyena Ears",
+      "alchemyRecipes": [
+        "Potion of Speed"
+      ],
+      "alchemyIngredient": "Hyena Ear",
+      "icon": "https://bg3.wiki/w/images/7/7f/Extract_Ashes_Pink_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Imp Patagium",
+      "description": "Native to the Nine Hells, imps barely burn, but once they have perished, their wings turn to ash surprisingly easily.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Imp Patagium",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Imp Patagium",
+      "alchemyRecipes": [
+        "Potion of Invisibility"
+      ],
+      "alchemyIngredient": "Imp Patagium",
+      "icon": "https://bg3.wiki/w/images/7/7f/Extract_Ashes_Pink_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Worg Fang",
+      "description": "Worgs, unlike phoenixes, do not rise from the ashes - but their savagery does.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Worg Fang",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Worg Fangs",
+      "alchemyRecipes": [
+        "Elixir of Bloodlust"
+      ],
+      "alchemyIngredient": "Worg Fang",
+      "icon": "https://bg3.wiki/w/images/7/7f/Extract_Ashes_Pink_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Acorn Truffle",
+      "description": "Like the truffle it is extracted from, this spirit's vibrant colour and smell seem to entice all kinds of critters.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Acorn Truffle",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Acorn Truffles",
+      "alchemyRecipes": [
+        "Potion of Animal Speaking"
+      ],
+      "alchemyIngredient": "Acorn Truffle",
+      "icon": "https://bg3.wiki/w/images/7/78/Essence_of_Acorn_Truffle_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Beholder Eye",
+      "description": "This vivid resin gleams with the promise of power.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Beholder Eye",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Beholder Irises",
+      "alchemyRecipes": [
+        "Supreme Elixir of Arcane Cultivation"
+      ],
+      "alchemyIngredient": "Beholder Eye",
+      "icon": "https://bg3.wiki/w/images/c/ca/Essence_of_Beholder_Eye_Item_Icon.png"
+    },
+    {
+      "name": "Ashes of Wyvern Stinger",
+      "description": "Far more bestial than their draconic cousins, Wyverns fill the sky with shrieks like some nightmarish airborne choir, their stingers adrip with beats of poison.",
+      "category": "Alchemy",
+      "wikiTitle": "Ashes of Wyvern Stinger",
+      "alchemyGroup": "Extracts / Ashes",
+      "alchemyWhereToFind": "* Crafted by combining 3 Wyvern Stingers",
+      "alchemyRecipes": [
+        "Wyvern Toxin"
+      ],
+      "alchemyIngredient": "Wyvern Stinger",
+      "icon": "https://bg3.wiki/w/images/3/35/Extract_Ashes_Orange_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Crystalline Lens",
+      "description": "Catching the eye, a few quartzy grains of crystal linger.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Crystalline Lens",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Crystalline Lenses",
+      "alchemyRecipes": [
+        "Elixir of Darkvision"
+      ],
+      "alchemyIngredient": "Crystalline Lens",
+      "icon": "https://bg3.wiki/w/images/3/35/Essence_of_Crystalline_Lens_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Planetar Feather",
+      "description": "Ivory with the slightest hint of emerald - and thrumming with magic.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Planetar Feather",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Planetar Feathers",
+      "alchemyRecipes": [
+        "Potion of Angelic Slumber"
+      ],
+      "alchemyIngredient": "Planetar Feather",
+      "icon": "https://bg3.wiki/w/images/5/5e/Essence_of_Planetar_Feather_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Gremishka Tail",
+      "description": "Discorporated from its shape, the tail essence gestures to the futility and endurance of conflict between spellcasters and their more sentient failures.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Gremishka Tail",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Gremishka Tails",
+      "alchemyRecipes": [
+        "Wizardsbane Oil"
+      ],
+      "alchemyIngredient": "Gremishka Tail",
+      "icon": "https://bg3.wiki/w/images/b/b3/Essence_of_Gremishka_Tail_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Nightlight",
+      "description": "In his troubled Underdark days, the drow with the heart of gold, Drizzt Do'Urden, often purified nightlight to draw out its luminance. By its light his face was pensive, thoughtful, and too-wise.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Nightlight",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "Crafted by combining 3 Nightlight Fronds",
+      "alchemyRecipes": [
+        "Hearthlight Bomb"
+      ],
+      "alchemyIngredient": "Nightlight",
+      "icon": "https://bg3.wiki/w/images/0/02/Essence_of_Nightlight_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Swarming Toadstool",
+      "description": "Cheerfully dancing motes of bioluminescence, reduced to their fundamental matter.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Swarming Toadstool",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Swarming Toadstools",
+      "alchemyRecipes": [
+        "Drow Poison"
+      ],
+      "alchemyIngredient": "Swarming Toadstool",
+      "icon": "https://bg3.wiki/w/images/e/ea/Essence_of_Swarming_Toadstool_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Sylvan Stone",
+      "description": "The belief that the Feywild is a dreamy plane of whimsical adventure is folly. The occasional rainbow-coloured glint from this substance could easily evoke a treacherous oil slick.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Sylvan Stone",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Sylvan Stones",
+      "alchemyRecipes": [
+        "Oil of Diminution"
+      ],
+      "alchemyIngredient": "Sylvan Stone",
+      "icon": "https://bg3.wiki/w/images/6/6e/Essence_of_Sylvan_Stone_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Timmask Spores",
+      "description": "The chaotic fugue of Timmask-induced confusion is in many ways the exact opposite of Myconid meditation, which is calm, spiritual, and does not involve even a little bit of puzzled drooling.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Timmask Spores",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Timmask Spores",
+      "alchemyRecipes": [
+        "Fungal Bamboozler"
+      ],
+      "alchemyIngredient": "Timmask Spores",
+      "icon": "https://bg3.wiki/w/images/e/e7/Essence_of_Timmask_Spores_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Carrion Crawler Tentacle",
+      "description": "While crows rend gobbets of flesh from battlefield dead, carrion crawlers prefer the seclusion of sewers and cemeteries for their feasting.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Carrion Crawler Tentacle",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Carrion Crawler Tentacles",
+      "alchemyRecipes": [
+        "Crawler Mucus"
+      ],
+      "alchemyIngredient": "Carrion Crawler Tentacle",
+      "icon": "https://bg3.wiki/w/images/0/08/Extract_Brown_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Essence of Unicorn Horn",
+      "description": "Remember this, as you hold these heavenly sparks: any creature that takes a role in the death of a unicorn risks incurring divine wrath.",
+      "category": "Alchemy",
+      "wikiTitle": "Essence of Unicorn Horn",
+      "alchemyGroup": "Extracts / Essences",
+      "alchemyWhereToFind": "* Crafted by combining 3 Unicorn Horns",
+      "alchemyRecipes": [
+        "Potion of Angelic Reprieve"
+      ],
+      "alchemyIngredient": "Unicorn Horn",
+      "icon": "https://bg3.wiki/w/images/6/6d/Essence_of_Unicorn_Horn_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Cloud Giant Fingernails",
+      "description": "Despotic, artistic, and terribly powerful, cloud giants often view themselves as elegant sovereigns over the cruder, more terrestrial giantkin.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Cloud Giant Fingernails",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Cloud Giant Fingers",
+      "alchemyRecipes": [
+        "Elixir of Cloud Giant Strength"
+      ],
+      "alchemyIngredient": "Cloud Giant Fingernails",
+      "icon": "https://bg3.wiki/w/images/4/40/Extract_Green_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Chasm Creeper",
+      "description": "The lonely tenacity of the Chasm Creeper might go some way to explaining its alchemical properties - strength like that could be useful when harnessed.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Chasm Creeper",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Chasm Creepers",
+      "alchemyRecipes": [
+        "Elixir of the Colossus"
+      ],
+      "alchemyIngredient": "Chasm Creeper",
+      "icon": "https://bg3.wiki/w/images/b/bd/Extract_Pink_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Corpse Rose",
+      "description": "Once plucked from the chest cavity of a recent corpse, this flower was dried and mixed with rare salts to enhance its alchemical properties.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Corpse Rose",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Corpse Roses",
+      "alchemyRecipes": [
+        "Thisobald's Brewed-Up Bellyglummer"
+      ],
+      "alchemyIngredient": "Corpse Rose",
+      "icon": "https://bg3.wiki/w/images/0/08/Extract_Brown_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Copper Shavings",
+      "description": "These tiny slivers of copper glisten when illuminated - almost like miniature bolts of lightning.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Copper Shavings",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Broken Machineries",
+      "alchemyRecipes": [
+        "Elixir of Lightning Resistance"
+      ],
+      "alchemyIngredient": "Copper Shavings",
+      "icon": "https://bg3.wiki/w/images/9/9b/Extract_Red_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Musk Creeper",
+      "description": "While alive, yellow musk creepers feed on humanoid corpses, turning them into zombies, but in the hands of a skilled alchemist, their petals can be used for good.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Musk Creeper",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Yellow Musk Creeper Petals",
+      "alchemyRecipes": [
+        "Potion of Superior Healing"
+      ],
+      "alchemyIngredient": "Musk Creeper",
+      "icon": "https://bg3.wiki/w/images/0/08/Extract_Brown_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Mugwort",
+      "description": "The roots of the common mugwort weed can be dried and crushed to create a powder that looks unassuming, but is full of potential.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Mugwort",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Mugworts",
+      "alchemyRecipes": [
+        "Antidote"
+      ],
+      "alchemyIngredient": "Mugwort",
+      "icon": "https://bg3.wiki/w/images/0/08/Extract_Brown_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Hill Giant Fingernails",
+      "description": "These salts have a surprisingly vast colour palette - the yellows of fungus, greens of moss, and blacks and browns of old blood.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Hill Giant Fingernails",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Hill Giant Fingers",
+      "alchemyRecipes": [
+        "Elixir of Hill Giant Strength"
+      ],
+      "alchemyIngredient": "Hill Giant Fingernails",
+      "icon": "https://bg3.wiki/w/images/9/9f/Extract_Grey_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Rogue's Morsel",
+      "description": "Created using the dried gills of the rogue's morsel mushroom, this powder smells surprisingly sweet.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Rogue's Morsel",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Rogue's Morsels",
+      "alchemyRecipes": [
+        "Potion of Healing"
+      ],
+      "alchemyIngredient": "Rogue's Morsel",
+      "icon": "https://bg3.wiki/w/images/4/45/Extract_White_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Viridian Crystal",
+      "description": "Inchoate arcane symbols form and dissolve in the salt grains.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Viridian Crystal",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Viridian Crystals",
+      "alchemyRecipes": [
+        "Diluted Oil of Sharpness"
+      ],
+      "alchemyIngredient": "Viridian Crystal",
+      "icon": "https://bg3.wiki/w/images/4/40/Extract_Green_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Solution of Night Orchid",
+      "description": "This liquid solution has the colour of evening.",
+      "category": "Alchemy",
+      "wikiTitle": "Solution of Night Orchid",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Night Orchids",
+      "alchemyRecipes": [
+        "Superior Elixir of Arcane Cultivation"
+      ],
+      "alchemyIngredient": "Night Orchid",
+      "icon": "https://bg3.wiki/w/images/6/6d/Suspension_of_Bullywug_Trumpet_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Tree Bark",
+      "description": "Unlike malignant blights, wood woads are created to fulfil a specific purpose. Considering the brutality of the ceremony by which they are made, the derived elixir will doubtless make one hardy and staunch as bark.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Tree Bark",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Wood Bark",
+      "alchemyRecipes": [
+        "Elixir of Barkskin"
+      ],
+      "alchemyIngredient": "Tree Bark",
+      "icon": "https://bg3.wiki/w/images/0/08/Extract_Brown_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Salts of Xorn Scales",
+      "description": "These ground xorn scales would be indistinguishable from a pile of sand, if not for their otherworldly shine.",
+      "category": "Alchemy",
+      "wikiTitle": "Salts of Xorn Scales",
+      "alchemyGroup": "Extracts / Salts",
+      "alchemyWhereToFind": "* Crafted by combining 3 Xorn Scales",
+      "alchemyRecipes": [
+        "Remedial Potion"
+      ],
+      "alchemyIngredient": "Xorn Scales",
+      "icon": "https://bg3.wiki/w/images/b/bd/Extract_Pink_Salts_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Autumn Crocus",
+      "description": "The airily sweet mist makes you light-headed, feeling like you could reach for the sun.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Autumn Crocus",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Autumncrocus",
+      "alchemyRecipes": [
+        "Potion of Feather Fall"
+      ],
+      "alchemyIngredient": "Autumn Crocus",
+      "icon": "https://bg3.wiki/w/images/4/4a/Sublimate_of_Autumn_Crocus_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Bloodstained Hook",
+      "description": "Few Sounds in the vast Underdark are as eerie as the clacking, echoing chatter of Hook Horrors - made even worse by the fact that they are usually a warning of even greater danger to come.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Bloodstained Hook",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Hooks",
+      "alchemyRecipes": [
+        "Elixir of Vigilance"
+      ],
+      "alchemyIngredient": "Bloodstained Hook",
+      "icon": "https://bg3.wiki/w/images/2/27/Sublimate_of_Bloodstained_Hook_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Behir Scales",
+      "description": "Ironically, the blinding property of behir scales mirrors the short-sightedness of the storm giants who created the first behirs - fashioned from serpentine lightning, they did not remain subordinate to their giant masters for long.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Behir Scales",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Behir Scales",
+      "alchemyRecipes": [
+        "Flashblinder"
+      ],
+      "alchemyIngredient": "Behir Scales",
+      "icon": "https://bg3.wiki/w/images/4/49/Sublimate_of_Behir_Scales_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Belladonna",
+      "description": "In this transmogrified state, Belladonna loses its toxic properties, gaining instead an engrossing, perception-enhancing characteristic.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Belladonna",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Belladonna",
+      "alchemyRecipes": [
+        "Elixir of Peerless Focus"
+      ],
+      "alchemyIngredient": "Belladonna",
+      "icon": "https://bg3.wiki/w/images/e/ef/Sublimate_of_Belladonna_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Frosted Ears",
+      "description": "Ice mephit ears boast the alchemical property of nullifying fire resistance. Though completely useless to the mephits itself, they seem to revel in the thought of imparting their own vulnerabilities onto others.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Frosted Ears",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Frosted Ears",
+      "alchemyRecipes": [
+        "Arsonist's Oil"
+      ],
+      "alchemyIngredient": "Frosted Ears",
+      "icon": "https://bg3.wiki/w/images/1/1e/Sublimate_of_Frosted_Ears_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Haste Spores",
+      "description": "A frenzy of tiny mushroom-shaped clouds fizzle and pop on the surface of this sublimate.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Haste Spores",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Hastening Spores",
+      "alchemyRecipes": [
+        "Haste Spore Grenade"
+      ],
+      "alchemyIngredient": "Haste Spores",
+      "icon": "https://bg3.wiki/w/images/6/66/Sublimate_of_Haste_Spores_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Ki-Rin Hair",
+      "description": "The smoke coming from ki-rin hair releases a soothing scent, as well as the bulk of its heavenly magic.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Ki-Rin Hair",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Ki-Rin Hair",
+      "alchemyRecipes": [
+        "Potion of Supreme Healing"
+      ],
+      "alchemyIngredient": "Ki-Rin Hair",
+      "icon": "https://bg3.wiki/w/images/d/dd/Sublimate_of_Ki-Rin_Hair_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Eagle Feathers",
+      "description": "Eagles have been known to kill tortoises by gripping them by the shell, taking flight, and dropping them from a great height. No one knows why they do this, because there isn't particularly good eating on a tortoise.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Eagle Feathers",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Eagle Feathers",
+      "alchemyRecipes": [
+        "Potion of Flying"
+      ],
+      "alchemyIngredient": "Eagle Feathers",
+      "icon": "https://bg3.wiki/w/images/2/23/Sublimate_of_Eagle_Feathers_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Pegasus Feathers",
+      "description": "Pegasi hail from Arborea. There they serve elven gods, their wings spread like broad fans over lush gardens, and their feathers bright with blessings and powers of vitality.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Pegasus Feathers",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Pegasus Feathers",
+      "alchemyRecipes": [
+        "Elixir of Heroism"
+      ],
+      "alchemyIngredient": "Pegasus Feathers",
+      "icon": "https://bg3.wiki/w/images/6/60/Sublimate_of_Pegasus_Feathers_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Poison Spores",
+      "description": "One whiff of this sickly-sweet smelling vapour makes the sinuses shrink.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Poison Spores",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Poison Spores",
+      "alchemyRecipes": [
+        "Noxious Spore Grenade"
+      ],
+      "alchemyIngredient": "Poison Spores",
+      "icon": "https://bg3.wiki/w/images/3/3a/Sublimate_of_Poison_Spores_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Tongue of Madness",
+      "description": "The suffusion of psionics through the nervous system is generally a slow, perhaps even generational process, as the gith and duergar might well attest to.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Tongue of Madness",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Tongues of Madness",
+      "alchemyRecipes": [
+        "Tadpole Elixir"
+      ],
+      "alchemyIngredient": "Tongue of Madness",
+      "icon": "https://bg3.wiki/w/images/8/89/Sublimate_of_Tongue_of_Madness_Item_Icon.png"
+    },
+    {
+      "name": "Sublimate of Wispweed",
+      "description": "Get the strands wet and you can almost hear the lovelorn sobs.",
+      "category": "Alchemy",
+      "wikiTitle": "Sublimate of Wispweed",
+      "alchemyGroup": "Extracts / Sublimates",
+      "alchemyWhereToFind": "* Crafted by combining 3 Wispweeds",
+      "alchemyRecipes": [
+        "Potion of Glorious Vaulting"
+      ],
+      "alchemyIngredient": "Wispweed",
+      "icon": "https://bg3.wiki/w/images/f/ff/Sublimate_of_Wispweed_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Frost Salamander Tongue",
+      "description": "The gelid texture of this substance is a reflection of the frost giants who tame equally icy salamanders at the intersection between Planes of Air and Water.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Frost Salamander Tongue",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Frost Salamander Tongues",
+      "alchemyRecipes": [
+        "Oil of Freezing"
+      ],
+      "alchemyIngredient": "Frost Salamander Tongue",
+      "icon": "https://bg3.wiki/w/images/6/69/Suspension_of_Laculite_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Cerebrospinal Fluid",
+      "description": "This fluid, harvested from a humanoid brain enthralled and experimented on by mind flayers until it gained a life of its own, is the perfect ingredient for psychic potions.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Cerebrospinal Fluid",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Intellect Devourer Cerebellums",
+      "alchemyRecipes": [
+        "Elixir of Psychic Resistance"
+      ],
+      "alchemyIngredient": "Cerebrospinal Fluid",
+      "icon": "https://bg3.wiki/w/images/2/24/Suspension_of_Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Bullywug Trumpet",
+      "description": "Even the slightest sniff of this acrid tincture makes your eyes sting.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Bullywug Trumpet",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Bullywug Trumpets",
+      "alchemyRecipes": [
+        "Simple Toxin"
+      ],
+      "alchemyIngredient": "Bullywug Trumpet",
+      "icon": "https://bg3.wiki/w/images/6/6d/Suspension_of_Bullywug_Trumpet_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Gauth Eye",
+      "description": "Once used to wet a Gauth's eye, this slime had mostly dried up before you could extract it. Still, its power remains.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Gauth Eye",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Gauth Eyestalks",
+      "alchemyRecipes": [
+        "Elixir of Battlemage's Power"
+      ],
+      "alchemyIngredient": "Gauth Eye",
+      "icon": "https://bg3.wiki/w/images/9/9e/Suspension_of_Gauth_Eye_Unfaded_Icon.png"
+    },
+    {
+      "name": "Suspension of Muddy Goo",
+      "description": "Nothing but a watery sludge remains of what was once a mephit's wing. Still, its elemental magic lingers.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Muddy Goo",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Mud Mephit Wings",
+      "alchemyRecipes": [
+        "Elixir of Poison Resistance"
+      ],
+      "alchemyIngredient": "Muddy Goo",
+      "icon": "https://bg3.wiki/w/images/1/17/Suspension_of_Muddy_Goo_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Laculite",
+      "description": "Crushed Laculite floats at the bottom of this tincture, infusing the water with the Underdark's mysterious powers.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Laculite",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Laculites",
+      "alchemyRecipes": [
+        "Greater Elixir of Arcane Cultivation"
+      ],
+      "alchemyIngredient": "Laculite",
+      "icon": "https://bg3.wiki/w/images/6/69/Suspension_of_Laculite_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Mergrass",
+      "description": "Touching a little of the substance to your lips, you begin to hear muffled pulses of sound - daubs of thoughts belonging to those nearby.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Mergrass",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Mergrasses",
+      "alchemyRecipes": [
+        "Potion of Mind Reading"
+      ],
+      "alchemyIngredient": "Mergrass",
+      "icon": "https://bg3.wiki/w/images/2/24/Suspension_of_Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Nothic Eye",
+      "description": "The origin of the nothic curse is one-eyed Vecna, the undead lich and master of secrets. Nothics themselves do not remember their former livers as wizards - but their eyes can still be distilled for the benefit of spellcasters.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Nothic Eye",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Nothic Eyes",
+      "alchemyRecipes": [
+        "Elixir of See Invisibility"
+      ],
+      "alchemyIngredient": "Nothic Eye",
+      "icon": "https://bg3.wiki/w/images/b/b0/Suspension_of_Nothic_Eye_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Purple Worm Slime",
+      "description": "Purple Worms are attracted by sonic vibrations. Drow and duergar settlements erect special arcane barriers to deter the incursion of these frightful monsters.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Purple Worm Slime",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "Crafted by combining 3 Purple Worm Gullets",
+      "alchemyRecipes": [
+        "Purple Worm Toxin"
+      ],
+      "alchemyIngredient": "Purple Worm Slime",
+      "icon": "https://bg3.wiki/w/images/2/24/Suspension_of_Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Snake Venom",
+      "description": "Poison is believed to be the coward's tool, but the soldier who works with so-called honest steel might reconsider this opinion if her sword reared up and bit her on the eyeball.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Snake Venom",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Venomous Fangs",
+      "alchemyRecipes": [
+        "Serpent Fang Toxin"
+      ],
+      "alchemyIngredient": "Snake Venom",
+      "icon": "https://bg3.wiki/w/images/1/17/Suspension_of_Muddy_Goo_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Ochre Jelly",
+      "description": "If Iggwilv's Demonomicon has the right of it, all oozes are the spawn of the Faceless Lord, the demon tyrant Juiblex - it also cites the useful motion-based alchemical properties of the substance.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Ochre Jelly",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Ochre Jelly Slimes",
+      "alchemyRecipes": [
+        "Elixir of Guileful Movement"
+      ],
+      "alchemyIngredient": "Ochre Jelly",
+      "icon": "https://bg3.wiki/w/images/9/9d/Suspension_of_Ochre_Jelly_Item_Icon.png"
+    },
+    {
+      "name": "Suspension of Spider Silk",
+      "description": "Once, there were songs of Ettercap (creature)s and spiders that warded children away from dangerous woods - but songs are forgotten, children wander, and when the silken threads turn out to be stickier than first presumed, their small noises of surprise are abruptly silenced.",
+      "category": "Alchemy",
+      "wikiTitle": "Suspension of Spider Silk",
+      "alchemyGroup": "Extracts / Suspensions",
+      "alchemyWhereToFind": "* Crafted by combining 3 Silk Glands",
+      "alchemyRecipes": [
+        "Web Grenade"
+      ],
+      "alchemyIngredient": "Spider Silk",
+      "icon": "https://bg3.wiki/w/images/2/24/Suspension_of_Mergrass_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Bonecap",
+      "description": "Bonecaps are found growing upon burial grounds; their alchemical properties are flavored with proximal death.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Bonecap",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Bonecaps",
+      "alchemyRecipes": [
+        "Basic Poison"
+      ],
+      "alchemyIngredient": "Bonecap",
+      "icon": "https://bg3.wiki/w/images/d/da/Vitriol_of_Bonecap_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Lolth's Candle",
+      "description": "No surprise that Lolth's candle lead travellers in the Underdark, given that their namesake is a goddess of deceit as well as spiders and shadows. Worse, distilled, they even blind and poison the unwary.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Lolth's Candle",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Lolth's Candles",
+      "alchemyRecipes": [
+        "Malice"
+      ],
+      "alchemyIngredient": "Lolth's Candle",
+      "icon": "https://bg3.wiki/w/images/e/e7/Vitriol_of_Lolth%27s_Candle_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Divine Miasma",
+      "description": "A thick miasma exuded by the bone shards of a dead god. For some inexplicable reason, it makes you feel safe.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Divine Miasma",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Divine Bone Shards",
+      "alchemyRecipes": [
+        "Elixir of Universal Resistance"
+      ],
+      "alchemyIngredient": "Divine Miasma",
+      "icon": "https://bg3.wiki/w/images/8/83/Vitriol_of_Divine_Miasma_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Oleander",
+      "description": "The sap's dark colour, viscous consistency, and cloying sweetness belie its beneficial potential.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Oleander",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Black Oleanders",
+      "alchemyRecipes": [
+        "Elixir of Necrotic Resistance"
+      ],
+      "alchemyIngredient": "Oleander",
+      "icon": "https://bg3.wiki/w/images/f/f5/Vitriol_of_Oleander_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Shadowroot Sac",
+      "description": "A cloying sweetness rises from the secretion. It simultaneously sharpens your senses and makes bile rise in your throat.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Shadowroot Sac",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Shadowroot Sacs",
+      "alchemyRecipes": [
+        "Elixir of Viciousness"
+      ],
+      "alchemyIngredient": "Shadowroot Sac",
+      "icon": "https://bg3.wiki/w/images/d/d6/Vitriol_of_Shadowroot_Sac_Item_Icon.png"
+    },
+    {
+      "name": "Vitriol of Putrefied Tumour",
+      "description": "The stench of this rotten flesh has only worsened during its journey through the alchemical process.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Putrefied Tumour",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Putrefied Tumours",
+      "alchemyRecipes": [
+        "Oil of Bane"
+      ],
+      "alchemyIngredient": "Putrefied Tumour",
+      "icon": "https://bg3.wiki/w/images/a/a0/Vitriol_of_Putrefied_Tumour_Unfaded_Icon.png"
+    },
+    {
+      "name": "Vitriol of Weavemoss",
+      "description": "Small parts of Weave stick to this foul-smelling paste, imperceptible to any but the most attuned spellcasters.",
+      "category": "Alchemy",
+      "wikiTitle": "Vitriol of Weavemoss",
+      "alchemyGroup": "Extracts / Vitriols",
+      "alchemyWhereToFind": "* Crafted by combining 3 Weavemoss",
+      "alchemyRecipes": [
+        "Elixir of Arcane Cultivation"
+      ],
+      "alchemyIngredient": "Weavemoss",
+      "icon": "https://bg3.wiki/w/images/4/4d/Vitriol_of_Weavemoss_Item_Icon.png"
+    }
+  ]
+}

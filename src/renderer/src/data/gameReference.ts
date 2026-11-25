@@ -1,6 +1,11 @@
 import catalog from './gameReference.generated.json'
 
-export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Spell' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC' | 'Location' | 'Character Creation'
+export type ReferenceCategory = 'Weapon' | 'Armour' | 'Object' | 'Passive' | 'Spell' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'Alchemy' | 'NPC' | 'Location' | 'Character Creation'
+export type ReferenceQuestObjective = {
+  title: string
+  journalEntries: string[]
+  children: ReferenceQuestObjective[]
+}
 export type ReferenceCatalogEntry = {
   name: string
   description: string
@@ -23,16 +28,26 @@ export type ReferenceCatalogEntry = {
   sourceUid?: string
   /** User-selected localization source for a manually corrected description association. */
   descriptionSourceName?: string
+  /** User-selected localization source strings for quest objective titles and journal entries. */
+  questObjectiveSourceNames?: Record<string, string>
   /** User-selected localization source strings for manually associated book text. */
   contentSourceNames?: string[]
   section?: string
   subquests?: string[]
+  objectives?: ReferenceQuestObjective[]
   subLocations?: string[]
   npcGroups?: string[]
   itemGroups?: Array<{ section: string; type: string; subtype?: string }>
   rarity?: string
+  alchemyGroup?: string
+  alchemyRecipe?: string
+  alchemyRecipes?: string[]
+  alchemyIngredient?: string
+  alchemyExtract?: string
+  alchemyWhereToFind?: string
+  alchemyCategoryLabel?: boolean
 }
-export type ReferenceTag = 'Name' | 'Description' | 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'NPC' | 'Location' | 'Character Creation'
+export type ReferenceTag = 'Name' | 'Description' | 'Weapon' | 'Armour' | 'Object' | 'Spell' | 'Passive' | 'Status' | 'Interrupt' | 'Quest' | 'Book' | 'Item' | 'Alchemy' | 'NPC' | 'Location' | 'Character Creation'
 export type ReferenceLink = { kind: 'Name' | 'Description'; text: string }
 
 const entries = catalog as ReferenceCatalogEntry[]

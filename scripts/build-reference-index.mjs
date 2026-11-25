@@ -154,6 +154,30 @@ for (const item of entries.filter((entry) => entry.category === 'Object' && entr
   const matches = suffix ? tooltipSpellsById.get(suffix) : undefined
   if (matches?.length === 1) item.effect = [matches[0].description]
 }
+const alchemyReference = JSON.parse(
+  fs.readFileSync(path.join(referenceDir, 'BG3 Alchemy.json'), 'utf8')
+)
+const alchemyRecipesByName = new Map(alchemyReference.recipes.map((recipe) => [normalizeItemName(recipe.name), recipe]))
+const alchemyEntries = [...alchemyReference.entries]
+for (const item of entries.filter((entry) => entry.category === 'Object' && entry.itemGroups?.some(
+  (group) => group.section === 'Consumables' && ['Potions', 'Elixirs', 'Grenades', 'Coatings'].includes(group.type)
+))) {
+  const group = item.itemGroups.find((candidate) => candidate.section === 'Consumables' && ['Potions', 'Elixirs', 'Grenades', 'Coatings'].includes(candidate.type))
+  const recipe = alchemyRecipesByName.get(normalizeItemName(item.name))
+  if (!recipe) continue
+  alchemyEntries.push({
+    name: item.name,
+    description: item.description,
+    category: 'Alchemy',
+    wikiTitle: item.wikiTitle ?? item.name,
+    alchemyGroup: group.type,
+    ...(recipe?.icon ? { icon: recipe.icon } : {}),
+    ...(item.effect?.length ? { effect: item.effect } : {}),
+    ...(recipe?.recipe ? { alchemyRecipe: recipe.recipe } : {})
+  })
+}
+const alchemyUnique = new Map(alchemyEntries.map((entry) => [`${entry.alchemyGroup}\0${entry.name}`, entry]))
+entries.push(...alchemyUnique.values())
 const npcReference = JSON.parse(
   fs.readFileSync(path.join(root, 'resources/reference/BG3 NPCs.json'), 'utf8')
 )
