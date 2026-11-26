@@ -45,6 +45,7 @@ import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
+import { NeedsReviewNoteModal } from '@/components/translation/NeedsReviewNoteModal'
 import {
   type ReviewStatus,
   type TranslationSessionEntry,
@@ -314,7 +315,10 @@ function QuestTreeList({
     const nextAncestors = new Set(ancestors).add(entry.name)
     return (
       <div key={`${entry.name}:${depth}`}>
-        <div className="flex min-w-0 items-center gap-1" style={{ paddingLeft: depth * 12 }}>
+        <div className={cn(
+          'group relative flex min-w-0 items-center gap-1 before:content-[\'\'] before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:transition-colors',
+          selected ? 'before:bg-amber-500/10' : 'hover:before:bg-[#262626]'
+        )} style={{ paddingLeft: depth * 12 }}>
           {hasChildren || hasObjectives ? (
             <button
               type="button"
@@ -333,31 +337,43 @@ function QuestTreeList({
                   return next
                 })
               }}
-              className="flex h-7 w-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:bg-[#1c1f24] hover:text-neutral-200"
+              className="flex h-7 w-6 shrink-0 items-center justify-center rounded text-neutral-500 hover:text-neutral-200"
             >
               {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
             </button>
           ) : (
             <span className="w-6 shrink-0" aria-hidden="true" />
           )}
-          <button
-            type="button"
-            onClick={() => onSelect(entry)}
-            data-game-data-selected={selected ? 'true' : undefined}
-            data-game-data-entry-key={referenceEntryKey(entry)}
-            data-game-data-group-path={entry.section || 'Other quests'}
-            className={cn(
-              'min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors',
-              selected
-                ? 'bg-amber-500/10 text-amber-300'
-                : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100'
-            )}
-            title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}
-          >
-            <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
-          </button>
-          <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-          <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+          {(() => {
+            const stats = statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()
+            return <>
+              <div className="group relative z-[1] flex min-w-0 flex-1 items-center gap-1 rounded-md px-1">
+                <button
+                  type="button"
+                  onClick={() => onSelect(entry)}
+                  data-game-data-selected={selected ? 'true' : undefined}
+                  data-game-data-entry-key={referenceEntryKey(entry)}
+                  data-game-data-group-path={entry.section || 'Other quests'}
+                  className={cn('game-data-quest-title min-w-0 flex-1 truncate rounded-md border-0 px-1 py-1.5 text-left text-[11px] transition-colors', selected ? 'text-amber-300' : 'text-neutral-300 hover:text-neutral-100')}
+                >
+                  <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
+                </button>
+                {entry.category === 'Quest' && onAddToSection && <AppTooltip label="Add entry" focusable={false}>
+                  <button
+                    type="button"
+                    aria-label={`Add entry to ${entry.section || 'Other quests'}`}
+                    onClick={() => onAddToSection(entry.section || 'Other quests')}
+                    className="game-data-folder-add relative -translate-x-1.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#343a33] text-neutral-500 opacity-0 transition group-hover:opacity-100 focus:opacity-100"
+                  >
+                    <CirclePlus size={14} className="block shrink-0" />
+                  </button>
+                </AppTooltip>}
+                <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative -translate-x-1.5" />
+                <ReferenceStatusRings stats={stats} endIndex={1} className="relative -translate-x-1.5" />
+              </div>
+              <ReferenceStatusRings stats={stats} startIndex={1} className="relative -translate-x-1.5" />
+            </>
+          })()}
         </div>
         {open && hasChildren && (
           <div className="mt-0.5 border-l border-[#24282f]" style={{ marginLeft: depth * 12 + 13 }}>
@@ -378,17 +394,23 @@ function QuestTreeList({
                 const fieldStats = emptyReferenceStatusCounts()
                 objectiveRows.forEach((row) => { fieldStats[entryReviewStatus(row)] += 1; fieldStats.total += 1 })
                 const active = selectedObjective?.questName === entry.name && selectedObjective.objective.key === objective.key
-                return <div key={objective.key} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: Math.min(objective.depth, 5) * 10 }}>
-                  <button
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => onSelectObjective(entry, objective)}
-                    className={cn('min-w-0 flex-1 truncate rounded px-2 py-1 text-left text-[10px] transition-colors', active ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-400 hover:bg-[#1c1f24] hover:text-neutral-200')}
-                  >
-                    <span className="mr-1 text-[9px] text-neutral-600">•</span>{objective.title}{translatedObjectiveTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedObjectiveTitle}</span></>}
-                  </button>
-                  <ObjectiveMissingFields entry={entry} objective={objective} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-                  <ReferenceStatusRings stats={fieldStats} />
+                return <div key={objective.key} data-game-data-objective-entry-key={referenceEntryKey(entry)} data-game-data-objective-key={objective.key} className={cn(
+                  'group relative flex min-w-0 items-center gap-1 before:content-[\'\'] before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:transition-colors',
+                  active ? 'before:bg-amber-500/10' : 'hover:before:bg-[#262626]'
+                )} style={{ paddingLeft: Math.min(objective.depth, 5) * 10 }}>
+                  <div className="group relative z-[1] flex min-w-0 flex-1 items-center gap-1 rounded-md px-1">
+                    <button
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => onSelectObjective(entry, objective)}
+                      className={cn('game-data-objective-title min-w-0 flex-1 truncate rounded px-1 py-1 text-left text-[10px] transition-colors', active ? 'text-amber-300' : 'text-neutral-400 hover:text-neutral-200')}
+                    >
+                      <span className="mr-1 text-[9px] text-neutral-600">•</span>{objective.title}{translatedObjectiveTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedObjectiveTitle}</span></>}
+                    </button>
+                    <ObjectiveMissingFields entry={entry} objective={objective} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative -translate-x-1.5" />
+                    <ReferenceStatusRings stats={fieldStats} endIndex={1} className="relative -translate-x-1.5" />
+                  </div>
+                  <ReferenceStatusRings stats={fieldStats} startIndex={1} className="relative -translate-x-1.5" />
                 </div>
               })}
           </div>
@@ -522,12 +544,15 @@ function CharacterCreationTreeList({
           const translatedTitle = showTranslatedTitles
             ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
             : undefined
-          return <div key={referenceEntryKey(entry)} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: 9 + depth * 12 }}>
-            <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={path} className={cn('min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100')} title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}>
+          return <div key={referenceEntryKey(entry)} className={cn(
+            'group relative flex min-w-0 items-center gap-1 before:content-[\'\'] before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:transition-colors',
+            selected ? 'before:bg-amber-500/10' : 'hover:before:bg-[#262626]'
+          )} style={{ paddingLeft: 9 + depth * 12 }}>
+            <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={path} className={cn('game-data-character-title relative z-[1] min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'text-amber-300' : 'text-neutral-300 hover:text-neutral-100')}>
               {entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}
             </button>
-            <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-            <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+            <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative z-[1] -translate-x-1.5" />
+            <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} className="relative z-[1] -translate-x-1.5" />
           </div>
         })}</div>
       </div>}
@@ -672,20 +697,19 @@ function NpcTreeList({
       key={key}
       type="button"
       onClick={() => onSelect(entry)}
-      title={translatedTitle ? `${entry.name} · ${translatedTitle}` : entry.name}
       data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
       data-game-data-entry-key={referenceEntryKey(entry)}
       data-game-data-group-path={groupPath.replaceAll('/', ' / ')}
       className={cn(
-        'flex min-h-8 w-full items-center rounded-md text-left text-[11px] transition-colors',
+        'game-data-list-entry flex min-h-8 w-full items-center rounded-md text-left text-[11px] transition-colors',
         depth === 0 ? 'px-2' : 'px-2',
-        current?.name === entry.name ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24]'
+        current?.name === entry.name ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300'
       )}
-      style={{ paddingLeft: `${12 + depth * 12}px`, paddingRight: 8 }}
+      style={{ paddingLeft: `${12 + depth * 12}px`, paddingRight: 0 }}
     >
       <span className="min-w-0 flex-1 truncate">{entry.name}{translatedTitle && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{translatedTitle}</span></>}</span>
-      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative -translate-x-1.5" />
+      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} className="relative -translate-x-1.5" />
     </button>
   }
   const renderGroup = (label: string, node: NpcGroupNode, path: string, depth: number): React.JSX.Element => {
@@ -843,12 +867,15 @@ function AlchemyTreeList({
         const translation = showTranslatedTitles
           ? (titleRows.find((row) => row.target.trim() && row.reviewStatus === 'verified') ?? titleRows.find((row) => row.target.trim()))?.target.trim()
           : undefined
-        return <div key={referenceEntryKey(entry)} className="flex min-w-0 items-center gap-1" style={{ paddingLeft: depth * 10 }}>
-          <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={entry.alchemyGroup ?? parent} className={cn('min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'bg-amber-500/10 text-amber-300' : 'text-neutral-300 hover:bg-[#1c1f24] hover:text-neutral-100')}>
+        return <div key={referenceEntryKey(entry)} className={cn(
+          'group relative flex min-w-0 items-center gap-1 before:content-[\'\'] before:pointer-events-none before:absolute before:inset-0 before:rounded-md before:transition-colors',
+          selected ? 'before:bg-amber-500/10' : 'hover:before:bg-[#262626]'
+        )} style={{ paddingLeft: depth * 10 }}>
+          <button type="button" onClick={() => onSelect(entry)} data-game-data-selected={selected ? 'true' : undefined} data-game-data-entry-key={referenceEntryKey(entry)} data-game-data-group-path={entry.alchemyGroup ?? parent} className={cn('game-data-alchemy-title relative z-[1] min-w-0 flex-1 truncate rounded-md border-0 px-2 py-1.5 text-left text-[11px] transition-colors', selected ? 'text-amber-300' : 'text-neutral-300 hover:text-neutral-100')}>
             <span className="inline-flex min-w-0 items-center gap-1.5">{entryIcon(entry, 'h-4 w-4')}<span className="truncate">{entry.name}</span>{translation && <><span className="shrink-0 text-neutral-500"> · </span><span className="truncate text-[var(--poly-accent)]">{translation}</span></>}</span>
           </button>
-          <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-          <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+          <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative z-[1] -translate-x-1.5" />
+          <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} className="relative z-[1] -translate-x-1.5" />
         </div>
       }
       return <section key={parent} className="mb-2">
@@ -1104,20 +1131,19 @@ function ItemTreeList({
       key={entryKey}
       type="button"
       onClick={() => onSelect(entry)}
-      title={entry.name}
       data-game-data-selected={current?.name === entry.name ? 'true' : undefined}
       data-game-data-entry-key={referenceEntryKey(entry)}
       data-game-data-group-path={groupPath}
       className={cn(
-        'ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded px-2 text-left text-[11px] transition-colors',
-        current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#1c1f24]'
+        'game-data-list-entry game-data-item-entry ml-5 flex min-h-8 w-[calc(100%-1.25rem)] items-center rounded pl-2 pr-0 text-left text-[11px] transition-colors',
+        current?.name === entry.name ? 'bg-amber-500/10' : 'hover:bg-[#262626]'
       )}
     >
       <span className={cn('min-w-0 flex-1 truncate', rarityColor(entry.rarity))} style={entry.rarity?.toLowerCase() === 'story item' ? { color: '#fb923c' } : undefined}>
         {entry.name}{titleTranslation && <><span className="text-neutral-500"> · </span><span className="text-[var(--poly-accent)]">{titleTranslation}</span></>}
       </span>
-      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} />
-      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} />
+      <ReferenceMissingFields entry={entry} rowsBySource={rowsBySource} sourceKeysByPrefix={sourceKeysByPrefix} className="relative -translate-x-1.5" />
+      <ReferenceStatusRings stats={statusByEntry.get(referenceEntryKey(entry)) ?? emptyReferenceStatusCounts()} className="relative -translate-x-1.5" />
     </button>
   }
   const countFolderEntries = (node: ItemFolderNode): number =>
@@ -1497,11 +1523,13 @@ function referenceTitleRows(
 function ReferenceMissingFields({
   entry,
   rowsBySource,
-  sourceKeysByPrefix
+  sourceKeysByPrefix,
+  className
 }: {
   entry: ReferenceCatalogEntry
   rowsBySource: Map<string, TranslationSessionEntry[]>
   sourceKeysByPrefix: Map<string, string[]>
+  className?: string
 }): React.JSX.Element | null {
   const missing: Array<{ marker: string; label: string }> = []
   if (!referenceTitleRows(entry, rowsBySource).length) missing.push({ marker: 'T', label: 'Title EN is missing from the loaded XML' })
@@ -1516,7 +1544,7 @@ function ReferenceMissingFields({
   }
   if (!missing.length) return null
   return (
-    <span className="ml-1 inline-flex shrink-0 items-center gap-1">
+    <span className={cn("ml-1 inline-flex shrink-0 items-center gap-1", className)}>
       {missing.map(({ marker, label }) => (
         <AppTooltip key={marker} label={label}>
           <span
@@ -1535,12 +1563,14 @@ function ObjectiveMissingFields({
   entry,
   objective,
   rowsBySource,
-  sourceKeysByPrefix
+  sourceKeysByPrefix,
+  className
 }: {
   entry: ReferenceCatalogEntry
   objective: FlattenedQuestObjective
   rowsBySource: Map<string, TranslationSessionEntry[]>
   sourceKeysByPrefix: Map<string, string[]>
+  className?: string
 }): React.JSX.Element | null {
   const missing: Array<{ marker: 'T' | 'D'; label: string }> = []
   if (!rowsForQuestObjectiveText(entry, `${objective.key}:title`, objective.title, rowsBySource, sourceKeysByPrefix).length) {
@@ -1552,16 +1582,16 @@ function ObjectiveMissingFields({
     missing.push({ marker: 'D', label: 'Objective description EN is missing from the loaded XML' })
   }
   if (!missing.length) return null
-  return <span className="ml-1 inline-flex shrink-0 items-center gap-1">
+  return <span className={cn("ml-1 inline-flex shrink-0 items-center gap-1", className)}>
     {missing.map(({ marker, label }) => <AppTooltip key={marker} label={label}>
       <span role="img" aria-label={label} className="inline-flex h-3.5 min-w-3.5 cursor-default select-none items-center justify-center rounded border border-rose-400/30 bg-rose-500/10 px-0.5 text-[8px] font-bold leading-none text-rose-300">{marker}</span>
     </AppTooltip>)}
   </span>
 }
-function ReferenceStatusRings({ stats }: { stats: ReferenceStatusCounts }): React.JSX.Element {
+function ReferenceStatusRings({ stats, startIndex = 0, endIndex, className }: { stats: ReferenceStatusCounts; startIndex?: number; endIndex?: number; className?: string }): React.JSX.Element {
   return (
-    <span className="ml-1 inline-flex shrink-0 items-center gap-1.5">
-      {REFERENCE_STATUS_ITEMS.map((status) => {
+    <span className={cn('ml-1 inline-flex shrink-0 items-center gap-1.5', className)}>
+      {REFERENCE_STATUS_ITEMS.slice(startIndex, endIndex).map((status) => {
         const translated = status.key === 'untranslated'
         const count = translated ? stats.total - stats.untranslated : stats[status.key]
         const percent = stats.total ? Math.round((count / stats.total) * 100) : 0
@@ -1792,7 +1822,7 @@ function TranslationField({
           </GameDataTooltipButton>
         )}
         <GameDataTooltipButton
-          tooltip="Needs review"
+          tooltip="Flag for review"
           onClick={() => toggleNeedsReview(entry.rowId)}
           className={cn(
             'inline-flex h-6 w-6 items-center justify-center rounded border transition-colors',
@@ -2097,6 +2127,12 @@ export function ReferencePage(): React.JSX.Element {
     entry: ReferenceCatalogEntry
     path: string
   } | null>(null)
+  const [objectiveContextMenu, setObjectiveContextMenu] = useState<{
+    x: number
+    y: number
+    entry: ReferenceCatalogEntry
+    objective: FlattenedQuestObjective
+  } | null>(null)
   const catalogEntries = useMemo(() => {
     const existing = getReferenceCatalog()
     const knownNames = new Set(existing.filter((entry) => entry.category === 'Character Creation').map((entry) => normalize(entry.name)))
@@ -2156,6 +2192,7 @@ export function ReferencePage(): React.JSX.Element {
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
   const [historyEntry, setHistoryEntry] = useState<TranslationSessionEntry | null>(null)
+  const [needsReviewEntry, setNeedsReviewEntry] = useState<TranslationSessionEntry | null>(null)
   const translationInputRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const tagSelections = useRef<Map<string, TextSelection>>(new Map())
   const tagProgress = useRef<Map<string, number>>(new Map())
@@ -2167,6 +2204,10 @@ export function ReferencePage(): React.JSX.Element {
     session.sourceLang,
     session.targetLang
   )
+  const openNeedsReviewModal = (rowId: string) => {
+    const entry = session.entries.find((candidate) => candidate.rowId === rowId)
+    if (entry) setNeedsReviewEntry(entry)
+  }
   const [termGlossary, setTermGlossary] = useState<TermGlossaryEntry[]>(() =>
     loadTermGlossary(termGlossaryKey)
   )
@@ -2413,6 +2454,30 @@ export function ReferencePage(): React.JSX.Element {
         return
       }
       const key = referenceEntryKey(sourceModal.entry)
+      const isAddingDescription = sourceModal.objectiveFieldKey.endsWith(':description:add')
+      if (isAddingDescription) {
+        const objectiveKey = sourceModal.objectiveFieldKey.slice(0, -':description:add'.length)
+        setUserOverrides((previous) => ({
+          ...previous,
+          questObjectiveAddedJournalEntriesByEntry: {
+            ...previous.questObjectiveAddedJournalEntriesByEntry,
+            [key]: {
+              ...(previous.questObjectiveAddedJournalEntriesByEntry[key] ?? {}),
+              [objectiveKey]: [...new Set([
+                ...(previous.questObjectiveAddedJournalEntriesByEntry[key]?.[objectiveKey] ?? []),
+                sourceRow.source
+              ])]
+            }
+          }
+        }))
+        setSelected(sourceModal.entry)
+        setSelectedByCategory((previous) => ({ ...previous, Quest: sourceModal.entry!.name }))
+        setSelectedQuestObjective((previous) => previous?.questName === sourceModal.entry!.name && previous.objective.key === objectiveKey
+          ? { ...previous, objective: { ...previous.objective, journalEntries: [...new Set([...previous.objective.journalEntries, sourceRow.source])] } }
+          : previous)
+        setSourceModal(null)
+        return
+      }
       const objectiveSources = {
         ...(sourceModal.entry.questObjectiveSourceNames ?? {}),
         [sourceModal.objectiveFieldKey]: sourceRow.source
@@ -2516,6 +2581,9 @@ export function ReferencePage(): React.JSX.Element {
   const openQuestObjectiveAssociation = (entry: ReferenceCatalogEntry, fieldKey: string, source: string) => {
     setSourceModal({ mode: 'edit', path: '', entry, category: 'Quest', field: 'questObjective', objectiveFieldKey: fieldKey, objectiveSource: source })
   }
+  const openAddQuestObjectiveDescription = (entry: ReferenceCatalogEntry, objective: FlattenedQuestObjective) => {
+    setSourceModal({ mode: 'edit', path: '', entry, category: 'Quest', field: 'questObjective', objectiveFieldKey: `${objective.key}:description:add` })
+  }
   const deleteGameDataEntry = () => {
     if (!pendingEntryDelete) return
     const { entry, path } = pendingEntryDelete
@@ -2552,10 +2620,29 @@ export function ReferencePage(): React.JSX.Element {
     setPendingEntryDelete(null)
   }
   const handleGameDataContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+    const objectiveRow = (event.target as HTMLElement).closest<HTMLElement>('[data-game-data-objective-entry-key]')
+    if (objectiveRow) {
+      const entryKey = objectiveRow.dataset.gameDataObjectiveEntryKey
+      const objectiveKey = objectiveRow.dataset.gameDataObjectiveKey
+      const entry = catalogEntries.find((candidate) => referenceEntryKey(candidate) === entryKey)
+      const objective = entry?.category === 'Quest'
+        ? flattenQuestObjectiveNodes(entry.objectives ?? []).find((candidate) => candidate.key === objectiveKey)
+        : undefined
+      if (entry && objective) {
+        event.preventDefault()
+        setEntryContextMenu(null)
+        setSelected(entry)
+        setSelectedByCategory((previous) => ({ ...previous, Quest: entry.name }))
+        setSelectedQuestObjective({ questName: entry.name, objective })
+        setObjectiveContextMenu({ x: event.clientX, y: event.clientY, entry, objective })
+        return
+      }
+    }
     const row = (event.target as HTMLElement).closest<HTMLElement>('[data-game-data-entry-key]')
     const key = row?.dataset.gameDataEntryKey
     if (!key) {
       setEntryContextMenu(null)
+      setObjectiveContextMenu(null)
       return
     }
     const entry = catalogEntries.find((candidate) => referenceEntryKey(candidate) === key)
@@ -2564,6 +2651,7 @@ export function ReferencePage(): React.JSX.Element {
     if (!isItemEntry && entry.category !== 'NPC' && entry.category !== 'Quest' && entry.category !== 'Location' && entry.category !== 'Book' && entry.category !== 'Item' && entry.category !== 'Alchemy' && entry.category !== 'Character Creation') return
     event.preventDefault()
     setSelected(entry)
+    setObjectiveContextMenu(null)
     const listCategory = category === 'Item' ? 'Item' : entry.category
     setSelectedByCategory((previous) => ({ ...previous, [listCategory]: entry.name }))
     const path = (row?.dataset.gameDataGroupPath ?? entry.npcGroups?.[0] ?? entry.section ?? '').split('/').map((part) => part.trim()).filter(Boolean).join(' / ')
@@ -2626,7 +2714,7 @@ export function ReferencePage(): React.JSX.Element {
           else translationInputRefs.current.delete(rowId)
         }}
         onSelectionChange={(rowId, selection) => tagSelections.current.set(rowId, selection)}
-        toggleNeedsReview={session.toggleNeedsReview}
+        toggleNeedsReview={openNeedsReviewModal}
         setReviewStatus={session.setReviewStatus}
         termGlossary={termGlossary}
         sourceAssociationLabel={linkedRows.length > 0 ? 'Edit' : 'Add'}
@@ -2646,6 +2734,9 @@ export function ReferencePage(): React.JSX.Element {
   )
   return (
     <>
+      {needsReviewEntry && (
+        <NeedsReviewNoteModal entry={needsReviewEntry} onClose={() => setNeedsReviewEntry(null)} />
+      )}
       {aiEntry && (
         <AITranslateModal
           open
@@ -2694,11 +2785,13 @@ export function ReferencePage(): React.JSX.Element {
       <GameDataSourceModal
         open={sourceModal !== null}
         title={sourceModal?.field === 'questObjective'
-          ? 'Associate quest objective Source'
+          ? sourceModal.objectiveFieldKey?.endsWith(':description:add') ? 'Add objective description' : 'Associate quest objective Source'
           : sourceModal?.mode === 'edit' ? sourceModal.field === 'content' ? 'Add book text' : `Edit ${sourceModal.field} Source association` : 'Add existing Game Data entry'}
         description={sourceModal?.mode === 'edit'
           ? sourceModal.field === 'questObjective'
-            ? `Choose the correct localization string for “${sourceModal.objectiveSource ?? ''}”.`
+            ? sourceModal.objectiveFieldKey?.endsWith(':description:add')
+              ? `Choose a Source string to add as a description for “${flattenQuestObjectiveNodes(sourceModal.entry?.objectives ?? []).find((objective) => objective.key === sourceModal.objectiveFieldKey?.slice(0, -':description:add'.length))?.title ?? ''}”.`
+              : `Choose the correct localization string for “${sourceModal.objectiveSource ?? ''}”.`
             : sourceModal.field === 'content'
             ? `Choose a Source string to add as text for “${sourceModal.entry?.name ?? ''}”.`
             : `Choose the correct localization string for “${sourceModal.entry?.name ?? ''}”. Its Wiki name and link will stay unchanged.`
@@ -2875,7 +2968,7 @@ export function ReferencePage(): React.JSX.Element {
                     onSelectionChange={(rowId, selection) =>
                       tagSelections.current.set(rowId, selection)
                     }
-                    toggleNeedsReview={session.toggleNeedsReview}
+                    toggleNeedsReview={openNeedsReviewModal}
                     setReviewStatus={session.setReviewStatus}
                     termGlossary={termGlossary}
                     sourceAssociationLabel={current.alchemyCategoryLabel || isGameDataItem ? (linkedTitle.length ? 'Edit' : 'Add') : undefined}
@@ -2905,7 +2998,7 @@ export function ReferencePage(): React.JSX.Element {
                       onSelectionChange={(rowId, selection) =>
                         tagSelections.current.set(rowId, selection)
                       }
-                      toggleNeedsReview={session.toggleNeedsReview}
+                      toggleNeedsReview={openNeedsReviewModal}
                       setReviewStatus={session.setReviewStatus}
                       termGlossary={termGlossary}
                       sourceAssociationLabel={isGameDataItem || isAlchemyEntry ? (linkedDescription.length ? 'Edit' : 'Add') : undefined}
@@ -2940,7 +3033,7 @@ export function ReferencePage(): React.JSX.Element {
                       onSelectionChange={(rowId, selection) =>
                         tagSelections.current.set(rowId, selection)
                       }
-                      toggleNeedsReview={session.toggleNeedsReview}
+                      toggleNeedsReview={openNeedsReviewModal}
                       setReviewStatus={session.setReviewStatus}
                       termGlossary={termGlossary}
                     />
@@ -2967,7 +3060,7 @@ export function ReferencePage(): React.JSX.Element {
                       onSelectionChange={(rowId, selection) =>
                         tagSelections.current.set(rowId, selection)
                       }
-                      toggleNeedsReview={session.toggleNeedsReview}
+                      toggleNeedsReview={openNeedsReviewModal}
                       setReviewStatus={session.setReviewStatus}
                       termGlossary={termGlossary}
                     />
@@ -2989,6 +3082,72 @@ export function ReferencePage(): React.JSX.Element {
             </div>
           </main>
         </div>
+        {objectiveContextMenu && (
+          <div className="fixed inset-0 z-[4000]" onMouseDown={() => setObjectiveContextMenu(null)}>
+            <div
+              role="menu"
+              className="fixed z-[4001] w-64 max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl"
+              style={{
+                left: Math.max(8, Math.min(objectiveContextMenu.x, window.innerWidth - 272)),
+                top: Math.max(8, Math.min(objectiveContextMenu.y, window.innerHeight - Math.min(320, 48 + Math.max(1, objectiveContextMenu.objective.journalEntries.length) * 32)))
+              }}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              {(() => {
+                const { entry, objective } = objectiveContextMenu
+                const titleFieldKey = `${objective.key}:title`
+                const titleExists = rowsForQuestObjectiveText(entry, titleFieldKey, objective.title, rowsBySource, sourceKeysByPrefix).length > 0
+                return <>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setObjectiveContextMenu(null)
+                      openQuestObjectiveAssociation(entry, titleFieldKey, objective.title)
+                    }}
+                    className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+                  >
+                    {titleExists ? <Pencil size={14} className="text-neutral-400 group-hover:text-[var(--color-amber-300)]" /> : <ScrollText size={14} className="text-neutral-400 group-hover:text-[var(--color-amber-300)]" />}
+                    {titleExists ? 'Edit title' : 'Add title'}
+                  </button>
+                  {objective.journalEntries.map((source, index) => {
+                    const fieldKey = `${objective.key}:description:${index}`
+                    const descriptionExists = rowsForQuestObjectiveText(entry, fieldKey, source, rowsBySource, sourceKeysByPrefix).length > 0
+                    const label = objective.journalEntries.length > 1
+                      ? `${descriptionExists ? 'Edit' : 'Add'} description ${index + 1}`
+                      : `${descriptionExists ? 'Edit' : 'Add'} description`
+                    return <button
+                      key={fieldKey}
+                      type="button"
+                      role="menuitem"
+                      title={source}
+                      onClick={() => {
+                        setObjectiveContextMenu(null)
+                        openQuestObjectiveAssociation(entry, fieldKey, source)
+                      }}
+                      className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+                    >
+                      {descriptionExists ? <Pencil size={14} className="shrink-0 text-neutral-400 group-hover:text-[var(--color-amber-300)]" /> : <ScrollText size={14} className="shrink-0 text-neutral-400 group-hover:text-[var(--color-amber-300)]" />}
+                      <span className="truncate">{label}</span>
+                    </button>
+                  })}
+                  {objective.journalEntries.length === 0 && <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setObjectiveContextMenu(null)
+                      openAddQuestObjectiveDescription(entry, objective)
+                    }}
+                    className="game-data-entry-context-menu-option group flex h-8 w-full items-center gap-2 rounded-md px-2.5 text-left text-xs text-neutral-300 transition-colors hover:bg-neutral-800"
+                  >
+                    <ScrollText size={14} className="text-neutral-400 group-hover:text-[var(--color-amber-300)]" />
+                    Add description
+                  </button>}
+                </>
+              })()}
+            </div>
+          </div>
+        )}
         {entryContextMenu && (
           <div
             className="fixed inset-0 z-[4000]"

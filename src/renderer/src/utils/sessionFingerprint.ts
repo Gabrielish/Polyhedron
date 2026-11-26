@@ -3,6 +3,7 @@ type FingerprintEntry = {
   target: string
   matchType: string
   needsReview: boolean
+  needsReviewReason?: string
   reviewStatus?: string
   history?: unknown
 }
@@ -19,7 +20,7 @@ export async function calculateSessionFingerprint(
     const deadline = performance.now() + 6
     do {
       const entry = entries[offset++]!
-      const value = `${entry.uid}\u0000${entry.target}\u0000${entry.matchType}\u0000${entry.needsReview}\u0000${entry.reviewStatus ?? ''}\u0000${JSON.stringify(entry.history ?? [])}`
+      const value = `${entry.uid}\u0000${entry.target}\u0000${entry.matchType}\u0000${entry.needsReview}\u0000${entry.needsReviewReason ?? ''}\u0000${entry.reviewStatus ?? ''}\u0000${JSON.stringify(entry.history ?? [])}`
       for (let i = 0; i < value.length; i++) {
         hash ^= value.charCodeAt(i)
         hash = Math.imul(hash, 16777619)

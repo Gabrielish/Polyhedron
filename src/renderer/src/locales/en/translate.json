@@ -69,7 +69,7 @@
     "tags": "With XML tags",
     "needsReview": "Needs review",
     "needsReviewShort": "Review",
-    "needsReviewToggle": "Toggle Needs review",
+    "needsReviewToggle": "Flag for review",
     "selectedStats": "{{strings}} strings • {{characters}} characters",
     "sourceHeader": "Source · {{language}}",
     "translationHeader": "Translation · {{language}}",

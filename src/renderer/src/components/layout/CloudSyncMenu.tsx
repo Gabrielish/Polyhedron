@@ -69,6 +69,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   }, [confirmAction, syncResult])
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(null)
   const [remoteFingerprint, setRemoteFingerprint] = useState<string | null>(null)
+  const [downloadedFingerprint, setDownloadedFingerprint] = useState<string | null>(null)
   const [lastUploadedAt, setLastUploadedAt] = useState<string | null>(null)
   const [lastDownloadedAt, setLastDownloadedAt] = useState<string | null>(null)
   const [autoSyncBlocked, setAutoSyncBlocked] = useState(false)
@@ -100,6 +101,7 @@ export function CloudSyncMenu(): React.JSX.Element {
   const syncKey = `polyhedron.cloud-sync.${session.modName}|${session.sourceLang}|${session.targetLang}`
   const lastUploadedKey = `${syncKey}.last-uploaded`
   const lastDownloadedKey = `${syncKey}.last-downloaded`
+  const downloadedFingerprintKey = `${syncKey}.downloaded-fingerprint`
   const lastUploadedTranslatedKey = `${syncKey}.last-uploaded-translated`
   const globalLastUploadedKey = 'polyhedron.cloud-sync.last-uploaded'
   const globalLastDownloadedKey = 'polyhedron.cloud-sync.last-downloaded'
@@ -148,23 +150,23 @@ export function CloudSyncMenu(): React.JSX.Element {
     setRemoteFingerprint(null)
     setLastUploadedAt(localStorage.getItem(lastUploadedKey))
     setLastDownloadedAt(localStorage.getItem(lastDownloadedKey))
+    setDownloadedFingerprint(localStorage.getItem(downloadedFingerprintKey))
     setAutoSyncBlocked(false)
-  }, [lastDownloadedKey, lastUploadedKey, syncKey])
+  }, [downloadedFingerprintKey, lastDownloadedKey, lastUploadedKey, syncKey])
 
-  const loadedOnce = useRef(session.phase === 'loaded')
+  // The renderer still has the pre-download session until the user restarts.
+  // Consume the marker only in a fresh process, against the imported session.
+  const downloadInitiatedThisRun = useRef(false)
   useEffect(() => {
-    if (session.phase !== 'loaded') {
-      loadedOnce.current = false
-      return
-    }
-    if (!fingerprintReady || loadedOnce.current) return
-    loadedOnce.current = true
+    if (session.phase !== 'loaded' || !fingerprintReady || downloadInitiatedThisRun.current) return
     if (localStorage.getItem(syncKey) !== 'download-pending') return
-    // The imported workspace is now loaded; use the fingerprint of the actual
-    // in-memory session rather than the pre-restart archive fingerprint.
+    // Archive metadata may contain paths from another computer; fingerprint
+    // the session loaded on this device instead.
     localStorage.setItem(syncKey, currentFingerprint)
+    localStorage.setItem(downloadedFingerprintKey, currentFingerprint)
     setSavedFingerprint(currentFingerprint)
-  }, [currentFingerprint, fingerprintReady, session.phase, syncKey])
+    setDownloadedFingerprint(currentFingerprint)
+  }, [currentFingerprint, downloadedFingerprintKey, fingerprintReady, session.phase, syncKey])
 
   const remoteStampKey = `polyhedron.cloud-sync-remote.${syncKey}`
   const isSynced =
@@ -173,8 +175,8 @@ export function CloudSyncMenu(): React.JSX.Element {
     !remoteChanged &&
     savedFingerprint !== null &&
     savedFingerprint === currentFingerprint &&
-    remoteFingerprint !== null &&
-    remoteFingerprint === currentFingerprint
+    (remoteFingerprint === currentFingerprint ||
+      (remoteFingerprint === null && downloadedFingerprint === currentFingerprint))
 
   useEffect(() => {
     if (!connected || session.phase !== 'loaded') return
@@ -269,12 +271,13 @@ export function CloudSyncMenu(): React.JSX.Element {
     await window.api.session.save({
       key: sessionKey,
       entries: latest.entries.map(
-        ({ uid, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+        ({ uid, target, genderTargets, matchType, needsReview, needsReviewReason, reviewStatus, history }) => ({
           uid,
           target,
           genderTargets,
           matchType,
           needsReview,
+          needsReviewReason,
           reviewStatus,
           history
         })
@@ -390,6 +393,7 @@ export function CloudSyncMenu(): React.JSX.Element {
       if (result.gameDataOverrides) {
         saveGameDataOverrides(parseGameDataOverrides(result.gameDataOverrides))
       }
+      downloadInitiatedThisRun.current = true
       localStorage.setItem(syncKey, 'download-pending')
       setSavedFingerprint('download-pending')
       setRemoteFingerprint(null)

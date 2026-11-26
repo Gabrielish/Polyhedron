@@ -33,11 +33,13 @@ import { StyledWebview } from '@/components/shared/StyledWebview'
 import {
   type GenderVariant,
   type ReviewStatus,
+  type TranslationSessionEntry,
   useTranslationSession
 } from '@/context/TranslationSession'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
+import { NeedsReviewNoteModal } from '@/components/translation/NeedsReviewNoteModal'
 import {
   type DialogueCategory,
   type DialogueNodeMetadata,
@@ -565,6 +567,7 @@ export function DialogueNodesPage(): React.JSX.Element {
   const [historyEntry, setHistoryEntry] = useState<
     ReturnType<typeof useTranslationSession>['entries'][number] | null
   >(null)
+  const [needsReviewEntry, setNeedsReviewEntry] = useState<TranslationSessionEntry | null>(null)
   const [termGlossaryOpen, setTermGlossaryOpen] = useState(false)
   const [showContentUid, setShowContentUid] = useState(false)
   const termGlossaryProjectKey =
@@ -1036,6 +1039,9 @@ export function DialogueNodesPage(): React.JSX.Element {
           onClose={() => setHistoryEntry(null)}
         />
       )}
+      {needsReviewEntry && (
+        <NeedsReviewNoteModal entry={needsReviewEntry} onClose={() => setNeedsReviewEntry(null)} />
+      )}
       <TermGlossaryModal
         open={termGlossaryOpen}
         sourceLang={session.sourceLang}
@@ -1451,10 +1457,10 @@ export function DialogueNodesPage(): React.JSX.Element {
                                         </DialogueTooltipButton>
                                       )}
                                       <DialogueTooltipButton
-                                        tooltip="Needs review"
+                                        tooltip="Flag for review"
                                         onClick={(event) => {
                                           event.stopPropagation()
-                                          session.toggleNeedsReview(entry.rowId)
+                                          setNeedsReviewEntry(entry)
                                         }}
                                         className={cn(
                                           'inline-flex h-6 w-6 items-center justify-center rounded border transition-colors',

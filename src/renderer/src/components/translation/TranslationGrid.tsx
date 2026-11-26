@@ -60,6 +60,7 @@ import { TextSearchInput } from '@/components/shared/TextSearchInput'
 import { ThemedSelect, type ThemedSelectOption } from '@/components/shared/ThemedSelect'
 import { AITranslateModal } from '@/components/translation/AITranslateModal'
 import { SimilarityExamplesModal } from '@/components/translation/SimilarityExamplesModal'
+import { NeedsReviewNoteModal } from '@/components/translation/NeedsReviewNoteModal'
 import { TranslationHistoryDialog } from '@/components/translation/TranslationHistoryDialog'
 import {
   createEntrySearchMatcher,
@@ -406,11 +407,13 @@ function SearchToolbarToggle({
 
 function TranslateActionTooltipButton({
   tooltip,
+  tooltipClassName,
   onClick,
   className,
   children
 }: {
   tooltip: string
+  tooltipClassName?: string
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void
   className: string
   children: React.ReactNode
@@ -428,7 +431,7 @@ function TranslateActionTooltipButton({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/translate-tooltip:translate-y-0 group-hover/translate-tooltip:opacity-100 group-focus-visible/translate-tooltip:translate-y-0 group-focus-visible/translate-tooltip:opacity-100"
+        className={cn("pointer-events-none absolute bottom-[calc(100%+8px)] left-1/2 z-[100] w-max max-w-56 -translate-x-1/2 translate-y-[2px] whitespace-nowrap rounded-md border border-neutral-700 bg-[#131518] px-2 py-1.5 text-[10px] font-medium leading-tight text-neutral-200 opacity-0 shadow-2xl transition-all duration-150 group-hover/translate-tooltip:translate-y-0 group-hover/translate-tooltip:opacity-100 group-focus-visible/translate-tooltip:translate-y-0 group-focus-visible/translate-tooltip:opacity-100", tooltipClassName)}
       >
         {tooltip}
       </span>
@@ -542,7 +545,6 @@ export function TranslationGrid({
     sourceLang,
     targetLang,
     sourceFrequencies,
-    toggleNeedsReview,
     setReviewStatus
   } = session
   const initialViewState = useRef<TranslateViewState | null>(null)
@@ -746,6 +748,7 @@ export function TranslationGrid({
   // Row the per-line "Translate with AI" modal is open for (null = closed).
   const [aiEntry, setAiEntry] = useState<TranslationSessionEntry | null>(null)
   const [similarityEntry, setSimilarityEntry] = useState<TranslationSessionEntry | null>(null)
+  const [needsReviewEntry, setNeedsReviewEntry] = useState<TranslationSessionEntry | null>(null)
   const [dialogueKey, setDialogueKey] = useState<{ file: string; dialogue: string } | null>(null)
   const [dialogueChoices] = useState<Array<{ file: string; dialogue: string }>>([])
   const [showLiveGraph, setShowLiveGraph] = useState(true)
@@ -1642,10 +1645,15 @@ export function TranslationGrid({
 
   const renderReviewButton = (entry: TranslationSessionEntry) => (
     <TranslateActionTooltipButton
-      tooltip={t('grid.needsReviewToggle', { ns: 'translate' })}
+      tooltip={entry.needsReview && deferredFilter === 'needs-review' && entry.needsReviewReason?.trim()
+        ? entry.needsReviewReason
+        : t('grid.needsReviewToggle', { ns: 'translate' })}
+      tooltipClassName={entry.needsReview && deferredFilter === 'needs-review' && entry.needsReviewReason?.trim()
+        ? 'max-w-80 whitespace-normal text-left'
+        : undefined}
       onClick={(event) => {
         event.stopPropagation()
-        toggleNeedsReview(entry.rowId)
+        setNeedsReviewEntry(entry)
       }}
       className={cn(
         'inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded border transition-colors',
@@ -1702,6 +1710,10 @@ export function TranslationGrid({
       onDelete={(historyId) => session.deleteHistoryEntry(historyEntry.rowId, historyId)}
       onClose={() => setHistoryEntry(null)}
     />
+  )
+
+  const needsReviewModal = needsReviewEntry && (
+    <NeedsReviewNoteModal entry={needsReviewEntry} onClose={() => setNeedsReviewEntry(null)} />
   )
 
   const dialogueEntries = useMemo(() => {
@@ -3352,6 +3364,7 @@ export function TranslationGrid({
         {aiModal}
         {similarityModal}
         {historyModal}
+        {needsReviewModal}
       </div>
     )
   }
@@ -3651,6 +3664,7 @@ export function TranslationGrid({
       {aiModal}
       {similarityModal}
       {historyModal}
+      {needsReviewModal}
     </div>
   )
 }

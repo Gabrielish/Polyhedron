@@ -182,6 +182,18 @@ html[data-theme="liquid-glass"] .app-modal-panel button:is([class~="bg-amber-500
   box-shadow: none !important;
   filter: none !important;
 }
+html[data-theme] .app-content-shell main button.game-data-list-entry:not([data-game-data-selected="true"]):hover {
+  background-color: #262626 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+html[data-theme] .app-content-shell main button.game-data-list-entry[data-game-data-selected="true"]:hover {
+  background-color: color-mix(in srgb, var(--poly-accent) 10%, transparent) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
 
 /* Interactive controls share one cursor policy throughout the desktop app,
    including dropdown menus and dialogs rendered outside the page container. */
@@ -4834,4 +4846,17 @@ html[data-theme] .provider-api-key-field > button:focus-visible {
   background: var(--poly-accent, var(--color-amber-500, #ed1c24)) !important;
   color: var(--poly-accent-foreground, #101010) !important;
   border-color: color-mix(in srgb, var(--poly-accent-foreground, #101010) 30%, transparent) !important;
+}
+/* Quest objective rows draw one continuous hover/active surface on the row.
+   Keep the title button transparent so it does not create a second rounded
+   background inside that surface. */
+html[data-theme] .app-content-shell main :is(.game-data-quest-title, .game-data-objective-title, .game-data-alchemy-title, .game-data-character-title),
+html[data-theme] .app-content-shell main :is(.game-data-quest-title, .game-data-objective-title, .game-data-alchemy-title, .game-data-character-title):hover,
+html[data-theme] .app-content-shell main :is(.game-data-quest-title, .game-data-objective-title, .game-data-alchemy-title, .game-data-character-title):focus,
+html[data-theme] .app-content-shell main :is(.game-data-quest-title, .game-data-objective-title, .game-data-alchemy-title, .game-data-character-title):focus-visible,
+html[data-theme] .app-content-shell main :is(.game-data-quest-title, .game-data-objective-title, .game-data-alchemy-title, .game-data-character-title):active {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
 }

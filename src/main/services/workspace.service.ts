@@ -39,7 +39,7 @@ export function getWorkspaceTranslationStats(
       stats.total += parsed.entries.length
       stats.translated += parsed.entries.filter((entry) => Boolean(entry.target?.trim())).length
       for (const entry of parsed.entries) {
-        const value = `${(entry as { uid?: string }).uid ?? ''}\u0000${entry.target ?? ''}\u0000${(entry as { matchType?: string }).matchType ?? ''}\u0000${(entry as { needsReview?: boolean }).needsReview ?? false}\u0000${(entry as { reviewStatus?: string }).reviewStatus ?? ''}\u0000${JSON.stringify((entry as { history?: unknown }).history ?? [])}`
+        const value = `${(entry as { uid?: string }).uid ?? ''}\u0000${entry.target ?? ''}\u0000${(entry as { matchType?: string }).matchType ?? ''}\u0000${(entry as { needsReview?: boolean }).needsReview ?? false}\u0000${(entry as { needsReviewReason?: string }).needsReviewReason ?? ''}\u0000${(entry as { reviewStatus?: string }).reviewStatus ?? ''}\u0000${JSON.stringify((entry as { history?: unknown }).history ?? [])}`
         for (let index = 0; index < value.length; index += 1) {
           hash ^= value.charCodeAt(index)
           hash = Math.imul(hash, 16777619)

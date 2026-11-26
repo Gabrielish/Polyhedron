@@ -21,6 +21,7 @@ export function prepareSessionEntries(
       matchType:
         hasSavedTarget || previous.matchType === 'manual' ? previous.matchType : entry.matchType,
       needsReview: previous.needsReview === true,
+      needsReviewReason: previous.needsReviewReason ?? entry.needsReviewReason,
       reviewStatus: previous.reviewStatus ?? (hasSavedTarget ? 'needs-review' : 'untranslated'),
       genderTargets: previous.genderTargets ?? entry.genderTargets,
       history: previous.history ?? entry.history

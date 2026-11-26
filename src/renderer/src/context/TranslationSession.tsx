@@ -277,6 +277,7 @@ type Action =
   | { type: 'RESTORE_EDIT'; rowId: string; field: 'target' | GenderVariant; value: string }
   | { type: 'MARK_MANUAL'; rowId: string }
   | { type: 'TOGGLE_NEEDS_REVIEW'; rowId: string }
+  | { type: 'SET_NEEDS_REVIEW'; rowId: string; enabled: boolean; reason: string }
   | { type: 'SET_REVIEW_STATUS'; rowId: string; status: ReviewStatus }
   | { type: 'DELETE_HISTORY_ENTRY'; rowId: string; historyId: string }
   | { type: 'SELECT_ALL_MATCHING'; filter: FilterSpec }
@@ -473,7 +474,24 @@ function reducer(state: TranslationSessionState, action: Action): TranslationSes
             ? {
                 ...e,
                 needsReview: !e.needsReview,
+                needsReviewReason: e.needsReview ? '' : e.needsReviewReason,
                 history: appendHistory(e, { kind: 'needs-review', value: String(!e.needsReview) })
+              }
+            : e
+        )
+      }
+    case 'SET_NEEDS_REVIEW':
+      return {
+        ...state,
+        entries: state.entries.map((e) =>
+          e.rowId === action.rowId
+            ? {
+                ...e,
+                needsReview: action.enabled,
+                needsReviewReason: action.enabled ? action.reason : '',
+                history: e.needsReview === action.enabled && e.needsReviewReason === action.reason
+                  ? e.history
+                  : appendHistory(e, { kind: 'needs-review', value: String(action.enabled) })
               }
             : e
         )
@@ -575,6 +593,7 @@ interface TranslationSessionContext extends TranslationSessionState {
   updateGenderVariant: (rowId: string, variant: GenderVariant, target: string) => void
   markManual: (rowId: string) => void
   toggleNeedsReview: (rowId: string) => void
+  setNeedsReview: (rowId: string, enabled: boolean, reason: string) => void
   setReviewStatus: (rowId: string, status: ReviewStatus) => void
   deleteHistoryEntry: (rowId: string, historyId: string) => void
   setModName: (name: string) => void
@@ -686,13 +705,14 @@ export function TranslationSessionProvider({
       void window.api.session.save({
         key,
         entries: latest.entries.map(
-          ({ uid, source, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+          ({ uid, source, target, genderTargets, matchType, needsReview, needsReviewReason, reviewStatus, history }) => ({
             uid,
             source,
             target,
             genderTargets,
             matchType,
             needsReview,
+            needsReviewReason,
             reviewStatus,
             history
           })
@@ -831,6 +851,10 @@ export function TranslationSessionProvider({
     dispatch({ type: 'TOGGLE_NEEDS_REVIEW', rowId })
   }, [])
 
+  const setNeedsReview = useCallback((rowId: string, enabled: boolean, reason: string) => {
+    dispatch({ type: 'SET_NEEDS_REVIEW', rowId, enabled, reason })
+  }, [])
+
   const setReviewStatus = useCallback((rowId: string, status: ReviewStatus) => {
     dispatch({ type: 'SET_REVIEW_STATUS', rowId, status })
   }, [])
@@ -962,6 +986,7 @@ export function TranslationSessionProvider({
         updateGenderVariant,
         markManual,
         toggleNeedsReview,
+        setNeedsReview,
         setReviewStatus,
         deleteHistoryEntry,
         setModName,

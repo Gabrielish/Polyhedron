@@ -445,6 +445,7 @@ const api: AppApi = {
         genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
         matchType: import('./api-types').XmlMatchType
         needsReview: boolean
+        needsReviewReason?: string
         reviewStatus?: import('./api-types').ReviewStatus
         history?: import('./api-types').TranslationHistoryEntry[]
       }>

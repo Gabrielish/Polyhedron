@@ -50,6 +50,7 @@ type PwaSyncEntry = {
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
+  needsReviewReason?: string
   reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
   history?: Array<Record<string, unknown>>
 }
@@ -61,6 +62,7 @@ type SavedSessionEntry = {
   genderTargets?: PwaSyncEntry['genderTargets']
   matchType?: PwaSyncEntry['matchType']
   needsReview?: boolean
+  needsReviewReason?: string
   reviewStatus?: PwaSyncEntry['reviewStatus']
   history?: PwaSyncEntry['history']
 }
@@ -140,10 +142,11 @@ function buildPwaSyncDocument() {
         genderTargets: saved.genderTargets,
         matchType: saved.matchType ?? 'none',
         needsReview: saved.needsReview === true,
+        needsReviewReason: saved.needsReviewReason,
         reviewStatus: saved.reviewStatus,
         history: saved.history
       }
-      const value = `${entry.uid}\u0000${entry.source}\u0000${entry.target}`
+      const value = `${entry.uid}\u0000${entry.source}\u0000${entry.target}\u0000${entry.needsReview}\u0000${entry.needsReviewReason ?? ''}`
       for (let index = 0; index < value.length; index += 1) {
         hash ^= value.charCodeAt(index)
         hash = Math.imul(hash, 16777619)
@@ -596,6 +599,7 @@ async function applyPwaSyncFromDrive(
         genderTargets?: PwaSyncEntry['genderTargets']
         matchType?: PwaSyncEntry['matchType']
         needsReview?: boolean
+        needsReviewReason?: string
         reviewStatus?: 'not-verified' | 'needs-review' | 'verified'
         history?: PwaSyncEntry['history']
       }>
@@ -618,6 +622,7 @@ async function applyPwaSyncFromDrive(
         genderTargets: entry.genderTargets,
         matchType: entry.matchType ?? 'none',
         needsReview: entry.needsReview === true,
+        needsReviewReason: entry.needsReviewReason,
         reviewStatus: entry.reviewStatus,
         history: entry.history
       }))

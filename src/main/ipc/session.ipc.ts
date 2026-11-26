@@ -10,6 +10,7 @@ interface SessionEntry {
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
   matchType: 'none' | 'mod-text' | 'text' | 'manual'
   needsReview: boolean
+  needsReviewReason?: string
   reviewStatus?: 'untranslated' | 'not-verified' | 'needs-review' | 'verified'
   history?: Array<Record<string, unknown>>
 }

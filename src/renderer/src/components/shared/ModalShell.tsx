@@ -14,6 +14,7 @@ interface ModalShellProps {
   iconClassName?: string
   descriptionClassName?: string
   contentClassName?: string
+  footerClassName?: string
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
@@ -30,6 +31,7 @@ export function ModalShell({
   iconClassName,
   descriptionClassName,
   contentClassName,
+  footerClassName,
   onClose,
   children,
   footer
@@ -89,7 +91,7 @@ export function ModalShell({
         <div className={cn('px-5 py-5', contentClassName)}>{children}</div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-[#2a2c34] bg-[#101115] px-5 py-4">
+          <div className={cn('flex items-center justify-end gap-2 border-t border-[#2a2c34] bg-[#101115] px-5 py-4', footerClassName)}>
             {footer}
           </div>
         )}

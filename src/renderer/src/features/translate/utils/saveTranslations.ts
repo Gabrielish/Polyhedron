@@ -20,13 +20,14 @@ export async function saveTranslations(session: TranslationSession): Promise<num
   await window.api.session.save({
     key,
     entries: entries.map(
-      ({ uid, source, target, genderTargets, matchType, needsReview, reviewStatus, history }) => ({
+      ({ uid, source, target, genderTargets, matchType, needsReview, needsReviewReason, reviewStatus, history }) => ({
         uid,
         source,
         target,
         genderTargets,
         matchType,
         needsReview,
+        needsReviewReason,
         reviewStatus,
         history
       })

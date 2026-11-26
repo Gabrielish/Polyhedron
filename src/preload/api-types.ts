@@ -326,6 +326,7 @@ export interface XmlEntry {
   target: string
   matchType: XmlMatchType
   needsReview: boolean
+  needsReviewReason?: string
   reviewStatus?: ReviewStatus
   genderVariant?: 'default' | 'female' | 'neutral'
   genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
@@ -721,6 +722,7 @@ export interface SessionApi {
       genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
       matchType: XmlMatchType
       needsReview: boolean
+      needsReviewReason?: string
       reviewStatus?: ReviewStatus
       history?: TranslationHistoryEntry[]
     }>
@@ -731,6 +733,7 @@ export interface SessionApi {
     genderTargets?: Partial<Record<'default' | 'female' | 'neutral', string>>
     matchType: XmlMatchType
     needsReview?: boolean
+    needsReviewReason?: string
     reviewStatus?: ReviewStatus
     history?: TranslationHistoryEntry[]
   }> | null>

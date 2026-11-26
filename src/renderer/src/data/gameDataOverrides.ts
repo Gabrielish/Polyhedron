@@ -11,6 +11,7 @@ export interface GameDataOverrides {
   hiddenEntries: string[]
   descriptionSourceNameByEntry: Record<string, string>
   questObjectiveSourceNamesByEntry: Record<string, Record<string, string>>
+  questObjectiveAddedJournalEntriesByEntry: Record<string, Record<string, string[]>>
   questSectionByEntry: Record<string, string>
   locationSectionByEntry: Record<string, string>
   bookSectionByEntry: Record<string, string>
@@ -30,6 +31,7 @@ const emptyOverrides = (): GameDataOverrides => ({
   hiddenEntries: [],
   descriptionSourceNameByEntry: {},
   questObjectiveSourceNamesByEntry: {},
+  questObjectiveAddedJournalEntriesByEntry: {},
   questSectionByEntry: {},
   locationSectionByEntry: {},
   bookSectionByEntry: {},
@@ -74,6 +76,15 @@ function nestedStringRecord(value: unknown): Record<string, Record<string, strin
   return Object.fromEntries(Object.entries(value).map(([key, entries]) => [key, stringRecord(entries)]).filter(([, entries]) => Object.keys(entries).length > 0))
 }
 
+function nestedStringArrayRecord(value: unknown): Record<string, Record<string, string[]>> {
+  if (!isRecord(value)) return {}
+  return Object.fromEntries(
+    Object.entries(value)
+      .map(([key, entries]) => [key, stringArrayRecord(entries)])
+      .filter(([, entries]) => Object.keys(entries).length > 0)
+  )
+}
+
 export function parseGameDataOverrides(value: unknown): GameDataOverrides {
   if (!isRecord(value)) return emptyOverrides()
   return {
@@ -85,6 +96,7 @@ export function parseGameDataOverrides(value: unknown): GameDataOverrides {
     hiddenEntries: stringArray(value.hiddenEntries),
     descriptionSourceNameByEntry: stringRecord(value.descriptionSourceNameByEntry),
     questObjectiveSourceNamesByEntry: nestedStringRecord(value.questObjectiveSourceNamesByEntry),
+    questObjectiveAddedJournalEntriesByEntry: nestedStringArrayRecord(value.questObjectiveAddedJournalEntriesByEntry),
     questSectionByEntry: stringRecord(value.questSectionByEntry),
     locationSectionByEntry: stringRecord(value.locationSectionByEntry),
     bookSectionByEntry: stringRecord(value.bookSectionByEntry),
@@ -130,13 +142,26 @@ export function mergeGameDataEntries(
     const sourceUid = overrides.sourceUidByEntry[key]
     const descriptionSourceName = overrides.descriptionSourceNameByEntry[key]
     const questObjectiveSourceNames = overrides.questObjectiveSourceNamesByEntry[key]
+    const addedObjectiveJournalEntries = overrides.questObjectiveAddedJournalEntriesByEntry[key]
     const contentSourceNames = overrides.contentSourceNamesByEntry[key]
     const npcGroups = overrides.npcGroupsByEntry[key]
     const section = overrides.questSectionByEntry[key]
     const locationSection = overrides.locationSectionByEntry[key]
     const bookSection = overrides.bookSectionByEntry[key]
     const characterCreationSection = overrides.characterCreationSectionByEntry[key]
-    if (!sourceName && !sourceUid && !descriptionSourceName && !contentSourceNames && !questObjectiveSourceNames && (!npcGroups || entry.category !== 'NPC') && (!section || entry.category !== 'Quest') && (!locationSection || entry.category !== 'Location') && (!bookSection || entry.category !== 'Book') && (!characterCreationSection || entry.category !== 'Character Creation')) return [entry]
+    if (!sourceName && !sourceUid && !descriptionSourceName && !contentSourceNames && !questObjectiveSourceNames && !addedObjectiveJournalEntries && (!npcGroups || entry.category !== 'NPC') && (!section || entry.category !== 'Quest') && (!locationSection || entry.category !== 'Location') && (!bookSection || entry.category !== 'Book') && (!characterCreationSection || entry.category !== 'Character Creation')) return [entry]
+
+    const mergeAddedJournalEntries = (
+      objectives: NonNullable<ReferenceCatalogEntry['objectives']>,
+      path = ''
+    ): NonNullable<ReferenceCatalogEntry['objectives']> => objectives.map((objective, index) => {
+      const objectiveKey = `${path}${index}`
+      return {
+        ...objective,
+        journalEntries: [...objective.journalEntries, ...(addedObjectiveJournalEntries?.[objectiveKey] ?? [])],
+        children: mergeAddedJournalEntries(objective.children, `${objectiveKey}.`)
+      }
+    })
 
     return [{
       ...entry,
@@ -144,6 +169,9 @@ export function mergeGameDataEntries(
       ...(sourceUid ? { sourceUid } : {}),
       ...(descriptionSourceName ? { descriptionSourceName } : {}),
       ...(questObjectiveSourceNames ? { questObjectiveSourceNames } : {}),
+      ...(addedObjectiveJournalEntries && entry.category === 'Quest' && entry.objectives
+        ? { objectives: mergeAddedJournalEntries(entry.objectives) }
+        : {}),
       ...(contentSourceNames?.length ? { contentSourceNames } : {}),
       ...(section && entry.category === 'Quest' ? { section } : {}),
       ...(locationSection && entry.category === 'Location' ? { section: locationSection } : {}),
