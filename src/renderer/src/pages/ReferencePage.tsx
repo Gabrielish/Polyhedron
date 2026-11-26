@@ -3089,7 +3089,10 @@ export function ReferencePage(): React.JSX.Element {
               className="fixed z-[4001] w-64 max-w-[calc(100vw-16px)] overflow-hidden rounded-lg border border-neutral-600 bg-[#131518] p-1 shadow-2xl"
               style={{
                 left: Math.max(8, Math.min(objectiveContextMenu.x, window.innerWidth - 272)),
-                top: Math.max(8, Math.min(objectiveContextMenu.y, window.innerHeight - Math.min(320, 48 + Math.max(1, objectiveContextMenu.objective.journalEntries.length) * 32)))
+                top: Math.max(8, Math.min(
+                  objectiveContextMenu.y,
+                  window.innerHeight - Math.min(400, 16 + (objectiveContextMenu.objective.journalEntries.length + 2) * 32)
+                ))
               }}
               onMouseDown={(event) => event.stopPropagation()}
             >
@@ -3131,7 +3134,7 @@ export function ReferencePage(): React.JSX.Element {
                       <span className="truncate">{label}</span>
                     </button>
                   })}
-                  {objective.journalEntries.length === 0 && <button
+                  <button
                     type="button"
                     role="menuitem"
                     onClick={() => {
@@ -3142,7 +3145,7 @@ export function ReferencePage(): React.JSX.Element {
                   >
                     <ScrollText size={14} className="text-neutral-400 group-hover:text-[var(--color-amber-300)]" />
                     Add description
-                  </button>}
+                  </button>
                 </>
               })()}
             </div>

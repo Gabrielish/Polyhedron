@@ -121,7 +121,7 @@ function unwrapJournalText(value) {
   // Wiki puts quotation marks around journal excerpts for presentation; they are not part of the string.
   if (text.startsWith('“') || text.startsWith('"')) text = text.slice(1).trim()
   if (text.endsWith('”') || text.endsWith('"')) text = text.slice(0, -1).trim()
-  return text
+  return text.replace(/\.'$/, '.')
 }
 
 function parseQuestObjectives(wikitext) {
@@ -141,8 +141,16 @@ function parseQuestObjectives(wikitext) {
       contentWithoutChildren = `${contentWithoutChildren.slice(0, relativeStart)}\n${contentWithoutChildren.slice(child.end)}`
     }
     const journalEntries = [...contentWithoutChildren.matchAll(/^\s*\*+\s*(.+?)\s*$/gm)]
-      .map((match) => unwrapJournalText(match[1]))
-      .filter((entry) => entry && !/^If the /i.test(entry) && !/^Read .+?:?$/i.test(entry))
+      .map((match) => {
+        let entry = unwrapJournalText(match[1])
+        // Conditional variants are formatted as `If ...: "Journal text"`
+        // or `When entering via ...: Journal text`. Keep the journal entry,
+        // not its condition, without stripping colons from narrative text.
+        const conditional = entry.match(/^(?:If\b[^:]*:\s*|When entering via\b[^:]*:\s*)(.+)$/i)
+        if (conditional) entry = unwrapJournalText(conditional[1])
+        return unwrapJournalText(entry)
+      })
+      .filter((entry) => entry && !/^Read .+?:?$/i.test(entry) && !/^(?:If|When|Should)\b[^:]*:\s*$/i.test(entry))
     return { title, journalEntries: [...new Set(journalEntries)], children }
   }
   const parseLevel = (text) => findDirectTemplates(text, 'Quest objective')

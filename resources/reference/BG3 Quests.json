@@ -52,18 +52,27 @@
         {
           "title": "Find a way to release the captive.",
           "journalEntries": [
-            "We encountered a survivor, trapped inside one of the pods aboard the nautiloid. Perhaps we can find a way to free her."
+            "We encountered a survivor, trapped inside one of the pods aboard the nautiloid. Perhaps we can find a way to free her.",
+            "We found an Eldritch Rune. It may help us to rescue the captive half-elf."
           ],
           "children": []
         },
         {
           "title": "Talk to the half-elf.",
-          "journalEntries": [],
+          "journalEntries": [
+            "We opened the pod using an Eldritch Rune, and freed the captive. We should speak to her.",
+            "We forced the pod open using our brute strength, freeing the captive. We should speak to her."
+          ],
           "children": []
         },
         {
           "title": "Quest Completed!",
-          "journalEntries": [],
+          "journalEntries": [
+            "We learned that the survivor aboard the nautiloid is called Shadowheart. She joined us.",
+            "We learned that the survivor aboard the nautiloid is called Shadowheart. We decided to go our separate ways.",
+            "We freed the captive aboard the nautiloid from her pod, but left her behind.",
+            "We left the captive inside the pod, and escaped the nautiloid without her."
+          ],
           "children": []
         }
       ]
@@ -3218,8 +3227,8 @@
           "title": "Investigate the ruins.",
           "journalEntries": [
             "We found a way into the abandoned ruins.",
-            "When entering via the trapdoor: We've entered some ruins through an underground cave. There's bound to be some interesting artefacts down here.",
-            "When entering via the locked door (down on the beach): We've entered some kind of crypt. It doesn't look like anyone has been here in a while - there might still be some valuable artefacts lying around.",
+            "We've entered some ruins through an underground cave. There's bound to be some interesting artefacts down here.",
+            "We've entered some kind of crypt. It doesn't look like anyone has been here in a while - there might still be some valuable artefacts lying around.",
             "We found a locked door, but it doesn't have a keyhole. There's got to be something interesting behind it.",
             "The strange door led deeper into the ruins. There are bound to be some interesting artefacts down here."
           ],
@@ -3366,8 +3375,11 @@
         {
           "title": "Quest Complete",
           "journalEntries": [
-            "If Doni is found: Rikka was grateful and thanked us for finding Doni.",
-            "If Rikka dies during the goblin raid: Rikka died."
+            "Rikka was grateful and thanked us for finding Doni.",
+            "Rikka died.",
+            "We betrayed the tieflings' trust - Rikka won't want to deal with us anymore.",
+            "We left the region without helping Rikka.",
+            "The siege began before we could bring any news to Rikka."
           ],
           "children": []
         }
@@ -4377,7 +4389,7 @@
           "journalEntries": [
             "We met an eccentric old lady in the Emerald Grove. She's confident she can remove our parasites and invited us to her teahouse.",
             "We met an eccentric old lady at a teahouse in the wilderness. She's confident she can remove our parasites - for a price.",
-            "Ethel named her price for helping us: one of our eyes",
+            "Ethel named her price for helping us: one of our eyes.",
             "We agreed to give up an eye in exchange for removing the parasite."
           ],
           "children": []
@@ -4615,8 +4627,9 @@
             "We met Oskar, an artist captured by the Zhentarim. He begged us to help him escape, promising that his patron will reward us handsomely.",
             "We told Oskar we'd rescue him. Now to figure out how.",
             "Brem agreed to sell us Oskar for a hefty sum of gold.",
-            "If passing a persuasion check: \"It took some convincing, but we got Brem to lower the price.",
-            "If Oskar is purchased: \"We bought Oskar from Zhentarium. We should tell him the good news.",
+            "It took some convincing, but we got Brem to lower the price.",
+            "We bought Oskar from Zhentarium. We should tell him the good news.",
+            "We persuaded the Zhentarim that Oskar was more trouble than he was worth. They let him go.",
             "Oskar told us his story. Caught up in a romantic scandal with a patriar of Baldur's Gate, he fled his engagement to her."
           ],
           "children": []
@@ -5040,7 +5053,7 @@
         {
           "title": "Drink Priestess Gut's potion.",
           "journalEntries": [
-            "Now that we have some privacy, Priestess Gut is prepared to assist us. All we need to do is drink a potion.'\""
+            "Now that we have some privacy, Priestess Gut is prepared to assist us. All we need to do is drink a potion."
           ],
           "children": []
         },
@@ -5068,6 +5081,7 @@
         {
           "title": "Travel to the Goblin Camp.",
           "journalEntries": [
+            "If the tieflings are to make their way to Baldur's Gate, we will need to deal with the goblins. Zevlor thinks someone must be organising them. We should investigate their camp.",
             "There were three figures in the drawing we found. The goblins must have more than one leader."
           ],
           "children": []
@@ -5844,7 +5858,11 @@
         },
         {
           "title": "Quest Complete",
-          "journalEntries": [],
+          "journalEntries": [
+            "We destroyed the rubble.",
+            "We got past the rubble.",
+            "We left Grymforge without reaching the Adamantine Forge."
+          ],
           "children": []
         }
       ]
@@ -6381,7 +6399,7 @@
         {
           "title": "Quest Complete",
           "journalEntries": [
-            "If Arabella is immediately told about her parents' deaths before reaching camp: Arabella fled into the shadow curse upon hearing what happened to her parents. It is unlikely that she will survive.",
+            "Arabella fled into the shadow curse upon hearing what happened to her parents. It is unlikely that she will survive.",
             "Withers encouraged Arabella to learn the ways of the Weave. She left to find her own way in the world.",
             "We never did tell Arabella that her parents died.",
             "We never did find Arabella's parents. They must have succumbed to the shadow curse.",
@@ -6423,13 +6441,13 @@
         {
           "title": "Quest Complete",
           "journalEntries": [
-            "If Cal and Lia are saved in Rescue the Tieflings: Rolan's family are finally safe, and together once more in Last Light.",
-            "If Lia dies in Rescue the Tieflings: With Lia dead, Rolan and Cal will never be the same.",
-            "If Cal dies in Rescue the Tieflings: With Cal dead, Rolan and Lia will never be the same.",
+            "Rolan's family are finally safe, and together once more in Last Light.",
+            "With Lia dead, Rolan and Cal will never be the same.",
+            "With Cal dead, Rolan and Lia will never be the same.",
             "Rolan has reunited with Lia at Last Light.",
             "Rolan has reunited with Cal at Last Light.",
-            "If Rolan is not saved in time by the Shades: Rolan died.",
-            "If Isobel is not saved in Resolve the Abduction: With Last Light gone, Rolan will never see his family again.",
+            "Rolan died.",
+            "With Last Light gone, Rolan will never see his family again.",
             "We left the shadow-cursed lands without speaking to Rolan in Last Light.",
             "We left the shadow-cursed lands without helping Rolan.",
             "Rolan's reunion with his siblings didn't go as expected, and they separated on bad terms."
@@ -6590,6 +6608,8 @@
         {
           "title": "Quest Complete",
           "journalEntries": [
+            "Halsin is lost to the Shadowfell. Without him, we can't lift the shadow curse.",
+            "We left for Baldur's Gate without finding a way to lift the shadow curse. Halsin decided to stay behind to try and lift the curse without us.",
             "We successfully lifted the shadow curse. In time, these lands will flourish once again.",
             "Halsin died. Without him, we cannot lift the shadow curse."
           ],
@@ -6676,9 +6696,9 @@
           "title": "Quest Complete",
           "journalEntries": [
             "We woke Art. He desperately wants to speak to Halsin about Thaniel - the spirit of the land, who he met in the Shadowfell.",
-            "If Halsin dies before Art was woken up: \"Art despaired when he learned of Halsin's death. Without him, Thaniel is lost to the Shadowfell - and the shadow curse can never be lifted.",
+            "Art despaired when he learned of Halsin's death. Without him, Thaniel is lost to the Shadowfell - and the shadow curse can never be lifted.",
             "We woke Art. He told Halsin that he met the spirit of the land, Thaniel, in the Shadowfell.",
-            "If Isobel dies or is kidnapped in Resolve the Abduction: \"Art Cullagh died before we could wake him."
+            "Art Cullagh died before we could wake him."
           ],
           "children": []
         }
@@ -7909,7 +7929,7 @@
           "title": "Investigate the Open Hand Temple roof.",
           "journalEntries": [
             "We found the bloody remains of several pigeons on the roof. The trail seems to lead towards the Open Hand Temple roof.",
-            "We spoke to a pigeon in the pigeon coop. He claims other carrier pigeons have been intercepted by an unknown enemy to the west of the posthouse. He warned us - 'beware the sign of the featherless wings.'"
+            "We spoke to a pigeon in the pigeon coop. He claims other carrier pigeons have been intercepted by an unknown enemy to the west of the posthouse. He warned us - 'beware the sign of the featherless wings."
           ],
           "children": []
         },
